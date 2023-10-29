@@ -9,15 +9,33 @@ import SwiftUI
 
 
 struct MainContentView: View {
+    private var authenticationManager = AuthenticationManager()
+    @State private var isShowSheet = false
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            if authenticationManager.isSignIn == false {
+                // Sign-Out状態なのでSign-Inボタンを表示する
+                Button {
+                    self.isShowSheet.toggle()
+                } label: {
+                    Text("Sign-In")
+                }
+            } else {
+                // Sign-In状態なのでSign-Outボタンを表示する
+                Button {
+                    authenticationManager.signOut()
+                } label: {
+                    Text("Sign-Out")
+                }
+            }
         }
-        .padding()
+        .sheet(isPresented: $isShowSheet) {
+           LoginView()
+              
+                           
+        }
     }
+    
 }
 
 
