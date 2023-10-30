@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>434041288140-e2trb3lu7plbrmk2o84me3ocp2rkf6k2.apps.googleusercontent.com</string>
+	<string>592210612826-55u94cpajpgku3j3ks6oaj1ilo2e7i2k.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.434041288140-e2trb3lu7plbrmk2o84me3ocp2rkf6k2</string>
+	<string>com.googleusercontent.apps.592210612826-55u94cpajpgku3j3ks6oaj1ilo2e7i2k</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDZNwEmqi4UShUZKpesu7a7ODDQDo926G4</string>
+	<string>AIzaSyBm1MjLr8W8JCFIFaxlp5Lv1SGt1ceJ8O0</string>
 	<key>GCM_SENDER_ID</key>
-	<string>434041288140</string>
+	<string>592210612826</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.hosonuma.sakki.sotsugyo</string>
+	<string>com.hosonuma.sakki.sotsugyou</string>
 	<key>PROJECT_ID</key>
-	<string>sotsugyo-597fa</string>
+	<string>sotugyou-7ea16</string>
 	<key>STORAGE_BUCKET</key>
-	<string>sotsugyo-597fa.appspot.com</string>
+	<string>sotugyou-7ea16.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:434041288140:ios:a2af274ca12c9ec2f7d969</string>
+	<string>1:592210612826:ios:da30019458463eb14a3e63</string>
 </dict>
 </plist>
