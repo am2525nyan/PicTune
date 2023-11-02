@@ -58,7 +58,7 @@ struct MainContentView: View {
                     }
                     .fullScreenCover(isPresented: $isPresented) { //フルスクリーンの画面遷移
                         
-                        PhotoView()
+                        CameraView()
                     }
                 }
             }

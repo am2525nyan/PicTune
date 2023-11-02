@@ -8,7 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		7265CACA2AEFED71000058BC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7265CAC92AEFED71000058BC /* GoogleService-Info.plist */; };
-		7265CACC2AF1117C000058BC /* PhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7265CACB2AF1117C000058BC /* PhotoView.swift */; };
+		7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7266BF322AF374BE000D711B /* ImagePicker.swift */; };
+		7266BF352AF374E7000D711B /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7266BF342AF374E7000D711B /* CameraView.swift */; };
 		728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB082AEE1C10008C079B /* sotsugyoApp.swift */; };
 		728EFB0B2AEE1C10008C079B /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB0A2AEE1C10008C079B /* MainContentView.swift */; };
 		728EFB0D2AEE1C15008C079B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 728EFB0C2AEE1C15008C079B /* Assets.xcassets */; };
@@ -54,7 +55,8 @@
 /* Begin PBXFileReference section */
 		7265CAC62AEFDB60000058BC /* sotsugyo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = sotsugyo.entitlements; sourceTree = "<group>"; };
 		7265CAC92AEFED71000058BC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		7265CACB2AF1117C000058BC /* PhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoView.swift; sourceTree = "<group>"; };
+		7266BF322AF374BE000D711B /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		7266BF342AF374E7000D711B /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		728EFB052AEE1C10008C079B /* sotsugyo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sotsugyo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		728EFB082AEE1C10008C079B /* sotsugyoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sotsugyoApp.swift; sourceTree = "<group>"; };
 		728EFB0A2AEE1C10008C079B /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
@@ -140,7 +142,8 @@
 				728EFB4E2AEE303B008C079B /* LoginView.swift */,
 				728EFB0C2AEE1C15008C079B /* Assets.xcassets */,
 				728EFB0E2AEE1C15008C079B /* Preview Content */,
-				7265CACB2AF1117C000058BC /* PhotoView.swift */,
+				7266BF322AF374BE000D711B /* ImagePicker.swift */,
+				7266BF342AF374E7000D711B /* CameraView.swift */,
 			);
 			path = sotsugyo;
 			sourceTree = "<group>";
@@ -323,8 +326,9 @@
 			files = (
 				728EFB0B2AEE1C10008C079B /* MainContentView.swift in Sources */,
 				728EFB512AEE318C008C079B /* AuthenticationManager.swift in Sources */,
+				7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */,
+				7266BF352AF374E7000D711B /* CameraView.swift in Sources */,
 				728EFB4F2AEE303C008C079B /* LoginView.swift in Sources */,
-				7265CACC2AF1117C000058BC /* PhotoView.swift in Sources */,
 				728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -495,6 +499,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = sotsugyo/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "チェキを撮影します";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -528,6 +533,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = sotsugyo/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "チェキを撮影します";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
