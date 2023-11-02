@@ -6,13 +6,32 @@
 //
 
 import SwiftUI
+import Firebase
+import FirebaseAuthUI
+import FirebaseGoogleAuthUI
+import FirebaseOAuthUI
+import FirebaseEmailAuthUI
+import FirebaseFirestore
 
-struct loginView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+struct LoginView: UIViewControllerRepresentable {
+    
+    func makeUIViewController(context: Context) -> UINavigationController {
+        let authUI = FUIAuth.defaultAuthUI()!
+        // サポートするログイン方法を構成
+        let providers: [FUIAuthProvider] = [
+            FUIGoogleAuth(authUI: authUI),
+            FUIOAuth.appleAuthProvider(),
+            FUIEmailAuth()
+        ]
+        authUI.providers = providers
+        
+        // FirebaseUIを表示する
+        let authViewController = authUI.authViewController()
+        
+        return authViewController
     }
-}
-
-#Preview {
-    loginView()
+    
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {
+        // 処理なし
+    }
 }
