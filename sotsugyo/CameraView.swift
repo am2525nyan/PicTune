@@ -1,8 +1,8 @@
 //
-//  PhotoView.swift
+//  CameraView.swift
 //  sotsugyo
 //
-//  Created by saki on 2023/10/31.
+//  Created by saki on 2023/11/02.
 //
 
 import SwiftUI
