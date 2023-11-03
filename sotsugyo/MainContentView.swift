@@ -15,9 +15,11 @@ import Firebase
 struct MainContentView: View {
     private var authenticationManager = AuthenticationManager()
     @State private var isShowSheet = false
-    @State private var user: User? // ユーザー情報を格納するためのプロパティ
-       @State private var error: Error? // エラーハンドリング用のプロパティ
-    @State private var isPresented: Bool = false
+    @State private var user: User?
+       @State private var error: Error?
+    @State private var images: [UIImage] = []
+        @State private var isPresentingCamera = false
+    private let gridItemLayout = [GridItem(.flexible()), GridItem(.flexible())]
     var body: some View {
         VStack {
            
@@ -39,30 +41,37 @@ struct MainContentView: View {
             } else {
                 HStack {
                     //Sign-In状態なのでSign-Outボタンを表示する
-                   
+                    
                     Button {
                         
                         authenticationManager.signOut()
                     } label: {
                         Text("Sign-Out")
-                            
-                    }
-                  
-                    Button {
-                        isPresented = true
                         
-                        
-                    } label: {
-                        Text("カメラ")
-                            
                     }
-                    .fullScreenCover(isPresented: $isPresented) { //フルスクリーンの画面遷移
-                        
-                        CameraView()
-                    }
+                    
+                }
+                    ScrollView {
+                        LazyVGrid(columns: gridItemLayout, spacing: 10) {
+                                           ForEach(images, id: \.self) { image in
+                                               Image(uiImage: image)
+                                                   .resizable()
+                                                   .scaledToFit()
+                                                   .frame(width: 150, height: 150) // 画像のサイズを指定
+                                                   .clipped()
+                                           }
+                                   }
+                               }
+                               
+                               Button("カメラを開く") {
+                                   isPresentingCamera = true
+                               }
+                               .sheet(isPresented: $isPresentingCamera) {
+                                   CameraView(images: $images, isPresentingCamera: $isPresentingCamera)
+                               }
                 }
             }
-        }
+        
         Spacer()
         .sheet(isPresented: $isShowSheet) {
            LoginView()
