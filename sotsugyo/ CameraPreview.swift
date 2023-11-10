@@ -7,12 +7,20 @@
 
 import SwiftUI
 
-struct _CameraPreview: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
+struct CameraPreview: UIViewRepresentable {
+    let cameraManager: CameraManager
+    
+    func makeUIView(context: Context) -> UIView {
+            let view = UIView(frame: UIScreen.main.bounds)
+            
+            // セッションが開始された後にプレビューレイヤーが設定されるようにします。
+            if let previewLayer = cameraManager.previewLayer {
+                previewLayer.frame = view.bounds
+                view.layer.addSublayer(previewLayer)
+            }
 
-#Preview {
-    _CameraPreview()
+            return view
+        }
+    
+    func updateUIView(_ uiView: UIView, context: Context) {}
 }
