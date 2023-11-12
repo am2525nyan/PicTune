@@ -113,10 +113,7 @@ struct MainContentView: View {
                 if url != nil{
                     urlArray.append(url as! String)
                 }
-               
-               
-                    
-                
+                   
             }
             let storage = Storage.storage()
             

@@ -118,7 +118,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
                 Task{
                     do{
                         try await self.uploadLink(url: url)
-                       
+                        self.isImageUploadCompleted = true
                        
                     }
                 }
@@ -143,13 +143,14 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
                 "url": url,
                 "date": FieldValue.serverTimestamp()
             ])
-            documentId?.append(ref.documentID)
+            self.documentId?.append(ref.documentID)
             print("保存しました！")
           
         }
-        self.isImageUploadCompleted = true
-        print("戻りました！")
-      
+        DispatchQueue.main.sync{
+          
+            print("戻りました！")
+        }
     }
     
 }
