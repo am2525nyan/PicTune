@@ -34,11 +34,11 @@ struct Camera2View: View {
                 }
                 
                 .padding()
-                .onChange(of: cameraManager.isImageUploadCompleted) { completed in
-                          if completed {
+                .onChange(of: cameraManager.isImageUploadCompleted) {
+                      
                               // Firestoreへのアップロードが完了したら、isPresentingCamera を false にしてシートを閉じる
                               self.isPresentingCamera = false
-                          }
+                          
                       }
             }
         }
@@ -47,6 +47,13 @@ struct Camera2View: View {
             cameraManager.startSession()
         }
         .onDisappear {
+            Task{
+                do{
+                   try await MainContentView().getUrl()
+                }
+            }
+            
+           
           //  cameraManager.stopSession()
         }
     }

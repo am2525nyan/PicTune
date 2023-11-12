@@ -20,7 +20,7 @@ struct MainContentView: View {
     @State private var images: [UIImage] = []
     @State private var isPresentingCamera = false
     private let gridItemLayout = [GridItem(.flexible()), GridItem(.flexible())]
-    
+    @State var documentId: String?
 
        
     
@@ -73,7 +73,9 @@ struct MainContentView: View {
                    
                 }
                 .fullScreenCover(isPresented: $isPresentingCamera) {
-                    Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: CameraManager(isPresentingCamera: $isPresentingCamera))
+                    Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: CameraManager(isPresentingCamera: $isPresentingCamera, documentId: $documentId))
+                    
+                 
                     
                 }
 
@@ -97,16 +99,23 @@ struct MainContentView: View {
         
         
         func getUrl() async throws{
+            print("BBB")
             let db = Firestore.firestore()
             let uid = Auth.auth().currentUser?.uid
             var urlArray = [String]()
             
-            let document = try await db.collection("users").document(uid ?? "").collection("photo").document("list").getDocument()
+            let ref = try await db.collection("users").document(uid ?? "").collection("photo").getDocuments()
             
-            let data = document.data()
-            let urlList = data?["urlList"] as! Array<Any>
-            for string in urlList {
-                urlArray.append(string as! String)
+            for document in ref.documents {
+                
+                let data = document.data()
+                let url = data["url"]
+                if url != nil{
+                    urlArray.append(url as! String)
+                }
+               
+               
+                    
                 
             }
             let storage = Storage.storage()

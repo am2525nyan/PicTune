@@ -16,14 +16,19 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     @State private var isPresentingMain = false
     @Binding var isPresentingCamera: Bool
     @Published var isImageUploadCompleted = false
+    var saveArray: Array! = [NSData]()
+    let savedata = UserDefaults.standard
+    @Binding var documentId: String?
     
-    init(isPresentingCamera: Binding<Bool>) {
-          _isPresentingCamera = isPresentingCamera
-          super.init()
-          setupCaptureSession()
-       
-      }
-  //カメラの準備
+    
+    init(isPresentingCamera: Binding<Bool>, documentId: Binding<String?>) {
+        _documentId = documentId
+        _isPresentingCamera = isPresentingCamera
+        super.init()
+        setupCaptureSession()
+        
+    }
+    //カメラの準備
     func setupCaptureSession() {
         captureSession.beginConfiguration()
         guard let camera = AVCaptureDevice.default(for: .video) else { return }
@@ -39,11 +44,11 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
             print(error.localizedDescription)
             return
         }
-       
+        
         captureSession.commitConfiguration()
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         previewLayer?.videoGravity = .resizeAspectFill
-       
+        
     }
     //スタート！
     func startSession() {
@@ -86,10 +91,10 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         guard let ciImage = CIImage(image: inputImage) else { return nil }
         
         sepiaFilter.inputImage = ciImage
-        sepiaFilter.intensity = 0.8
+        sepiaFilter.intensity = 0.2
         
         if let outputImage = sepiaFilter.outputImage, let cgimg = context.createCGImage(outputImage, from: outputImage.extent) {
-            uploadPhoto(UIImage(cgImage: cgimg))
+           
             return UIImage(cgImage: cgimg)
         }
         return nil
@@ -99,80 +104,52 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     //写真をfirestorageに保存
     func uploadPhoto(_ image: UIImage) {
         
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+        guard let imageData = image.jpegData(compressionQuality: 0.2) else {
             return
         }
         
         let imageName = UUID().uuidString
         let imageReference = Storage.storage().reference().child("images/\(imageName).jpg")
         let url = ("\(imageName).jpg")
-        uploadLink(url: url)
+        
+        
         imageReference.putData(imageData, metadata: nil) { metadata, error in
-            guard metadata != nil else {
-                return
-            }
-            
-            
-            imageReference.downloadURL { url, error in
-                guard let downloadURL = url else {
-                    
-                    return
+          
+                Task{
+                    do{
+                        try await self.uploadLink(url: url)
+                       
+                       
+                    }
                 }
+              
+        
+                return
                 
-                
-            }
         }
     }
     
     
     //写真をfirestorageのurlをfirestoreに保存 あとで非同期にする
-    func uploadLink(url: String){
+    func uploadLink(url: String) async throws{
         let db = Firestore.firestore()
         let uid = Auth.auth().currentUser?.uid
         
         var urlArray = [String]()
         
-        db.collection("users").document(uid ?? "").collection("photo").document("list").getDocument(){ (document, error) in
+        DispatchQueue.main.sync{
             
-            if let document = document, document.exists {
-                let data = document.data()
-                let urlList = data?["urlList"] as! Array<Any>
-                for string in urlList {
-                    urlArray.append(string as! String)
-                }
-            }
-            
-            urlArray.append(url)
-            
-            db.collection("users").document(uid ?? "").collection("photo").document("list").delete() { err in
-                if let err = err {
-                    print("Error removing document: \(err)")
-                } else {
-                    print("Document successfully removed!")
-                }
-            }
-            db.collection("users").document(uid ?? "").collection("photo").document("list").setData([
-                "urlList": urlArray
-                
-            ]) { err in
-                if let err = err {
-                    print("Error writing document: \(err)")
-                } else {
-                    
-                    self.isImageUploadCompleted = true
-                    print("保存しました！")
-                  
-                }
-            }
-            
-            
+            let ref = db.collection("users").document(uid ?? "").collection("photo").addDocument(data: [
+                "url": url,
+                "date": FieldValue.serverTimestamp()
+            ])
+            documentId?.append(ref.documentID)
+            print("保存しました！")
+          
         }
+        self.isImageUploadCompleted = true
+        print("戻りました！")
+      
     }
-    func idou(){
-                
-                MainContentView()
-                    .edgesIgnoringSafeArea(.all)
-                
-            
-    }
+    
 }
