@@ -14,16 +14,16 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     @Published var capturedImage: UIImage?
     @Environment(\.presentationMode) var presentation
     @State private var isPresentingMain = false
-    @Binding var isPresentingCamera: Bool
     @Published var isImageUploadCompleted = false
     var saveArray: Array! = [NSData]()
     let savedata = UserDefaults.standard
-    @Binding var documentId: String?
+    @Published var newImage: UIImage?
+   
     
     
-    init(isPresentingCamera: Binding<Bool>, documentId: Binding<String?>) {
-        _documentId = documentId
-        _isPresentingCamera = isPresentingCamera
+    override init() {
+        
+     
         super.init()
         setupCaptureSession()
         
@@ -55,7 +55,9 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         if !captureSession.isRunning {
             DispatchQueue.global().async {
                 self.captureSession.startRunning()
+                print("いいよ")
             }
+          
         }
     }
     //終わり
@@ -77,14 +79,19 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         guard let imageData = photo.fileDataRepresentation(),
-              let image = UIImage(data: imageData) else { return }
-        
+              var image = UIImage(data: imageData) else {
+            print(error as Any)
+            return }
+
+      
+        image = image.rotateLeft90Degrees()
+
         if let filteredImage = applySepiaFilter(to: image) {
-            uploadPhoto(filteredImage)
-            
+            self.isImageUploadCompleted = true
+            self.newImage = filteredImage
         }
     }
-    
+
     func applySepiaFilter(to inputImage: UIImage) -> UIImage? {
         let context = CIContext()
         let sepiaFilter = CIFilter.sepiaTone()
@@ -118,7 +125,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
                 Task{
                     do{
                         try await self.uploadLink(url: url)
-                        self.isImageUploadCompleted = true
+                      
                        
                     }
                 }
@@ -135,7 +142,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         let db = Firestore.firestore()
         let uid = Auth.auth().currentUser?.uid
         
-        var urlArray = [String]()
+      
         
         DispatchQueue.main.sync{
             
@@ -143,14 +150,34 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
                 "url": url,
                 "date": FieldValue.serverTimestamp()
             ])
-            self.documentId?.append(ref.documentID)
             print("保存しました！")
           
         }
-        DispatchQueue.main.sync{
-          
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            self.isImageUploadCompleted = true
             print("戻りました！")
         }
     }
     
 }
+extension UIImage {
+    func rotateLeft90Degrees() -> UIImage {
+        let radians =  CGFloat.pi/365
+        let rotatedSize = CGRect(origin: .zero, size: size)
+            .applying(CGAffineTransform(rotationAngle: CGFloat(radians)))
+            .integral.size
+
+        UIGraphicsBeginImageContext(rotatedSize)
+        if let context = UIGraphicsGetCurrentContext() {
+            context.translateBy(x: rotatedSize.width / 2, y: rotatedSize.height / 2)
+            context.rotate(by: radians)
+            draw(in: CGRect(x: -size.width / 2, y: -size.height / 2, width: size.width, height: size.height))
+            let rotatedImage = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            return rotatedImage ?? self
+        }
+        return self
+    }
+}
+
+

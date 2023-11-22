@@ -1,10 +1,3 @@
-//
-//  Camera2View.swift
-//  sotsugyo
-//
-//  Created by saki on 2023/11/06.
-//
-
 import SwiftUI
 
 struct Camera2View: View {
@@ -24,7 +17,19 @@ struct Camera2View: View {
 
     var body: some View {
         ZStack {
-            CameraPreview(cameraManager: cameraManager)
+         
+                CameraPreview(cameraManager: cameraManager)
+            
+     //           .frame(width:120,height: 10)
+       //             .position(x: 60,y: 120)
+                
+            
+                        Image("Image")
+                            .resizable()
+                            .scaledToFit()
+                        
+                    
+            
             VStack {
                 Spacer()
                 Button("撮影") {
@@ -36,26 +41,52 @@ struct Camera2View: View {
                 .padding()
                 .onChange(of: cameraManager.isImageUploadCompleted) {
                       
-                              // Firestoreへのアップロードが完了したら、isPresentingCamera を false にしてシートを閉じる
-                              self.isPresentingCamera = false
+                             
+                            
                           
                       }
+                .sheet(isPresented: $cameraManager.isImageUploadCompleted) {
+                         
+                    PhotoPreviewView(image: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager)
+                       }
             }
+            
         }
         .onAppear {
         
             cameraManager.startSession()
         }
         .onDisappear {
-            Task{
-                do{
-                   try await MainContentView().getUrl()
-                }
-            }
+          
             
            
-          //  cameraManager.stopSession()
+          cameraManager.stopSession()
         }
     }
 }
+struct PhotoPreviewView: View {
+    let image: UIImage?
+        @Binding var isPresentingCamera: Bool
+    @ObservedObject var cameraManager: CameraManager
 
+    
+    
+    var body: some View {
+            VStack {
+                if let image = image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .padding()
+
+                    Button("保存") {
+                        cameraManager.uploadPhoto(image)
+                        isPresentingCamera = false
+                    }
+                    .padding()
+                } else {
+                    Text("写真がありません")
+                }
+            }
+        }
+    }
