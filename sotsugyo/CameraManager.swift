@@ -26,11 +26,12 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
      
         super.init()
         setupCaptureSession()
-        
+       
     }
     //カメラの準備
     func setupCaptureSession() {
         captureSession.beginConfiguration()
+        captureSession.sessionPreset = AVCaptureSession.Preset.photo
         guard let camera = AVCaptureDevice.default(for: .video) else { return }
         do {
             let input = try AVCaptureDeviceInput(device: camera)
@@ -46,10 +47,15 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         }
         
         captureSession.commitConfiguration()
-        previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer?.videoGravity = .resizeAspectFill
         
+        previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+        
+              previewLayer?.videoGravity = .resizeAspectFill
+        
+      
     }
+    
+  
     //スタート！
     func startSession() {
         if !captureSession.isRunning {
@@ -74,6 +80,17 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     
     func captureImage() {
         let settings = AVCapturePhotoSettings()
+       
+           let previewWidth = UIScreen.main.bounds.width * 0.864
+           let previewHeight = UIScreen.main.bounds.height * 0.536
+        
+        settings.previewPhotoFormat = [
+               kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+               kCVPixelBufferWidthKey as String: previewWidth, // 幅を変更
+               kCVPixelBufferHeightKey as String: previewHeight // 高さを変更
+           ]
+
+
         photoOutput.capturePhoto(with: settings, delegate: self)
     }
     
@@ -82,9 +99,37 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
               var image = UIImage(data: imageData) else {
             print(error as Any)
             return }
+        let previewWidth = UIScreen.main.bounds.width * 0.864
+        let previewHeight = UIScreen.main.bounds.height * 0.536
+     //   let resizedImage = resizeImage(image, newSize: CGSize(width:  previewWidth, height: previewHeight))
+        
+        var originalSize: CGSize
+           if image.imageOrientation == .left || image.imageOrientation == .right {
+               originalSize = CGSize(width: image.size.height, height: image.size.width)
+           } else {
+               originalSize = image.size
+           }
 
-      
-        image = image.rotateLeft90Degrees()
+           // プレビューのサイズを利用してmetaRectを計算
+           let previewSize = CGSize(width: UIScreen.main.bounds.width * 0.864, height: UIScreen.main.bounds.height * 0.536)
+           let metaRect = CGRect(x: 0, y: 0, width: previewSize.width, height: previewSize.height)
+
+           // previewLayerのrectを切り抜きたいviewの座標系に変換
+           let metaRectConverted = previewLayer?.metadataOutputRectConverted(fromLayerRect: metaRect) ?? CGRect.zero
+           // 切り抜く範囲を計算
+           let cropRect: CGRect = CGRect(x: metaRectConverted.origin.x * originalSize.width,
+                                         y: metaRectConverted.origin.y * originalSize.height,
+                                         width: metaRectConverted.size.width * originalSize.width,
+                                         height: metaRectConverted.size.height * originalSize.height).integral
+
+        // 画像を切り取る
+        guard let cgImage = image.cgImage?.cropping(to: cropRect) else { return }
+        let croppedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
+
+        
+        
+        
+        image = croppedImage.rotateLeft90Degrees()
 
         if let filteredImage = applySepiaFilter(to: image) {
             self.isImageUploadCompleted = true
@@ -137,7 +182,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     }
     
     
-    //写真をfirestorageのurlをfirestoreに保存 あとで非同期にする
+    //写真をfirestorageのurlをfirestoreに保存
     func uploadLink(url: String) async throws{
         let db = Firestore.firestore()
         let uid = Auth.auth().currentUser?.uid
@@ -146,7 +191,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         
         DispatchQueue.main.sync{
             
-            let ref = db.collection("users").document(uid ?? "").collection("photo").addDocument(data: [
+            db.collection("users").document(uid ?? "").collection("photo").addDocument(data: [
                 "url": url,
                 "date": FieldValue.serverTimestamp()
             ])
@@ -159,10 +204,17 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         }
     }
     
+    func resizeImage(_ image: UIImage, newSize: CGSize) -> UIImage {
+           let renderer = UIGraphicsImageRenderer(size: newSize)
+           return renderer.image { (context) in
+               image.draw(in: CGRect(origin: .zero, size: newSize))
+           }
+       }
+    
 }
 extension UIImage {
     func rotateLeft90Degrees() -> UIImage {
-        let radians =  CGFloat.pi/365
+        let radians =  CGFloat.pi/360
         let rotatedSize = CGRect(origin: .zero, size: size)
             .applying(CGAffineTransform(rotationAngle: CGFloat(radians)))
             .integral.size

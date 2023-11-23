@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		72012FA42B0DACB600B5BD71 /* PhotoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */; };
 		7265CACA2AEFED71000058BC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7265CAC92AEFED71000058BC /* GoogleService-Info.plist */; };
 		7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7266BF322AF374BE000D711B /* ImagePicker.swift */; };
 		72873D6E2B0B0A3E00A51488 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72873D6D2B0B0A3D00A51488 /* DrawingView.swift */; };
@@ -56,6 +57,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewView.swift; sourceTree = "<group>"; };
 		7265CAC62AEFDB60000058BC /* sotsugyo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = sotsugyo.entitlements; sourceTree = "<group>"; };
 		7265CAC92AEFED71000058BC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7266BF322AF374BE000D711B /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
@@ -153,6 +155,7 @@
 				72F226CA2AF8C3B4002BA0A6 /*  CameraPreview.swift */,
 				72F226CC2AF8C496002BA0A6 /* Camera2View.swift */,
 				72873D6D2B0B0A3D00A51488 /* DrawingView.swift */,
+				72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */,
 			);
 			path = sotsugyo;
 			sourceTree = "<group>";
@@ -341,6 +344,7 @@
 				728EFB4F2AEE303C008C079B /* LoginView.swift in Sources */,
 				72873D6E2B0B0A3E00A51488 /* DrawingView.swift in Sources */,
 				728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */,
+				72012FA42B0DACB600B5BD71 /* PhotoPreviewView.swift in Sources */,
 				72F226CD2AF8C496002BA0A6 /* Camera2View.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
