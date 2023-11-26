@@ -26,7 +26,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         
      
         super.init()
-        setupCaptureSession()
+     
        
     }
     //カメラの準備
@@ -47,7 +47,10 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
             return
         }
         
+      
+        
         captureSession.commitConfiguration()
+        captureSession.startRunning()
         
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         
@@ -59,11 +62,11 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
   
     //スタート！
     func startSession() {
+       
         if !captureSession.isRunning {
-            DispatchQueue.global().async {
+          
                 self.captureSession.startRunning()
-                print("いいよ")
-            }
+            
           
         }
     }

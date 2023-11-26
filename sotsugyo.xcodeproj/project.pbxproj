@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		72012FA42B0DACB600B5BD71 /* PhotoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */; };
+		7209E38D2B12EBD200FC44D3 /* Nuke in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E38C2B12EBD200FC44D3 /* Nuke */; };
+		7209E38F2B12EBD200FC44D3 /* NukeExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E38E2B12EBD200FC44D3 /* NukeExtensions */; };
+		7209E3912B12EBD200FC44D3 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E3902B12EBD200FC44D3 /* NukeUI */; };
+		7209E3932B12EBD200FC44D3 /* NukeVideo in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E3922B12EBD200FC44D3 /* NukeVideo */; };
 		7265CACA2AEFED71000058BC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7265CAC92AEFED71000058BC /* GoogleService-Info.plist */; };
 		7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7266BF322AF374BE000D711B /* ImagePicker.swift */; };
 		72873D6E2B0B0A3E00A51488 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72873D6D2B0B0A3D00A51488 /* DrawingView.swift */; };
@@ -94,12 +98,16 @@
 				728EFB3A2AEE2E4A008C079B /* FirebaseFirestoreCombine-Community in Frameworks */,
 				728EFB362AEE2E4A008C079B /* FirebaseAuthCombine-Community in Frameworks */,
 				728EFB382AEE2E4A008C079B /* FirebaseFirestore in Frameworks */,
+				7209E3932B12EBD200FC44D3 /* NukeVideo in Frameworks */,
+				7209E3912B12EBD200FC44D3 /* NukeUI in Frameworks */,
 				728EFB452AEE2FF2008C079B /* FirebaseEmailAuthUI in Frameworks */,
 				728EFB4B2AEE2FF2008C079B /* FirebaseOAuthUI in Frameworks */,
+				7209E38D2B12EBD200FC44D3 /* Nuke in Frameworks */,
 				728EFB472AEE2FF2008C079B /* FirebaseFirestoreUI in Frameworks */,
 				728EFB3E2AEE2E4A008C079B /* FirebaseStorage in Frameworks */,
 				728EFB432AEE2FF2008C079B /* FirebaseAuthUI in Frameworks */,
 				728EFB492AEE2FF2008C079B /* FirebaseGoogleAuthUI in Frameworks */,
+				7209E38F2B12EBD200FC44D3 /* NukeExtensions in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,6 +226,10 @@
 				728EFB482AEE2FF2008C079B /* FirebaseGoogleAuthUI */,
 				728EFB4A2AEE2FF2008C079B /* FirebaseOAuthUI */,
 				728EFB4C2AEE2FF2008C079B /* FirebaseStorageUI */,
+				7209E38C2B12EBD200FC44D3 /* Nuke */,
+				7209E38E2B12EBD200FC44D3 /* NukeExtensions */,
+				7209E3902B12EBD200FC44D3 /* NukeUI */,
+				7209E3922B12EBD200FC44D3 /* NukeVideo */,
 			);
 			productName = sotsugyo;
 			productReference = 728EFB052AEE1C10008C079B /* sotsugyo.app */;
@@ -294,6 +306,7 @@
 			packageReferences = (
 				728EFB322AEE2E4A008C079B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				728EFB412AEE2FF2008C079B /* XCRemoteSwiftPackageReference "FirebaseUI-iOS" */,
+				7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */,
 			);
 			productRefGroup = 728EFB062AEE1C10008C079B /* Products */;
 			projectDirPath = "";
@@ -691,6 +704,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Nuke";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		728EFB322AEE2E4A008C079B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -710,6 +731,26 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		7209E38C2B12EBD200FC44D3 /* Nuke */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = Nuke;
+		};
+		7209E38E2B12EBD200FC44D3 /* NukeExtensions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeExtensions;
+		};
+		7209E3902B12EBD200FC44D3 /* NukeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeUI;
+		};
+		7209E3922B12EBD200FC44D3 /* NukeVideo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeVideo;
+		};
 		728EFB332AEE2E4A008C079B /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 728EFB322AEE2E4A008C079B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
