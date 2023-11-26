@@ -22,6 +22,7 @@ struct Camera2View: View {
             Image("Image")
                 .resizable()
                 .scaledToFit()
+               
               
             
             
@@ -33,6 +34,7 @@ struct Camera2View: View {
                     cameraManager.captureImage()
                     
                 }
+                
                 
                 .padding()
                 .onChange(of: cameraManager.isImageUploadCompleted) {
@@ -50,14 +52,15 @@ struct Camera2View: View {
         }
         .background(Color.yellow)
         .onAppear {
-            cameraManager.setupCaptureSession()
+          
+            cameraManager.startSession()
            
         }
         .onDisappear {
             
             
             
-            cameraManager.stopSession()
+          //  cameraManager.stopSession()
         }
     }
 }

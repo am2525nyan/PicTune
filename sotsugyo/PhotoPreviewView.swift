@@ -10,17 +10,19 @@ struct PhotoPreviewView: View {
     let previewWidth = UIScreen.main.bounds.width * 0.867
     let previewHeight = UIScreen.main.bounds.height * 0.537
     @Environment(\.displayScale) private var displayScale
+    @Environment(\.dismiss) var dismiss
     var body: some View {
         VStack {
             if let image = image {
                 
                 Button("保存") {
-                    if let capture = UIApplication.shared.windows.first?.rootViewController?.view.snapshot {
-                        UIImageWriteToSavedPhotosAlbum(capture, nil, nil, nil)
-                        cameraManager.uploadPhoto(capture)
-                    }
+             //       if let capture = UIApplication.shared.windows.first?.rootViewController?.view.snapshot {
+              //          UIImageWriteToSavedPhotosAlbum(capture, nil, nil, nil)
+                        cameraManager.uploadPhoto(image)
+                    
                     
                     isPresentingCamera = false
+                    dismiss()
                 }
                 .padding()
                 Image("Image")
