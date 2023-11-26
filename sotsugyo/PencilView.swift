@@ -6,13 +6,32 @@
 //
 
 import SwiftUI
-
+import PencilKit
 struct PencilView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        PenKitView()
+        
     }
 }
 
-#Preview {
-    PencilView()
+struct PenKitView:UIViewRepresentable {
+   typealias UIViewType = PKCanvasView
+    let toolPicker = PKToolPicker()
+   
+   func makeUIView(context: Context) -> PKCanvasView {
+       let pkcView = PKCanvasView()
+       pkcView.drawingPolicy = PKCanvasViewDrawingPolicy.anyInput
+       toolPicker.addObserver(pkcView)
+       toolPicker.setVisible(true, forFirstResponder: pkcView)
+       pkcView.becomeFirstResponder()
+       pkcView.isOpaque = false
+       
+       return pkcView
+   }
+   
+   func updateUIView(_ uiView: PKCanvasView, context: Context) {
+   }
+   
 }
+
+

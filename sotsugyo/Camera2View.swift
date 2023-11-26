@@ -42,8 +42,7 @@ struct Camera2View: View {
                 
                 .sheet(isPresented: $cameraManager.isImageUploadCompleted) {
                     PhotoPreviewView(image: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager)
-                    // フルスクリーン表示を指定
-                        .edgesIgnoringSafeArea(.all)
+                  
                     
                 }
             }

@@ -34,6 +34,7 @@
 		728EFB4F2AEE303C008C079B /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB4E2AEE303B008C079B /* LoginView.swift */; };
 		728EFB512AEE318C008C079B /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB502AEE318C008C079B /* AuthenticationManager.swift */; };
 		728EFB552AEE36BC008C079B /* setupGitignore.command in Resources */ = {isa = PBXBuildFile; fileRef = 728EFB542AEE36BC008C079B /* setupGitignore.command */; };
+		72B47F7B2B104A94008832F5 /* PencilView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B47F7A2B104A94008832F5 /* PencilView.swift */; };
 		72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226C82AF8C35D002BA0A6 /* CameraManager.swift */; };
 		72F226CB2AF8C3B4002BA0A6 /*  CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CA2AF8C3B4002BA0A6 /*  CameraPreview.swift */; };
 		72F226CD2AF8C496002BA0A6 /* Camera2View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CC2AF8C496002BA0A6 /* Camera2View.swift */; };
@@ -75,6 +76,7 @@
 		728EFB4E2AEE303B008C079B /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		728EFB502AEE318C008C079B /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		728EFB542AEE36BC008C079B /* setupGitignore.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = setupGitignore.command; sourceTree = "<group>"; };
+		72B47F7A2B104A94008832F5 /* PencilView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilView.swift; sourceTree = "<group>"; };
 		72F226C82AF8C35D002BA0A6 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		72F226CA2AF8C3B4002BA0A6 /*  CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " CameraPreview.swift"; sourceTree = "<group>"; };
 		72F226CC2AF8C496002BA0A6 /* Camera2View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera2View.swift; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 				72F226CC2AF8C496002BA0A6 /* Camera2View.swift */,
 				72873D6D2B0B0A3D00A51488 /* DrawingView.swift */,
 				72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */,
+				72B47F7A2B104A94008832F5 /* PencilView.swift */,
 			);
 			path = sotsugyo;
 			sourceTree = "<group>";
@@ -344,6 +347,7 @@
 				728EFB4F2AEE303C008C079B /* LoginView.swift in Sources */,
 				72873D6E2B0B0A3E00A51488 /* DrawingView.swift in Sources */,
 				728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */,
+				72B47F7B2B104A94008832F5 /* PencilView.swift in Sources */,
 				72012FA42B0DACB600B5BD71 /* PhotoPreviewView.swift in Sources */,
 				72F226CD2AF8C496002BA0A6 /* Camera2View.swift in Sources */,
 			);
@@ -517,6 +521,7 @@
 				INFOPLIST_FILE = sotsugyo/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "チェキを撮影します";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "チェキを撮影します";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "チェキを保存します";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -552,6 +557,7 @@
 				INFOPLIST_FILE = sotsugyo/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "チェキを撮影します";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "チェキを撮影します";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "チェキを保存します";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

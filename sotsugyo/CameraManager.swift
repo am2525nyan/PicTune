@@ -14,6 +14,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     @Published var capturedImage: UIImage?
     @Environment(\.presentationMode) var presentation
     @State private var isPresentingMain = false
+    @State private var isPresentingCamera = true
     @Published var isImageUploadCompleted = false
     var saveArray: Array! = [NSData]()
     let savedata = UserDefaults.standard
@@ -86,8 +87,8 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         
         settings.previewPhotoFormat = [
                kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
-               kCVPixelBufferWidthKey as String: previewWidth, // 幅を変更
-               kCVPixelBufferHeightKey as String: previewHeight // 高さを変更
+               kCVPixelBufferWidthKey as String: previewWidth,
+               kCVPixelBufferHeightKey as String: previewHeight 
            ]
 
 
@@ -99,10 +100,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
               var image = UIImage(data: imageData) else {
             print(error as Any)
             return }
-        let previewWidth = UIScreen.main.bounds.width * 0.864
-        let previewHeight = UIScreen.main.bounds.height * 0.536
-     //   let resizedImage = resizeImage(image, newSize: CGSize(width:  previewWidth, height: previewHeight))
-        
+     
         var originalSize: CGSize
            if image.imageOrientation == .left || image.imageOrientation == .right {
                originalSize = CGSize(width: image.size.height, height: image.size.width)
@@ -199,6 +197,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
           
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+           
             self.isImageUploadCompleted = true
             print("戻りました！")
         }

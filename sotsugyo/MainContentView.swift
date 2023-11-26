@@ -99,6 +99,7 @@ struct MainContentView: View {
                     
                 }
                 .onAppear {
+                    
                     Task {
                         try await firstgetUrl()
                     }
@@ -107,15 +108,16 @@ struct MainContentView: View {
     }
     
     func firstgetUrl() async throws{
-        
-        
+        do{
+            guard let uid = Auth.auth().currentUser?.uid else {
+                throw NSError(domain: "FirebaseError", code: -1, userInfo: [NSLocalizedDescriptionKey: "uid is nil"])
+            }
+      
         let db = Firestore.firestore()
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw NSError(domain: "FirebaseError", code: -1, userInfo: [NSLocalizedDescriptionKey: "uid is nil"])
-        }
+       
         var urlArray = [String]()
         images = []
-        do{
+       
             let ref = try await db.collection("users").document(uid).collection("photo").getDocuments()
             
             for document in ref.documents {
