@@ -50,14 +50,14 @@ struct Camera2View: View {
         }
         .background(Color.yellow)
         .onAppear {
-            cameraManager.startSession()
+            cameraManager.setupCaptureSession()
            
         }
         .onDisappear {
             
             
             
-     //       cameraManager.stopSession()
+            cameraManager.stopSession()
         }
     }
 }

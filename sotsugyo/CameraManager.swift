@@ -26,7 +26,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         
      
         super.init()
-      
+     
        
     }
     //カメラの準備
@@ -47,30 +47,33 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
             return
         }
         
+      
+        
         captureSession.commitConfiguration()
+        captureSession.startRunning()
         
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         
               previewLayer?.videoGravity = .resizeAspectFill
         
-        startSession()
+      
     }
     
   
     //スタート！
     func startSession() {
-        
+       
         if !captureSession.isRunning {
-            DispatchQueue.global(qos: .background).async {
+          
                 self.captureSession.startRunning()
-            }
+            
           
         }
     }
     //終わり
     func stopSession() {
         if captureSession.isRunning {
-            DispatchQueue.global(qos: .background).async {
+            DispatchQueue.global().async {
                 self.captureSession.stopRunning()
             }
         }
@@ -197,7 +200,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
           
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-          
+           
             self.isImageUploadCompleted = true
             print("戻りました！")
         }
