@@ -8,8 +8,18 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @State private var isPresentingSearchMusic = false
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack{
+          
+            Text("Hello, World!")
+            Button("音楽設定") {
+                    isPresentingSearchMusic = true
+                      }
+            .fullScreenCover(isPresented: $isPresentingSearchMusic) {
+                SearchMusicView(isPresentingSearchMusic: $isPresentingSearchMusic)
+                          }
+        }
     }
 }
 

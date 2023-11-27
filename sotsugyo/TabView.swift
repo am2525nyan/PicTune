@@ -25,6 +25,14 @@ struct TabContentView: View {
                     .tag(1)
                     
                 }
+            ProfileView()
+                .tabItem {
+                    VStack {
+                        Label("Page2", systemImage: "2.circle")
+                    }
+                    .tag(2)
+                    
+                }
         }
     }
 }
