@@ -9,7 +9,7 @@ struct Camera2View: View {
     init(isPresentingCamera: Binding<Bool>, cameraManager: CameraManager) {
         self._isPresentingCamera = isPresentingCamera
         self.cameraManager = cameraManager
-        self.cameraManager.setupCaptureSession()
+       
     }
     
     
@@ -43,7 +43,7 @@ struct Camera2View: View {
                 
                 
                 .sheet(isPresented: $cameraManager.isImageUploadCompleted) {
-                    PhotoPreviewView(image: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager)
+                    PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager)
                   
                     
                 }
@@ -52,15 +52,14 @@ struct Camera2View: View {
         }
         .background(Color.yellow)
         .onAppear {
-          
-            cameraManager.startSession()
            
+            cameraManager.setupCaptureSession()
         }
         .onDisappear {
             
             
             
-          //  cameraManager.stopSession()
+            cameraManager.stopSession()
         }
     }
 }

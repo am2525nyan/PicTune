@@ -23,10 +23,8 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     
     
     override init() {
-        
-        
         super.init()
-        setupCaptureSession()
+        
         
     }
     //カメラの準備
@@ -43,7 +41,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
                 captureSession.addOutput(photoOutput)
             }
         } catch {
-            print(error.localizedDescription,"ここ")
+            print(error.localizedDescription)
             return
         }
        
@@ -52,9 +50,9 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         
         previewLayer?.videoGravity = .resizeAspectFill
-        
+        print("セットアップ終わり")
       
-        
+        startSession()
     }
     
     
@@ -73,6 +71,7 @@ func stopSession() {
     if captureSession.isRunning {
         DispatchQueue.global().async {
             self.captureSession.stopRunning()
+            print("終わり")
         }
     }
 }
@@ -162,7 +161,7 @@ func uploadPhoto(_ image: UIImage) {
     let imageName = UUID().uuidString
     let imageReference = Storage.storage().reference().child("images/\(imageName).jpg")
     let url = ("\(imageName).jpg")
-    
+    newImage = image
     
     imageReference.putData(imageData, metadata: nil) { metadata, error in
         
@@ -185,10 +184,7 @@ func uploadPhoto(_ image: UIImage) {
 func uploadLink(url: String) async throws{
     let db = Firestore.firestore()
     let uid = Auth.auth().currentUser?.uid
-    
-    
-          
-        db.collection("users").document(uid ?? "").collection("photo").addDocument(data: [
+     db.collection("users").document(uid ?? "").collection("photo").addDocument(data: [
             "url": url,
             "date": FieldValue.serverTimestamp()
         ])
@@ -208,7 +204,7 @@ func resizeImage(_ image: UIImage, newSize: CGSize) -> UIImage {
 }
 extension UIImage {
     func rotateLeft90Degrees() -> UIImage {
-        let radians =  CGFloat.pi/360
+        let radians =  CGFloat.pi/1500
         let rotatedSize = CGRect(origin: .zero, size: size)
             .applying(CGAffineTransform(rotationAngle: CGFloat(radians)))
             .integral.size

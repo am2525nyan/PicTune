@@ -15,7 +15,7 @@ struct TabContentView: View {
 
     var body: some View {
         TabView(selection: $selection) {
-
+            
             MainContentView()
             
                 .tabItem {
@@ -23,21 +23,8 @@ struct TabContentView: View {
                         Label("Page1", systemImage: "1.circle")
                     }
                     .tag(1)
-                  }
-            Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager)
-                .tabItem {
-                    VStack {
-                        Label("Page1", systemImage: "2.circle")
-                        
-                        
-                    }
-                    .tag(2)
-                    
                     
                 }
-                .fullScreenCover(isPresented: $isPresentingCamera) {
-                                  Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager)
-                              }
         }
     }
 }

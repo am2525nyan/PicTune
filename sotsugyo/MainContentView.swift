@@ -18,7 +18,7 @@ struct MainContentView: View {
     @State private var user: User?
     @State private var error: Error?
     @State private var images: [UIImage] = []
- 
+    @State private var isPresentingCamera = false
    
     private let gridItemLayout = [GridItem(.flexible()), GridItem(.flexible())]
     
@@ -56,6 +56,12 @@ struct MainContentView: View {
                     }
                     
                 }
+                Button("Open Camera") {
+                              isPresentingCamera = true
+                          }
+                .fullScreenCover(isPresented: $isPresentingCamera) {
+                                  Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager)
+                              }
                 ScrollView {
                     
                     LazyVGrid(columns: gridItemLayout, spacing: 10) {
@@ -78,7 +84,7 @@ struct MainContentView: View {
                 }
                 .onReceive(cameraManager.$newImage){ newImage in
                     if let newImage = newImage{
-                        self.images.append(newImage)
+                   //     self.images.append(newImage)
                     }
                 }
                

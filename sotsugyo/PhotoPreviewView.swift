@@ -2,7 +2,7 @@ import SwiftUI
 
 
 struct PhotoPreviewView: View {
-    let image: UIImage?
+    var images: UIImage?
     @Binding var isPresentingCamera: Bool
     @ObservedObject var cameraManager: CameraManager
     let previewX = CGFloat(27)
@@ -11,18 +11,23 @@ struct PhotoPreviewView: View {
     let previewHeight = UIScreen.main.bounds.height * 0.537
     @Environment(\.displayScale) private var displayScale
     @Environment(\.dismiss) var dismiss
+    @State private var isPresentingImagePicker = false
+    @State private var screenshotImage: UIImage?
     var body: some View {
         VStack {
-            if let image = image {
+            if let image = images {
                 
                 Button("保存") {
-             //       if let capture = UIApplication.shared.windows.first?.rootViewController?.view.snapshot {
-              //          UIImageWriteToSavedPhotosAlbum(capture, nil, nil, nil)
-                        cameraManager.uploadPhoto(image)
+                    takeScreenshot()
+                    //       if let capture = UIApplication.shared.windows.first?.rootViewController?.view.snapshot {
                     
+                    UIImageWriteToSavedPhotosAlbum(screenshotImage ?? image, nil, nil, nil)
+                    cameraManager.uploadPhoto(screenshotImage ?? image)
                     
                     isPresentingCamera = false
                     dismiss()
+                   
+                    
                 }
                 .padding()
                 Image("Image")
@@ -46,8 +51,22 @@ struct PhotoPreviewView: View {
         }
         .background(Color.yellow)
     }
-   
+    func takeScreenshot() {
+        if let window = UIApplication.shared.windows.first {
+            let screenshotRect = CGRect(x: 4, y: 158, width: UIScreen.main.bounds.width * 0.988, height: UIScreen.main.bounds.height * 0.726)
+            
+            UIGraphicsBeginImageContextWithOptions(screenshotRect.size, false, UIScreen.main.scale)
+            window.drawHierarchy(in: CGRect(origin: CGPoint(x: -screenshotRect.origin.x, y: -screenshotRect.origin.y), size: window.bounds.size), afterScreenUpdates: true)
+            let screenshotImage = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            self.screenshotImage = screenshotImage
+            
+            isPresentingImagePicker = true
+        }
+    }
 
+    
 }
 
 extension UIView {
