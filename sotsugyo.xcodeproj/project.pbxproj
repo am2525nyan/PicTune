@@ -7,9 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		72012FA42B0DACB600B5BD71 /* PhotoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */; };
+		7209E38D2B12EBD200FC44D3 /* Nuke in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E38C2B12EBD200FC44D3 /* Nuke */; };
+		7209E38F2B12EBD200FC44D3 /* NukeExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E38E2B12EBD200FC44D3 /* NukeExtensions */; };
+		7209E3912B12EBD200FC44D3 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E3902B12EBD200FC44D3 /* NukeUI */; };
+		7209E3932B12EBD200FC44D3 /* NukeVideo in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E3922B12EBD200FC44D3 /* NukeVideo */; };
 		7265CACA2AEFED71000058BC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7265CAC92AEFED71000058BC /* GoogleService-Info.plist */; };
 		7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7266BF322AF374BE000D711B /* ImagePicker.swift */; };
-		7266BF352AF374E7000D711B /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7266BF342AF374E7000D711B /* CameraView.swift */; };
+		7279F4252B13802900A64739 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7279F4242B13802900A64739 /* ProfileView.swift */; };
+		7279F4272B13837E00A64739 /* TabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7279F4262B13837E00A64739 /* TabView.swift */; };
 		728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB082AEE1C10008C079B /* sotsugyoApp.swift */; };
 		728EFB0B2AEE1C10008C079B /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB0A2AEE1C10008C079B /* MainContentView.swift */; };
 		728EFB0D2AEE1C15008C079B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 728EFB0C2AEE1C15008C079B /* Assets.xcassets */; };
@@ -33,6 +39,10 @@
 		728EFB4F2AEE303C008C079B /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB4E2AEE303B008C079B /* LoginView.swift */; };
 		728EFB512AEE318C008C079B /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB502AEE318C008C079B /* AuthenticationManager.swift */; };
 		728EFB552AEE36BC008C079B /* setupGitignore.command in Resources */ = {isa = PBXBuildFile; fileRef = 728EFB542AEE36BC008C079B /* setupGitignore.command */; };
+		72B47F7B2B104A94008832F5 /* PencilView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B47F7A2B104A94008832F5 /* PencilView.swift */; };
+		72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226C82AF8C35D002BA0A6 /* CameraManager.swift */; };
+		72F226CB2AF8C3B4002BA0A6 /*  CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CA2AF8C3B4002BA0A6 /*  CameraPreview.swift */; };
+		72F226CD2AF8C496002BA0A6 /* Camera2View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CC2AF8C496002BA0A6 /* Camera2View.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,10 +63,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewView.swift; sourceTree = "<group>"; };
 		7265CAC62AEFDB60000058BC /* sotsugyo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = sotsugyo.entitlements; sourceTree = "<group>"; };
 		7265CAC92AEFED71000058BC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7266BF322AF374BE000D711B /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
-		7266BF342AF374E7000D711B /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		7279F4242B13802900A64739 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		7279F4262B13837E00A64739 /* TabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabView.swift; sourceTree = "<group>"; };
 		728EFB052AEE1C10008C079B /* sotsugyo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sotsugyo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		728EFB082AEE1C10008C079B /* sotsugyoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sotsugyoApp.swift; sourceTree = "<group>"; };
 		728EFB0A2AEE1C10008C079B /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
@@ -70,6 +82,10 @@
 		728EFB4E2AEE303B008C079B /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		728EFB502AEE318C008C079B /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		728EFB542AEE36BC008C079B /* setupGitignore.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = setupGitignore.command; sourceTree = "<group>"; };
+		72B47F7A2B104A94008832F5 /* PencilView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilView.swift; sourceTree = "<group>"; };
+		72F226C82AF8C35D002BA0A6 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
+		72F226CA2AF8C3B4002BA0A6 /*  CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " CameraPreview.swift"; sourceTree = "<group>"; };
+		72F226CC2AF8C496002BA0A6 /* Camera2View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera2View.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,12 +100,16 @@
 				728EFB3A2AEE2E4A008C079B /* FirebaseFirestoreCombine-Community in Frameworks */,
 				728EFB362AEE2E4A008C079B /* FirebaseAuthCombine-Community in Frameworks */,
 				728EFB382AEE2E4A008C079B /* FirebaseFirestore in Frameworks */,
+				7209E3932B12EBD200FC44D3 /* NukeVideo in Frameworks */,
+				7209E3912B12EBD200FC44D3 /* NukeUI in Frameworks */,
 				728EFB452AEE2FF2008C079B /* FirebaseEmailAuthUI in Frameworks */,
 				728EFB4B2AEE2FF2008C079B /* FirebaseOAuthUI in Frameworks */,
+				7209E38D2B12EBD200FC44D3 /* Nuke in Frameworks */,
 				728EFB472AEE2FF2008C079B /* FirebaseFirestoreUI in Frameworks */,
 				728EFB3E2AEE2E4A008C079B /* FirebaseStorage in Frameworks */,
 				728EFB432AEE2FF2008C079B /* FirebaseAuthUI in Frameworks */,
 				728EFB492AEE2FF2008C079B /* FirebaseGoogleAuthUI in Frameworks */,
+				7209E38F2B12EBD200FC44D3 /* NukeExtensions in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,7 +163,13 @@
 				728EFB0C2AEE1C15008C079B /* Assets.xcassets */,
 				728EFB0E2AEE1C15008C079B /* Preview Content */,
 				7266BF322AF374BE000D711B /* ImagePicker.swift */,
-				7266BF342AF374E7000D711B /* CameraView.swift */,
+				72F226C82AF8C35D002BA0A6 /* CameraManager.swift */,
+				72F226CA2AF8C3B4002BA0A6 /*  CameraPreview.swift */,
+				72F226CC2AF8C496002BA0A6 /* Camera2View.swift */,
+				72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */,
+				72B47F7A2B104A94008832F5 /* PencilView.swift */,
+				7279F4242B13802900A64739 /* ProfileView.swift */,
+				7279F4262B13837E00A64739 /* TabView.swift */,
 			);
 			path = sotsugyo;
 			sourceTree = "<group>";
@@ -203,6 +229,10 @@
 				728EFB482AEE2FF2008C079B /* FirebaseGoogleAuthUI */,
 				728EFB4A2AEE2FF2008C079B /* FirebaseOAuthUI */,
 				728EFB4C2AEE2FF2008C079B /* FirebaseStorageUI */,
+				7209E38C2B12EBD200FC44D3 /* Nuke */,
+				7209E38E2B12EBD200FC44D3 /* NukeExtensions */,
+				7209E3902B12EBD200FC44D3 /* NukeUI */,
+				7209E3922B12EBD200FC44D3 /* NukeVideo */,
 			);
 			productName = sotsugyo;
 			productReference = 728EFB052AEE1C10008C079B /* sotsugyo.app */;
@@ -279,6 +309,7 @@
 			packageReferences = (
 				728EFB322AEE2E4A008C079B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				728EFB412AEE2FF2008C079B /* XCRemoteSwiftPackageReference "FirebaseUI-iOS" */,
+				7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */,
 			);
 			productRefGroup = 728EFB062AEE1C10008C079B /* Products */;
 			projectDirPath = "";
@@ -326,10 +357,16 @@
 			files = (
 				728EFB0B2AEE1C10008C079B /* MainContentView.swift in Sources */,
 				728EFB512AEE318C008C079B /* AuthenticationManager.swift in Sources */,
+				7279F4272B13837E00A64739 /* TabView.swift in Sources */,
+				72F226CB2AF8C3B4002BA0A6 /*  CameraPreview.swift in Sources */,
+				72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */,
+				7279F4252B13802900A64739 /* ProfileView.swift in Sources */,
 				7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */,
-				7266BF352AF374E7000D711B /* CameraView.swift in Sources */,
 				728EFB4F2AEE303C008C079B /* LoginView.swift in Sources */,
 				728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */,
+				72B47F7B2B104A94008832F5 /* PencilView.swift in Sources */,
+				72012FA42B0DACB600B5BD71 /* PhotoPreviewView.swift in Sources */,
+				72F226CD2AF8C496002BA0A6 /* Camera2View.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -500,6 +537,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = sotsugyo/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "チェキを撮影します";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "チェキを撮影します";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "チェキを保存します";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -534,6 +573,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = sotsugyo/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "チェキを撮影します";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "チェキを撮影します";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "チェキを保存します";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -667,6 +708,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Nuke";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		728EFB322AEE2E4A008C079B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -686,6 +735,26 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		7209E38C2B12EBD200FC44D3 /* Nuke */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = Nuke;
+		};
+		7209E38E2B12EBD200FC44D3 /* NukeExtensions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeExtensions;
+		};
+		7209E3902B12EBD200FC44D3 /* NukeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeUI;
+		};
+		7209E3922B12EBD200FC44D3 /* NukeVideo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeVideo;
+		};
 		728EFB332AEE2E4A008C079B /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 728EFB322AEE2E4A008C079B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
