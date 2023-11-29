@@ -16,13 +16,9 @@ struct ProfileView: View {
             Button("音楽設定") {
                     isPresentingSearchMusic = true
                       }
-            .fullScreenCover(isPresented: $isPresentingSearchMusic) {
+            .sheet(isPresented: $isPresentingSearchMusic) {
                 SearchMusicView(isPresentingSearchMusic: $isPresentingSearchMusic)
                           }
         }
     }
-}
-
-#Preview {
-    ProfileView()
 }
