@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CameraPreview: UIViewRepresentable {
     let cameraManager: CameraManager
-    
+
     func makeUIView(context: Context) -> UIView {
       
             let view = UIView()

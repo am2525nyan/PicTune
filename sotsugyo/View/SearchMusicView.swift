@@ -10,16 +10,14 @@ import FirebaseAuth
 
 struct SearchMusicView: View {
     @StateObject private var viewModel = SearchMusicViewModel()
-    @State var isAlart: Bool = false
     @Binding var isPresentingSearchMusic: Bool
+    @State var isSearchBarFocused: Bool = false
+    @State var selectedMusic: Music?
+    @Environment(\.dismiss) var dismiss
     var body: some View {
         NavigationView {
             VStack {
-                SearchBar(
-                    text: $viewModel.searchText,
-                    isFocused: $viewModel.isSearchBarFocused,
-                    onSearchTextChanged: viewModel.searchBarTextChanged
-                )
+                SearchBar(text: $viewModel.searchText, isFocused: $isSearchBarFocused, onSearchTextChanged: viewModel.searchBarTextChanged)
                 
                 List(viewModel.musicList, id: \.id) { music in
                     if let index = viewModel.musicList.firstIndex(where: { $0.id == music.id }),
@@ -37,39 +35,34 @@ struct SearchMusicView: View {
                         .onTapGesture {
                             Task{
                                 do{
-                                    try await tapAction(selection: music.trackName, Url:  music.previewUrl)
+                                    try await viewModel.tapAction(trackName: music.trackName, Url:  music.previewUrl)
                                     
                                 }
                             }
                         }
                     }
                 }
-                .alert(isPresented: $isAlart) {
-                    Alert(title: Text("保存しました！"))
-                    
-                    
+                .alert("タイトル", isPresented: $viewModel.isAlart) {
+                    Button("キャンセル") {
+                    }
+                    Button("OK") {
+                        isPresentingSearchMusic = false
+                       
+                        
+                    }
+                } message: {
+                    Text("ここに詳細メッセージを書きます。")
                 }
+
+
                 .listStyle(PlainListStyle())
             }
             .navigationTitle("音楽を設定")
-        }
-    }
-    func tapAction(selection: String,Url: String) async throws{
-        let db = Firestore.firestore()
-        
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            try await db.collection("users").document(uid).collection("personal").document("info").updateData([
-                "music": [
-                    "trackName": selection,
-                    "previewUrl": Url
-                ]
-            ])
+                      
         }
         
-        isAlart = true
-       isPresentingSearchMusic = true
     }
+
     
     
     struct SearchMusicView_Previews: PreviewProvider {

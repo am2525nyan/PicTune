@@ -22,17 +22,11 @@ struct Camera2View: View {
             Image("Image")
                 .resizable()
                 .scaledToFit()
-               
-              
-            
-            
-            
+          
             VStack {
                 Spacer()
                 Button("撮影") {
-                    
                     cameraManager.captureImage()
-                    
                 }
                 
                 
@@ -41,11 +35,9 @@ struct Camera2View: View {
                     
                 }
                 
-                
                 .sheet(isPresented: $cameraManager.isImageUploadCompleted) {
                     PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager)
-                  
-                    
+    
                 }
             }
             
@@ -56,9 +48,7 @@ struct Camera2View: View {
             cameraManager.setupCaptureSession()
         }
         .onDisappear {
-            
-            
-            
+  
             cameraManager.stopSession()
         }
     }

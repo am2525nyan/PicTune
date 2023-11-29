@@ -8,17 +8,21 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @State private var isPresentingSearchMusic = false
+    @State var isPresentingSearchMusic =  false
+   
+
     var body: some View {
-        VStack{
-          
+        VStack {
             Text("Hello, World!")
+            
             Button("音楽設定") {
-                    isPresentingSearchMusic = true
-                      }
+               
+                isPresentingSearchMusic = true
+               
+            }
             .sheet(isPresented: $isPresentingSearchMusic) {
                 SearchMusicView(isPresentingSearchMusic: $isPresentingSearchMusic)
-                          }
+            }
         }
     }
 }
