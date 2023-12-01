@@ -5,6 +5,8 @@
 //  Created by saki on 2023/11/29.
 //
 
+
+
 import Combine
 import Foundation
 import UIKit
@@ -28,16 +30,14 @@ class SearchMusicViewModel: ObservableObject {
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             try await db.collection("users").document(uid).collection("personal").document("info").updateData([
-                "music": [
+                
                     "trackName": trackName,
                     "previewUrl": Url
-                ]
+                
             ])
         }
         DispatchQueue.main.async {
-           
-            self.isAlart = true
-            self.isPresentingSearchMusic = true
+           self.isAlart = true
             
         }
     }

@@ -21,7 +21,7 @@ struct ProfileView: View {
                
             }
             .sheet(isPresented: $isPresentingSearchMusic) {
-                SearchMusicView(isPresentingSearchMusic: $isPresentingSearchMusic)
+                SearchView()
             }
         }
     }

@@ -1,8 +1,8 @@
-//
-//  Track.swift
-//  sotsugyo
-//
-//  Created by saki on 2023/11/30.
-//
 
-import Foundation
+// Track.swift
+struct Track: Identifiable {
+    let id: String
+    let name: String
+    let artist: String
+    // 他の曲の情報を追加
+}

@@ -50,6 +50,11 @@
 		72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226C82AF8C35D002BA0A6 /* CameraManager.swift */; };
 		72F226CB2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */; };
 		72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CC2AF8C496002BA0A6 /* CameraView.swift */; };
+		72F9855D2B17540800FEEC05 /* CameraMusicViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F9855C2B17540800FEEC05 /* CameraMusicViewModel.swift */; };
+		72F985602B1773B300FEEC05 /* SpotifyiOS in Frameworks */ = {isa = PBXBuildFile; productRef = 72F9855F2B1773B300FEEC05 /* SpotifyiOS */; };
+		72F985622B17FD2F00FEEC05 /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F985612B17FD2F00FEEC05 /* Track.swift */; };
+		72F985642B17FD4A00FEEC05 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F985632B17FD4A00FEEC05 /* SpotifyAPI.swift */; };
+		72F985672B17FD8200FEEC05 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 72F985662B17FD8200FEEC05 /* Alamofire */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,6 +105,9 @@
 		72F226C82AF8C35D002BA0A6 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " CameraPreviewModel.swift"; sourceTree = "<group>"; };
 		72F226CC2AF8C496002BA0A6 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		72F9855C2B17540800FEEC05 /* CameraMusicViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraMusicViewModel.swift; sourceTree = "<group>"; };
+		72F985612B17FD2F00FEEC05 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
+		72F985632B17FD4A00FEEC05 /* SpotifyAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAPI.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,7 +116,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				728EFB3C2AEE2E4A008C079B /* FirebaseFirestoreSwift in Frameworks */,
+				72F985602B1773B300FEEC05 /* SpotifyiOS in Frameworks */,
 				728EFB402AEE2E4A008C079B /* FirebaseStorageCombine-Community in Frameworks */,
+				72F985672B17FD8200FEEC05 /* Alamofire in Frameworks */,
 				728EFB4D2AEE2FF2008C079B /* FirebaseStorageUI in Frameworks */,
 				728EFB342AEE2E4A008C079B /* FirebaseAuth in Frameworks */,
 				728EFB3A2AEE2E4A008C079B /* FirebaseFirestoreCombine-Community in Frameworks */,
@@ -162,6 +172,7 @@
 			isa = PBXGroup;
 			children = (
 				72576F672B1468510064A362 /* Music.swift */,
+				72F985612B17FD2F00FEEC05 /* Track.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -175,6 +186,7 @@
 				72576F742B16F58B0064A362 /* PhotoPreviewViewModel.swift */,
 				72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */,
 				72576F7A2B17010E0064A362 /* searchMusicViewModel.swift */,
+				72F9855C2B17540800FEEC05 /* CameraMusicViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -186,6 +198,7 @@
 				728EFB502AEE318C008C079B /* AuthenticationManager.swift */,
 				72F226C82AF8C35D002BA0A6 /* CameraManager.swift */,
 				7266BF322AF374BE000D711B /* ImagePicker.swift */,
+				72F985632B17FD4A00FEEC05 /* SpotifyAPI.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -286,6 +299,8 @@
 				7209E38E2B12EBD200FC44D3 /* NukeExtensions */,
 				7209E3902B12EBD200FC44D3 /* NukeUI */,
 				7209E3922B12EBD200FC44D3 /* NukeVideo */,
+				72F9855F2B1773B300FEEC05 /* SpotifyiOS */,
+				72F985662B17FD8200FEEC05 /* Alamofire */,
 			);
 			productName = sotsugyo;
 			productReference = 728EFB052AEE1C10008C079B /* sotsugyo.app */;
@@ -363,6 +378,8 @@
 				728EFB322AEE2E4A008C079B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				728EFB412AEE2FF2008C079B /* XCRemoteSwiftPackageReference "FirebaseUI-iOS" */,
 				7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */,
+				72F9855E2B1773B300FEEC05 /* XCRemoteSwiftPackageReference "ios-sdk" */,
+				72F985652B17FD8200FEEC05 /* XCRemoteSwiftPackageReference "Alamofire" */,
 			);
 			productRefGroup = 728EFB062AEE1C10008C079B /* Products */;
 			projectDirPath = "";
@@ -413,8 +430,10 @@
 				728EFB512AEE318C008C079B /* AuthenticationManager.swift in Sources */,
 				72576F792B16FDD50064A362 /* PencilView.swift in Sources */,
 				7279F4272B13837E00A64739 /* TabView.swift in Sources */,
+				72F985642B17FD4A00FEEC05 /* SpotifyAPI.swift in Sources */,
 				72F226CB2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift in Sources */,
 				72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */,
+				72F9855D2B17540800FEEC05 /* CameraMusicViewModel.swift in Sources */,
 				72576F772B16FD740064A362 /* UIImage.swift in Sources */,
 				72576F732B16E5020064A362 /* Main ContentModel.swift in Sources */,
 				7279F4252B13802900A64739 /* ProfileView.swift in Sources */,
@@ -427,6 +446,7 @@
 				72576F752B16F58B0064A362 /* PhotoPreviewViewModel.swift in Sources */,
 				72576F7B2B17010E0064A362 /* searchMusicViewModel.swift in Sources */,
 				72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */,
+				72F985622B17FD2F00FEEC05 /* Track.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -792,6 +812,22 @@
 				kind = branch;
 			};
 		};
+		72F9855E2B1773B300FEEC05 /* XCRemoteSwiftPackageReference "ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/spotify/ios-sdk/";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		72F985652B17FD8200FEEC05 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.8.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -879,6 +915,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 728EFB412AEE2FF2008C079B /* XCRemoteSwiftPackageReference "FirebaseUI-iOS" */;
 			productName = FirebaseStorageUI;
+		};
+		72F9855F2B1773B300FEEC05 /* SpotifyiOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 72F9855E2B1773B300FEEC05 /* XCRemoteSwiftPackageReference "ios-sdk" */;
+			productName = SpotifyiOS;
+		};
+		72F985662B17FD8200FEEC05 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 72F985652B17FD8200FEEC05 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

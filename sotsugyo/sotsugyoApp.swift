@@ -32,7 +32,7 @@ struct sotsugyoApp: App {
     
     var body: some Scene {
         WindowGroup {
-           TabContentView()
+            TabContentView()
         }
     }
 
