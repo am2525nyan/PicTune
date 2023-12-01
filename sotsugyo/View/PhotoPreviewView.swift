@@ -4,6 +4,8 @@ import SwiftUI
 struct PhotoPreviewView: View {
     var images: UIImage?
     @Binding var isPresentingCamera: Bool
+    @Binding var isPresentingSearch: Bool
+    @Binding var documentId: String
     @ObservedObject var cameraManager: CameraManager
     let previewX = CGFloat(27)
     let previewY = CGFloat(131)
@@ -22,13 +24,27 @@ struct PhotoPreviewView: View {
                     //       if let capture = UIApplication.shared.windows.first?.rootViewController?.view.snapshot {
                     
                     UIImageWriteToSavedPhotosAlbum(viewModel.screenshotImage ?? image, nil, nil, nil)
-                    cameraManager.uploadPhoto(viewModel.screenshotImage ?? image)
                     
-                    isPresentingCamera = false
-                    dismiss()
+                    
+                
+                  // dismiss()
                    
-                    
+                        cameraManager.uploadPhoto(viewModel.screenshotImage ?? image)
+                       
+
+                     
+                       
+                        print(documentId, "searchmusicView")
+                  
                 }
+               
+                .sheet(isPresented: $cameraManager.isPresentingSearch) {
+                    SearchView(documentId: cameraManager.documentId)
+                        .onAppear {
+                           
+                        }
+                }
+
                 .padding()
                 Image("Image")
                     .resizable()

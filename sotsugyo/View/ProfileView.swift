@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @State var isPresentingSearchMusic =  false
-   
+    @Binding var documentId: String
 
     var body: some View {
         VStack {
@@ -21,7 +21,7 @@ struct ProfileView: View {
                
             }
             .sheet(isPresented: $isPresentingSearchMusic) {
-                SearchView()
+                SearchView(documentId: documentId)
             }
         }
     }

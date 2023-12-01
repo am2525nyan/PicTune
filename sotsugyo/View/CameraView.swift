@@ -2,15 +2,12 @@ import SwiftUI
 
 struct Camera2View: View {
     @Binding var isPresentingCamera: Bool
+   
     @ObservedObject var cameraManager: CameraManager
     @Environment(\.presentationMode) var presentation
     @State private var isPresentingMain = false
-    
-    init(isPresentingCamera: Binding<Bool>, cameraManager: CameraManager) {
-        self._isPresentingCamera = isPresentingCamera
-        self.cameraManager = cameraManager
-       
-    }
+    @State var isPresentingSearch =  false
+   
     
     
     
@@ -36,7 +33,7 @@ struct Camera2View: View {
                 }
                 
                 .sheet(isPresented: $cameraManager.isImageUploadCompleted) {
-                    PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager)
+                    PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, isPresentingSearch: $isPresentingSearch, documentId: $cameraManager.documentId, cameraManager: cameraManager)
     
                 }
             }

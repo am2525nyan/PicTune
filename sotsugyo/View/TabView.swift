@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TabContentView: View {
     @State var selection = 1
-   
+    @Binding var documentId: String
     
 
     var body: some View {
@@ -25,7 +25,7 @@ struct TabContentView: View {
                     
                 }
                 
-            ProfileView()
+            ProfileView( documentId: $documentId)
                 .tabItem {
                     VStack {
                         Label("Page2", systemImage: "2.circle")

@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 
 extension UIView {
-    // UIViewのスクリーンショットを取得するプロパティ
     var snapshot: UIImage? {
         UIGraphicsBeginImageContextWithOptions(bounds.size, false, UIScreen.main.scale)
         defer { UIGraphicsEndImageContext() }

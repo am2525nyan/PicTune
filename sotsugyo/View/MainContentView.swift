@@ -9,12 +9,12 @@
 import SwiftUI
 
 struct MainContentView: View {
-    private var authenticationManager = AuthenticationManager()
+  var authenticationManager = AuthenticationManager()
     private let gridItemLayout = [GridItem(.flexible()), GridItem(.flexible())]
 
     @ObservedObject private var cameraManager = CameraManager()
     @StateObject private var viewModel = MainContentModel()
-
+    
     var body: some View {
         VStack {
             if authenticationManager.isSignIn == false {
@@ -38,6 +38,7 @@ struct MainContentView: View {
                 }
                 Button("Open Camera") {
                     viewModel.isPresentingCamera = true
+                    
                 }
                 .fullScreenCover(isPresented: $viewModel.isPresentingCamera) {
                     Camera2View(isPresentingCamera: $viewModel.isPresentingCamera, cameraManager: cameraManager)
@@ -61,13 +62,13 @@ struct MainContentView: View {
                     }
                 }
                 .onReceive(cameraManager.$newImage) { newImage in
-                    if let newImage = newImage {
+                    if newImage != nil {
                         // self.images.append(newImage)
                     }
                 }
             }
 
-            Spacer() // Spacerの前にsheetがある場合、Spacerがsheetを引き伸ばす効果があるため注意が必要
+            Spacer() 
                 .sheet(isPresented: $viewModel.isShowSheet) {
                     LoginView()
                 }
