@@ -41,7 +41,7 @@ struct MainContentView: View {
                     
                 }
                 .fullScreenCover(isPresented: $viewModel.isPresentingCamera) {
-                    Camera2View(isPresentingCamera: $viewModel.isPresentingCamera, cameraManager: cameraManager)
+                    Camera2View(isPresentingCamera: $viewModel.isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true))
                 }
                 ScrollView {
                     LazyVGrid(columns: gridItemLayout, spacing: 10) {

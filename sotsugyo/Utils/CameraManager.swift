@@ -150,7 +150,6 @@ func applySepiaFilter(to inputImage: UIImage) -> UIImage? {
 }
 
 
-    // 写真をFirebase Storageに保存し、その後FirestoreにURLを保存
     func uploadPhoto(_ image: UIImage) {
         guard let imageData = image.jpegData(compressionQuality: 0.2) else {
             return
@@ -159,33 +158,28 @@ func applySepiaFilter(to inputImage: UIImage) -> UIImage? {
         let imageName = UUID().uuidString
         let imageReference = Storage.storage().reference().child("images/\(imageName).jpg")
         let url = "\(imageName).jpg"
-        
+
         imageReference.putData(imageData, metadata: nil) { metadata, error in
             if let error = error {
                 print("Error uploading image to storage: \(error)")
                 return
             }
-            
+
             Task {
                 do {
                     // Firestoreに写真のURLを保存し、documentIdを取得
                     let newdocumentId = try await self.uploadLink(url: url)
                     DispatchQueue.main.async {
-                        self.documentId = newdocumentId // ここを修正
-                    }
-                    print(newdocumentId, self.documentId, "searchmusicView5")
-                    // documentIdを使用してisPresentingSearchを設定
-                    DispatchQueue.main.async {
+                        self.documentId = newdocumentId
                         self.isPresentingSearch = true
-                        print(self.documentId, "searchmusicView3")
                     }
                 } catch {
                     print("Error uploading link to Firestore: \(error)")
                 }
-            
             }
         }
     }
+
 
     // Firestoreに写真のURLを保存し、documentIdを取得
     func uploadLink(url: String) async throws -> String {

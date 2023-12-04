@@ -6,9 +6,9 @@ struct Camera2View: View {
     @ObservedObject var cameraManager: CameraManager
     @Environment(\.presentationMode) var presentation
     @State private var isPresentingMain = false
-    @State var isPresentingSearch =  false
+    @Binding var isPresentingSearch : Bool
    
-    
+    @Environment(\.dismiss) var dismiss
     
     
     
@@ -32,8 +32,10 @@ struct Camera2View: View {
                     
                 }
                 
-                .sheet(isPresented: $cameraManager.isImageUploadCompleted) {
-                    PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, isPresentingSearch: $isPresentingSearch, documentId: $cameraManager.documentId, cameraManager: cameraManager)
+                .sheet(isPresented: $cameraManager.isImageUploadCompleted, onDismiss: {
+                    dismiss()
+                 }) {
+                    PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, isPresentingSearch: $cameraManager.isPresentingSearch, documentId: $cameraManager.documentId, cameraManager: cameraManager)
     
                 }
             }

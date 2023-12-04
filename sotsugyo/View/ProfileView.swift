@@ -20,9 +20,7 @@ struct ProfileView: View {
                 isPresentingSearchMusic = true
                
             }
-            .sheet(isPresented: $isPresentingSearchMusic) {
-                SearchView(documentId: documentId)
-            }
+          
         }
     }
 }

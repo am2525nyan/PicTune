@@ -21,29 +21,33 @@ struct PhotoPreviewView: View {
                 
                 Button("保存") {
                     viewModel.takeScreenshot()
-                    //       if let capture = UIApplication.shared.windows.first?.rootViewController?.view.snapshot {
-                    
+                  
                     UIImageWriteToSavedPhotosAlbum(viewModel.screenshotImage ?? image, nil, nil, nil)
                     
                     
                 
                   // dismiss()
+                  
                    
                         cameraManager.uploadPhoto(viewModel.screenshotImage ?? image)
-                       
-
-                     
-                       
-                        print(documentId, "searchmusicView")
+                    print(isPresentingSearch)
+                   
                   
                 }
                
-                .sheet(isPresented: $cameraManager.isPresentingSearch) {
+                .sheet(isPresented: $isPresentingSearch, onDismiss: {
+                   dismiss()
+                }) {
                     SearchView(documentId: cameraManager.documentId)
                         .onAppear {
-                           
+                            print("SearchView appeared")
+                         
+                        }
+                        .onDisappear {
+                            print("SearchView disappeared")
                         }
                 }
+
 
                 .padding()
                 Image("Image")

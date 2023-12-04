@@ -44,7 +44,7 @@ class SpotifyAPI {
                                    let artist = artists.first?["name"] as? String,
                                    let albumData = item["album"] as? [String: Any],
                                    let albumID = albumData["id"] as? String {
-
+                                   
                                     self.getAlbumInfo(albumID: albumID) { albumImages in
                                         let track = Track(id: id, name: name, artist: artist, albumImages: albumImages)
                                         tracks.append(track)

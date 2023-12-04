@@ -17,12 +17,14 @@ class SearchViewModel: ObservableObject {
     @Published var musicList: [Music] = []
     @Published var artworks: [UIImage] = []
     @Published var searchText: String = ""
-    @Published var isAlart: Bool = false
+
     @Published var isPresentingSearchMusic: Bool = true
     @Published var isPresentingSearch: Bool = true
     @Published var documentId = "default_value"
     @Published var isPresentingCamera: Bool = true
+    @Published var showAlert = false
     private var cancellables: Set<AnyCancellable> = []
+  
     
     func tapAction(trackName: String,Url: String) async throws{
         let db = Firestore.firestore()
@@ -33,19 +35,20 @@ class SearchViewModel: ObservableObject {
             try await db.collection("users").document(uid).collection("photo").document(documentId).updateData([
                 
                 "trackName": trackName,
-                "previewUrl": Url
+                "id": Url
                 
             ])
-            print(documentId)
-            DispatchQueue.main.async {
-                self.isPresentingSearch = false
-                self.isPresentingCamera = false
-            }
-        }
-        DispatchQueue.main.async {
-            self.isAlart = true
+           
+          
             
         }
+        DispatchQueue.main.async {
+           
+            print("firebaseに保存しました！,",self.documentId,self.isPresentingSearch)
+          
+           
+        }
+       
     }
     
 }
