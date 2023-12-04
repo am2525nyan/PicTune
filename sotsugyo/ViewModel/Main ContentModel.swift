@@ -12,14 +12,14 @@ import FirebaseStorage
 import Combine
 
 class MainContentModel: ObservableObject {
-  
+    
     
     @Published internal var isShowSheet = false
     @Published internal var images: [UIImage] = []
     @Published internal var isPresentingCamera = false
-    
-    
-   
+    @Published internal var dates: [String] = []
+ 
+  
     func firstgetUrl() async throws{
         do{
             guard let uid = Auth.auth().currentUser?.uid else {
@@ -31,8 +31,8 @@ class MainContentModel: ObservableObject {
             var urlArray = [String]()
             DispatchQueue.main.async {
                 self.images = []
-                   }
-          
+            }
+            
             
             let ref = try await db.collection("users").document(uid).collection("photo").getDocuments()
             
@@ -57,7 +57,7 @@ class MainContentModel: ObservableObject {
                         let image = UIImage(data: data!)
                         DispatchQueue.main.async {
                             self.images.append(image!)
-                            
+                            print(self.images)
                         }
                     }
                 }
@@ -139,6 +139,35 @@ class MainContentModel: ObservableObject {
         }
     }
     
-    
-    
+    // MainContentModel.swift
+    func getDate() async throws {
+        DispatchQueue.main.async {
+            self.dates = []
+        }
+        do {
+            guard let uid = Auth.auth().currentUser?.uid else {
+                throw NSError(domain: "FirebaseError", code: -1, userInfo: [NSLocalizedDescriptionKey: "uid is nil"])
+            }
+            
+            let db = Firestore.firestore()
+            let ref = try await db.collection("users").document(uid).collection("photo").getDocuments()
+            
+            for document in ref.documents {
+                let data = document.data()
+                let date = data["date"] as! Timestamp
+                
+                let formatterDate = DateFormatter()
+                formatterDate.dateFormat = "yyyy-MM-dd-HH:mm"
+                let createdDate = formatterDate.string(from: date.dateValue())
+                
+                DispatchQueue.main.async {
+                    self.dates.append(createdDate)
+                    print("Dates Array: \(self.dates)")
+                }
+            }
+        } catch {
+            throw error
+        }
+    }
 }
+

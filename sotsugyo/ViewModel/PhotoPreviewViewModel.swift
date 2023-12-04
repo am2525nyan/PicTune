@@ -14,17 +14,18 @@ class PhotoPreviewViewModel: ObservableObject {
     
     func takeScreenshot() {
         if let window = UIApplication.shared.windows.first {
-            let screenshotRect = CGRect(x: 4, y: 158, width: UIScreen.main.bounds.width * 0.988, height: UIScreen.main.bounds.height * 0.726)
-            
+            let screenshotRect = CGRect(x: 4, y: 158, width: window.bounds.width * 0.988, height: window.bounds.height * 0.726)
+
             UIGraphicsBeginImageContextWithOptions(screenshotRect.size, false, UIScreen.main.scale)
             window.drawHierarchy(in: CGRect(origin: CGPoint(x: -screenshotRect.origin.x, y: -screenshotRect.origin.y), size: window.bounds.size), afterScreenUpdates: true)
             let screenshotImage = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
-            
+
             self.screenshotImage = screenshotImage
-            
+
             isPresentingImagePicker = true
         }
     }
+
     
 }
