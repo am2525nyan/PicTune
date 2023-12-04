@@ -1,113 +1,25 @@
 //
-//  ContentView.swift
+//  Main ContentModel.swift
 //  sotsugyo
 //
-//  Created by saki on 2023/10/29.
+//  Created by saki on 2023/11/29.
 //
 
-import SwiftUI
-import FirebaseAuth
+import Foundation
 import FirebaseFirestore
-import FirebaseAuthUI
-import Firebase
+import FirebaseAuth
 import FirebaseStorage
+import Combine
 
-struct MainContentView: View {
-    private var authenticationManager = AuthenticationManager()
-    @State private var isShowSheet = false
-    @State private var user: User?
-    @State private var error: Error?
-    @State private var images: [UIImage] = []
-    @State private var isPresentingCamera = false
+class MainContentModel: ObservableObject {
+  
+    
+    @Published internal var isShowSheet = false
+    @Published internal var images: [UIImage] = []
+    @Published internal var isPresentingCamera = false
+    
+    
    
-    private let gridItemLayout = [GridItem(.flexible()), GridItem(.flexible())]
-    
-    @ObservedObject private var cameraManager = CameraManager()
-    
-    
-    var body: some View {
-        VStack {
-            
-            if authenticationManager.isSignIn == false {
-                
-                HStack {
-                    Spacer()
-                    //Sign-Out状態なのでSign-Inボタンを表示する
-                    Button {
-                        self.isShowSheet.toggle()
-                        saveUserData()
-                        
-                    } label: {
-                        Text("Sign-In")
-                        
-                    }
-                    .padding()
-                }
-            } else {
-                HStack {
-                    //Sign-In状態なのでSign-Outボタンを表示する
-                    
-                    Button {
-                        
-                        authenticationManager.signOut()
-                    } label: {
-                        Text("Sign-Out")
-                        
-                    }
-                    
-                }
-                Button("Open Camera") {
-                              isPresentingCamera = true
-                          }
-                .fullScreenCover(isPresented: $isPresentingCamera) {
-                                  Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager)
-                              }
-                ScrollView {
-                    
-                    LazyVGrid(columns: gridItemLayout, spacing: 10) {
-                        ForEach(images, id: \.self) { image in
-                            Image(uiImage: image)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 150, height: 200) // 画像のサイズを指定
-                                .clipped()
-                        }
-                    }
-                }
-                .refreshable {
-                    Task{
-                        do{
-                            try await getUrl()
-                        }
-                    }
-                    
-                }
-                .onReceive(cameraManager.$newImage){ newImage in
-                    if let newImage = newImage{
-                   //     self.images.append(newImage)
-                    }
-                }
-               
-                
-               
-                
-            }
-            
-            Spacer()
-                .sheet(isPresented: $isShowSheet) {
-                    LoginView()
-                    
-                    
-                }
-                .onAppear {
-                    
-                    Task {
-                        try await firstgetUrl()
-                    }
-                }
-        }
-    }
-    
     func firstgetUrl() async throws{
         do{
             guard let uid = Auth.auth().currentUser?.uid else {
@@ -117,7 +29,10 @@ struct MainContentView: View {
             let db = Firestore.firestore()
             
             var urlArray = [String]()
-            images = []
+            DispatchQueue.main.async {
+                self.images = []
+                   }
+          
             
             let ref = try await db.collection("users").document(uid).collection("photo").getDocuments()
             
@@ -140,9 +55,10 @@ struct MainContentView: View {
                         print("Error occurred! : \(error)")
                     } else {
                         let image = UIImage(data: data!)
-                        images.append(image!)
-                        
-                        
+                        DispatchQueue.main.async {
+                            self.images.append(image!)
+                            
+                        }
                     }
                 }
                 
@@ -185,8 +101,9 @@ struct MainContentView: View {
                             print("Error occurred! : \(error)")
                         } else {
                             let image = UIImage(data: data!)
-                            images.append(image!)
-                            
+                            DispatchQueue.main.async {
+                                self.images.append(image!)
+                            }
                             
                         }
                     }
@@ -223,8 +140,5 @@ struct MainContentView: View {
     }
     
     
-}
-
-#Preview {
-    MainContentView()
+    
 }

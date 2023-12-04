@@ -18,11 +18,13 @@ struct Music: Codable, Identifiable {
     var id: Int
     var trackName: String
     var artworkUrl60: URL
+    var previewUrl: String
 
     enum CodingKeys: String, CodingKey {
         case id = "trackId"
         case trackName
         case artworkUrl60
+        case previewUrl
     }
 }
 

@@ -7,12 +7,7 @@
 
 import SwiftUI
 import PencilKit
-struct PencilView: View {
-    var body: some View {
-        PenKitView()
-        
-    }
-}
+
 
 struct PenKitView:UIViewRepresentable {
    typealias UIViewType = PKCanvasView

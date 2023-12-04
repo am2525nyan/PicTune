@@ -2,16 +2,13 @@ import SwiftUI
 
 struct Camera2View: View {
     @Binding var isPresentingCamera: Bool
+   
     @ObservedObject var cameraManager: CameraManager
     @Environment(\.presentationMode) var presentation
     @State private var isPresentingMain = false
-    
-    init(isPresentingCamera: Binding<Bool>, cameraManager: CameraManager) {
-        self._isPresentingCamera = isPresentingCamera
-        self.cameraManager = cameraManager
-       
-    }
-    
+    @Binding var isPresentingSearch : Bool
+   
+    @Environment(\.dismiss) var dismiss
     
     
     
@@ -22,17 +19,11 @@ struct Camera2View: View {
             Image("Image")
                 .resizable()
                 .scaledToFit()
-               
-              
-            
-            
-            
+          
             VStack {
                 Spacer()
                 Button("撮影") {
-                    
                     cameraManager.captureImage()
-                    
                 }
                 
                 
@@ -41,11 +32,11 @@ struct Camera2View: View {
                     
                 }
                 
-                
-                .sheet(isPresented: $cameraManager.isImageUploadCompleted) {
-                    PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager)
-                  
-                    
+                .sheet(isPresented: $cameraManager.isImageUploadCompleted, onDismiss: {
+                    dismiss()
+                 }) {
+                    PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, isPresentingSearch: $cameraManager.isPresentingSearch, documentId: $cameraManager.documentId, cameraManager: cameraManager)
+    
                 }
             }
             
@@ -56,9 +47,7 @@ struct Camera2View: View {
             cameraManager.setupCaptureSession()
         }
         .onDisappear {
-            
-            
-            
+  
             cameraManager.stopSession()
         }
     }

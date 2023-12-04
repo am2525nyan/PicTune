@@ -16,15 +16,17 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     @State private var isPresentingMain = false
     @State private var isPresentingCamera = true
     @Published var isImageUploadCompleted = false
+    @Published var isPresentingSearch = false
     var saveArray: Array! = [NSData]()
     let savedata = UserDefaults.standard
     @Published var newImage: UIImage?
+    @Published var documentId = "default_value"
     
     
     
     override init() {
         super.init()
-        
+        print(documentId)
         
     }
     //カメラの準備
@@ -80,8 +82,9 @@ func stopSession() {
 
 
 func captureImage() {
-    let settings = AVCapturePhotoSettings()
-    
+   
+        let settings = AVCapturePhotoSettings()
+   
     let previewWidth = UIScreen.main.bounds.width * 0.864
     let previewHeight = UIScreen.main.bounds.height * 0.536
     
@@ -92,7 +95,8 @@ func captureImage() {
     ]
     
     
-    photoOutput.capturePhoto(with: settings, delegate: self)
+        self.photoOutput.capturePhoto(with: settings, delegate: self)
+    
 }
 
 func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
@@ -108,19 +112,14 @@ func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo:
         originalSize = image.size
     }
     
-    // プレビューのサイズを利用してmetaRectを計算
     let previewSize = CGSize(width: UIScreen.main.bounds.width * 0.864, height: UIScreen.main.bounds.height * 0.536)
     let metaRect = CGRect(x: 0, y: 0, width: previewSize.width, height: previewSize.height)
-    
-    // previewLayerのrectを切り抜きたいviewの座標系に変換
     let metaRectConverted = previewLayer?.metadataOutputRectConverted(fromLayerRect: metaRect) ?? CGRect.zero
-    // 切り抜く範囲を計算
     let cropRect: CGRect = CGRect(x: metaRectConverted.origin.x * originalSize.width,
                                   y: metaRectConverted.origin.y * originalSize.height,
                                   width: metaRectConverted.size.width * originalSize.width,
                                   height: metaRectConverted.size.height * originalSize.height).integral
     
-    // 画像を切り取る
     guard let cgImage = image.cgImage?.cropping(to: cropRect) else { return }
     let croppedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
     
@@ -151,48 +150,62 @@ func applySepiaFilter(to inputImage: UIImage) -> UIImage? {
 }
 
 
-//写真をfirestorageに保存
-func uploadPhoto(_ image: UIImage) {
-    
-    guard let imageData = image.jpegData(compressionQuality: 0.2) else {
-        return
-    }
-    
-    let imageName = UUID().uuidString
-    let imageReference = Storage.storage().reference().child("images/\(imageName).jpg")
-    let url = ("\(imageName).jpg")
-    newImage = image
-    
-    imageReference.putData(imageData, metadata: nil) { metadata, error in
-        
-        Task{
-            do{
-                try await self.uploadLink(url: url)
-                
-                
+    func uploadPhoto(_ image: UIImage) {
+        guard let imageData = image.jpegData(compressionQuality: 0.2) else {
+            return
+        }
+
+        let imageName = UUID().uuidString
+        let imageReference = Storage.storage().reference().child("images/\(imageName).jpg")
+        let url = "\(imageName).jpg"
+
+        imageReference.putData(imageData, metadata: nil) { metadata, error in
+            if let error = error {
+                print("Error uploading image to storage: \(error)")
+                return
+            }
+
+            Task {
+                do {
+                    // Firestoreに写真のURLを保存し、documentIdを取得
+                    let newdocumentId = try await self.uploadLink(url: url)
+                    DispatchQueue.main.async {
+                        self.documentId = newdocumentId
+                        self.isPresentingSearch = true
+                    }
+                } catch {
+                    print("Error uploading link to Firestore: \(error)")
+                }
             }
         }
-        
-        
-        return
-        
     }
-}
 
 
-//写真をfirestorageのurlをfirestoreに保存
-func uploadLink(url: String) async throws{
-    let db = Firestore.firestore()
-    let uid = Auth.auth().currentUser?.uid
-     db.collection("users").document(uid ?? "").collection("photo").addDocument(data: [
-            "url": url,
-            "date": FieldValue.serverTimestamp()
-        ])
-        print("保存しました！")
-        
-    
-  
-}
+    // Firestoreに写真のURLを保存し、documentIdを取得
+    func uploadLink(url: String) async throws -> String {
+        return try await withCheckedThrowingContinuation { continuation in
+            let db = Firestore.firestore()
+            let uid = Auth.auth().currentUser?.uid
+            var ref: DocumentReference? = nil
+            
+            ref = db.collection("users").document(uid ?? "").collection("photo").addDocument(data: [
+                "url": url,
+                "date": FieldValue.serverTimestamp()
+            ]) { err in
+                if let err = err {
+                    print("Error writing document: \(err)")
+                    continuation.resume(throwing: err)
+                } else {
+                    if let documentId = ref?.documentID {
+                        continuation.resume(returning: documentId)
+                    } else {
+                      
+                    }
+                }
+            }
+        }
+    }
+
 
 func resizeImage(_ image: UIImage, newSize: CGSize) -> UIImage {
     let renderer = UIGraphicsImageRenderer(size: newSize)

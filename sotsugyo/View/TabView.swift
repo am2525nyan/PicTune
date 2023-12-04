@@ -8,16 +8,15 @@
 import SwiftUI
 
 struct TabContentView: View {
-    
-    @State private var isPresentingCamera = false
-    @ObservedObject private var cameraManager = CameraManager()
     @State var selection = 1
+    @Binding var documentId: String
+    
 
     var body: some View {
         TabView(selection: $selection) {
             
-            MainContentView()
             
+            MainContentView()
                 .tabItem {
                     VStack {
                         Label("Page1", systemImage: "1.circle")
@@ -25,7 +24,8 @@ struct TabContentView: View {
                     .tag(1)
                     
                 }
-            ProfileView()
+                
+            ProfileView( documentId: $documentId)
                 .tabItem {
                     VStack {
                         Label("Page2", systemImage: "2.circle")
@@ -34,5 +34,6 @@ struct TabContentView: View {
                     
                 }
         }
+                 
     }
 }
