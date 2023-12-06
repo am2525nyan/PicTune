@@ -11,6 +11,11 @@ struct MainContentView: View {
     @State var selectedImage: UIImage?
     @State var selectedIndex = Int()
     @State var dates  = [String]()
+    @State var tapdocumentId = String()
+    @State private var Music: [FirebaseMusic] = []
+    @State var documentIdArray = []
+
+   
     var body: some View {
         NavigationView {
             VStack {
@@ -46,7 +51,7 @@ struct MainContentView: View {
                             ForEach($viewModel.images.indices, id: \.self) { index in
                                 // 画像を NavigationLink でラップ
                                 NavigationLink(
-                                    destination: ImageDetailView(image: $selectedImage, viewModel: viewModel, selectedIndex: selectedIndex),
+                                    destination: ImageDetailView(image: $selectedImage, documentId: $tapdocumentId, tapdocumentId: $tapdocumentId, viewModel: viewModel, selectedIndex: selectedIndex),
                                     tag: viewModel.images[index],
                                     selection: $selectedImage,
                                     label: {
@@ -56,6 +61,7 @@ struct MainContentView: View {
                                             .frame(width: 200, height: 350)
                                             .clipped()
                                             .onTapGesture {
+                                                tapdocumentId  = viewModel.documentIdArray[index] as! String
                                                 selectedImage = viewModel.images[index]
                                                 selectedIndex = index 
                                             }
@@ -63,6 +69,7 @@ struct MainContentView: View {
                                 )
 
                                 .onAppear {
+                                    tapdocumentId  = viewModel.documentIdArray[index] as! String
                                     selectedIndex = index
                                     print(selectedIndex, viewModel.dates)
                                 }

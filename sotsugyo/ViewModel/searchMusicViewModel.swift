@@ -14,7 +14,7 @@ import FirebaseFirestore
 
 class SearchViewModel: ObservableObject {
     
-    @Published var musicList: [Music] = []
+   
     @Published var artworks: [UIImage] = []
     @Published var searchText: String = ""
 

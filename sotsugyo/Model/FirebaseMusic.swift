@@ -5,4 +5,11 @@
 //  Created by saki on 2023/12/06.
 //
 
-import Foundation
+
+struct FirebaseMusic: Identifiable {
+    var id: String
+    var  artistName: String
+    var  imageName: String
+    var trackName:  String
+    
+}

@@ -18,7 +18,8 @@ class MainContentModel: ObservableObject {
     @Published internal var images: [UIImage] = []
     @Published internal var isPresentingCamera = false
     @Published internal var dates: [String] = []
- 
+    @Published internal var Music: [FirebaseMusic] = []
+    @Published internal var documentIdArray = []
   
     func firstgetUrl() async throws{
         do{
@@ -31,6 +32,7 @@ class MainContentModel: ObservableObject {
             var urlArray = [String]()
             DispatchQueue.main.async {
                 self.images = []
+                self.documentIdArray = []
             }
             
             
@@ -43,7 +45,10 @@ class MainContentModel: ObservableObject {
                 if url != nil{
                     urlArray.append(url as! String)
                 }
-                
+                let documentId = document.documentID
+                DispatchQueue.main.async {
+                    self.documentIdArray.append(documentId)
+                }
             }
             let storage = Storage.storage()
             
@@ -74,7 +79,9 @@ class MainContentModel: ObservableObject {
         let db = Firestore.firestore()
         let uid = Auth.auth().currentUser?.uid
         var urlArray = [String]()
-        
+        DispatchQueue.main.async {
+            self.documentIdArray = []
+        }
         let document =  try await db.collection("users").document(uid ?? "").getDocument()
         let data = document.data()
         let date = data?["date"]
@@ -88,6 +95,10 @@ class MainContentModel: ObservableObject {
                     let url = data["url"]
                     if url != nil{
                         urlArray.append(url as! String)
+                    }
+                    let documentId = document.documentID
+                    DispatchQueue.main.async {
+                        self.documentIdArray.append(documentId)
                     }
                     
                 }
@@ -166,6 +177,23 @@ class MainContentModel: ObservableObject {
             }
         } catch {
             throw error
+        }
+    }
+    func getMusic(documentId: String) async throws{
+        if let currentUser = Auth.auth().currentUser {
+            let uid = currentUser.uid
+            let db = Firestore.firestore()
+            print(documentId,"dd")
+            let ref = try await db.collection("users").document(uid).collection("photo").document(documentId).getDocument()
+            let data = ref.data()
+            let artistName =  data?["artistName"]
+            let imageName =  data?["imageName"]
+            let trackName =  data?["trackName"]
+            DispatchQueue.main.async {
+                self.Music.append(FirebaseMusic(id: documentId, artistName: artistName as! String, imageName: imageName as! String, trackName: trackName as! String)
+                )
+            }
+            print(Music)
         }
     }
 }
