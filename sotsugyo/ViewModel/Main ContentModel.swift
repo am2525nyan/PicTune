@@ -34,7 +34,7 @@ class MainContentModel: ObservableObject {
             }
             
             
-            let ref = try await db.collection("users").document(uid).collection("photo").getDocuments()
+            let ref = try await db.collection("users").document(uid).collection("photo").order(by: "date").getDocuments()
             
             for document in ref.documents {
                 
@@ -57,7 +57,7 @@ class MainContentModel: ObservableObject {
                         let image = UIImage(data: data!)
                         DispatchQueue.main.async {
                             self.images.append(image!)
-                            print(self.images)
+                           
                         }
                     }
                 }
@@ -80,7 +80,7 @@ class MainContentModel: ObservableObject {
         let date = data?["date"]
         if date != nil{
             do{
-                let ref = try await db.collection("users").document(uid ?? "").collection("photo").whereField("date", isGreaterThanOrEqualTo: date as Any).getDocuments()
+                let ref = try await db.collection("users").document(uid ?? "").collection("photo").whereField("date", isGreaterThanOrEqualTo: date as Any).order(by: "date").getDocuments()
                 
                 for document in ref.documents {
                     
@@ -139,7 +139,7 @@ class MainContentModel: ObservableObject {
         }
     }
     
-    // MainContentModel.swift
+   
     func getDate() async throws {
         DispatchQueue.main.async {
             self.dates = []
@@ -150,7 +150,7 @@ class MainContentModel: ObservableObject {
             }
             
             let db = Firestore.firestore()
-            let ref = try await db.collection("users").document(uid).collection("photo").getDocuments()
+            let ref = try await db.collection("users").document(uid).collection("photo").order(by: "date").getDocuments()
             
             for document in ref.documents {
                 let data = document.data()
@@ -162,7 +162,6 @@ class MainContentModel: ObservableObject {
                 
                 DispatchQueue.main.async {
                     self.dates.append(createdDate)
-                    print("Dates Array: \(self.dates)")
                 }
             }
         } catch {

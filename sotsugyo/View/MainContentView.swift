@@ -8,8 +8,9 @@ struct MainContentView: View {
     @StateObject private var viewModel = MainContentModel()
     
     // タップされた画像を保持するための State 変数を追加
-    @State private var selectedImage: UIImage?
-
+    @State var selectedImage: UIImage?
+    @State var selectedIndex = Int()
+    @State var dates  = [String]()
     var body: some View {
         NavigationView {
             VStack {
@@ -39,12 +40,13 @@ struct MainContentView: View {
                     .fullScreenCover(isPresented: $viewModel.isPresentingCamera) {
                         Camera2View(isPresentingCamera: $viewModel.isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true))
                     }
+               
                     ScrollView {
                         LazyVGrid(columns: gridItemLayout, spacing: 3) {
                             ForEach($viewModel.images.indices, id: \.self) { index in
                                 // 画像を NavigationLink でラップ
                                 NavigationLink(
-                                    destination: ImageDetailView(image: $selectedImage),
+                                    destination: ImageDetailView(image: $selectedImage, viewModel: viewModel, selectedIndex: selectedIndex),
                                     tag: viewModel.images[index],
                                     selection: $selectedImage,
                                     label: {
@@ -55,12 +57,21 @@ struct MainContentView: View {
                                             .clipped()
                                             .onTapGesture {
                                                 selectedImage = viewModel.images[index]
+                                                selectedIndex = index 
                                             }
                                     }
                                 )
+
+                                .onAppear {
+                                    selectedIndex = index
+                                    print(selectedIndex, viewModel.dates)
+                                }
                             }
                         }
                     }
+
+
+            
                     .refreshable {
                         Task {
                             do {

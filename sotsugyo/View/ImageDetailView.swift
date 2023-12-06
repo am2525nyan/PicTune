@@ -6,12 +6,11 @@
 //
 
 import SwiftUI
-
 // ImageDetailView.swift
 struct ImageDetailView: View {
-    
     @Binding var image: UIImage?
-    @ObservedObject var viewModel = MainContentModel()
+    @ObservedObject var viewModel: MainContentModel
+    var selectedIndex: Int // 選択された画像のindexを保持するプロパティ
 
     var body: some View {
         VStack {
@@ -20,14 +19,14 @@ struct ImageDetailView: View {
                     .resizable()
                     .scaledToFit()
                     .navigationBarTitle("画像詳細", displayMode: .inline)
-                
+
                 // 画像に対応する日付を表示
-                if let index = viewModel.images.firstIndex(where: { $0.isEqual(unwrappedImage) }), viewModel.dates.indices.contains(index) {
-                    let correspondingDate = viewModel.dates[index]
+                if selectedIndex < viewModel.dates.count {
+                    let correspondingDate = viewModel.dates[selectedIndex]
                     Text("日付: \(correspondingDate)")
                         .padding()
                 } else {
-                    Text("日付情報がありません")
+                    Text("日付情報なし")
                         .padding()
                 }
             }
