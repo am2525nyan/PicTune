@@ -12,14 +12,15 @@ import FirebaseStorage
 import Combine
 
 class MainContentModel: ObservableObject {
-  
+    
     
     @Published internal var isShowSheet = false
     @Published internal var images: [UIImage] = []
     @Published internal var isPresentingCamera = false
-    
-    
-   
+    @Published internal var dates: [String] = []
+    @Published internal var Music: [FirebaseMusic] = []
+    @Published internal var documentIdArray = []
+  
     func firstgetUrl() async throws{
         do{
             guard let uid = Auth.auth().currentUser?.uid else {
@@ -31,10 +32,11 @@ class MainContentModel: ObservableObject {
             var urlArray = [String]()
             DispatchQueue.main.async {
                 self.images = []
-                   }
-          
+                self.documentIdArray = []
+            }
             
-            let ref = try await db.collection("users").document(uid).collection("photo").getDocuments()
+            
+            let ref = try await db.collection("users").document(uid).collection("photo").order(by: "date").getDocuments()
             
             for document in ref.documents {
                 
@@ -43,7 +45,10 @@ class MainContentModel: ObservableObject {
                 if url != nil{
                     urlArray.append(url as! String)
                 }
-                
+                let documentId = document.documentID
+                DispatchQueue.main.async {
+                    self.documentIdArray.append(documentId)
+                }
             }
             let storage = Storage.storage()
             
@@ -57,7 +62,7 @@ class MainContentModel: ObservableObject {
                         let image = UIImage(data: data!)
                         DispatchQueue.main.async {
                             self.images.append(image!)
-                            
+                           
                         }
                     }
                 }
@@ -74,13 +79,15 @@ class MainContentModel: ObservableObject {
         let db = Firestore.firestore()
         let uid = Auth.auth().currentUser?.uid
         var urlArray = [String]()
-        
+        DispatchQueue.main.async {
+            self.documentIdArray = []
+        }
         let document =  try await db.collection("users").document(uid ?? "").getDocument()
         let data = document.data()
         let date = data?["date"]
         if date != nil{
             do{
-                let ref = try await db.collection("users").document(uid ?? "").collection("photo").whereField("date", isGreaterThanOrEqualTo: date as Any).getDocuments()
+                let ref = try await db.collection("users").document(uid ?? "").collection("photo").whereField("date", isGreaterThanOrEqualTo: date as Any).order(by: "date").getDocuments()
                 
                 for document in ref.documents {
                     
@@ -88,6 +95,10 @@ class MainContentModel: ObservableObject {
                     let url = data["url"]
                     if url != nil{
                         urlArray.append(url as! String)
+                    }
+                    let documentId = document.documentID
+                    DispatchQueue.main.async {
+                        self.documentIdArray.append(documentId)
                     }
                     
                 }
@@ -139,6 +150,51 @@ class MainContentModel: ObservableObject {
         }
     }
     
-    
-    
+   
+    func getDate() async throws {
+        DispatchQueue.main.async {
+            self.dates = []
+        }
+        do {
+            guard let uid = Auth.auth().currentUser?.uid else {
+                throw NSError(domain: "FirebaseError", code: -1, userInfo: [NSLocalizedDescriptionKey: "uid is nil"])
+            }
+            
+            let db = Firestore.firestore()
+            let ref = try await db.collection("users").document(uid).collection("photo").order(by: "date").getDocuments()
+            
+            for document in ref.documents {
+                let data = document.data()
+                let date = data["date"] as! Timestamp
+                
+                let formatterDate = DateFormatter()
+                formatterDate.dateFormat = "yyyy-MM-dd-HH:mm"
+                let createdDate = formatterDate.string(from: date.dateValue())
+                
+                DispatchQueue.main.async {
+                    self.dates.append(createdDate)
+                }
+            }
+        } catch {
+            throw error
+        }
+    }
+    func getMusic(documentId: String) async throws{
+        if let currentUser = Auth.auth().currentUser {
+            let uid = currentUser.uid
+            let db = Firestore.firestore()
+            print(documentId,"dd")
+            let ref = try await db.collection("users").document(uid).collection("photo").document(documentId).getDocument()
+            let data = ref.data()
+            let artistName =  data?["artistName"]
+            let imageName =  data?["imageName"]
+            let trackName =  data?["trackName"]
+            DispatchQueue.main.async {
+                self.Music.append(FirebaseMusic(id: documentId, artistName: artistName as! String, imageName: imageName as! String, trackName: trackName as! String)
+                )
+            }
+            print(Music)
+        }
+    }
 }
+

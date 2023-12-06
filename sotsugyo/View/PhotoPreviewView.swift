@@ -30,8 +30,7 @@ struct PhotoPreviewView: View {
                   
                    
                         cameraManager.uploadPhoto(viewModel.screenshotImage ?? image)
-                    print(isPresentingSearch)
-                   
+                                       
                   
                 }
                
