@@ -69,8 +69,8 @@ struct MainContentView: View {
                                 )
 
                                 .onAppear {
-                                    tapdocumentId  = viewModel.documentIdArray[index] as! String
-                                    selectedIndex = index
+                          //          tapdocumentId  = viewModel.documentIdArray[index] as! String
+                            //        selectedIndex = index
                                     print(selectedIndex, viewModel.dates)
                                 }
                             }

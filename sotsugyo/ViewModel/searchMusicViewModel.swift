@@ -26,16 +26,18 @@ class SearchViewModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
   
     
-    func tapAction(trackName: String,Url: String) async throws{
+    func tapAction(trackName: String,Url: String,artistName: String, imageName: String, previewUrl: String) async throws{
         let db = Firestore.firestore()
         
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
            
             try await db.collection("users").document(uid).collection("photo").document(documentId).updateData([
-                
+                "artistName": artistName,
                 "trackName": trackName,
-                "id": Url
+                "id": Url,
+                "imageName": imageName,
+                "previewUrl": previewUrl
                 
             ])
            

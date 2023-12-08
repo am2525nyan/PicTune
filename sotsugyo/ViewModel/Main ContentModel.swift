@@ -10,6 +10,7 @@ import FirebaseFirestore
 import FirebaseAuth
 import FirebaseStorage
 import Combine
+import AVFoundation
 
 class MainContentModel: ObservableObject {
     
@@ -20,7 +21,8 @@ class MainContentModel: ObservableObject {
     @Published internal var dates: [String] = []
     @Published internal var Music: [FirebaseMusic] = []
     @Published internal var documentIdArray = []
-  
+    var audioPlayer: AVPlayer?
+    var url = URL.init(string: "https://www.hello.com/sample.wav")
     func firstgetUrl() async throws{
         do{
             guard let uid = Auth.auth().currentUser?.uid else {
@@ -62,7 +64,7 @@ class MainContentModel: ObservableObject {
                         let image = UIImage(data: data!)
                         DispatchQueue.main.async {
                             self.images.append(image!)
-                           
+                            
                         }
                     }
                 }
@@ -79,9 +81,6 @@ class MainContentModel: ObservableObject {
         let db = Firestore.firestore()
         let uid = Auth.auth().currentUser?.uid
         var urlArray = [String]()
-        DispatchQueue.main.async {
-            self.documentIdArray = []
-        }
         let document =  try await db.collection("users").document(uid ?? "").getDocument()
         let data = document.data()
         let date = data?["date"]
@@ -99,6 +98,7 @@ class MainContentModel: ObservableObject {
                     let documentId = document.documentID
                     DispatchQueue.main.async {
                         self.documentIdArray.append(documentId)
+                        print(self.documentIdArray,"AAA")
                     }
                     
                 }
@@ -150,7 +150,7 @@ class MainContentModel: ObservableObject {
         }
     }
     
-   
+    
     func getDate() async throws {
         DispatchQueue.main.async {
             self.dates = []
@@ -180,6 +180,9 @@ class MainContentModel: ObservableObject {
         }
     }
     func getMusic(documentId: String) async throws{
+        DispatchQueue.main.async {
+            self.Music = []
+        }
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             let db = Firestore.firestore()
@@ -189,12 +192,68 @@ class MainContentModel: ObservableObject {
             let artistName =  data?["artistName"]
             let imageName =  data?["imageName"]
             let trackName =  data?["trackName"]
+            let id = data?["id"]
+            let previewUrl = data?["previewUrl"]
             DispatchQueue.main.async {
-                self.Music.append(FirebaseMusic(id: documentId, artistName: artistName as! String, imageName: imageName as! String, trackName: trackName as! String)
+                self.Music.append(FirebaseMusic(id: documentId, artistName: artistName as! String, imageName: imageName as! String, trackName: trackName as! String, trackId: id as! String, previewURL: previewUrl as! String)
                 )
             }
-            print(Music)
+            DispatchQueue.main.async {
+                print(self.Music)
+            }
         }
     }
+    
+    
+    func startPlay() {
+        url =  URL.init(string: Music.first!.previewURL )
+        let sampleUrl = URL.init(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/8f/c1/32/8fc1329a-bf7d-03f2-3082-6536f60666ee/mzaf_1239907852510333018.plus.aac.p.m4a")
+        audioPlayer = AVPlayer.init(playerItem: AVPlayerItem(url: url ?? sampleUrl! ))
+        
+        // 再生が終わった際のイベント定義
+        NotificationCenter.default
+            .addObserver(self, selector: #selector(playerDidFinishPlaying),
+                         name: .AVPlayerItemDidPlayToEndTime,
+                         object: audioPlayer?.currentItem)
+        
+        // 秒数の表示
+        Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { timer in
+            if let audioPlayer = self.audioPlayer,
+               let currentItem = audioPlayer.currentItem,
+               currentItem.status == .readyToPlay {
+                let timeElapsed = CMTimeGetSeconds(audioPlayer.currentTime()) // 現在の再生時間の取得
+                let timeDuration = currentItem.duration.seconds
+                
+            }
+        }
+        
+        audioPlayer?.play()
+    }
+    
+    @objc func playerDidFinishPlaying(note: NSNotification) {
+        // 再生が終わった際のイベント処理
+    }
+    
+    func stop() {
+        audioPlayer?.pause()
+        // audioPlayer?.play() で再開
+    }
+    
+    // 音声再生スピードの変更
+    func changeSpeed(speed: Float) {
+        audioPlayer?.rate = speed
+    }
+    
+    // 音声再生位置の移動
+    func changeLocation(seconds: Double) {
+        guard let audioPlayer = self.audioPlayer else { return }
+        
+        let timeScale = CMTimeScale(NSEC_PER_SEC)
+        let rhs = CMTime(seconds: seconds, preferredTimescale: timeScale)
+        let time = CMTimeAdd(audioPlayer.currentTime(), rhs)
+        audioPlayer.seek(to: time)
+    }
+    
+    
 }
 

@@ -13,6 +13,7 @@ import FirebaseAuth
 class CameraMusicViewModel: ObservableObject {
     var audioPlayer: AVPlayer?
     var url = URL.init(string: "https://www.hello.com/sample.wav")
+    
     func getMusic()async throws{
         let db = Firestore.firestore()
         if let currentUser = Auth.auth().currentUser {
