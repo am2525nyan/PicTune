@@ -21,10 +21,12 @@ class MainContentModel: ObservableObject {
     @Published internal var dates: [String] = []
     @Published internal var Music: [FirebaseMusic] = []
     @Published internal var documentIdArray = []
+    
     var audioPlayer: AVPlayer?
     var url = URL.init(string: "https://www.hello.com/sample.wav")
-    func firstgetUrl() async throws{
-        do{
+    
+    func firstgetUrl() async throws {
+        do {
             guard let uid = Auth.auth().currentUser?.uid else {
                 throw NSError(domain: "FirebaseError", code: -1, userInfo: [NSLocalizedDescriptionKey: "uid is nil"])
             }
@@ -37,98 +39,110 @@ class MainContentModel: ObservableObject {
                 self.documentIdArray = []
             }
             
-            
             let ref = try await db.collection("users").document(uid).collection("photo").order(by: "date").getDocuments()
             
             for document in ref.documents {
-                
                 let data = document.data()
                 let url = data["url"]
-                if url != nil{
+                if url != nil {
                     urlArray.append(url as! String)
+                    print(urlArray,"BB")
                 }
                 let documentId = document.documentID
                 DispatchQueue.main.async {
                     self.documentIdArray.append(documentId)
+                    
                 }
             }
-            let storage = Storage.storage()
             
+            let storage = Storage.storage()
             let storageRef = storage.reference()
-            for photo in urlArray{
+            for (index, photo) in urlArray.enumerated() {
                 let imageRef = storageRef.child("images/" + photo)
-                imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
-                    if let error = error {
-                        print("Error occurred! : \(error)")
-                    } else {
-                        let image = UIImage(data: data!)
-                        DispatchQueue.main.async {
-                            self.images.append(image!)
-                            
+                
+                do {
+                    let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
+                        imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
+                            if let error = error {
+                                continuation.resume(throwing: error)
+                            } else if let data = data {
+                                continuation.resume(returning: data)
+                            }
                         }
                     }
+                    let image = UIImage(data: data)
+                    DispatchQueue.main.async {
+                        self.images.insert(image!, at: index)
+                    }
+                } catch {
+                    print("Error occurred! : \(error)")
                 }
-                
             }
-            
-            
-        } catch{
-            throw error
+
+
         }
     }
+
     
-    func getUrl() async throws{
-        let db = Firestore.firestore()
-        let uid = Auth.auth().currentUser?.uid
-        var urlArray = [String]()
-        let document =  try await db.collection("users").document(uid ?? "").getDocument()
-        let data = document.data()
-        let date = data?["date"]
-        if date != nil{
-            do{
+    func getUrl() async throws {
+        do {
+            let db = Firestore.firestore()
+            let uid = Auth.auth().currentUser?.uid
+            var urlArray = [String]()
+            
+            let document = try await db.collection("users").document(uid ?? "").getDocument()
+            let data = document.data()
+            let date = data?["date"]
+            
+            if date != nil {
                 let ref = try await db.collection("users").document(uid ?? "").collection("photo").whereField("date", isGreaterThanOrEqualTo: date as Any).order(by: "date").getDocuments()
-                
+
                 for document in ref.documents {
-                    
                     let data = document.data()
                     let url = data["url"]
-                    if url != nil{
+                    if url != nil {
                         urlArray.append(url as! String)
+                        print(urlArray,"AA")
                     }
                     let documentId = document.documentID
                     DispatchQueue.main.async {
                         self.documentIdArray.append(documentId)
-                        print(self.documentIdArray,"AAA")
+                       
                     }
-                    
                 }
+
                 let storage = Storage.storage()
-                
                 let storageRef = storage.reference()
-                for photo in urlArray{
-                    let imageRef = storageRef.child("images/" + photo)
-                    imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
-                        if let error = error {
-                            print("Error occurred! : \(error)")
-                        } else {
-                            let image = UIImage(data: data!)
-                            DispatchQueue.main.async {
-                                self.images.append(image!)
+
+                for (_, photo) in urlArray.enumerated() {
+                    do {
+                        let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
+                            let imageRef = storageRef.child("images/" + photo)
+                            imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
+                                if let error = error {
+                                    continuation.resume(throwing: error)
+                                } else if let data = data {
+                                    continuation.resume(returning: data)
+                                }
                             }
-                            
                         }
+
+                        let image = UIImage(data: data)
+                        DispatchQueue.main.async {
+                            self.images.append(image!)
+                        }
+                    } catch {
+                        print("Error occurred! : \(error)")
                     }
-                    
                 }
-                
-            }catch{
-                throw error
             }
-            
+
             try await db.collection("users").document(uid ?? "").setData(["date": FieldValue.serverTimestamp()])
+        } catch {
+            throw error
         }
     }
-    
+
     
     func saveUserData(){
         
@@ -198,9 +212,8 @@ class MainContentModel: ObservableObject {
                 self.Music.append(FirebaseMusic(id: documentId, artistName: artistName as! String, imageName: imageName as! String, trackName: trackName as! String, trackId: id as! String, previewURL: previewUrl as! String)
                 )
             }
-            DispatchQueue.main.async {
-                print(self.Music)
-            }
+           
+            
         }
     }
     
@@ -209,51 +222,17 @@ class MainContentModel: ObservableObject {
         url =  URL.init(string: Music.first!.previewURL )
         let sampleUrl = URL.init(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/8f/c1/32/8fc1329a-bf7d-03f2-3082-6536f60666ee/mzaf_1239907852510333018.plus.aac.p.m4a")
         audioPlayer = AVPlayer.init(playerItem: AVPlayerItem(url: url ?? sampleUrl! ))
-        
-        // 再生が終わった際のイベント定義
-        NotificationCenter.default
-            .addObserver(self, selector: #selector(playerDidFinishPlaying),
-                         name: .AVPlayerItemDidPlayToEndTime,
-                         object: audioPlayer?.currentItem)
-        
-        // 秒数の表示
-        Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { timer in
-            if let audioPlayer = self.audioPlayer,
-               let currentItem = audioPlayer.currentItem,
-               currentItem.status == .readyToPlay {
-                let timeElapsed = CMTimeGetSeconds(audioPlayer.currentTime()) // 現在の再生時間の取得
-                let timeDuration = currentItem.duration.seconds
-                
-            }
-        }
-        
+      
         audioPlayer?.play()
     }
     
-    @objc func playerDidFinishPlaying(note: NSNotification) {
-        // 再生が終わった際のイベント処理
-    }
+
     
     func stop() {
         audioPlayer?.pause()
-        // audioPlayer?.play() で再開
-    }
-    
-    // 音声再生スピードの変更
-    func changeSpeed(speed: Float) {
-        audioPlayer?.rate = speed
-    }
-    
-    // 音声再生位置の移動
-    func changeLocation(seconds: Double) {
-        guard let audioPlayer = self.audioPlayer else { return }
-        
-        let timeScale = CMTimeScale(NSEC_PER_SEC)
-        let rhs = CMTime(seconds: seconds, preferredTimescale: timeScale)
-        let time = CMTimeAdd(audioPlayer.currentTime(), rhs)
-        audioPlayer.seek(to: time)
     }
     
     
+   
 }
 

@@ -14,6 +14,7 @@ struct MainContentView: View {
     @State var tapdocumentId = String()
     @State private var Music: [FirebaseMusic] = []
     @State var documentIdArray = []
+    @State var first = true
 
    
     var body: some View {
@@ -68,11 +69,7 @@ struct MainContentView: View {
                                     }
                                 )
 
-                                .onAppear {
-                          //          tapdocumentId  = viewModel.documentIdArray[index] as! String
-                            //        selectedIndex = index
-                                    print(selectedIndex, viewModel.dates)
-                                }
+                                
                             }
                         }
                     }
@@ -99,8 +96,15 @@ struct MainContentView: View {
                     }
                     .onAppear {
                         Task {
-                            try await viewModel.firstgetUrl()
-                            try await viewModel.getDate()
+                            if first == true{
+                                try await viewModel.firstgetUrl()
+                                try await viewModel.getDate()
+                               
+                                first = false
+                            }else{
+                                try await viewModel.getUrl()
+                            }
+                        
                         }
                     }
                 
