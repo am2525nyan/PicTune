@@ -21,7 +21,7 @@ class MainContentModel: ObservableObject {
     @Published internal var dates: [String] = []
     @Published internal var Music: [FirebaseMusic] = []
     @Published internal var documentIdArray = []
-    
+    @Published internal var folderUrl = []
     var audioPlayer: AVPlayer?
     var url = URL.init(string: "https://www.hello.com/sample.wav")
     
@@ -46,7 +46,6 @@ class MainContentModel: ObservableObject {
                 let url = data["url"]
                 if url != nil {
                     urlArray.append(url as! String)
-                    print(urlArray,"BB")
                 }
                 let documentId = document.documentID
                 DispatchQueue.main.async {
@@ -232,7 +231,31 @@ class MainContentModel: ObservableObject {
         audioPlayer?.pause()
     }
     
-    
-   
+    func makeFolder(folderName: String){
+        let db = Firestore.firestore()
+        
+        if let currentUser = Auth.auth().currentUser {
+            let uid = currentUser.uid
+            let folders = UUID().uuidString
+            db.collection("users").document(uid).collection("folders").document(folders).setData([
+                "title": folderName
+            ])
+
+                }
+    }
+    func getFolder()async throws{
+        let db = Firestore.firestore()
+        
+        if let currentUser = Auth.auth().currentUser {
+            let uid = currentUser.uid
+            
+         let ref =  try await db.collection("users").document(uid).collection("folders").getDocuments()
+            for document in ref.documents {
+                let data = document.data()
+                let folders = data["title"]
+            }
+            
+        }
+    }
 }
 

@@ -15,7 +15,11 @@ struct MainContentView: View {
     @State private var Music: [FirebaseMusic] = []
     @State var documentIdArray = []
     @State var first = true
-
+    @State var folderUrl = String()
+    @State var showAlart = false
+    @State private var folder = [String]()
+       //バッファとする
+       @State private var folderBuf = ""
    
     var body: some View {
         NavigationView {
@@ -39,8 +43,30 @@ struct MainContentView: View {
                             Text("Sign-Out")
                         }
                     }
-                    Button("Open Camera") {
-                        viewModel.isPresentingCamera = true
+                    HStack {
+                        Button("カメラ起動") {
+                            viewModel.isPresentingCamera = true
+                            
+                        }
+                        Button("フォルダ作成") {
+                            showAlart = true
+                            
+                        }.alert("フォルダを制作", isPresented: $showAlart) {
+                            TextField("フォルダ名", text: $folderBuf)
+                            Button("OK", role: .cancel){
+                                //OKで値を渡す
+                                folder.append(folderBuf)
+                                viewModel.makeFolder(folderName: folderBuf)
+                                folderBuf = ""
+                                showAlart = false
+                            }
+                            Button("Cancel", role: .destructive){
+                               
+                            }
+                        } message: {
+                            Text("フォルダ名を入力")
+                        }
+                        
                         
                     }
                     .fullScreenCover(isPresented: $viewModel.isPresentingCamera) {
@@ -95,6 +121,7 @@ struct MainContentView: View {
                         LoginView()
                     }
                     .onAppear {
+                        folderUrl = "Main"
                         Task {
                             if first == true{
                                 try await viewModel.firstgetUrl()
