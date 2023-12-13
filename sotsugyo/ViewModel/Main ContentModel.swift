@@ -20,8 +20,10 @@ class MainContentModel: ObservableObject {
     @Published internal var isPresentingCamera = false
     @Published internal var dates: [String] = []
     @Published internal var Music: [FirebaseMusic] = []
-    @Published internal var documentIdArray = []
+    @Published internal var documentIdArray = [String]()
     @Published internal var folderUrl = []
+    @Published internal var folders = []
+    @Published internal var foldersDocumentId = [String]()
     var audioPlayer: AVPlayer?
     var url = URL.init(string: "https://www.hello.com/sample.wav")
     
@@ -77,11 +79,11 @@ class MainContentModel: ObservableObject {
                     print("Error occurred! : \(error)")
                 }
             }
-
-
+            
+            
         }
     }
-
+    
     
     func getUrl() async throws {
         do {
@@ -95,24 +97,23 @@ class MainContentModel: ObservableObject {
             
             if date != nil {
                 let ref = try await db.collection("users").document(uid ?? "").collection("photo").whereField("date", isGreaterThanOrEqualTo: date as Any).order(by: "date").getDocuments()
-
+                
                 for document in ref.documents {
                     let data = document.data()
                     let url = data["url"]
                     if url != nil {
                         urlArray.append(url as! String)
-                        print(urlArray,"AA")
                     }
                     let documentId = document.documentID
                     DispatchQueue.main.async {
                         self.documentIdArray.append(documentId)
-                       
+                        
                     }
                 }
-
+                
                 let storage = Storage.storage()
                 let storageRef = storage.reference()
-
+                
                 for (_, photo) in urlArray.enumerated() {
                     do {
                         let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
@@ -125,7 +126,7 @@ class MainContentModel: ObservableObject {
                                 }
                             }
                         }
-
+                        
                         let image = UIImage(data: data)
                         DispatchQueue.main.async {
                             self.images.append(image!)
@@ -135,13 +136,13 @@ class MainContentModel: ObservableObject {
                     }
                 }
             }
-
+            
             try await db.collection("users").document(uid ?? "").setData(["date": FieldValue.serverTimestamp()])
         } catch {
             throw error
         }
     }
-
+    
     
     func saveUserData(){
         
@@ -157,7 +158,7 @@ class MainContentModel: ObservableObject {
                 if let error = error {
                     print("データの保存に失敗しました: \(error.localizedDescription)")
                 } else {
-                    print("データがFirestoreに保存されました")
+                    print("データがFirestoreに保存されましたよ")
                 }
             }
         }
@@ -199,7 +200,6 @@ class MainContentModel: ObservableObject {
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             let db = Firestore.firestore()
-            print(documentId,"dd")
             let ref = try await db.collection("users").document(uid).collection("photo").document(documentId).getDocument()
             let data = ref.data()
             let artistName =  data?["artistName"]
@@ -211,7 +211,7 @@ class MainContentModel: ObservableObject {
                 self.Music.append(FirebaseMusic(id: documentId, artistName: artistName as! String, imageName: imageName as! String, trackName: trackName as! String, trackId: id as! String, previewURL: previewUrl as! String)
                 )
             }
-           
+            
             
         }
     }
@@ -221,11 +221,11 @@ class MainContentModel: ObservableObject {
         url =  URL.init(string: Music.first!.previewURL )
         let sampleUrl = URL.init(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/8f/c1/32/8fc1329a-bf7d-03f2-3082-6536f60666ee/mzaf_1239907852510333018.plus.aac.p.m4a")
         audioPlayer = AVPlayer.init(playerItem: AVPlayerItem(url: url ?? sampleUrl! ))
-      
+        
         audioPlayer?.play()
     }
     
-
+    
     
     func stop() {
         audioPlayer?.pause()
@@ -240,22 +240,36 @@ class MainContentModel: ObservableObject {
             db.collection("users").document(uid).collection("folders").document(folders).setData([
                 "title": folderName
             ])
-
-                }
+            DispatchQueue.main.async {
+                self.folders.append(folders)
+                self.foldersDocumentId.append(folders)
+            }
+        }
+        
+        
     }
     func getFolder()async throws{
+        DispatchQueue.main.async {
+            self.folders = []
+        }
         let db = Firestore.firestore()
         
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             
-         let ref =  try await db.collection("users").document(uid).collection("folders").getDocuments()
+            let ref =  try await db.collection("users").document(uid).collection("folders").getDocuments()
             for document in ref.documents {
                 let data = document.data()
-                let folders = data["title"]
+                let folder = data["title"] as! String
+                let documentId = document.documentID
+                DispatchQueue.main.async {
+                    self.folders.append(folder)
+                    self.foldersDocumentId.append(documentId)
+                }
             }
             
         }
     }
+   
 }
 

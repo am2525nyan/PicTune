@@ -47,6 +47,8 @@
 		728EFB4F2AEE303C008C079B /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB4E2AEE303B008C079B /* LoginViewModel.swift */; };
 		728EFB512AEE318C008C079B /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB502AEE318C008C079B /* AuthenticationManager.swift */; };
 		728EFB552AEE36BC008C079B /* setupGitignore.command in Resources */ = {isa = PBXBuildFile; fileRef = 728EFB542AEE36BC008C079B /* setupGitignore.command */; };
+		72967E452B298E1700911D97 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72967E442B298E1700911D97 /* SignInView.swift */; };
+		72967E472B298E2200911D97 /* SignInedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72967E462B298E2200911D97 /* SignInedView.swift */; };
 		72B47F7B2B104A94008832F5 /* PenKitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */; };
 		72C5A1672B1DACAD00F890AD /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */; };
 		72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226C82AF8C35D002BA0A6 /* CameraManager.swift */; };
@@ -104,6 +106,8 @@
 		728EFB4E2AEE303B008C079B /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		728EFB502AEE318C008C079B /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		728EFB542AEE36BC008C079B /* setupGitignore.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = setupGitignore.command; sourceTree = "<group>"; };
+		72967E442B298E1700911D97 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
+		72967E462B298E2200911D97 /* SignInedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInedView.swift; sourceTree = "<group>"; };
 		72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenKitViewModel.swift; sourceTree = "<group>"; };
 		72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
 		72F226C82AF8C35D002BA0A6 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
@@ -178,6 +182,8 @@
 				7279F4242B13802900A64739 /* ProfileView.swift */,
 				72576F652B1466690064A362 /* SearchMusicView.swift */,
 				72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */,
+				72967E442B298E1700911D97 /* SignInView.swift */,
+				72967E462B298E2200911D97 /* SignInedView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -449,6 +455,7 @@
 				72576F792B16FDD50064A362 /* PencilView.swift in Sources */,
 				7279F4272B13837E00A64739 /* TabView.swift in Sources */,
 				72F985642B17FD4A00FEEC05 /* SpotifyAPI.swift in Sources */,
+				72967E452B298E1700911D97 /* SignInView.swift in Sources */,
 				72F226CB2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift in Sources */,
 				72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */,
 				72F9855D2B17540800FEEC05 /* CameraMusicViewModel.swift in Sources */,
@@ -465,6 +472,7 @@
 				728384552B2055E20098856E /* FirebaseMusic.swift in Sources */,
 				72576F7B2B17010E0064A362 /* searchMusicViewModel.swift in Sources */,
 				72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */,
+				72967E472B298E2200911D97 /* SignInedView.swift in Sources */,
 				72F985622B17FD2F00FEEC05 /* Track.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

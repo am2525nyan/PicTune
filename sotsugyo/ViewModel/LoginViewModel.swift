@@ -13,6 +13,7 @@ import FirebaseOAuthUI
 import FirebaseEmailAuthUI
 import FirebaseFirestore
 
+
 struct LoginView: UIViewControllerRepresentable {
     
     func makeUIViewController(context: Context) -> UINavigationController {
