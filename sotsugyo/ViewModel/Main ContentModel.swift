@@ -11,19 +11,25 @@ import FirebaseAuth
 import FirebaseStorage
 import Combine
 import AVFoundation
+import SwiftUI
 
 class MainContentModel: ObservableObject {
     
     
     @Published internal var isShowSheet = false
     @Published internal var images: [UIImage] = []
+    @Published internal var foldersImages: [UIImage] = []
     @Published internal var isPresentingCamera = false
     @Published internal var dates: [String] = []
+    @Published internal var folderDates: [String] = []
     @Published internal var Music: [FirebaseMusic] = []
     @Published internal var documentIdArray = [String]()
+    @Published internal var folderDocumentIdArray = [String]()
     @Published internal var folderUrl = []
     @Published internal var folders = []
     @Published internal var foldersDocumentId = [String]()
+    @Published var folderImages: [String: [UIImage]] = [:]
+    @Published internal var getimage = false
     var audioPlayer: AVPlayer?
     var url = URL.init(string: "https://www.hello.com/sample.wav")
     
@@ -52,6 +58,7 @@ class MainContentModel: ObservableObject {
                 let documentId = document.documentID
                 DispatchQueue.main.async {
                     self.documentIdArray.append(documentId)
+                    print("取得してます")
                     
                 }
             }
@@ -248,6 +255,7 @@ class MainContentModel: ObservableObject {
         
         
     }
+  
     func getFolder()async throws{
         DispatchQueue.main.async {
             self.folders = []
@@ -270,6 +278,116 @@ class MainContentModel: ObservableObject {
             
         }
     }
-   
+    func appendFolder(folderId: Int, index: Int,selectedFolderIndex: Binding<Int>) {
+        let db = Firestore.firestore()
+        let document = documentIdArray[index]
+        let folderDocument = foldersDocumentId[folderId]
+
+        if let currentUser = Auth.auth().currentUser {
+            let uid = currentUser.uid
+
+            // 新しいコレクション名
+            let newCollectionName = "photos"
+
+            // 新しいコレクションのドキュメントリファレンスを作成
+            let destinationCollectionRef = db.collection("users").document(uid).collection("folders").document(folderDocument).collection(newCollectionName).document()
+
+            // バッチを新しく作成
+            let batch = db.batch()
+
+            // "photo" コレクションからデータを取得して新しいコレクションに追加
+            let sourceDocumentRef = db.collection("users").document(uid).collection("photo").document(document)
+            sourceDocumentRef.getDocument { (documentSnapshot, error) in
+                if let error = error {
+                    print("Error getting document: \(error)")
+                } else if let data = documentSnapshot?.data() {
+                    // 対応する document のデータを新しいコレクション内の新しいドキュメントにセット
+                    batch.setData(data, forDocument: destinationCollectionRef)
+
+                    // バッチをコミット
+                    batch.commit() { err in
+                        if let err = err {
+                            print("バッチの書き込みエラー: \(err)")
+                        } else {
+                            print("データが正常にコピーされました！")
+                            selectedFolderIndex.wrappedValue = folderId
+                        }
+                    }
+                }
+            }
+        }
+    }
+    func isImageInFolder(index: Int, folderIndex: Int) -> Bool {
+           let documentId = documentIdArray[index]
+           return folderImages[documentId] != nil
+       }
+
+
+    func FoldergetUrl(folderId: Int) async throws {
+        print("A")
+        do {
+            let db = Firestore.firestore()
+            let uid = Auth.auth().currentUser?.uid
+            var urlArray = [String]()
+            let folderDocument = foldersDocumentId[folderId]
+            DispatchQueue.main.async {
+                self.images = []
+                self.documentIdArray = []
+                self.dates  = []
+            }
+            let ref = try await db.collection("users").document(uid!).collection("folders").document(folderDocument).collection("photos").getDocuments()
+
+            for document in ref.documents {
+                let data = document.data()
+
+                let url = data["url"]
+                let date = data["date"] as! Timestamp
+
+                let formatterDate = DateFormatter()
+                formatterDate.dateFormat = "yyyy-MM-dd-HH:mm"
+                let createdDate = formatterDate.string(from: date.dateValue())
+                if url != nil {
+                    urlArray.append(url as! String)
+                }
+                let documentId = document.documentID
+                DispatchQueue.main.async {
+                    self.documentIdArray.append(documentId)
+                    self.dates.append(createdDate)
+                }
+
+                let storage = Storage.storage()
+                let storageRef = storage.reference()
+
+                for (_, photo) in urlArray.enumerated() {
+                    do {
+                        let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
+                            let imageRef = storageRef.child("images/" + photo)
+                            imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
+                                if let error = error {
+                                    continuation.resume(throwing: error)
+                                } else if let data = data {
+                                    continuation.resume(returning: data)
+                                }
+                            }
+                        }
+
+                        let image = UIImage(data: data)
+                        DispatchQueue.main.async {
+                            self.images.append(image!)
+                            print(image!)
+                        }
+                    } catch {
+                        print("Error occurred! : \(error)")
+                    }
+                }
+            }
+
+            try await db.collection("users").document(uid ?? "").setData(["date": FieldValue.serverTimestamp()])
+            
+        } catch {
+            throw error
+        }
+    }
+
 }
 

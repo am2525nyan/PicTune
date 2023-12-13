@@ -20,6 +20,9 @@ struct SignInView: View {
                 Text("Sign-In")
             }
             .padding()
+            .sheet(isPresented: $viewModel.isShowSheet) {
+                LoginView()
+            }
         }
     }
 }
