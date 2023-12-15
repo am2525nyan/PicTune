@@ -10,6 +10,7 @@ import SwiftUI
 struct FolderContentView: View {
     @ObservedObject var viewModel: MainContentModel
     @Binding var selectedFolderIndex: Int
+    @State var selectedFolderIndex2: Int = 0
 
     var body: some View {
         ScrollView(.horizontal) {
@@ -17,6 +18,8 @@ struct FolderContentView: View {
                 ForEach(viewModel.folders.indices, id: \.self) { folderIndex in
                     Button {
                         selectedFolderIndex = folderIndex
+                        selectedFolderIndex2 = folderIndex
+                        
                         print(selectedFolderIndex,viewModel.getimage)
                        
                         Task {
@@ -34,7 +37,7 @@ struct FolderContentView: View {
                         Text(viewModel.folders[folderIndex] as! String)
                     }
                     .padding()
-                    .background(selectedFolderIndex == folderIndex ? Color.blue : Color.gray)
+                    .background(selectedFolderIndex2 == folderIndex ? Color.blue : Color.gray)
                     .foregroundColor(.white)
                     .cornerRadius(8)
                 }
