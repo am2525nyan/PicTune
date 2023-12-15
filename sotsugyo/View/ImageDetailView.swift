@@ -11,6 +11,7 @@ struct ImageDetailView: View {
     @Binding var image: UIImage?
     @Binding var documentId: String
     @Binding var tapdocumentId: String
+    @Binding var index: Int
     @State private var tracks: [Track] = []
     @ObservedObject var viewModel: MainContentModel
     var selectedIndex: Int
@@ -105,7 +106,8 @@ struct ImageDetailView: View {
                     Task {
                         do {
                             try await viewModel.getDate()
-                            try await viewModel.getMusic(documentId: documentId)
+                            try await viewModel.getMusic(documentId: tapdocumentId, folder: viewModel.folderDocument)
+                        //    try await viewModel.getMusic(documentId: documentId, folder: index)
                         } catch {
                             print("テキスト情報の取得に失敗しました: \(error)")
                         }
@@ -113,7 +115,7 @@ struct ImageDetailView: View {
                     
                     Task {
                         do {
-                            try await viewModel.getMusic(documentId: tapdocumentId)
+                      
                         } catch {
                             print("Error loading music: \(error.localizedDescription)")
                         }

@@ -188,7 +188,7 @@ func applySepiaFilter(to inputImage: UIImage) -> UIImage? {
             let uid = Auth.auth().currentUser?.uid
             var ref: DocumentReference? = nil
             
-            ref = db.collection("users").document(uid ?? "").collection("photo").addDocument(data: [
+            ref = db.collection("users").document(uid!).collection("folders").document("all").collection("photos").addDocument(data: [
                 "url": url,
                 "date": FieldValue.serverTimestamp()
             ]) { err in

@@ -32,7 +32,7 @@ class SearchViewModel: ObservableObject {
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
            
-            try await db.collection("users").document(uid).collection("photo").document(documentId).updateData([
+            try await db.collection("users").document(uid).collection("folders").document("all").collection("photos").document(documentId).updateData([
                 "artistName": artistName,
                 "trackName": trackName,
                 "id": Url,

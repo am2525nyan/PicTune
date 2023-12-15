@@ -18,18 +18,18 @@ struct SignInedView: View {
     @State private var tapDocumentId = ""
     @State private var showAlart = false
     @State private var folderBuf = ""
-    @State var first = true
+@State var first = true
     var authenticationManager = AuthenticationManager()
     var body: some View {
         
         VStack {
             HStack {
-                Button {
-                    authenticationManager.signOut()
-                } label: {
-                    Text("Sign-Out")
-                }
-            }
+                       Button {
+                           authenticationManager.signOut()
+                       } label: {
+                           Text("Sign-Out")
+                       }
+                   }
             CameraFolderView(
                 isPresentingCamera: $viewModel.isPresentingCamera,
                 showAlart: $showAlart,
@@ -37,8 +37,8 @@ struct SignInedView: View {
                 cameraManager: cameraManager,
                 viewModel: viewModel
             )
-            FolderContentView(viewModel: viewModel)
-            
+            FolderContentView(viewModel: viewModel, selectedFolderIndex: $selectedIndex)
+
             MainImageView(
                 tapImage: $selectedImage,
                 tapIndex: $selectedIndex,
@@ -46,16 +46,16 @@ struct SignInedView: View {
                 viewModel: viewModel
             )
             Spacer()
-            
+               
                 .onAppear {
                     Task {
                         if first {
-                            try await viewModel.firstgetUrl()
+                           try await viewModel.firstgetUrl()
                             try await viewModel.getDate()
                             try await viewModel.getFolder()
-                            first = false
+                          first = false
                         } else {
-                            try await viewModel.getUrl()
+                           try await viewModel.getUrl()
                             try await viewModel.getFolder()
                         }
                     }
@@ -63,8 +63,4 @@ struct SignInedView: View {
         }
     }
 }
-
-
-
-
 

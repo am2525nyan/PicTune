@@ -8,11 +8,37 @@
 import SwiftUI
 
 struct FolderContentView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
+    @ObservedObject var viewModel: MainContentModel
+    @Binding var selectedFolderIndex: Int
 
-#Preview {
-    FolderContentView()
+    var body: some View {
+        ScrollView(.horizontal) {
+            HStack {
+                ForEach(viewModel.folders.indices, id: \.self) { folderIndex in
+                    Button {
+                        selectedFolderIndex = folderIndex
+                        print(selectedFolderIndex,viewModel.getimage)
+                       
+                        Task {
+                            do {
+                               
+                                if selectedFolderIndex == folderIndex {
+                                   
+                                    viewModel.getimage.toggle()
+                                }
+                            }
+                        }
+
+                      
+                    } label: {
+                        Text(viewModel.folders[folderIndex] as! String)
+                    }
+                    .padding()
+                    .background(selectedFolderIndex == folderIndex ? Color.blue : Color.gray)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+                }
+            }
+        }
+    }
 }
