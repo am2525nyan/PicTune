@@ -60,12 +60,27 @@ struct MainImageView: View {
                     .contextMenu {
                         ForEach(viewModel.folders.indices, id: \.self) { index1 in
                             Button {
-                                // 更新された引数を渡す
                                 viewModel.appendFolder(folderId: index1, index: index)
                             } label: {
-                                Text(viewModel.folders[index1] as! String)
+                                Text(viewModel.folders[index1] )
+                            }
+                           
+
+                        }
+                        Button("削除", role: .destructive) {
+                            let intValue = selectedFolderIndex.wrappedValue
+                            viewModel.deletePhoto(document: viewModel.documentIdArray[index])
+                            Task {
+                                do {
+                                    try await viewModel.FoldergetUrl(folderId: intValue)
+                                } catch {
+                                    print("Error: \(error)")
+                                }
                             }
                         }
+
+
+
                     }
             }
             

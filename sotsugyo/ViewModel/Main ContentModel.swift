@@ -354,7 +354,7 @@ class MainContentModel: ObservableObject {
                 
             }
             getLetter()
-
+            
             let ref = try await db.collection("users").document(uid!).collection("folders").document(folderDocument).collection("photos").order(by: "date").getDocuments()
             
             for document in ref.documents {
@@ -436,17 +436,23 @@ class MainContentModel: ObservableObject {
             let uid = currentUser.uid
             db.collection("users").document(uid).collection("folders").document(folderDocument).getDocument { (document, error) in
                 if let document = document, document.exists {
-                  let data = document.data()
-                  let letter = data?["letter"] as? String ?? ""
+                    let data = document.data()
+                    let letter = data?["letter"] as? String ?? ""
                     self.userDataList = letter
-                   
+                    
                 } else {
-                  print("Document does not exist")
+                    print("Document does not exist")
                     self.userDataList = ""
                 }
-              }
+            }
         }
     }
     
-    
+    func deletePhoto(document: String){
+        let db = Firestore.firestore()
+        if let currentUser = Auth.auth().currentUser {
+            let uid = currentUser.uid
+            db.collection("users").document(uid).collection("folders").document(folderDocument).collection("photos").document(document).delete()
+        }
+    }
 }
