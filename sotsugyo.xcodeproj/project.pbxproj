@@ -12,6 +12,7 @@
 		7209E38F2B12EBD200FC44D3 /* NukeExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E38E2B12EBD200FC44D3 /* NukeExtensions */; };
 		7209E3912B12EBD200FC44D3 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E3902B12EBD200FC44D3 /* NukeUI */; };
 		7209E3932B12EBD200FC44D3 /* NukeVideo in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E3922B12EBD200FC44D3 /* NukeVideo */; };
+		7223A54E2B2567DF009D6704 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 7223A54D2B2567DF009D6704 /* Kingfisher */; };
 		72576F662B1466690064A362 /* SearchMusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F652B1466690064A362 /* SearchMusicView.swift */; };
 		72576F732B16E5020064A362 /* Main ContentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F722B16E5020064A362 /* Main ContentModel.swift */; };
 		72576F752B16F58B0064A362 /* PhotoPreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F742B16F58B0064A362 /* PhotoPreviewViewModel.swift */; };
@@ -46,8 +47,15 @@
 		728EFB4F2AEE303C008C079B /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB4E2AEE303B008C079B /* LoginViewModel.swift */; };
 		728EFB512AEE318C008C079B /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB502AEE318C008C079B /* AuthenticationManager.swift */; };
 		728EFB552AEE36BC008C079B /* setupGitignore.command in Resources */ = {isa = PBXBuildFile; fileRef = 728EFB542AEE36BC008C079B /* setupGitignore.command */; };
+		72967E452B298E1700911D97 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72967E442B298E1700911D97 /* SignInView.swift */; };
+		72967E472B298E2200911D97 /* SignInedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72967E462B298E2200911D97 /* SignInedView.swift */; };
 		72B47F7B2B104A94008832F5 /* PenKitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */; };
 		72C5A1672B1DACAD00F890AD /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */; };
+		72CBE0AC2B2CA794007542EE /* CameraFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CBE0AB2B2CA794007542EE /* CameraFolderView.swift */; };
+		72CBE0AE2B2CA96B007542EE /* FolderTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CBE0AD2B2CA96B007542EE /* FolderTextView.swift */; };
+		72CBE0B02B2DBD30007542EE /* WriteLetterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CBE0AF2B2DBD30007542EE /* WriteLetterView.swift */; };
+		72D0C0202B2CA58900456F96 /* MainImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D0C01F2B2CA58900456F96 /* MainImageView.swift */; };
+		72D0C0222B2CA5EC00456F96 /* FolderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D0C0212B2CA5EC00456F96 /* FolderContentView.swift */; };
 		72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226C82AF8C35D002BA0A6 /* CameraManager.swift */; };
 		72F226CB2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */; };
 		72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CC2AF8C496002BA0A6 /* CameraView.swift */; };
@@ -103,8 +111,15 @@
 		728EFB4E2AEE303B008C079B /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		728EFB502AEE318C008C079B /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		728EFB542AEE36BC008C079B /* setupGitignore.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = setupGitignore.command; sourceTree = "<group>"; };
+		72967E442B298E1700911D97 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
+		72967E462B298E2200911D97 /* SignInedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInedView.swift; sourceTree = "<group>"; };
 		72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenKitViewModel.swift; sourceTree = "<group>"; };
 		72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
+		72CBE0AB2B2CA794007542EE /* CameraFolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraFolderView.swift; sourceTree = "<group>"; };
+		72CBE0AD2B2CA96B007542EE /* FolderTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTextView.swift; sourceTree = "<group>"; };
+		72CBE0AF2B2DBD30007542EE /* WriteLetterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteLetterView.swift; sourceTree = "<group>"; };
+		72D0C01F2B2CA58900456F96 /* MainImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainImageView.swift; sourceTree = "<group>"; };
+		72D0C0212B2CA5EC00456F96 /* FolderContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderContentView.swift; sourceTree = "<group>"; };
 		72F226C82AF8C35D002BA0A6 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " CameraPreviewModel.swift"; sourceTree = "<group>"; };
 		72F226CC2AF8C496002BA0A6 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
@@ -127,6 +142,7 @@
 				728EFB3A2AEE2E4A008C079B /* FirebaseFirestoreCombine-Community in Frameworks */,
 				728EFB362AEE2E4A008C079B /* FirebaseAuthCombine-Community in Frameworks */,
 				728EFB382AEE2E4A008C079B /* FirebaseFirestore in Frameworks */,
+				7223A54E2B2567DF009D6704 /* Kingfisher in Frameworks */,
 				7209E3932B12EBD200FC44D3 /* NukeVideo in Frameworks */,
 				7209E3912B12EBD200FC44D3 /* NukeUI in Frameworks */,
 				728EFB452AEE2FF2008C079B /* FirebaseEmailAuthUI in Frameworks */,
@@ -158,9 +174,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7223A53B2B256213009D6704 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
 		72576F692B16E2560064A362 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				72D0C01E2B2CA35700456F96 /* main */,
 				7279F4262B13837E00A64739 /* TabView.swift */,
 				728EFB0A2AEE1C10008C079B /* MainContentView.swift */,
 				72F226CC2AF8C496002BA0A6 /* CameraView.swift */,
@@ -169,6 +193,8 @@
 				7279F4242B13802900A64739 /* ProfileView.swift */,
 				72576F652B1466690064A362 /* SearchMusicView.swift */,
 				72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */,
+				72967E442B298E1700911D97 /* SignInView.swift */,
+				72CBE0AF2B2DBD30007542EE /* WriteLetterView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -235,6 +261,7 @@
 				72576F6B2B16E2670064A362 /* Model */,
 				72576F692B16E2560064A362 /* View */,
 				72576F6D2B16E2E00064A362 /* ViewModel */,
+				7223A53B2B256213009D6704 /* ViewController */,
 				72576F6E2B16E2E70064A362 /* Utils */,
 				7265CAC92AEFED71000058BC /* GoogleService-Info.plist */,
 				7265CAC62AEFDB60000058BC /* sotsugyo.entitlements */,
@@ -268,6 +295,18 @@
 				728EFB252AEE1C15008C079B /* sotsugyoUITestsLaunchTests.swift */,
 			);
 			path = sotsugyoUITests;
+			sourceTree = "<group>";
+		};
+		72D0C01E2B2CA35700456F96 /* main */ = {
+			isa = PBXGroup;
+			children = (
+				72967E462B298E2200911D97 /* SignInedView.swift */,
+				72D0C01F2B2CA58900456F96 /* MainImageView.swift */,
+				72D0C0212B2CA5EC00456F96 /* FolderContentView.swift */,
+				72CBE0AB2B2CA794007542EE /* CameraFolderView.swift */,
+				72CBE0AD2B2CA96B007542EE /* FolderTextView.swift */,
+			);
+			path = main;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -307,6 +346,7 @@
 				72F985662B17FD8200FEEC05 /* Alamofire */,
 				72F985692B19880800FEEC05 /* URLImage */,
 				72F9856B2B19880800FEEC05 /* URLImageStore */,
+				7223A54D2B2567DF009D6704 /* Kingfisher */,
 			);
 			productName = sotsugyo;
 			productReference = 728EFB052AEE1C10008C079B /* sotsugyo.app */;
@@ -386,6 +426,7 @@
 				7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */,
 				72F985652B17FD8200FEEC05 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				72F985682B19880800FEEC05 /* XCRemoteSwiftPackageReference "url-image" */,
+				7223A54C2B2567DE009D6704 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = 728EFB062AEE1C10008C079B /* Products */;
 			projectDirPath = "";
@@ -437,6 +478,7 @@
 				72576F792B16FDD50064A362 /* PencilView.swift in Sources */,
 				7279F4272B13837E00A64739 /* TabView.swift in Sources */,
 				72F985642B17FD4A00FEEC05 /* SpotifyAPI.swift in Sources */,
+				72967E452B298E1700911D97 /* SignInView.swift in Sources */,
 				72F226CB2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift in Sources */,
 				72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */,
 				72F9855D2B17540800FEEC05 /* CameraMusicViewModel.swift in Sources */,
@@ -447,12 +489,18 @@
 				7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */,
 				728EFB4F2AEE303C008C079B /* LoginViewModel.swift in Sources */,
 				728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */,
+				72CBE0AC2B2CA794007542EE /* CameraFolderView.swift in Sources */,
+				72D0C0202B2CA58900456F96 /* MainImageView.swift in Sources */,
 				72B47F7B2B104A94008832F5 /* PenKitViewModel.swift in Sources */,
+				72CBE0B02B2DBD30007542EE /* WriteLetterView.swift in Sources */,
+				72D0C0222B2CA5EC00456F96 /* FolderContentView.swift in Sources */,
 				72012FA42B0DACB600B5BD71 /* PhotoPreviewView.swift in Sources */,
 				72576F752B16F58B0064A362 /* PhotoPreviewViewModel.swift in Sources */,
+				72CBE0AE2B2CA96B007542EE /* FolderTextView.swift in Sources */,
 				728384552B2055E20098856E /* FirebaseMusic.swift in Sources */,
 				72576F7B2B17010E0064A362 /* searchMusicViewModel.swift in Sources */,
 				72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */,
+				72967E472B298E2200911D97 /* SignInedView.swift in Sources */,
 				72F985622B17FD2F00FEEC05 /* Track.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -803,6 +851,14 @@
 				kind = branch;
 			};
 		};
+		7223A54C2B2567DE009D6704 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.10.1;
+			};
+		};
 		728EFB322AEE2E4A008C079B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -857,6 +913,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7209E38B2B12EBD200FC44D3 /* XCRemoteSwiftPackageReference "Nuke" */;
 			productName = NukeVideo;
+		};
+		7223A54D2B2567DF009D6704 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7223A54C2B2567DE009D6704 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 		728EFB332AEE2E4A008C079B /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -17,9 +17,9 @@ import FirebaseFirestore
         // ここで認証状態の変化を監視する（リスナー）
         handle = Auth.auth().addStateDidChangeListener { (auth, user) in
             if let _ = user {
-                print("Sign-in")
+                
                 self.isSignIn = true
-                self.saveUserData()
+               
             } else {
                 print("Sign-out")
                 self.isSignIn = false

@@ -11,5 +11,6 @@ struct FirebaseMusic: Identifiable {
     var  artistName: String
     var  imageName: String
     var trackName:  String
-    
+    var trackId: String
+    var previewURL: String
 }

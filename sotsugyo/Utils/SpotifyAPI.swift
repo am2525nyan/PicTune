@@ -43,10 +43,11 @@ class SpotifyAPI {
                                    let artists = item["artists"] as? [[String: Any]],
                                    let artist = artists.first?["name"] as? String,
                                    let albumData = item["album"] as? [String: Any],
-                                   let albumID = albumData["id"] as? String {
+                                   let albumID = albumData["id"] as? String,
+                                let previewUrl = item["preview_url"] as? String{
                                    
                                     self.getAlbumInfo(albumID: albumID) { albumImages in
-                                        let track = Track(id: id, name: name, artist: artist, albumImages: albumImages)
+                                        let track = Track(id: id, name: name, artist: artist, albumImages: albumImages,previewURL: previewUrl)
                                         tracks.append(track)
                                         completion(tracks)
                                     }
@@ -91,6 +92,7 @@ class SpotifyAPI {
                 }
             }
     }
+    
 }
 
 // SpotifyAuth.swift
@@ -99,18 +101,18 @@ import Alamofire
 
 class SpotifyAuth: ObservableObject {
     static let shared = SpotifyAuth()
-
+    
     private let clientID = "c1f459a776784f3783bea9e1803fd28b"
     private let clientSecret = "06b150a321fc443c8f839dd324a917a6"
     private let redirectURI = "http://localhost:8888/callback"
-
+    
     @Published var accessToken: String?
-
+    
     private init() {}
-
+    
     func requestAccessToken() {
         let base64EncodedCredentials = self.base64EncodedCredentials
-
+        
         AF.request("https://accounts.spotify.com/api/token", method: .post, parameters: [
             "grant_type": "client_credentials"
         ], headers: ["Authorization": "Basic \(base64EncodedCredentials)"])
@@ -127,20 +129,45 @@ class SpotifyAuth: ObservableObject {
             }
         }
     }
-
+    
     func fetchAccessToken(completion: @escaping (Bool) -> Void) {
         if let accessToken = self.accessToken {
             completion(true)
             return
         }
-
+        
         requestAccessToken()
-        completion(true) 
+        completion(true)
     }
-
+    
     private var base64EncodedCredentials: String {
         let credentials = "\(clientID):\(clientSecret)"
         let data = credentials.data(using: .utf8)!
         return data.base64EncodedString()
     }
+    
+    
+    func playTrack(trackID: String) {
+           SpotifyAuth.shared.fetchAccessToken { success in
+               guard success, let accessToken = SpotifyAuth.shared.accessToken else {
+                   print("Access token is nil or not available.")
+                   return
+               }
+
+               let playEndpoint = "https://api.spotify.com/v1/me/player/play"
+               
+               let trackUri = "spotify:track:\(trackID)" // トラックのIDをURIに変換
+               let parameters: [String: Any] = ["uris": [trackUri]]
+
+               AF.request(playEndpoint, method: .put, parameters: parameters, encoding: JSONEncoding.default, headers: ["Authorization": "Bearer \(accessToken)", "Content-Type": "application/json"])
+                   .responseJSON { response in
+                       switch response.result {
+                       case .success:
+                           print("Track played successfully")
+                       case .failure(let error):
+                           print("Error playing track: \(error.localizedDescription)")
+                       }
+                   }
+           }
+       }
 }

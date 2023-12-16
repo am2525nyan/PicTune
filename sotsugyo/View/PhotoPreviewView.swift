@@ -13,7 +13,7 @@ struct PhotoPreviewView: View {
     let previewHeight = UIScreen.main.bounds.height * 0.537
     @Environment(\.displayScale) private var displayScale
     @Environment(\.dismiss) var dismiss
-  
+    
     @StateObject private var viewModel = PhotoPreviewViewModel()
     var body: some View {
         VStack {
@@ -21,33 +21,33 @@ struct PhotoPreviewView: View {
                 
                 Button("保存") {
                     viewModel.takeScreenshot()
-                  
+                    
                     UIImageWriteToSavedPhotosAlbum(viewModel.screenshotImage ?? image, nil, nil, nil)
                     
                     
-                
-                  // dismiss()
-                  
-                   
-                        cameraManager.uploadPhoto(viewModel.screenshotImage ?? image)
-                                       
-                  
+                    
+                    // dismiss()
+                    
+                    
+                    cameraManager.uploadPhoto(viewModel.screenshotImage ?? image)
+                    
+                    
                 }
-               
+                
                 .sheet(isPresented: $isPresentingSearch, onDismiss: {
-                   dismiss()
+                    dismiss()
                 }) {
                     SearchView(documentId: cameraManager.documentId)
                         .onAppear {
                             print("SearchView appeared")
-                         
+                            
                         }
                         .onDisappear {
                             print("SearchView disappeared")
                         }
                 }
-
-
+                
+                
                 .padding()
                 Image("Image")
                     .resizable()
@@ -70,8 +70,8 @@ struct PhotoPreviewView: View {
         }
         .background(Color.yellow)
     }
-   
-
+    
+    
     
 }
 

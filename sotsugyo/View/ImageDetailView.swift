@@ -11,6 +11,8 @@ struct ImageDetailView: View {
     @Binding var image: UIImage?
     @Binding var documentId: String
     @Binding var tapdocumentId: String
+    @Binding var index: Int
+    @State private var tracks: [Track] = []
     @ObservedObject var viewModel: MainContentModel
     var selectedIndex: Int
     
@@ -28,7 +30,7 @@ struct ImageDetailView: View {
                     }
                 }
                 VStack {
-                   
+                    
                     if let music = viewModel.Music.first {
                         
                         HStack {
@@ -59,6 +61,7 @@ struct ImageDetailView: View {
                                         .frame(width: 100, height: 100)
                                 }
                             }
+                            .padding(10)
                             VStack {
                                 Text(music.trackName)
                                     .font(.headline)
@@ -67,7 +70,18 @@ struct ImageDetailView: View {
                                 Text(music.artistName)
                                     .font(.subheadline)
                                     .padding(.top, 4)
+                                
+                                
+                                
                             }
+                            .padding(EdgeInsets(
+                                top: 10,
+                                leading: 27,
+                                bottom: 10,
+                                trailing: 27
+                            ))
+                            
+                            
                         }
                     } else {
                         Text("ないよ")
@@ -83,13 +97,17 @@ struct ImageDetailView: View {
                     
                     
                 }
+                .onDisappear{
+                    viewModel.stop()
+                }
                 
                 
                 .onAppear {
                     Task {
                         do {
                             try await viewModel.getDate()
-                            try await viewModel.getMusic(documentId: documentId)
+                            try await viewModel.getMusic(documentId: tapdocumentId, folder: viewModel.folderDocument)
+                        //    try await viewModel.getMusic(documentId: documentId, folder: index)
                         } catch {
                             print("テキスト情報の取得に失敗しました: \(error)")
                         }
@@ -97,7 +115,7 @@ struct ImageDetailView: View {
                     
                     Task {
                         do {
-                            try await viewModel.getMusic(documentId: tapdocumentId)
+                      
                         } catch {
                             print("Error loading music: \(error.localizedDescription)")
                         }
@@ -106,10 +124,14 @@ struct ImageDetailView: View {
                 .background(Color.white)
                 
             }
+            .onTapGesture {
+                viewModel.startPlay()
+                  }
             
         }
         
         
     }
+    
     
 }

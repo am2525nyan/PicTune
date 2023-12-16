@@ -16,7 +16,10 @@ struct SearchView: View {
     @State var isPresentingSearch: Bool = true
     @State private var showAlert = false
     @State var trackName: String = ""
+    @State var artistName: String = ""
+    @State var imageName: String = ""
     @State var Url: String = ""
+    @State var previewUrl: String = ""
     @State private var documentId: String
     @Environment(\.dismiss) var dismiss
     init(documentId: String) {
@@ -81,6 +84,9 @@ struct SearchView: View {
                     .onTapGesture {
                         self.trackName = track.name
                         self.Url = track.id
+                        self.artistName = track.artist
+                        self.imageName = track.albumImages.first ?? ""
+                        self.previewUrl  = track.previewURL!
                         showAlert = true
                         
                         
@@ -99,7 +105,7 @@ struct SearchView: View {
                             Task{
                                 do{
                                     
-                                    try await viewModel.tapAction(trackName: trackName, Url: Url )
+                                    try await viewModel.tapAction(trackName: trackName,Url: Url,artistName: artistName, imageName: imageName, previewUrl: previewUrl)
                                     dismiss()
                                     
                                 }
