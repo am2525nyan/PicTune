@@ -26,11 +26,13 @@ class MainContentModel: ObservableObject {
     @Published internal var documentIdArray = [String]()
     @Published internal var folderDocumentIdArray = [String]()
     @Published internal var folderUrl = []
-    @Published internal var folders = []
+    @Published internal var folders = [String]()
     @Published internal var foldersDocumentId = [String]()
     @Published var folderImages: [String: [UIImage]] = [:]
     @Published internal var getimage = false
     @Published internal var folderDocument = String()
+    
+    @Published var userDataList: String = ""
     var audioPlayer: AVPlayer?
     var url = URL.init(string: "https://www.hello.com/sample.wav")
     
@@ -95,9 +97,9 @@ class MainContentModel: ObservableObject {
             DispatchQueue.main.async {
                 self.folderDocument = "all"
             }
-         try await db.collection("users").document(uid).collection("folders").document("all").setData(["title": "all","date": FieldValue.serverTimestamp()])
-         
-              
+            try await db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
+            
+            
             
             
         }
@@ -216,11 +218,11 @@ class MainContentModel: ObservableObject {
         DispatchQueue.main.async {
             self.Music = []
         }
-     
+        
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             let db = Firestore.firestore()
-         
+            
             let ref = try await db.collection("users").document(uid).collection("folders").document(folder).collection("photos").document(documentId).getDocument()
             let data = ref.data()
             let artistName =  data?["artistName"]
@@ -228,7 +230,7 @@ class MainContentModel: ObservableObject {
             let trackName =  data?["trackName"]
             let id = data?["id"]
             let previewUrl = data?["previewUrl"]
-       
+            
             DispatchQueue.main.async {
                 self.Music.append(FirebaseMusic(id: documentId, artistName: artistName as! String, imageName: imageName as! String, trackName: trackName as! String, trackId: id as! String, previewURL: previewUrl as! String)
                 )
@@ -267,12 +269,12 @@ class MainContentModel: ObservableObject {
                 self.folders.append(folderName)
                 self.foldersDocumentId.append(folders)
             }
-     db.collection("users").document(uid).collection("folders").document("all").setData(["title": "all","date": FieldValue.serverTimestamp()])
+            db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
         }
         
         
     }
-  
+    
     func getFolder()async throws{
         DispatchQueue.main.async {
             self.folders = []
@@ -292,42 +294,39 @@ class MainContentModel: ObservableObject {
                     self.foldersDocumentId.append(documentId)
                 }
             }
-           
+            
         }
         
     }
     func appendFolder(folderId: Int, index: Int) {
         let db = Firestore.firestore()
-
-            let document = self.documentIdArray[index]
-       
-            self.folderDocument = self.foldersDocumentId[folderId]
-       
+        
+        let document = self.documentIdArray[index]
+        
+        self.folderDocument = self.foldersDocumentId[folderId]
+        
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
-
+            
             let newCollectionName = "photos"
-
+            
             let destinationCollectionRef = db.collection("users").document(uid).collection("folders").document(folderDocument).collection(newCollectionName).document()
-
+            
             // バッチを新しく作成
             let batch = db.batch()
-
+            
             let sourceDocumentRef =  db.collection("users").document(uid).collection("folders").document("all").collection("photos").document(document)
             sourceDocumentRef.getDocument { (documentSnapshot, error) in
                 if let error = error {
                     print("Error getting document: \(error)")
                 } else if let data = documentSnapshot?.data() {
-                    // 対応する document のデータを新しいコレクション内の新しいドキュメントにセット
                     batch.setData(data, forDocument: destinationCollectionRef)
-
-                    // バッチをコミット
                     batch.commit() { err in
                         if let err = err {
                             print("バッチの書き込みエラー: \(err)")
                         } else {
                             print("データが正常にコピーされました！")
-                           
+                            
                         }
                     }
                 }
@@ -335,27 +334,29 @@ class MainContentModel: ObservableObject {
         }
     }
     func isImageInFolder(index: Int, folderIndex: Int) -> Bool {
-           let documentId = documentIdArray[index]
-           return folderImages[documentId] != nil
-       }
-
-
+        let documentId = documentIdArray[index]
+        return folderImages[documentId] != nil
+    }
+    
+    
     func FoldergetUrl(folderId: Int) async throws {
         do {
             let db = Firestore.firestore()
             let uid = Auth.auth().currentUser?.uid
             var urlArray = [String]()
-          
-                self.folderDocument = self.foldersDocumentId[folderId]
-          
+            
+            self.folderDocument = self.foldersDocumentId[folderId]
+            
             DispatchQueue.main.async {
                 self.images = []
                 self.documentIdArray = []
                 self.dates  = []
                 
             }
-            let ref = try await db.collection("users").document(uid!).collection("folders").document(folderDocument).collection("photos").order(by: "date").getDocuments()
+            getLetter()
 
+            let ref = try await db.collection("users").document(uid!).collection("folders").document(folderDocument).collection("photos").order(by: "date").getDocuments()
+            
             for document in ref.documents {
                 let data = document.data()
                 
@@ -376,48 +377,76 @@ class MainContentModel: ObservableObject {
                     self.images = []
                     
                 }
-
-            }
-                let storage = Storage.storage()
-                let storageRef = storage.reference()
-
-                for (index, photo) in urlArray.enumerated() {
-                    
-                    
-                    do {
-                        let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
-                            let imageRef = storageRef.child("images/" + photo)
-                            imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
-                                if let error = error {
-                                    continuation.resume(throwing: error)
-                                } else if let data = data {
-                                    continuation.resume(returning: data)
-                                    print("aaa")
-                                }
-                            }
-                        }
-
-                        let image = UIImage(data: data)
-                        DispatchQueue.main.async {
-                            if [image!] != []{
-                                self.images.insert(image!, at: index)
-                            }
-                           
-                            
-                            
-                        }
-                    } catch {
-                        print("Error occurred! : \(error)")
-                    }
                 
             }
-
+            let storage = Storage.storage()
+            let storageRef = storage.reference()
+            
+            for (index, photo) in urlArray.enumerated() {
+                
+                
+                do {
+                    let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
+                        let imageRef = storageRef.child("images/" + photo)
+                        imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
+                            if let error = error {
+                                continuation.resume(throwing: error)
+                            } else if let data = data {
+                                continuation.resume(returning: data)
+                                print("aaa")
+                            }
+                        }
+                    }
+                    
+                    let image = UIImage(data: data)
+                    DispatchQueue.main.async {
+                        if [image!] != []{
+                            self.images.insert(image!, at: index)
+                        }
+                        
+                        
+                        
+                    }
+                } catch {
+                    print("Error occurred! : \(error)")
+                }
+                
+            }
+            
             try await db.collection("users").document(uid ?? "").setData(["date": FieldValue.serverTimestamp()])
             
         } catch {
             throw error
         }
     }
-
+    func saveLetter(){
+        let db = Firestore.firestore()
+        
+        if let currentUser = Auth.auth().currentUser {
+            let uid = currentUser.uid
+            db.collection("users").document(uid).collection("folders").document(folderDocument).updateData([
+                "letter": userDataList
+            ])
+        }
+    }
+    func getLetter(){
+        let db = Firestore.firestore()
+        print(folderDocument)
+        if let currentUser = Auth.auth().currentUser {
+            let uid = currentUser.uid
+            db.collection("users").document(uid).collection("folders").document(folderDocument).getDocument { (document, error) in
+                if let document = document, document.exists {
+                  let data = document.data()
+                  let letter = data?["letter"] as? String ?? ""
+                    self.userDataList = letter
+                   
+                } else {
+                  print("Document does not exist")
+                    self.userDataList = ""
+                }
+              }
+        }
+    }
+    
+    
 }
-

@@ -19,14 +19,12 @@ struct FolderContentView: View {
                     Button {
                         selectedFolderIndex = folderIndex
                         selectedFolderIndex2 = folderIndex
-                        
-                        print(selectedFolderIndex,viewModel.getimage)
                        
                         Task {
                             do {
                                
                                 if selectedFolderIndex == folderIndex {
-                                   
+                                  
                                     viewModel.getimage.toggle()
                                 }
                             }
@@ -34,14 +32,16 @@ struct FolderContentView: View {
 
                       
                     } label: {
-                        Text(viewModel.folders[folderIndex] as! String)
+                        Text(viewModel.folders[folderIndex] )
                     }
                     .padding()
                     .background(selectedFolderIndex2 == folderIndex ? Color.blue : Color.gray)
                     .foregroundColor(.white)
                     .cornerRadius(8)
+                   
                 }
             }
         }
+       
     }
 }

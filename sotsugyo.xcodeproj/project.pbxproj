@@ -52,6 +52,8 @@
 		72B47F7B2B104A94008832F5 /* PenKitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */; };
 		72C5A1672B1DACAD00F890AD /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */; };
 		72CBE0AC2B2CA794007542EE /* CameraFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CBE0AB2B2CA794007542EE /* CameraFolderView.swift */; };
+		72CBE0AE2B2CA96B007542EE /* FolderTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CBE0AD2B2CA96B007542EE /* FolderTextView.swift */; };
+		72CBE0B02B2DBD30007542EE /* WriteLetterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CBE0AF2B2DBD30007542EE /* WriteLetterView.swift */; };
 		72D0C0202B2CA58900456F96 /* MainImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D0C01F2B2CA58900456F96 /* MainImageView.swift */; };
 		72D0C0222B2CA5EC00456F96 /* FolderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D0C0212B2CA5EC00456F96 /* FolderContentView.swift */; };
 		72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226C82AF8C35D002BA0A6 /* CameraManager.swift */; };
@@ -114,6 +116,8 @@
 		72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenKitViewModel.swift; sourceTree = "<group>"; };
 		72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
 		72CBE0AB2B2CA794007542EE /* CameraFolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraFolderView.swift; sourceTree = "<group>"; };
+		72CBE0AD2B2CA96B007542EE /* FolderTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTextView.swift; sourceTree = "<group>"; };
+		72CBE0AF2B2DBD30007542EE /* WriteLetterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteLetterView.swift; sourceTree = "<group>"; };
 		72D0C01F2B2CA58900456F96 /* MainImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainImageView.swift; sourceTree = "<group>"; };
 		72D0C0212B2CA5EC00456F96 /* FolderContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderContentView.swift; sourceTree = "<group>"; };
 		72F226C82AF8C35D002BA0A6 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
@@ -190,6 +194,7 @@
 				72576F652B1466690064A362 /* SearchMusicView.swift */,
 				72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */,
 				72967E442B298E1700911D97 /* SignInView.swift */,
+				72CBE0AF2B2DBD30007542EE /* WriteLetterView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -299,6 +304,7 @@
 				72D0C01F2B2CA58900456F96 /* MainImageView.swift */,
 				72D0C0212B2CA5EC00456F96 /* FolderContentView.swift */,
 				72CBE0AB2B2CA794007542EE /* CameraFolderView.swift */,
+				72CBE0AD2B2CA96B007542EE /* FolderTextView.swift */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -486,9 +492,11 @@
 				72CBE0AC2B2CA794007542EE /* CameraFolderView.swift in Sources */,
 				72D0C0202B2CA58900456F96 /* MainImageView.swift in Sources */,
 				72B47F7B2B104A94008832F5 /* PenKitViewModel.swift in Sources */,
+				72CBE0B02B2DBD30007542EE /* WriteLetterView.swift in Sources */,
 				72D0C0222B2CA5EC00456F96 /* FolderContentView.swift in Sources */,
 				72012FA42B0DACB600B5BD71 /* PhotoPreviewView.swift in Sources */,
 				72576F752B16F58B0064A362 /* PhotoPreviewViewModel.swift in Sources */,
+				72CBE0AE2B2CA96B007542EE /* FolderTextView.swift in Sources */,
 				728384552B2055E20098856E /* FirebaseMusic.swift in Sources */,
 				72576F7B2B17010E0064A362 /* searchMusicViewModel.swift in Sources */,
 				72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */,

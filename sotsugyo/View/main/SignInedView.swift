@@ -19,7 +19,9 @@ struct SignInedView: View {
     @State private var showAlart = false
     @State private var folderBuf = ""
 @State var first = true
-    var authenticationManager = AuthenticationManager()
+    @State var authenticationManager = AuthenticationManager()
+    
+  
     var body: some View {
         
         VStack {
@@ -37,7 +39,10 @@ struct SignInedView: View {
                 cameraManager: cameraManager,
                 viewModel: viewModel
             )
+            
             FolderContentView(viewModel: viewModel, selectedFolderIndex: $selectedIndex)
+            FolderTextView(viewModel: viewModel, selectedFolderIndex: $selectedIndex, userDataList: viewModel)
+
 
             MainImageView(
                 tapImage: $selectedImage,
