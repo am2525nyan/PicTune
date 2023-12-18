@@ -41,14 +41,16 @@ class SearchViewModel: ObservableObject {
                 
             ])
         }
-        try await db.collection("users").document(friendUid).collection("folders").document("all").collection("photos").document(documentId).updateData([
-            "artistName": artistName,
-            "trackName": trackName,
-            "id": Url,
-            "imageName": imageName,
-            "previewUrl": previewUrl
-            
-        ])
+        if friendUid != ""{
+            try await db.collection("users").document(friendUid).collection("folders").document("all").collection("photos").document(documentId).updateData([
+                "artistName": artistName,
+                "trackName": trackName,
+                "id": Url,
+                "imageName": imageName,
+                "previewUrl": previewUrl
+                
+            ])
+        }
         DispatchQueue.main.async {
             
             print("firebaseに保存しました！,",self.documentId,self.isPresentingSearch)

@@ -432,7 +432,7 @@ class MainContentModel: ObservableObject {
     }
     func getLetter(){
         let db = Firestore.firestore()
-        print(folderDocument)
+      
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             db.collection("users").document(uid).collection("folders").document(folderDocument).getDocument { (document, error) in

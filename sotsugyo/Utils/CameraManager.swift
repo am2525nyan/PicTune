@@ -27,7 +27,14 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     func setupCaptureSession() {
         captureSession.beginConfiguration()
         captureSession.sessionPreset = AVCaptureSession.Preset.photo
-        guard let camera = AVCaptureDevice.default(for: .video) else { return }
+        
+        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: .video, position: .front)
+        
+        guard let camera = deviceDiscoverySession.devices.first else {
+            print("Front camera not found.")
+            return
+        }
+
         do {
             let input = try AVCaptureDeviceInput(device: camera)
             if captureSession.canAddInput(input) {
@@ -40,7 +47,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
             print(error.localizedDescription)
             return
         }
-        
+    
         captureSession.commitConfiguration()
         
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
@@ -191,12 +198,15 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
                     print("Error writing document: \(err)")
                     continuation.resume(throwing: err)
                 } else {
-                    if let documentId = ref?.documentID {
-                        db.collection("users").document(friendUid).collection("folders").document("all").collection("photos").document(documentId).setData([
-                            "url": url,
-                            "date": FieldValue.serverTimestamp()])
+                   
+                        if let documentId = ref?.documentID {
+                            if friendUid != ""{
+                                db.collection("users").document(friendUid).collection("folders").document("all").collection("photos").document(documentId).setData([
+                                    "url": url,
+                                    "date": FieldValue.serverTimestamp()])
+                            }
+                            continuation.resume(returning: documentId)
                         
-                        continuation.resume(returning: documentId)
                     } else {
                         
                     }
@@ -232,4 +242,5 @@ extension UIImage {
         }
         return self
     }
+    
 }
