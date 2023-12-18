@@ -13,11 +13,26 @@ struct CameraFolderView: View {
     @Binding var folderBuf: String
     @StateObject var cameraManager: CameraManager
     @ObservedObject var viewModel: MainContentModel
+    @State var showQRAlart = false
+    @State var isPresentingQR = false
 
     var body: some View {
         HStack {
             Button("カメラ起動") {
-                isPresentingCamera = true
+                showQRAlart.toggle()
+            }
+            .alert("コード交換", isPresented: $showQRAlart) {
+               
+                Button("する", role: .cancel){
+                    isPresentingQR.toggle()
+                    
+             
+                }
+                Button("しない", role: .destructive){
+                    isPresentingCamera.toggle()
+                }
+            } message: {
+                Text("一緒のお友達のコードを読み込みますか？")
             }
             Button("フォルダ作成") {
                 showAlart = true
@@ -38,6 +53,10 @@ struct CameraFolderView: View {
         }
         .fullScreenCover(isPresented: $isPresentingCamera) {
             Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true))
+        }
+        .sheet(isPresented: $isPresentingQR){
+            FriendQRView(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager)
+            
         }
     }
 }

@@ -23,12 +23,6 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     @Published var documentId = "default_value"
     
     
-    
-    override init() {
-        super.init()
-        print(documentId)
-        
-    }
     //カメラの準備
     func setupCaptureSession() {
         captureSession.beginConfiguration()
