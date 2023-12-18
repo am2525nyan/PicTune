@@ -7,6 +7,7 @@ struct Camera2View: View {
     @Environment(\.presentationMode) var presentation
     @State private var isPresentingMain = false
     @Binding var isPresentingSearch : Bool
+    @Binding var friendUid: String
    
    
     
@@ -28,14 +29,11 @@ struct Camera2View: View {
                 
                 
                 .padding()
-                .onChange(of: cameraManager.isImageUploadCompleted) {
-                    
-                }
-                
+               
                 .sheet(isPresented: $cameraManager.isImageUploadCompleted) {
                    
                   
-                    PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, isPresentingSearch: $cameraManager.isPresentingSearch, documentId: $cameraManager.documentId, cameraManager: cameraManager)
+                    PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, isPresentingSearch: $cameraManager.isPresentingSearch, documentId: $cameraManager.documentId, cameraManager: cameraManager, friendUid: $friendUid)
     
                 }
             }

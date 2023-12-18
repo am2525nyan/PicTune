@@ -14,6 +14,7 @@ struct ImageDetailView: View {
     @Binding var index: Int
     @State private var tracks: [Track] = []
     @ObservedObject var viewModel: MainContentModel
+    @Binding var friendUid: String
     var selectedIndex: Int
     
     var body: some View {
@@ -106,8 +107,8 @@ struct ImageDetailView: View {
                     Task {
                         do {
                             try await viewModel.getDate()
-                            try await viewModel.getMusic(documentId: tapdocumentId, folder: viewModel.folderDocument)
-                        //    try await viewModel.getMusic(documentId: documentId, folder: index)
+                            try await viewModel.getMusic(documentId: tapdocumentId, folder: viewModel.folderDocument, friendUid: friendUid)
+                        
                         } catch {
                             print("テキスト情報の取得に失敗しました: \(error)")
                         }

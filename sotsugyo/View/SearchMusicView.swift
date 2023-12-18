@@ -20,11 +20,9 @@ struct SearchView: View {
     @State var imageName: String = ""
     @State var Url: String = ""
     @State var previewUrl: String = ""
-    @State private var documentId: String
+    @State  var documentId: String
+    @Binding var friendUid: String
    
-    init(documentId: String) {
-        self._documentId = State(initialValue: documentId)
-    }
     
     var body: some View {
         VStack {
@@ -105,7 +103,7 @@ struct SearchView: View {
                             Task{
                                 do{
                                     
-                                    try await viewModel.tapAction(trackName: trackName,Url: Url,artistName: artistName, imageName: imageName, previewUrl: previewUrl)
+                                    try await viewModel.tapAction(trackName: trackName,Url: Url,artistName: artistName, imageName: imageName, previewUrl: previewUrl, friendUid: friendUid)
                                     UIApplication.shared.windows.first{ $0.isKeyWindow }?.rootViewController?.dismiss(animated: true, completion: nil)
                                     
                                 }

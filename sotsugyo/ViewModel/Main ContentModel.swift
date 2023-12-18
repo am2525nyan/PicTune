@@ -214,7 +214,7 @@ class MainContentModel: ObservableObject {
             throw error
         }
     }
-    func getMusic(documentId: String,folder: String) async throws{
+    func getMusic(documentId: String,folder: String,friendUid: String) async throws{
         DispatchQueue.main.async {
             self.Music = []
         }
@@ -225,16 +225,17 @@ class MainContentModel: ObservableObject {
             
             let ref = try await db.collection("users").document(uid).collection("folders").document(folder).collection("photos").document(documentId).getDocument()
             let data = ref.data()
-            let artistName =  data?["artistName"]
-            let imageName =  data?["imageName"]
-            let trackName =  data?["trackName"]
-            let id = data?["id"]
-            let previewUrl = data?["previewUrl"]
+            let artistName =  data?["artistName"] as?String ?? "ないよ"
+            let imageName =  data?["imageName"] as?String ?? "ないよ"
+            let trackName =  data?["trackName"] as?String ?? "ないよ"
+            let id = data?["id"] as?String ?? "ないよ"
+            let previewUrl = data?["previewUrl"] as?String ?? "ないよ"
             
             DispatchQueue.main.async {
-                self.Music.append(FirebaseMusic(id: documentId, artistName: artistName as! String, imageName: imageName as! String, trackName: trackName as! String, trackId: id as! String, previewURL: previewUrl as! String)
+                self.Music.append(FirebaseMusic(id: documentId, artistName: artistName , imageName: imageName , trackName: trackName , trackId: id , previewURL: previewUrl )
                 )
             }
+            
             
             
         }

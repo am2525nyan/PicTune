@@ -56,6 +56,9 @@
 		72D0C0202B2CA58900456F96 /* MainImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D0C01F2B2CA58900456F96 /* MainImageView.swift */; };
 		72D0C0222B2CA5EC00456F96 /* FolderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D0C0212B2CA5EC00456F96 /* FolderContentView.swift */; };
 		72EC19482B300463002CA76B /* PencilView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EC19472B300463002CA76B /* PencilView.swift */; };
+		72EC194B2B30053B002CA76B /* FriendQRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EC194A2B30053B002CA76B /* FriendQRView.swift */; };
+		72EC194D2B300EBE002CA76B /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EC194C2B300EBE002CA76B /* QRCodeGenerator.swift */; };
+		72EC19502B301196002CA76B /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 72EC194F2B301196002CA76B /* CodeScanner */; };
 		72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226C82AF8C35D002BA0A6 /* CameraManager.swift */; };
 		72F226CB2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */; };
 		72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CC2AF8C496002BA0A6 /* CameraView.swift */; };
@@ -120,6 +123,8 @@
 		72D0C01F2B2CA58900456F96 /* MainImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainImageView.swift; sourceTree = "<group>"; };
 		72D0C0212B2CA5EC00456F96 /* FolderContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderContentView.swift; sourceTree = "<group>"; };
 		72EC19472B300463002CA76B /* PencilView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilView.swift; sourceTree = "<group>"; };
+		72EC194A2B30053B002CA76B /* FriendQRView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendQRView.swift; sourceTree = "<group>"; };
+		72EC194C2B300EBE002CA76B /* QRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeGenerator.swift; sourceTree = "<group>"; };
 		72F226C82AF8C35D002BA0A6 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " CameraPreviewModel.swift"; sourceTree = "<group>"; };
 		72F226CC2AF8C496002BA0A6 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
@@ -147,6 +152,7 @@
 				7209E3912B12EBD200FC44D3 /* NukeUI in Frameworks */,
 				728EFB452AEE2FF2008C079B /* FirebaseEmailAuthUI in Frameworks */,
 				728EFB4B2AEE2FF2008C079B /* FirebaseOAuthUI in Frameworks */,
+				72EC19502B301196002CA76B /* CodeScanner in Frameworks */,
 				7209E38D2B12EBD200FC44D3 /* Nuke in Frameworks */,
 				728EFB472AEE2FF2008C079B /* FirebaseFirestoreUI in Frameworks */,
 				728EFB3E2AEE2E4A008C079B /* FirebaseStorage in Frameworks */,
@@ -194,6 +200,7 @@
 				72576F652B1466690064A362 /* SearchMusicView.swift */,
 				72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */,
 				72967E442B298E1700911D97 /* SignInView.swift */,
+				72EC194A2B30053B002CA76B /* FriendQRView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -229,6 +236,7 @@
 				72F226C82AF8C35D002BA0A6 /* CameraManager.swift */,
 				7266BF322AF374BE000D711B /* ImagePicker.swift */,
 				72F985632B17FD4A00FEEC05 /* SpotifyAPI.swift */,
+				72EC194C2B300EBE002CA76B /* QRCodeGenerator.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -347,6 +355,7 @@
 				72F985692B19880800FEEC05 /* URLImage */,
 				72F9856B2B19880800FEEC05 /* URLImageStore */,
 				7223A54D2B2567DF009D6704 /* Kingfisher */,
+				72EC194F2B301196002CA76B /* CodeScanner */,
 			);
 			productName = sotsugyo;
 			productReference = 728EFB052AEE1C10008C079B /* sotsugyo.app */;
@@ -427,6 +436,7 @@
 				72F985652B17FD8200FEEC05 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				72F985682B19880800FEEC05 /* XCRemoteSwiftPackageReference "url-image" */,
 				7223A54C2B2567DE009D6704 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				72EC194E2B301196002CA76B /* XCRemoteSwiftPackageReference "CodeScanner" */,
 			);
 			productRefGroup = 728EFB062AEE1C10008C079B /* Products */;
 			projectDirPath = "";
@@ -491,7 +501,9 @@
 				728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */,
 				72CBE0AC2B2CA794007542EE /* CameraFolderView.swift in Sources */,
 				72D0C0202B2CA58900456F96 /* MainImageView.swift in Sources */,
+				72EC194B2B30053B002CA76B /* FriendQRView.swift in Sources */,
 				72B47F7B2B104A94008832F5 /* PenKitViewModel.swift in Sources */,
+				72EC194D2B300EBE002CA76B /* QRCodeGenerator.swift in Sources */,
 				72CBE0B02B2DBD30007542EE /* WriteLetterView.swift in Sources */,
 				72D0C0222B2CA5EC00456F96 /* FolderContentView.swift in Sources */,
 				72012FA42B0DACB600B5BD71 /* PhotoPreviewView.swift in Sources */,
@@ -875,6 +887,14 @@
 				kind = branch;
 			};
 		};
+		72EC194E2B301196002CA76B /* XCRemoteSwiftPackageReference "CodeScanner" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/twostraws/CodeScanner";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.3.3;
+			};
+		};
 		72F985652B17FD8200FEEC05 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -983,6 +1003,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 728EFB412AEE2FF2008C079B /* XCRemoteSwiftPackageReference "FirebaseUI-iOS" */;
 			productName = FirebaseStorageUI;
+		};
+		72EC194F2B301196002CA76B /* CodeScanner */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 72EC194E2B301196002CA76B /* XCRemoteSwiftPackageReference "CodeScanner" */;
+			productName = CodeScanner;
 		};
 		72F985662B17FD8200FEEC05 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
