@@ -21,7 +21,7 @@ struct SearchView: View {
     @State var Url: String = ""
     @State var previewUrl: String = ""
     @State private var documentId: String
-    @Environment(\.dismiss) var dismiss
+   
     init(documentId: String) {
         self._documentId = State(initialValue: documentId)
     }
@@ -99,14 +99,14 @@ struct SearchView: View {
                             viewModel.isPresentingSearch = isPresentingSearch
                         }
                     }
-                    .alert("タイトル", isPresented: $showAlert) {
-                        Button("了解") {
+                    .alert("保存", isPresented: $showAlert) {
+                        Button("音楽を保存します") {
                             showAlert = false
                             Task{
                                 do{
                                     
                                     try await viewModel.tapAction(trackName: trackName,Url: Url,artistName: artistName, imageName: imageName, previewUrl: previewUrl)
-                                    dismiss()
+                                    UIApplication.shared.windows.first{ $0.isKeyWindow }?.rootViewController?.dismiss(animated: true, completion: nil)
                                     
                                 }
                             }

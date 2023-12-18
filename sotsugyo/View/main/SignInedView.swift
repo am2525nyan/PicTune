@@ -47,7 +47,7 @@ struct SignInedView: View {
             MainImageView(
                 tapImage: $selectedImage,
                 tapIndex: $selectedIndex,
-                tapdocumentId: $tapDocumentId, selectedFolderIndex: $viewModel.folderDocument,
+                tapdocumentId: $tapDocumentId, selectedFolderIndex: $viewModel.folderDocument, selectedFolderIndex2: $selectedIndex,
                 viewModel: viewModel
             )
             Spacer()

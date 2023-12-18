@@ -23,20 +23,40 @@ struct FolderTextView: View {
                 } else {
                     Text("読み込み中")
                 }
-                Button {
-                    isWrite = true
-                } label: {
-                    Text("+")
-                        .frame(width: 50, height: 50)
-                        .font(.system(size: 25))
+                if viewModel.folders.indices.contains(selectedFolderIndex) {
+                    Button {
+                        isWrite = true
+                    } label: {
+                        Text("+")
+                            .frame(width: 50, height: 50)
+                            .font(.system(size: 25))
+                    }
+                    
+                    .background(.white)
+                    .cornerRadius(8)
                 }
-                .background(.white)
-                .cornerRadius(8)
-               
+                if viewModel.folders.indices.contains(selectedFolderIndex) {
+                    
+                    
+                    if viewModel.folders[selectedFolderIndex] != "all"{
+                        Button {
+                            viewModel.deletefolder()
+                        } label: {
+                            HStack {
+                                Image(systemName: "trash")
+                                
+                                
+                            }                            .frame(width: 50, height: 50)
+                                .font(.system(size: 25))
+                        }
+                    }else{
+                        
+                    }
+                }
                 
                 
             }
-           
+            
             Text(userDataList.userDataList)
             
         }
@@ -45,13 +65,10 @@ struct FolderTextView: View {
         }
         .onAppear{
             
-           
-
+            
+            
         }
         
     }
     
-    func printValues() {
-        print(viewModel.folders, selectedFolderIndex)
-    }
 }

@@ -11,6 +11,7 @@ struct MainImageView: View {
     @Binding var tapIndex: Int
     @Binding var tapdocumentId: String
     @Binding var selectedFolderIndex: String
+    @Binding var selectedFolderIndex2: Int
     @ObservedObject var viewModel: MainContentModel
    
  
@@ -67,18 +68,20 @@ struct MainImageView: View {
                            
 
                         }
-                        Button("削除", role: .destructive) {
-                            let intValue = selectedFolderIndex.wrappedValue
-                            viewModel.deletePhoto(document: viewModel.documentIdArray[index])
-                            Task {
-                                do {
-                                    try await viewModel.FoldergetUrl(folderId: intValue)
-                                } catch {
-                                    print("Error: \(error)")
-                                }
-                            }
+                    
+                                Button("削除", role: .destructive) {
+                                    let intValue = selectedFolderIndex.wrappedValue
+                                    viewModel.deletePhoto(document: viewModel.documentIdArray[index])
+                                    Task {
+                                        do {
+                                            try await viewModel.FoldergetUrl(folderId: intValue)
+                                        } catch {
+                                            print("Error: \(error)")
+                                        }
+                                    }
+                                
+                            
                         }
-
 
 
                     }

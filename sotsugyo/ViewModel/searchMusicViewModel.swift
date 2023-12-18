@@ -40,9 +40,6 @@ class SearchViewModel: ObservableObject {
                 "previewUrl": previewUrl
                 
             ])
-           
-          
-            
         }
         DispatchQueue.main.async {
            

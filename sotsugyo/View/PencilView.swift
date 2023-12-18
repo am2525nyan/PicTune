@@ -1,18 +1,14 @@
 //
-//  PencilView.swift
+//  PenKitViewModel.swift
 //  sotsugyo
 //
-//  Created by saki on 2023/12/18.
+//  Created by saki on 2023/11/29.
 //
 
 import SwiftUI
 
 struct PencilView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        PenKitView()
     }
-}
-
-#Preview {
-    PencilView()
 }

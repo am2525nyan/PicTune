@@ -393,19 +393,19 @@ class MainContentModel: ObservableObject {
                                 continuation.resume(throwing: error)
                             } else if let data = data {
                                 continuation.resume(returning: data)
-                                print("aaa")
                             }
                         }
                     }
                     
-                    let image = UIImage(data: data)
-                    DispatchQueue.main.async {
-                        if [image!] != []{
+                    // インデックスが範囲内であることを確認してからアクセス
+                    if index <= self.images.count {
+                        let image = UIImage(data: data)
+                        DispatchQueue.main.async {
                             self.images.insert(image!, at: index)
                         }
-                        
-                        
-                        
+                    } else {
+                        print("Index out of range. Ignoring data insertion.")
+                    
                     }
                 } catch {
                     print("Error occurred! : \(error)")
@@ -454,5 +454,22 @@ class MainContentModel: ObservableObject {
             let uid = currentUser.uid
             db.collection("users").document(uid).collection("folders").document(folderDocument).collection("photos").document(document).delete()
         }
+    }
+    func deletefolder(){
+        let db = Firestore.firestore()
+        if let currentUser = Auth.auth().currentUser {
+            let uid = currentUser.uid
+            db.collection("users").document(uid).collection("folders").document(folderDocument).delete()
+            DispatchQueue.main.async {
+               
+                if let indexToRemove = self.foldersDocumentId.firstIndex(where: { $0 == self.folderDocument }) {
+                    
+                    self.foldersDocumentId.remove(at: indexToRemove)
+                    self.folders.remove(at: indexToRemove)
+                }
+
+            }
+        }
+        
     }
 }

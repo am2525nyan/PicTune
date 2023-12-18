@@ -39,6 +39,8 @@ struct FolderContentView: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                    
+                    
+                   
                 }
             }
         }
