@@ -13,13 +13,13 @@ struct MainImageView: View {
     @Binding var selectedFolderIndex: String
     @Binding var selectedFolderIndex2: Int
     @ObservedObject var viewModel: MainContentModel
-   
- 
+    
+    
     var body: some View {
         ScrollView {
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 3) {
                 ForEach($viewModel.images.indices, id: \.self) { index in
-                  
+                    
                     imageCell(index: index, selectedFolderIndex: $tapIndex)
                 }
             }
@@ -28,8 +28,8 @@ struct MainImageView: View {
             Task {
                 do {
                     try await viewModel.FoldergetUrl(folderId: tapIndex)
-
-                               
+                    
+                    
                     
                     
                 } catch {
@@ -41,8 +41,8 @@ struct MainImageView: View {
     
     
     private func imageCell(index: Int, selectedFolderIndex: Binding<Int>) -> some View {
-     
-      
+        
+        
         return NavigationLink(
             destination: ImageDetailView(image: $tapImage, documentId: $tapdocumentId, tapdocumentId: $tapdocumentId, index: selectedFolderIndex, viewModel: viewModel, friendUid: .constant(""), selectedIndex: tapIndex),
             tag: viewModel.images[index],
@@ -65,25 +65,25 @@ struct MainImageView: View {
                             } label: {
                                 Text(viewModel.folders[index1] )
                             }
-                           
-
-                        }
-                    
-                                Button("削除", role: .destructive) {
-                                    let intValue = selectedFolderIndex.wrappedValue
-                                    viewModel.deletePhoto(document: viewModel.documentIdArray[index])
-                                    Task {
-                                        do {
-                                            try await viewModel.FoldergetUrl(folderId: intValue)
-                                        } catch {
-                                            print("Error: \(error)")
-                                        }
-                                    }
-                                
+                            
                             
                         }
-
-
+                        
+                        Button("削除", role: .destructive) {
+                            let intValue = selectedFolderIndex.wrappedValue
+                            viewModel.deletePhoto(document: viewModel.documentIdArray[index])
+                            Task {
+                                do {
+                                    try await viewModel.FoldergetUrl(folderId: intValue)
+                                } catch {
+                                    print("Error: \(error)")
+                                }
+                            }
+                            
+                            
+                        }
+                        
+                        
                     }
             }
             

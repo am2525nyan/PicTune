@@ -22,7 +22,7 @@ struct SearchView: View {
     @State var previewUrl: String = ""
     @State  var documentId: String
     @Binding var friendUid: String
-   
+    
     
     var body: some View {
         VStack {

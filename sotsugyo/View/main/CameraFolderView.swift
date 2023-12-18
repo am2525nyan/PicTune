@@ -16,18 +16,18 @@ struct CameraFolderView: View {
     @State var showQRAlart = false
     @State var isPresentingQR = false
     @Binding var friendUid: String
-
+    
     var body: some View {
         HStack {
             Button("カメラ起動") {
                 showQRAlart.toggle()
             }
             .alert("コード交換", isPresented: $showQRAlart) {
-               
+                
                 Button("する", role: .cancel){
                     isPresentingQR.toggle()
                     
-             
+                    
                 }
                 Button("しない", role: .destructive){
                     isPresentingCamera.toggle()
@@ -44,7 +44,7 @@ struct CameraFolderView: View {
                     viewModel.makeFolder(folderName: folderBuf)
                     folderBuf = ""
                     showAlart = false
-                
+                    
                 }
                 Button("Cancel", role: .destructive){
                 }

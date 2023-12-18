@@ -23,19 +23,15 @@ struct PhotoPreviewView: View {
                     viewModel.takeScreenshot()
                     
                     UIImageWriteToSavedPhotosAlbum(viewModel.screenshotImage ?? image, nil, nil, nil)
-                    
-                    
-                    
                     cameraManager.uploadPhoto(viewModel.screenshotImage ?? image, friendUid: friendUid)
-                    
                     
                 }
                 
                 .sheet(isPresented: $isPresentingSearch){
                     SearchView(documentId: cameraManager.documentId, friendUid: $friendUid)
-                 
+                    
                 }
-               
+                
                 .padding()
                 Image("Image")
                     .resizable()
@@ -58,7 +54,7 @@ struct PhotoPreviewView: View {
         }
         .background(Color.yellow)
     }
-       
+    
     
     
     

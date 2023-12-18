@@ -108,7 +108,7 @@ struct ImageDetailView: View {
                         do {
                             try await viewModel.getDate()
                             try await viewModel.getMusic(documentId: tapdocumentId, folder: viewModel.folderDocument, friendUid: friendUid)
-                        
+                            
                         } catch {
                             print("テキスト情報の取得に失敗しました: \(error)")
                         }
@@ -116,7 +116,7 @@ struct ImageDetailView: View {
                     
                     Task {
                         do {
-                      
+                            
                         } catch {
                             print("Error loading music: \(error.localizedDescription)")
                         }
@@ -127,7 +127,7 @@ struct ImageDetailView: View {
             }
             .onTapGesture {
                 viewModel.startPlay()
-                  }
+            }
             
         }
         

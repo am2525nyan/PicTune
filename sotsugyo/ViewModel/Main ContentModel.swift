@@ -406,7 +406,7 @@ class MainContentModel: ObservableObject {
                         }
                     } else {
                         print("Index out of range. Ignoring data insertion.")
-                    
+                        
                     }
                 } catch {
                     print("Error occurred! : \(error)")
@@ -462,13 +462,13 @@ class MainContentModel: ObservableObject {
             let uid = currentUser.uid
             db.collection("users").document(uid).collection("folders").document(folderDocument).delete()
             DispatchQueue.main.async {
-               
+                
                 if let indexToRemove = self.foldersDocumentId.firstIndex(where: { $0 == self.folderDocument }) {
                     
                     self.foldersDocumentId.remove(at: indexToRemove)
                     self.folders.remove(at: indexToRemove)
                 }
-
+                
             }
         }
         

@@ -4,7 +4,7 @@ import FirebaseFirestore
 
 struct MainContentView: View {
     var authenticationManager = AuthenticationManager()
-  
+    
     
     @ObservedObject private var cameraManager = CameraManager()
     @StateObject private var viewModel = MainContentModel()

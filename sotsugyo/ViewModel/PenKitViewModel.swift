@@ -10,23 +10,23 @@ import PencilKit
 
 
 struct PenKitView:UIViewRepresentable {
-   typealias UIViewType = PKCanvasView
+    typealias UIViewType = PKCanvasView
     let toolPicker = PKToolPicker()
-   
-   func makeUIView(context: Context) -> PKCanvasView {
-       let pkcView = PKCanvasView()
-       pkcView.drawingPolicy = PKCanvasViewDrawingPolicy.anyInput
-       toolPicker.addObserver(pkcView)
-       toolPicker.setVisible(true, forFirstResponder: pkcView)
-       pkcView.becomeFirstResponder()
-       pkcView.isOpaque = false
-       
-       return pkcView
-   }
-   
-   func updateUIView(_ uiView: PKCanvasView, context: Context) {
-   }
-   
+    
+    func makeUIView(context: Context) -> PKCanvasView {
+        let pkcView = PKCanvasView()
+        pkcView.drawingPolicy = PKCanvasViewDrawingPolicy.anyInput
+        toolPicker.addObserver(pkcView)
+        toolPicker.setVisible(true, forFirstResponder: pkcView)
+        pkcView.becomeFirstResponder()
+        pkcView.isOpaque = false
+        
+        return pkcView
+    }
+    
+    func updateUIView(_ uiView: PKCanvasView, context: Context) {
+    }
+    
 }
 
 
