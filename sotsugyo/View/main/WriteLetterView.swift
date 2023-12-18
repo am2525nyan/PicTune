@@ -17,7 +17,7 @@ struct WriteLetterView: View {
             TextField("Enter text", text: $userInput)
                 .padding()
             
-            Button("Save") {
+            Button("保存") {
                 userDataList.userDataList = userInput
                 viewModel.saveLetter()
                            // シートを閉じる

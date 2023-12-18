@@ -12,7 +12,7 @@ struct PhotoPreviewView: View {
     let previewWidth = UIScreen.main.bounds.width * 0.867
     let previewHeight = UIScreen.main.bounds.height * 0.537
     @Environment(\.displayScale) private var displayScale
-    @Environment(\.dismiss) var dismiss
+   
     
     @StateObject private var viewModel = PhotoPreviewViewModel()
     var body: some View {
@@ -26,25 +26,14 @@ struct PhotoPreviewView: View {
                     
                     
                     
-                    // dismiss()
-                    
-                    
                     cameraManager.uploadPhoto(viewModel.screenshotImage ?? image)
                     
                     
                 }
                 
-                .sheet(isPresented: $isPresentingSearch, onDismiss: {
-                    dismiss()
-                }) {
+                .sheet(isPresented: $isPresentingSearch){
                     SearchView(documentId: cameraManager.documentId)
-                        .onAppear {
-                            print("SearchView appeared")
-                            
-                        }
-                        .onDisappear {
-                            print("SearchView disappeared")
-                        }
+                 
                 }
                 
                 

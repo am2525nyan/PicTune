@@ -22,9 +22,9 @@ struct ImagePicker: UIViewControllerRepresentable {
         }
     }
     
-    let completionHandler: (UIImage) -> Void // 追加: コールバック用のクロージャ
+    let completionHandler: (UIImage) -> Void
     
-    init(image: Binding<Image?>, completionHandler: @escaping (UIImage) -> Void) { // 追加: クロージャの引数
+    init(image: Binding<Image?>, completionHandler: @escaping (UIImage) -> Void) { 
         _image = image
         self.completionHandler = completionHandler
     }
