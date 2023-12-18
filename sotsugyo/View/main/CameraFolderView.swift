@@ -15,6 +15,7 @@ struct CameraFolderView: View {
     @ObservedObject var viewModel: MainContentModel
     @State var showQRAlart = false
     @State var isPresentingQR = false
+    @Binding var friendUid: String
 
     var body: some View {
         HStack {
@@ -52,10 +53,10 @@ struct CameraFolderView: View {
             }
         }
         .fullScreenCover(isPresented: $isPresentingCamera) {
-            Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true))
+            Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true), friendUid: .constant(""))
         }
         .sheet(isPresented: $isPresentingQR){
-            FriendQRView(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager)
+            FriendQRView(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, friendUid:"")
             
         }
     }

@@ -12,7 +12,7 @@ struct PhotoPreviewView: View {
     let previewWidth = UIScreen.main.bounds.width * 0.867
     let previewHeight = UIScreen.main.bounds.height * 0.537
     @Environment(\.displayScale) private var displayScale
-   
+    @Binding var friendUid: String
     
     @StateObject private var viewModel = PhotoPreviewViewModel()
     var body: some View {
@@ -26,17 +26,16 @@ struct PhotoPreviewView: View {
                     
                     
                     
-                    cameraManager.uploadPhoto(viewModel.screenshotImage ?? image)
+                    cameraManager.uploadPhoto(viewModel.screenshotImage ?? image, friendUid: friendUid)
                     
                     
                 }
                 
                 .sheet(isPresented: $isPresentingSearch){
-                    SearchView(documentId: cameraManager.documentId)
+                    SearchView(documentId: cameraManager.documentId, friendUid: $friendUid)
                  
                 }
-                
-                
+               
                 .padding()
                 Image("Image")
                     .resizable()
@@ -59,6 +58,7 @@ struct PhotoPreviewView: View {
         }
         .background(Color.yellow)
     }
+       
     
     
     

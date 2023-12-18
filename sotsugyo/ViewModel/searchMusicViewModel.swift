@@ -26,7 +26,7 @@ class SearchViewModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
   
     
-    func tapAction(trackName: String,Url: String,artistName: String, imageName: String, previewUrl: String) async throws{
+    func tapAction(trackName: String,Url: String,artistName: String, imageName: String, previewUrl: String,friendUid: String) async throws{
         let db = Firestore.firestore()
         
         if let currentUser = Auth.auth().currentUser {
@@ -41,6 +41,14 @@ class SearchViewModel: ObservableObject {
                 
             ])
         }
+        try await db.collection("users").document(friendUid).collection("folders").document("all").collection("photos").document(documentId).updateData([
+            "artistName": artistName,
+            "trackName": trackName,
+            "id": Url,
+            "imageName": imageName,
+            "previewUrl": previewUrl
+            
+        ])
         DispatchQueue.main.async {
            
             print("firebaseに保存しました！,",self.documentId,self.isPresentingSearch)

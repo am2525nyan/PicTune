@@ -37,7 +37,7 @@ struct SignInedView: View {
                 showAlart: $showAlart,
                 folderBuf: $folderBuf,
                 cameraManager: cameraManager,
-                viewModel: viewModel
+                viewModel: viewModel, friendUid: .constant("")
             )
             
             FolderContentView(viewModel: viewModel, selectedFolderIndex: $selectedIndex)

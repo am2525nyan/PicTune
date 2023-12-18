@@ -21,7 +21,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     let savedata = UserDefaults.standard
     @Published var newImage: UIImage?
     @Published var documentId = "default_value"
-    
+   
     
     //カメラの準備
     func setupCaptureSession() {
@@ -144,7 +144,8 @@ func applySepiaFilter(to inputImage: UIImage) -> UIImage? {
 }
 
 
-    func uploadPhoto(_ image: UIImage) {
+    func uploadPhoto(_ image: UIImage, friendUid: String) {
+       
         guard let imageData = image.jpegData(compressionQuality: 0.2) else {
             return
         }
@@ -162,7 +163,7 @@ func applySepiaFilter(to inputImage: UIImage) -> UIImage? {
             Task {
                 do {
                     // Firestoreに写真のURLを保存し、documentIdを取得
-                    let newdocumentId = try await self.uploadLink(url: url)
+                    let newdocumentId = try await self.uploadLink(url: url, friendUid: friendUid)
                     DispatchQueue.main.async {
                         self.documentId = newdocumentId
                         self.isPresentingSearch = true
@@ -176,7 +177,7 @@ func applySepiaFilter(to inputImage: UIImage) -> UIImage? {
 
 
     // Firestoreに写真のURLを保存し、documentIdを取得
-    func uploadLink(url: String) async throws -> String {
+    func uploadLink(url: String,friendUid: String) async throws -> String {
         return try await withCheckedThrowingContinuation { continuation in
             let db = Firestore.firestore()
             let uid = Auth.auth().currentUser?.uid
@@ -191,13 +192,19 @@ func applySepiaFilter(to inputImage: UIImage) -> UIImage? {
                     continuation.resume(throwing: err)
                 } else {
                     if let documentId = ref?.documentID {
-                        continuation.resume(returning: documentId)
-                    } else {
-                      
-                    }
+                        db.collection("users").document(friendUid).collection("folders").document("all").collection("photos").document(documentId).setData([
+                            "url": url,
+                            "date": FieldValue.serverTimestamp()])
+                    
+                    print(friendUid,"aiueo")
+                    
+                    continuation.resume(returning: documentId)
+                } else {
+                    
                 }
             }
         }
+            }
     }
 
 

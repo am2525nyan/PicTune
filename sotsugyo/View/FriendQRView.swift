@@ -22,6 +22,7 @@ struct FriendQRView: View {
     @State private var alertMessage = ""
     
     @State private var qrCodeImage: UIImage?
+    @State var friendUid: String
        private let qrCodeGenerator = QRCodeGenerator()
     
     var body: some View {
@@ -57,7 +58,7 @@ struct FriendQRView: View {
             }
             .fullScreenCover(isPresented: $isPresentingQR) {
                        // isPresentingQRがtrueのときにフルスクリーンでCamera2Viewを開く
-                Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true))
+                Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true),friendUid: $friendUid)
                    }
                
             
@@ -76,6 +77,7 @@ struct FriendQRView: View {
         case .success(let scanResult):
             scannedCode = scanResult.string
             isPresentingScanner = false
+            
             getUserInfo(uid: scannedCode!)
         case .failure(let error):
             if let scanError = error as? CodeScanner.ScanError {
@@ -100,6 +102,7 @@ struct FriendQRView: View {
             if let document = document, document.exists {
                 if let name = document["name"] as? String {
                     showAlert(message: " \(name)さんと撮ります")
+                    friendUid = uid
                 } else {
                     showAlert(message: "User info is incomplete")
                 }
