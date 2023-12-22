@@ -9,10 +9,16 @@ import SwiftUI
 
 struct NFCView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Button("amatuki"){
+            print("a")
+        }
     }
 }
 
-#Preview {
-    NFCView()
+struct GetNFCView: View {
+    var body: some View {
+        Button("amatuki"){
+            print("a")
+        }
+    }
 }

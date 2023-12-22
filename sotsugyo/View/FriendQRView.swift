@@ -28,11 +28,6 @@ struct FriendQRView: View {
     var body: some View {
         
         
-        Button("カメラ起動") {
-            dismiss()
-        }
-        
-        
         VStack {
             if let qrCodeImage {
                 Image(uiImage: qrCodeImage)

@@ -313,7 +313,6 @@ class MainContentModel: ObservableObject {
             
             let destinationCollectionRef = db.collection("users").document(uid).collection("folders").document(folderDocument).collection(newCollectionName).document()
             
-            // バッチを新しく作成
             let batch = db.batch()
             
             let sourceDocumentRef =  db.collection("users").document(uid).collection("folders").document("all").collection("photos").document(document)
@@ -398,7 +397,6 @@ class MainContentModel: ObservableObject {
                         }
                     }
                     
-                    // インデックスが範囲内であることを確認してからアクセス
                     if index <= self.images.count {
                         let image = UIImage(data: data)
                         DispatchQueue.main.async {
@@ -432,7 +430,7 @@ class MainContentModel: ObservableObject {
     }
     func getLetter(){
         let db = Firestore.firestore()
-      
+        
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             db.collection("users").document(uid).collection("folders").document(folderDocument).getDocument { (document, error) in
@@ -472,5 +470,98 @@ class MainContentModel: ObservableObject {
             }
         }
         
+    }
+    func getNFCData( NFCUid: String, NFCfolderid: String)async throws{
+        
+        print(NFCUid,"A")
+        print(NFCfolderid,"B")
+        
+        if let currentUser = Auth.auth().currentUser {
+            let uid = currentUser.uid
+            
+            let db = Firestore.firestore()
+            var urlArray = [String]()
+            let document = try await db.collection("users").document(NFCUid).collection("folders").document(NFCfolderid).getDocument()
+            let  data = document.data()
+            let title = data?["title"] as! String
+            try await db.collection("users").document(uid).collection("folders").document(NFCfolderid).updateData(["title":title,"date": FieldValue.serverTimestamp()])
+            
+            
+            
+            
+            let destinationCollectionRef =  db.collection("users").document(uid).collection("folders").document(NFCfolderid).collection("photos")
+            
+            // データを取得してから新しい UID の下に書き込む
+            let sourceCollectionRef = try await db.collection("users").document(NFCUid).collection("folders").document(NFCfolderid).collection("photos").order(by: "date").getDocuments()
+            
+            for document in sourceCollectionRef.documents {
+                var data = document.data()
+                let DocumentID = document.documentID
+                // 必要に応じてデータ変換や編集を行うことができます
+                let url = data["url"]
+                if url != nil {
+                    urlArray.append(url as! String)
+                }
+                let ref = try await db.collection("users").document(uid).collection("folders").document(NFCfolderid).collection("photos").document(DocumentID).getDocument()
+                let data2 = ref.data()
+                let artistName =  data2?["artistName"] as?String ?? "ないよ"
+                let imageName =  data2?["imageName"] as?String ?? "ないよ"
+                let trackName =  data2?["trackName"] as?String ?? "ないよ"
+                let id = data2?["id"] as?String ?? "ないよ"
+                let previewUrl = data2?["previewUrl"] as?String ?? "ないよ"
+                
+                DispatchQueue.main.async {
+                    self.Music.append(FirebaseMusic(id: DocumentID, artistName: artistName , imageName: imageName , trackName: trackName , trackId: id , previewURL: previewUrl )
+                    )
+                }
+                
+                
+                
+                destinationCollectionRef.addDocument(data: data)
+            }
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            let storage = Storage.storage()
+            let storageRef = storage.reference()
+            
+            for (index, photo) in urlArray.enumerated() {
+                
+                
+                do {
+                    let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
+                        let imageRef = storageRef.child("images/" + photo)
+                        imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
+                            if let error = error {
+                                continuation.resume(throwing: error)
+                            } else if let data = data {
+                                continuation.resume(returning: data)
+                            }
+                        }
+                    }
+                    
+                    if index <= self.images.count {
+                        let image = UIImage(data: data)
+                        DispatchQueue.main.async {
+                            self.images.insert(image!, at: index)
+                        }
+                    } else {
+                        print("Index out of range. Ignoring data insertion.")
+                        
+                    }
+                } catch {
+                    print("Error occurred! : \(error)")
+                }
+                
+                
+                
+            }
+        }
     }
 }

@@ -33,6 +33,8 @@ struct FolderContentView: View {
                         
                     } label: {
                         Text(viewModel.folders[folderIndex] )
+                         
+                            .font(.system(size: 12))
                     }
                     .padding()
                     .background(selectedFolderIndex2 == folderIndex ? Color.blue : Color.gray)

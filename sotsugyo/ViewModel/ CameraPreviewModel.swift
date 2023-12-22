@@ -25,13 +25,15 @@ struct CameraPreview: UIViewRepresentable {
                 previewLayer.frame = CGRect(x: previewX, y: previewY, width: previewWidth, height: previewHeight)
 
                 view.layer.addSublayer(previewLayer)
+                /*
 
                 // Add ARFaceTracking
                 let arConfiguration = ARFaceTrackingConfiguration()
                 let sceneView = ARSCNView(frame: CGRect(x: previewX, y: previewY, width: previewWidth, height: previewHeight))
                 sceneView.session.run(arConfiguration)
                 sceneView.delegate = context.coordinator
-                view.addSubview(sceneView)
+              //  view.addSubview(sceneView)
+                 */
             }
         }
 
@@ -39,7 +41,7 @@ struct CameraPreview: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIView, context: Context) {}
-
+/*
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
@@ -62,5 +64,5 @@ struct CameraPreview: UIViewRepresentable {
 
             return faceNode
         }
-    }
+    }*/
 }

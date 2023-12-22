@@ -32,16 +32,18 @@ struct SignInedView: View {
                     Text("Sign-Out")
                 }
             }
-            CameraFolderView(
-                isPresentingCamera: $viewModel.isPresentingCamera,
-                showAlart: $showAlart,
-                folderBuf: $folderBuf,
-                cameraManager: cameraManager,
-                viewModel: viewModel, friendUid: .constant("")
-            )
-            
+            VStack {
+                CameraFolderView(
+                    isPresentingCamera: $viewModel.isPresentingCamera,
+                    showAlart: $showAlart,
+                    folderBuf: $folderBuf,
+                    cameraManager: cameraManager,
+                    viewModel: viewModel, friendUid: .constant("")
+                )
+                
+            }
             FolderContentView(viewModel: viewModel, selectedFolderIndex: $selectedIndex)
-            FolderTextView(viewModel: viewModel, selectedFolderIndex: $selectedIndex, userDataList: viewModel)
+            FolderTextView(viewModel: viewModel, selectedFolderIndex: $selectedIndex, userDataList: viewModel, folderDocument:  $viewModel.folderDocument)
             
             
             MainImageView(

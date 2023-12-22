@@ -24,6 +24,13 @@ struct MainImageView: View {
                 }
             }
         }
+        .refreshable {
+                               Task {
+                                   do {
+                                       try await viewModel.getUrl()
+                                   }
+                               }
+                           }
         .onChange(of: viewModel.getimage) {
             Task {
                 do {
@@ -68,6 +75,7 @@ struct MainImageView: View {
                             
                             
                         }
+                        
                         
                         Button("削除", role: .destructive) {
                             let intValue = selectedFolderIndex.wrappedValue
