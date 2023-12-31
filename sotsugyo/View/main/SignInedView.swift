@@ -62,7 +62,7 @@ struct SignInedView: View {
                             try await viewModel.getFolder()
                             first = false
                         } else {
-                            try await viewModel.getUrl()
+                            try await viewModel.firstgetUrl()
                             try await viewModel.getFolder()
                         }
                     }

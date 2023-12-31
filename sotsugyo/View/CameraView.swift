@@ -9,12 +9,12 @@ struct Camera2View: View {
     @Binding var isPresentingSearch : Bool
     @Binding var friendUid: String
     
-    
-    
-    
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
+
         ZStack {
+            
             
             CameraPreview(cameraManager: cameraManager)
             Image("Image")
@@ -26,7 +26,6 @@ struct Camera2View: View {
                 Button("撮影") {
                     cameraManager.captureImage()
                 }
-                
                 
                 .padding()
                 

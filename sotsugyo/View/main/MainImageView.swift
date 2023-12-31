@@ -27,7 +27,7 @@ struct MainImageView: View {
         .refreshable {
                                Task {
                                    do {
-                                       try await viewModel.getUrl()
+                                       try await viewModel.firstgetUrl()
                                    }
                                }
                            }
@@ -83,6 +83,7 @@ struct MainImageView: View {
                             Task {
                                 do {
                                     try await viewModel.FoldergetUrl(folderId: intValue)
+                                    try await viewModel.firstgetUrl()
                                 } catch {
                                     print("Error: \(error)")
                                 }
