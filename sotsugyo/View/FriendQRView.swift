@@ -23,14 +23,9 @@ struct FriendQRView: View {
     
     @State private var qrCodeImage: UIImage?
     @State var friendUid: String
-       private let qrCodeGenerator = QRCodeGenerator()
+    private let qrCodeGenerator = QRCodeGenerator()
     
     var body: some View {
-        
-        
-        Button("カメラ起動") {
-            dismiss()
-        }
         
         
         VStack {
@@ -57,12 +52,11 @@ struct FriendQRView: View {
                 )
             }
             .fullScreenCover(isPresented: $isPresentingQR) {
-                       // isPresentingQRがtrueのときにフルスクリーンでCamera2Viewを開く
                 Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true),friendUid: $friendUid)
-                   }
-               
+            }
             
-           
+            
+            
         }
         .onAppear{
             if let currentUser = Auth.auth().currentUser {
@@ -89,7 +83,7 @@ struct FriendQRView: View {
         }
     }
     
-  
+    
     private func getUserInfo(uid: String) {
         let db = Firestore.firestore()
         db.collection("users").document(uid).collection("personal").document("info").getDocument { document, error in

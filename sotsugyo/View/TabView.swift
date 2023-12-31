@@ -11,7 +11,7 @@ struct TabContentView: View {
     @State var selection = 1
     @Binding var documentId: String
     
-
+    
     var body: some View {
         TabView(selection: $selection) {
             
@@ -24,7 +24,7 @@ struct TabContentView: View {
                     .tag(1)
                     
                 }
-                
+            
             ProfileView( documentId: $documentId)
                 .tabItem {
                     VStack {
@@ -34,6 +34,6 @@ struct TabContentView: View {
                     
                 }
         }
-                 
+        
     }
 }

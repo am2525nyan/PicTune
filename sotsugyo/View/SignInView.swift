@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SignInView: View {
     @ObservedObject var viewModel: MainContentModel
-
+    
     var body: some View {
         HStack {
             Spacer()

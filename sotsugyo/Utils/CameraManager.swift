@@ -21,13 +21,20 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     let savedata = UserDefaults.standard
     @Published var newImage: UIImage?
     @Published var documentId = "default_value"
-   
+    
     
     //カメラの準備
     func setupCaptureSession() {
         captureSession.beginConfiguration()
         captureSession.sessionPreset = AVCaptureSession.Preset.photo
-        guard let camera = AVCaptureDevice.default(for: .video) else { return }
+        
+        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: .video, position: .front)
+        
+        guard let camera = deviceDiscoverySession.devices.first else {
+            print("Front camera not found.")
+            return
+        }
+
         do {
             let input = try AVCaptureDeviceInput(device: camera)
             if captureSession.canAddInput(input) {
@@ -40,14 +47,14 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
             print(error.localizedDescription)
             return
         }
-       
+    
         captureSession.commitConfiguration()
         
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         
         previewLayer?.videoGravity = .resizeAspectFill
         print("セットアップ終わり")
-      
+        
         startSession()
     }
     
@@ -58,108 +65,108 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         DispatchQueue.global().async {
             self.captureSession.startRunning()
             print("いいよ")
-        
-        
-    }
-}
-//終わり
-func stopSession() {
-    if captureSession.isRunning {
-        DispatchQueue.global().async {
-            self.captureSession.stopRunning()
-            print("終わり")
+            
+            
         }
     }
-}
-
-
-
-
-func captureImage() {
-   
-        let settings = AVCapturePhotoSettings()
-   
-    let previewWidth = UIScreen.main.bounds.width * 0.864
-    let previewHeight = UIScreen.main.bounds.height * 0.536
-    
-    settings.previewPhotoFormat = [
-        kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
-        kCVPixelBufferWidthKey as String: previewWidth,
-        kCVPixelBufferHeightKey as String: previewHeight
-    ]
-    
-    
-        self.photoOutput.capturePhoto(with: settings, delegate: self)
-    
-}
-
-func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-    guard let imageData = photo.fileDataRepresentation(),
-          var image = UIImage(data: imageData) else {
-        print(error as Any)
-        return }
-    
-    var originalSize: CGSize
-    if image.imageOrientation == .left || image.imageOrientation == .right {
-        originalSize = CGSize(width: image.size.height, height: image.size.width)
-    } else {
-        originalSize = image.size
+    //終わり
+    func stopSession() {
+        if captureSession.isRunning {
+            DispatchQueue.global().async {
+                self.captureSession.stopRunning()
+                print("終わり")
+            }
+        }
     }
     
-    let previewSize = CGSize(width: UIScreen.main.bounds.width * 0.864, height: UIScreen.main.bounds.height * 0.536)
-    let metaRect = CGRect(x: 0, y: 0, width: previewSize.width, height: previewSize.height)
-    let metaRectConverted = previewLayer?.metadataOutputRectConverted(fromLayerRect: metaRect) ?? CGRect.zero
-    let cropRect: CGRect = CGRect(x: metaRectConverted.origin.x * originalSize.width,
-                                  y: metaRectConverted.origin.y * originalSize.height,
-                                  width: metaRectConverted.size.width * originalSize.width,
-                                  height: metaRectConverted.size.height * originalSize.height).integral
-    
-    guard let cgImage = image.cgImage?.cropping(to: cropRect) else { return }
-    let croppedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
     
     
     
-    
-    image = croppedImage.rotateLeft90Degrees()
-    
-    if let filteredImage = applySepiaFilter(to: image) {
-        self.isImageUploadCompleted = true
-        self.newImage = filteredImage
-    }
-}
-
-func applySepiaFilter(to inputImage: UIImage) -> UIImage? {
-    let context = CIContext()
-    let sepiaFilter = CIFilter.sepiaTone()
-    guard let ciImage = CIImage(image: inputImage) else { return nil }
-    
-    sepiaFilter.inputImage = ciImage
-    sepiaFilter.intensity = 0.2
-    
-    if let outputImage = sepiaFilter.outputImage, let cgimg = context.createCGImage(outputImage, from: outputImage.extent) {
+    func captureImage() {
         
-        return UIImage(cgImage: cgimg)
+        let settings = AVCapturePhotoSettings()
+        
+        let previewWidth = UIScreen.main.bounds.width * 0.864
+        let previewHeight = UIScreen.main.bounds.height * 0.536
+        
+        settings.previewPhotoFormat = [
+            kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+            kCVPixelBufferWidthKey as String: previewWidth,
+            kCVPixelBufferHeightKey as String: previewHeight
+        ]
+        
+        
+        self.photoOutput.capturePhoto(with: settings, delegate: self)
+        
     }
-    return nil
-}
-
-
+    
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        guard let imageData = photo.fileDataRepresentation(),
+              var image = UIImage(data: imageData) else {
+            print(error as Any)
+            return }
+        
+        var originalSize: CGSize
+        if image.imageOrientation == .left || image.imageOrientation == .right {
+            originalSize = CGSize(width: image.size.height, height: image.size.width)
+        } else {
+            originalSize = image.size
+        }
+        
+        let previewSize = CGSize(width: UIScreen.main.bounds.width * 0.864, height: UIScreen.main.bounds.height * 0.536)
+        let metaRect = CGRect(x: 0, y: 0, width: previewSize.width, height: previewSize.height)
+        let metaRectConverted = previewLayer?.metadataOutputRectConverted(fromLayerRect: metaRect) ?? CGRect.zero
+        let cropRect: CGRect = CGRect(x: metaRectConverted.origin.x * originalSize.width,
+                                      y: metaRectConverted.origin.y * originalSize.height,
+                                      width: metaRectConverted.size.width * originalSize.width,
+                                      height: metaRectConverted.size.height * originalSize.height).integral
+        
+        guard let cgImage = image.cgImage?.cropping(to: cropRect) else { return }
+        let croppedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
+        
+        
+        
+        
+        image = croppedImage.rotateLeft90Degrees()
+        
+        if let filteredImage = applySepiaFilter(to: image) {
+            self.isImageUploadCompleted = true
+            self.newImage = filteredImage
+        }
+    }
+    
+    func applySepiaFilter(to inputImage: UIImage) -> UIImage? {
+        let context = CIContext()
+        let sepiaFilter = CIFilter.sepiaTone()
+        guard let ciImage = CIImage(image: inputImage) else { return nil }
+        
+        sepiaFilter.inputImage = ciImage
+        sepiaFilter.intensity = 0.2
+        
+        if let outputImage = sepiaFilter.outputImage, let cgimg = context.createCGImage(outputImage, from: outputImage.extent) {
+            
+            return UIImage(cgImage: cgimg)
+        }
+        return nil
+    }
+    
+    
     func uploadPhoto(_ image: UIImage, friendUid: String) {
-       
+        
         guard let imageData = image.jpegData(compressionQuality: 0.2) else {
             return
         }
-
+        
         let imageName = UUID().uuidString
         let imageReference = Storage.storage().reference().child("images/\(imageName).jpg")
         let url = "\(imageName).jpg"
-
+        
         imageReference.putData(imageData, metadata: nil) { metadata, error in
             if let error = error {
                 print("Error uploading image to storage: \(error)")
                 return
             }
-
+            
             Task {
                 do {
                     // Firestoreに写真のURLを保存し、documentIdを取得
@@ -174,8 +181,8 @@ func applySepiaFilter(to inputImage: UIImage) -> UIImage? {
             }
         }
     }
-
-
+    
+    
     // Firestoreに写真のURLを保存し、documentIdを取得
     func uploadLink(url: String,friendUid: String) async throws -> String {
         return try await withCheckedThrowingContinuation { continuation in
@@ -191,30 +198,31 @@ func applySepiaFilter(to inputImage: UIImage) -> UIImage? {
                     print("Error writing document: \(err)")
                     continuation.resume(throwing: err)
                 } else {
-                    if let documentId = ref?.documentID {
-                        db.collection("users").document(friendUid).collection("folders").document("all").collection("photos").document(documentId).setData([
-                            "url": url,
-                            "date": FieldValue.serverTimestamp()])
-                    
-                    print(friendUid,"aiueo")
-                    
-                    continuation.resume(returning: documentId)
-                } else {
-                    
+                   
+                        if let documentId = ref?.documentID {
+                            if friendUid != ""{
+                                db.collection("users").document(friendUid).collection("folders").document("all").collection("photos").document(documentId).setData([
+                                    "url": url,
+                                    "date": FieldValue.serverTimestamp()])
+                            }
+                            continuation.resume(returning: documentId)
+                        
+                    } else {
+                        
+                    }
                 }
             }
         }
-            }
     }
-
-
-func resizeImage(_ image: UIImage, newSize: CGSize) -> UIImage {
-    let renderer = UIGraphicsImageRenderer(size: newSize)
-    return renderer.image { (context) in
-        image.draw(in: CGRect(origin: .zero, size: newSize))
+    
+    
+    func resizeImage(_ image: UIImage, newSize: CGSize) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        return renderer.image { (context) in
+            image.draw(in: CGRect(origin: .zero, size: newSize))
+        }
     }
-}
-
+    
 }
 extension UIImage {
     func rotateLeft90Degrees() -> UIImage {
@@ -234,4 +242,5 @@ extension UIImage {
         }
         return self
     }
+    
 }

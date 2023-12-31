@@ -11,7 +11,7 @@ struct WriteLetterView: View {
     @Binding var isWrite: Bool
     @ObservedObject var viewModel: MainContentModel
     @ObservedObject var userDataList: MainContentModel
-
+    
     var body: some View {
         VStack {
             TextField("Enter text", text: $userInput)
@@ -20,14 +20,14 @@ struct WriteLetterView: View {
             Button("保存") {
                 userDataList.userDataList = userInput
                 viewModel.saveLetter()
-                           // シートを閉じる
-                           isWrite = false
-                           userInput = ""
+                // シートを閉じる
+                isWrite = false
+                userInput = ""
                 
             }
             .padding()
         }
     }
-
+    
     
 }

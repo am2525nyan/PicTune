@@ -1,10 +1,3 @@
-//
-//   CameraPreview.swift
-//  sotsugyo
-//
-//  Created by saki on 2023/11/06.
-//
-
 import SwiftUI
 
 struct CameraPreview: UIViewRepresentable {

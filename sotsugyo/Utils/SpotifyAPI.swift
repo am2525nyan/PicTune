@@ -4,28 +4,28 @@ import Alamofire
 
 class SpotifyAPI {
     static let shared = SpotifyAPI()
-
+    
     private let baseURL = "https://api.spotify.com/v1"
-
+    
     private init() {}
-
+    
     func searchTracks(query: String, completion: @escaping ([Track]) -> Void) {
         SpotifyAuth.shared.fetchAccessToken { success in
             guard success, let accessToken = SpotifyAuth.shared.accessToken else {
                 print("Access token is nil or not available.")
                 return
             }
-
+            
             let headers: HTTPHeaders = [
                 "Authorization": "Bearer \(accessToken)"
             ]
-
+            
             let searchURL = "\(self.baseURL)/search"
             let parameters: [String: Any] = [
                 "q": query,
                 "type": "track"
             ]
-
+            
             AF.request(searchURL, method: .get, parameters: parameters, headers: headers)
                 .validate()
                 .responseJSON { response in
@@ -34,9 +34,9 @@ class SpotifyAPI {
                         if let json = data as? [String: Any],
                            let tracksJSON = json["tracks"] as? [String: Any],
                            let items = tracksJSON["items"] as? [[String: Any]] {
-
+                            
                             var tracks: [Track] = []
-
+                            
                             for item in items {
                                 if let id = item["id"] as? String,
                                    let name = item["name"] as? String,
@@ -44,8 +44,8 @@ class SpotifyAPI {
                                    let artist = artists.first?["name"] as? String,
                                    let albumData = item["album"] as? [String: Any],
                                    let albumID = albumData["id"] as? String,
-                                let previewUrl = item["preview_url"] as? String{
-                                   
+                                   let previewUrl = item["preview_url"] as? String{
+                                    
                                     self.getAlbumInfo(albumID: albumID) { albumImages in
                                         let track = Track(id: id, name: name, artist: artist, albumImages: albumImages,previewURL: previewUrl)
                                         tracks.append(track)
@@ -62,19 +62,19 @@ class SpotifyAPI {
                 }
         }
     }
-
+    
     func getAlbumInfo(albumID: String, completion: @escaping ([String]) -> Void) {
         guard let accessToken = SpotifyAuth.shared.accessToken else {
             print("Access token is nil.")
             return
         }
-
+        
         let headers: HTTPHeaders = [
             "Authorization": "Bearer \(accessToken)"
         ]
-
+        
         let albumURL = "\(self.baseURL)/albums/\(albumID)"
-
+        
         AF.request(albumURL, method: .get, headers: headers)
             .validate()
             .responseJSON { response in
@@ -148,26 +148,26 @@ class SpotifyAuth: ObservableObject {
     
     
     func playTrack(trackID: String) {
-           SpotifyAuth.shared.fetchAccessToken { success in
-               guard success, let accessToken = SpotifyAuth.shared.accessToken else {
-                   print("Access token is nil or not available.")
-                   return
-               }
-
-               let playEndpoint = "https://api.spotify.com/v1/me/player/play"
-               
-               let trackUri = "spotify:track:\(trackID)" // トラックのIDをURIに変換
-               let parameters: [String: Any] = ["uris": [trackUri]]
-
-               AF.request(playEndpoint, method: .put, parameters: parameters, encoding: JSONEncoding.default, headers: ["Authorization": "Bearer \(accessToken)", "Content-Type": "application/json"])
-                   .responseJSON { response in
-                       switch response.result {
-                       case .success:
-                           print("Track played successfully")
-                       case .failure(let error):
-                           print("Error playing track: \(error.localizedDescription)")
-                       }
-                   }
-           }
-       }
+        SpotifyAuth.shared.fetchAccessToken { success in
+            guard success, let accessToken = SpotifyAuth.shared.accessToken else {
+                print("Access token is nil or not available.")
+                return
+            }
+            
+            let playEndpoint = "https://api.spotify.com/v1/me/player/play"
+            
+            let trackUri = "spotify:track:\(trackID)" // トラックのIDをURIに変換
+            let parameters: [String: Any] = ["uris": [trackUri]]
+            
+            AF.request(playEndpoint, method: .put, parameters: parameters, encoding: JSONEncoding.default, headers: ["Authorization": "Bearer \(accessToken)", "Content-Type": "application/json"])
+                .responseJSON { response in
+                    switch response.result {
+                    case .success:
+                        print("Track played successfully")
+                    case .failure(let error):
+                        print("Error playing track: \(error.localizedDescription)")
+                    }
+                }
+        }
+    }
 }

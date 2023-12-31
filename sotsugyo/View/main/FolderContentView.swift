@@ -11,7 +11,7 @@ struct FolderContentView: View {
     @ObservedObject var viewModel: MainContentModel
     @Binding var selectedFolderIndex: Int
     @State var selectedFolderIndex2: Int = 0
-
+    
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
@@ -19,31 +19,33 @@ struct FolderContentView: View {
                     Button {
                         selectedFolderIndex = folderIndex
                         selectedFolderIndex2 = folderIndex
-                       
+                        
                         Task {
                             do {
-                               
+                                
                                 if selectedFolderIndex == folderIndex {
-                                  
+                                    
                                     viewModel.getimage.toggle()
                                 }
                             }
                         }
-
-                      
+                        
+                        
                     } label: {
                         Text(viewModel.folders[folderIndex] )
+                         
+                            .font(.system(size: 12))
                     }
                     .padding()
                     .background(selectedFolderIndex2 == folderIndex ? Color.blue : Color.gray)
                     .foregroundColor(.white)
                     .cornerRadius(8)
-                   
                     
-                   
+                    
+                    
                 }
             }
         }
-       
+        
     }
 }

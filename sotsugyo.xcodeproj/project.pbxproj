@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,12 +16,19 @@
 		72576F662B1466690064A362 /* SearchMusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F652B1466690064A362 /* SearchMusicView.swift */; };
 		72576F732B16E5020064A362 /* Main ContentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F722B16E5020064A362 /* Main ContentModel.swift */; };
 		72576F752B16F58B0064A362 /* PhotoPreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F742B16F58B0064A362 /* PhotoPreviewViewModel.swift */; };
-		72576F772B16FD740064A362 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F762B16FD740064A362 /* UIImage.swift */; };
+		72576F772B16FD740064A362 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F762B16FD740064A362 /* UIView.swift */; };
 		72576F7B2B17010E0064A362 /* searchMusicViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F7A2B17010E0064A362 /* searchMusicViewModel.swift */; };
-		7265CACA2AEFED71000058BC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7265CAC92AEFED71000058BC /* GoogleService-Info.plist */; };
+		7257A6CB2B303954006FE747 /* FaceFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7257A6CA2B303954006FE747 /* FaceFilterViewModel.swift */; };
+		7257A6CD2B304671006FE747 /* Mask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7257A6CC2B304671006FE747 /* Mask.swift */; };
+		7257A6D02B30875E006FE747 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7257A6CF2B30875E006FE747 /* AVFoundation.framework */; };
+		7257A6D22B308769006FE747 /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7257A6D12B308769006FE747 /* ARKit.framework */; };
+		7257A6D42B308F33006FE747 /* ARFaceTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */; };
 		7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7266BF322AF374BE000D711B /* ImagePicker.swift */; };
 		7279F4252B13802900A64739 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7279F4242B13802900A64739 /* ProfileView.swift */; };
 		7279F4272B13837E00A64739 /* TabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7279F4262B13837E00A64739 /* TabView.swift */; };
+		7280C9D72B319648003025C6 /* Gifu in Frameworks */ = {isa = PBXBuildFile; productRef = 7280C9D62B319648003025C6 /* Gifu */; };
+		7280C9D92B3293CB003025C6 /* NFCView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7280C9D82B3293CB003025C6 /* NFCView.swift */; };
+		7280C9DB2B329581003025C6 /* NFCSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7280C9DA2B329581003025C6 /* NFCSession.swift */; };
 		728384552B2055E20098856E /* FirebaseMusic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728384542B2055E20098856E /* FirebaseMusic.swift */; };
 		728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB082AEE1C10008C079B /* sotsugyoApp.swift */; };
 		728EFB0B2AEE1C10008C079B /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB0A2AEE1C10008C079B /* MainContentView.swift */; };
@@ -62,6 +69,7 @@
 		72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226C82AF8C35D002BA0A6 /* CameraManager.swift */; };
 		72F226CB2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */; };
 		72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CC2AF8C496002BA0A6 /* CameraView.swift */; };
+		72F8815E2B32AA5000AE8D87 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 72F8815D2B32AA5000AE8D87 /* GoogleService-Info.plist */; };
 		72F9855D2B17540800FEEC05 /* CameraMusicViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F9855C2B17540800FEEC05 /* CameraMusicViewModel.swift */; };
 		72F985622B17FD2F00FEEC05 /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F985612B17FD2F00FEEC05 /* Track.swift */; };
 		72F985642B17FD4A00FEEC05 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F985632B17FD4A00FEEC05 /* SpotifyAPI.swift */; };
@@ -92,13 +100,19 @@
 		72576F652B1466690064A362 /* SearchMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMusicView.swift; sourceTree = "<group>"; };
 		72576F722B16E5020064A362 /* Main ContentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Main ContentModel.swift"; sourceTree = "<group>"; };
 		72576F742B16F58B0064A362 /* PhotoPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewViewModel.swift; sourceTree = "<group>"; };
-		72576F762B16FD740064A362 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
+		72576F762B16FD740064A362 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		72576F7A2B17010E0064A362 /* searchMusicViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchMusicViewModel.swift; sourceTree = "<group>"; };
+		7257A6CA2B303954006FE747 /* FaceFilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceFilterViewModel.swift; sourceTree = "<group>"; };
+		7257A6CC2B304671006FE747 /* Mask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mask.swift; sourceTree = "<group>"; };
+		7257A6CF2B30875E006FE747 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		7257A6D12B308769006FE747 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
+		7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARFaceTrackingView.swift; sourceTree = "<group>"; };
 		7265CAC62AEFDB60000058BC /* sotsugyo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = sotsugyo.entitlements; sourceTree = "<group>"; };
-		7265CAC92AEFED71000058BC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7266BF322AF374BE000D711B /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		7279F4242B13802900A64739 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		7279F4262B13837E00A64739 /* TabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabView.swift; sourceTree = "<group>"; };
+		7280C9D82B3293CB003025C6 /* NFCView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCView.swift; sourceTree = "<group>"; };
+		7280C9DA2B329581003025C6 /* NFCSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCSession.swift; sourceTree = "<group>"; };
 		728384542B2055E20098856E /* FirebaseMusic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseMusic.swift; sourceTree = "<group>"; };
 		728EFB052AEE1C10008C079B /* sotsugyo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sotsugyo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		728EFB082AEE1C10008C079B /* sotsugyoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sotsugyoApp.swift; sourceTree = "<group>"; };
@@ -128,6 +142,7 @@
 		72F226C82AF8C35D002BA0A6 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " CameraPreviewModel.swift"; sourceTree = "<group>"; };
 		72F226CC2AF8C496002BA0A6 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		72F8815D2B32AA5000AE8D87 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/chrome/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		72F9855C2B17540800FEEC05 /* CameraMusicViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraMusicViewModel.swift; sourceTree = "<group>"; };
 		72F985612B17FD2F00FEEC05 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
 		72F985632B17FD4A00FEEC05 /* SpotifyAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAPI.swift; sourceTree = "<group>"; };
@@ -144,10 +159,13 @@
 				72F985672B17FD8200FEEC05 /* Alamofire in Frameworks */,
 				728EFB4D2AEE2FF2008C079B /* FirebaseStorageUI in Frameworks */,
 				728EFB342AEE2E4A008C079B /* FirebaseAuth in Frameworks */,
+				7257A6D22B308769006FE747 /* ARKit.framework in Frameworks */,
 				728EFB3A2AEE2E4A008C079B /* FirebaseFirestoreCombine-Community in Frameworks */,
+				7280C9D72B319648003025C6 /* Gifu in Frameworks */,
 				728EFB362AEE2E4A008C079B /* FirebaseAuthCombine-Community in Frameworks */,
 				728EFB382AEE2E4A008C079B /* FirebaseFirestore in Frameworks */,
 				7223A54E2B2567DF009D6704 /* Kingfisher in Frameworks */,
+				7257A6D02B30875E006FE747 /* AVFoundation.framework in Frameworks */,
 				7209E3932B12EBD200FC44D3 /* NukeVideo in Frameworks */,
 				7209E3912B12EBD200FC44D3 /* NukeUI in Frameworks */,
 				728EFB452AEE2FF2008C079B /* FirebaseEmailAuthUI in Frameworks */,
@@ -224,6 +242,7 @@
 				72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */,
 				72576F7A2B17010E0064A362 /* searchMusicViewModel.swift */,
 				72F9855C2B17540800FEEC05 /* CameraMusicViewModel.swift */,
+				7257A6CA2B303954006FE747 /* FaceFilterViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -231,14 +250,25 @@
 		72576F6E2B16E2E70064A362 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				72576F762B16FD740064A362 /* UIImage.swift */,
+				72576F762B16FD740064A362 /* UIView.swift */,
 				728EFB502AEE318C008C079B /* AuthenticationManager.swift */,
 				72F226C82AF8C35D002BA0A6 /* CameraManager.swift */,
 				7266BF322AF374BE000D711B /* ImagePicker.swift */,
 				72F985632B17FD4A00FEEC05 /* SpotifyAPI.swift */,
 				72EC194C2B300EBE002CA76B /* QRCodeGenerator.swift */,
+				7257A6CC2B304671006FE747 /* Mask.swift */,
+				7280C9DA2B329581003025C6 /* NFCSession.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		7257A6CE2B30875E006FE747 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7257A6D12B308769006FE747 /* ARKit.framework */,
+				7257A6CF2B30875E006FE747 /* AVFoundation.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		728EFAFC2AEE1C10008C079B = {
@@ -249,6 +279,7 @@
 				728EFB182AEE1C15008C079B /* sotsugyoTests */,
 				728EFB222AEE1C15008C079B /* sotsugyoUITests */,
 				728EFB062AEE1C10008C079B /* Products */,
+				7257A6CE2B30875E006FE747 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -270,8 +301,8 @@
 				72576F6D2B16E2E00064A362 /* ViewModel */,
 				7223A53B2B256213009D6704 /* ViewController */,
 				72576F6E2B16E2E70064A362 /* Utils */,
-				7265CAC92AEFED71000058BC /* GoogleService-Info.plist */,
 				7265CAC62AEFDB60000058BC /* sotsugyo.entitlements */,
+				72F8815D2B32AA5000AE8D87 /* GoogleService-Info.plist */,
 				728EFB082AEE1C10008C079B /* sotsugyoApp.swift */,
 				728EFB0C2AEE1C15008C079B /* Assets.xcassets */,
 				728EFB0E2AEE1C15008C079B /* Preview Content */,
@@ -313,6 +344,8 @@
 				72CBE0AB2B2CA794007542EE /* CameraFolderView.swift */,
 				72CBE0AD2B2CA96B007542EE /* FolderTextView.swift */,
 				72CBE0AF2B2DBD30007542EE /* WriteLetterView.swift */,
+				7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */,
+				7280C9D82B3293CB003025C6 /* NFCView.swift */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -356,6 +389,7 @@
 				72F9856B2B19880800FEEC05 /* URLImageStore */,
 				7223A54D2B2567DF009D6704 /* Kingfisher */,
 				72EC194F2B301196002CA76B /* CodeScanner */,
+				7280C9D62B319648003025C6 /* Gifu */,
 			);
 			productName = sotsugyo;
 			productReference = 728EFB052AEE1C10008C079B /* sotsugyo.app */;
@@ -421,7 +455,7 @@
 				};
 			};
 			buildConfigurationList = 728EFB002AEE1C10008C079B /* Build configuration list for PBXProject "sotsugyo" */;
-			compatibilityVersion = "Xcode 14.0";
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -437,6 +471,7 @@
 				72F985682B19880800FEEC05 /* XCRemoteSwiftPackageReference "url-image" */,
 				7223A54C2B2567DE009D6704 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				72EC194E2B301196002CA76B /* XCRemoteSwiftPackageReference "CodeScanner" */,
+				7280C9D52B319648003025C6 /* XCRemoteSwiftPackageReference "gifu" */,
 			);
 			productRefGroup = 728EFB062AEE1C10008C079B /* Products */;
 			projectDirPath = "";
@@ -455,7 +490,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				728EFB552AEE36BC008C079B /* setupGitignore.command in Resources */,
-				7265CACA2AEFED71000058BC /* GoogleService-Info.plist in Resources */,
+				72F8815E2B32AA5000AE8D87 /* GoogleService-Info.plist in Resources */,
 				728EFB102AEE1C15008C079B /* Preview Assets.xcassets in Resources */,
 				728EFB0D2AEE1C15008C079B /* Assets.xcassets in Resources */,
 			);
@@ -490,18 +525,22 @@
 				72967E452B298E1700911D97 /* SignInView.swift in Sources */,
 				72F226CB2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift in Sources */,
 				72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */,
+				7257A6D42B308F33006FE747 /* ARFaceTrackingView.swift in Sources */,
 				72F9855D2B17540800FEEC05 /* CameraMusicViewModel.swift in Sources */,
+				7280C9D92B3293CB003025C6 /* NFCView.swift in Sources */,
 				72C5A1672B1DACAD00F890AD /* ImageDetailView.swift in Sources */,
-				72576F772B16FD740064A362 /* UIImage.swift in Sources */,
+				72576F772B16FD740064A362 /* UIView.swift in Sources */,
 				72EC19482B300463002CA76B /* PencilView.swift in Sources */,
 				72576F732B16E5020064A362 /* Main ContentModel.swift in Sources */,
 				7279F4252B13802900A64739 /* ProfileView.swift in Sources */,
 				7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */,
 				728EFB4F2AEE303C008C079B /* LoginViewModel.swift in Sources */,
 				728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */,
+				7257A6CB2B303954006FE747 /* FaceFilterViewModel.swift in Sources */,
 				72CBE0AC2B2CA794007542EE /* CameraFolderView.swift in Sources */,
 				72D0C0202B2CA58900456F96 /* MainImageView.swift in Sources */,
 				72EC194B2B30053B002CA76B /* FriendQRView.swift in Sources */,
+				7257A6CD2B304671006FE747 /* Mask.swift in Sources */,
 				72B47F7B2B104A94008832F5 /* PenKitViewModel.swift in Sources */,
 				72EC194D2B300EBE002CA76B /* QRCodeGenerator.swift in Sources */,
 				72CBE0B02B2DBD30007542EE /* WriteLetterView.swift in Sources */,
@@ -512,6 +551,7 @@
 				728384552B2055E20098856E /* FirebaseMusic.swift in Sources */,
 				72576F7B2B17010E0064A362 /* searchMusicViewModel.swift in Sources */,
 				72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */,
+				7280C9DB2B329581003025C6 /* NFCSession.swift in Sources */,
 				72967E472B298E2200911D97 /* SignInedView.swift in Sources */,
 				72F985622B17FD2F00FEEC05 /* Track.swift in Sources */,
 			);
@@ -683,7 +723,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = sotsugyo/Info.plist;
+				INFOPLIST_KEY_NFCReaderUsageDescription = "チェキをNFCに保存します";
 				INFOPLIST_KEY_NSCameraUsageDescription = "チェキを撮影します";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "加工します";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "チェキを撮影します";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "チェキを保存します";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -691,6 +733,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -719,7 +762,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = sotsugyo/Info.plist;
+				INFOPLIST_KEY_NFCReaderUsageDescription = "チェキをNFCに保存します";
 				INFOPLIST_KEY_NSCameraUsageDescription = "チェキを撮影します";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "加工します";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "チェキを撮影します";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "チェキを保存します";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -727,6 +772,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -871,6 +917,14 @@
 				minimumVersion = 7.10.1;
 			};
 		};
+		7280C9D52B319648003025C6 /* XCRemoteSwiftPackageReference "gifu" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kaishin/gifu";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.2.2;
+			};
+		};
 		728EFB322AEE2E4A008C079B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -938,6 +992,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7223A54C2B2567DE009D6704 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		7280C9D62B319648003025C6 /* Gifu */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7280C9D52B319648003025C6 /* XCRemoteSwiftPackageReference "gifu" */;
+			productName = Gifu;
 		};
 		728EFB332AEE2E4A008C079B /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;

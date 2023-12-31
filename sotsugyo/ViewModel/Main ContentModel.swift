@@ -12,7 +12,7 @@ import FirebaseStorage
 import Combine
 import AVFoundation
 import SwiftUI
-
+import Kingfisher
 class MainContentModel: ObservableObject {
     
     
@@ -31,6 +31,7 @@ class MainContentModel: ObservableObject {
     @Published var folderImages: [String: [UIImage]] = [:]
     @Published internal var getimage = false
     @Published internal var folderDocument = String()
+    @Published internal var photoDataCache: [String: Data] = [:]
     
     @Published var userDataList: String = ""
     var audioPlayer: AVPlayer?
@@ -64,14 +65,15 @@ class MainContentModel: ObservableObject {
                     
                 }
             }
-            
             let storage = Storage.storage()
             let storageRef = storage.reference()
+
             for (index, photo) in urlArray.enumerated() {
-                let imageRef = storageRef.child("images/" + photo)
+                
                 
                 do {
                     let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
+                        let imageRef = storageRef.child("images/" + photo)
                         imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
                             if let error = error {
                                 continuation.resume(throwing: error)
@@ -80,15 +82,21 @@ class MainContentModel: ObservableObject {
                             }
                         }
                     }
-                    let image = UIImage(data: data)
-                    DispatchQueue.main.async {
-                        self.images.insert(image!, at: index)
+                    
+                    if index <= self.images.count {
+                        let image = UIImage(data: data)
+                        DispatchQueue.main.async {
+                            self.images.insert(image!, at: index)
+                        }
+                    } else {
+                        print("Index out of range. Ignoring data insertion.")
                     }
                 } catch {
                     print("Error occurred! : \(error)")
                 }
             }
-            
+
+          
             
         }
         if let currentUser = Auth.auth().currentUser {
@@ -134,26 +142,38 @@ class MainContentModel: ObservableObject {
                 
                 let storage = Storage.storage()
                 let storageRef = storage.reference()
-                
-                for (_, photo) in urlArray.enumerated() {
-                    do {
-                        let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
-                            let imageRef = storageRef.child("images/" + photo)
-                            imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
-                                if let error = error {
-                                    continuation.resume(throwing: error)
-                                } else if let data = data {
-                                    continuation.resume(returning: data)
+                for (index, photo) in urlArray.enumerated() {
+                    if let cachedData = photoDataCache[photo] {
+                        let image = UIImage(data: cachedData)
+                        DispatchQueue.main.async {
+                            self.images.insert(image!, at: index)
+                        }
+                    } else {
+                        let imageRef = storageRef.child("images/" + photo)
+                        do {
+                           
+                            let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
+                                imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
+                                    if let error = error {
+                                        continuation.resume(throwing: error)
+                                    } else if let data = data {
+                                        continuation.resume(returning: data)
+                                    }
                                 }
                             }
+                            
+                            DispatchQueue.main.async {
+                                self.photoDataCache[photo] = data
+                            }
+                            let image = UIImage(data: data)
+                            print(index)
+                            DispatchQueue.main.async {
+                                self.images.insert(image!, at: index)
+                            }
+                        } catch {
+                            print("Error occurred during download! : \(error)")
+                            
                         }
-                        
-                        let image = UIImage(data: data)
-                        DispatchQueue.main.async {
-                            self.images.append(image!)
-                        }
-                    } catch {
-                        print("Error occurred! : \(error)")
                     }
                 }
             }
@@ -313,7 +333,6 @@ class MainContentModel: ObservableObject {
             
             let destinationCollectionRef = db.collection("users").document(uid).collection("folders").document(folderDocument).collection(newCollectionName).document()
             
-            // バッチを新しく作成
             let batch = db.batch()
             
             let sourceDocumentRef =  db.collection("users").document(uid).collection("folders").document("all").collection("photos").document(document)
@@ -383,35 +402,49 @@ class MainContentModel: ObservableObject {
             let storage = Storage.storage()
             let storageRef = storage.reference()
             
+           
             for (index, photo) in urlArray.enumerated() {
-                
-                
-                do {
-                    let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
-                        let imageRef = storageRef.child("images/" + photo)
-                        imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
-                            if let error = error {
-                                continuation.resume(throwing: error)
-                            } else if let data = data {
-                                continuation.resume(returning: data)
+                let imageRef = storageRef.child("images/" + photo)
+
+             
+                if let cachedData = photoDataCache[photo] {
+                    let image = UIImage(data: cachedData)
+                    DispatchQueue.main.async {
+                        self.images.insert(image!, at: index)
+                    }
+                } else {
+                    
+                    do {
+                        let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
+                            imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
+                                if let error = error {
+                                    continuation.resume(throwing: error)
+                                } else if let data = data {
+                                    continuation.resume(returning: data)
+                                }
                             }
                         }
-                    }
-                    
-                    // インデックスが範囲内であることを確認してからアクセス
-                    if index <= self.images.count {
-                        let image = UIImage(data: data)
-                        DispatchQueue.main.async {
-                            self.images.insert(image!, at: index)
+
+                     
+                        if index <= self.images.count {
+                            let image = UIImage(data: data)
+
+                            photoDataCache[photo] = data
+
+                            DispatchQueue.main.async {
+                              
+                                self.images.insert(image!, at: index)
+                            }
+                        } else {
+                            print("Index out of range. Ignoring data insertion.")
                         }
-                    } else {
-                        print("Index out of range. Ignoring data insertion.")
-                    
+                    } catch {
+                        print("Error occurred! : \(error)")
                     }
-                } catch {
-                    print("Error occurred! : \(error)")
                 }
-                
+            
+                          
+                      
             }
             
             try await db.collection("users").document(uid ?? "").setData(["date": FieldValue.serverTimestamp()])
@@ -432,7 +465,7 @@ class MainContentModel: ObservableObject {
     }
     func getLetter(){
         let db = Firestore.firestore()
-        print(folderDocument)
+        
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             db.collection("users").document(uid).collection("folders").document(folderDocument).getDocument { (document, error) in
@@ -462,15 +495,103 @@ class MainContentModel: ObservableObject {
             let uid = currentUser.uid
             db.collection("users").document(uid).collection("folders").document(folderDocument).delete()
             DispatchQueue.main.async {
-               
+                
                 if let indexToRemove = self.foldersDocumentId.firstIndex(where: { $0 == self.folderDocument }) {
                     
                     self.foldersDocumentId.remove(at: indexToRemove)
                     self.folders.remove(at: indexToRemove)
                 }
-
+                
             }
         }
         
+    }
+    func getNFCData( NFCUid: String, NFCfolderid: String)async throws{
+        
+        print(NFCUid,"A")
+        print(NFCfolderid,"B")
+        
+        if let currentUser = Auth.auth().currentUser {
+            let uid = currentUser.uid
+            
+            let db = Firestore.firestore()
+            var urlArray = [String]()
+           
+            if let document = try? await db.collection("users").document(NFCUid).collection("folders").document(NFCfolderid).getDocument() {
+                if let data = document.data(), let title = data["title"] {
+                    try await db.collection("users").document(uid).collection("folders").document(NFCfolderid).updateData(["title": title, "date": FieldValue.serverTimestamp()])
+                } else {
+                    // ドキュメントが存在するが、必要なデータがない場合の処理
+                    print("Document found, but title data is missing.")
+                }
+            } else {
+                // ドキュメントが見つからなかった場合の処理
+                print("Document not found for update.")
+            }
+
+            
+            
+            let destinationCollectionRef =  db.collection("users").document(uid).collection("folders").document(NFCfolderid).collection("photos")
+            
+            
+            let sourceCollectionRef = try await db.collection("users").document(NFCUid).collection("folders").document(NFCfolderid).collection("photos").order(by: "date").getDocuments()
+            
+            for document in sourceCollectionRef.documents {
+                let data = document.data()
+                let DocumentID = document.documentID
+                
+                let url = data["url"]
+                if url != nil {
+                    urlArray.append(url as! String)
+                }
+                let ref = try await db.collection("users").document(uid).collection("folders").document(NFCfolderid).collection("photos").document(DocumentID).getDocument()
+                let data2 = ref.data()
+                let artistName =  data2?["artistName"] as?String ?? "ないよ"
+                let imageName =  data2?["imageName"] as?String ?? "ないよ"
+                let trackName =  data2?["trackName"] as?String ?? "ないよ"
+                let id = data2?["id"] as?String ?? "ないよ"
+                let previewUrl = data2?["previewUrl"] as?String ?? "ないよ"
+                
+                DispatchQueue.main.async {
+                    self.Music.append(FirebaseMusic(id: DocumentID, artistName: artistName , imageName: imageName , trackName: trackName , trackId: id , previewURL: previewUrl )
+                    )
+                }
+                
+                
+                
+                destinationCollectionRef.addDocument(data: data)
+            }
+            
+            let storage = Storage.storage()
+            let storageRef = storage.reference()
+            
+            for (index, photo) in urlArray.enumerated() {
+                
+                
+                do {
+                    let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
+                        let imageRef = storageRef.child("images/" + photo)
+                        imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
+                            if let error = error {
+                                continuation.resume(throwing: error)
+                            } else if let data = data {
+                                continuation.resume(returning: data)
+                            }
+                        }
+                    }
+                    
+                    if index <= self.images.count {
+                        let image = UIImage(data: data)
+                        DispatchQueue.main.async {
+                            self.images.insert(image!, at: index)
+                        }
+                    } else {
+                        print("Index out of range. Ignoring data insertion.")
+                    }
+                } catch {
+                    print("Error occurred! : \(error)")
+                }
+            }
+        }
     }
 }
