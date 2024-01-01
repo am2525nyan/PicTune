@@ -210,7 +210,6 @@
 			children = (
 				72D0C01E2B2CA35700456F96 /* main */,
 				7279F4262B13837E00A64739 /* TabView.swift */,
-				728EFB0A2AEE1C10008C079B /* MainContentView.swift */,
 				72F226CC2AF8C496002BA0A6 /* CameraView.swift */,
 				72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */,
 				72EC19472B300463002CA76B /* PencilView.swift */,
@@ -338,9 +337,10 @@
 		72D0C01E2B2CA35700456F96 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				728EFB0A2AEE1C10008C079B /* MainContentView.swift */,
 				72967E462B298E2200911D97 /* SignInedView.swift */,
-				72D0C01F2B2CA58900456F96 /* MainImageView.swift */,
 				72D0C0212B2CA5EC00456F96 /* FolderContentView.swift */,
+				72D0C01F2B2CA58900456F96 /* MainImageView.swift */,
 				72CBE0AB2B2CA794007542EE /* CameraFolderView.swift */,
 				72CBE0AD2B2CA96B007542EE /* FolderTextView.swift */,
 				72CBE0AF2B2DBD30007542EE /* WriteLetterView.swift */,
@@ -742,9 +742,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyou;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -781,9 +783,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyou;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

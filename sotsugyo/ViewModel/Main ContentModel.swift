@@ -82,14 +82,15 @@ class MainContentModel: ObservableObject {
                             }
                         }
                     }
-                    
-                    if index <= self.images.count {
-                        let image = UIImage(data: data)
-                        DispatchQueue.main.async {
-                            self.images.insert(image!, at: index)
+                    DispatchQueue.main.async {
+                        if index <= self.images.count {
+                            let image = UIImage(data: data)
+                            DispatchQueue.main.async {
+                                self.images.insert(image!, at: index)
+                            }
+                        } else {
+                            print("Index out of range. Ignoring data insertion.")
                         }
-                    } else {
-                        print("Index out of range. Ignoring data insertion.")
                     }
                 } catch {
                     print("Error occurred! : \(error)")
@@ -191,7 +192,7 @@ class MainContentModel: ObservableObject {
         
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
-            db.collection("users").document(uid ).collection("personal").document("info").setData([
+            db.collection("users").document(uid).collection("personal").document("info").setData([
                 "uid": uid ,
                 "email": currentUser.email ?? "",
                 "name": currentUser.displayName ?? ""
@@ -199,6 +200,18 @@ class MainContentModel: ObservableObject {
                 if let error = error {
                     print("データの保存に失敗しました: \(error.localizedDescription)")
                 } else {
+                    
+                    if let currentUser = Auth.auth().currentUser {
+                        let uid = currentUser.uid
+                        let folders = UUID().uuidString
+                        db.collection("users").document(uid).collection("folders").document("all").setData([
+                            "title": "all",
+                            "date": FieldValue.serverTimestamp()
+                        ])
+                       
+                        db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
+                    }
+                    
                     print("データがFirestoreに保存されましたよ")
                 }
             }
@@ -289,7 +302,9 @@ class MainContentModel: ObservableObject {
             DispatchQueue.main.async {
                 self.folders.append(folderName)
                 self.foldersDocumentId.append(folders)
+                print(self.folders,self.foldersDocumentId)
             }
+         
             db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
         }
         
@@ -364,11 +379,10 @@ class MainContentModel: ObservableObject {
             let db = Firestore.firestore()
             let uid = Auth.auth().currentUser?.uid
             var urlArray = [String]()
-            
             self.folderDocument = self.foldersDocumentId[folderId]
-            
             DispatchQueue.main.async {
-                self.images = []
+          
+                    self.images = []
                 self.documentIdArray = []
                 self.dates  = []
                 
@@ -393,7 +407,6 @@ class MainContentModel: ObservableObject {
                 DispatchQueue.main.async {
                     self.documentIdArray.append(documentId)
                     self.dates.append(createdDate)
-                    
                     self.images = []
                     
                 }
@@ -410,7 +423,9 @@ class MainContentModel: ObservableObject {
                 if let cachedData = photoDataCache[photo] {
                     let image = UIImage(data: cachedData)
                     DispatchQueue.main.async {
-                        self.images.insert(image!, at: index)
+                        if index <= self.images.count {
+                            self.images.insert(image!, at: index)
+                        }
                     }
                 } else {
                     
@@ -519,7 +534,7 @@ class MainContentModel: ObservableObject {
            
             if let document = try? await db.collection("users").document(NFCUid).collection("folders").document(NFCfolderid).getDocument() {
                 if let data = document.data(), let title = data["title"] {
-                    try await db.collection("users").document(uid).collection("folders").document(NFCfolderid).updateData(["title": title, "date": FieldValue.serverTimestamp()])
+                    try await db.collection("users").document(uid).collection("folders").document(NFCfolderid).setData(["title": title, "date": FieldValue.serverTimestamp()])
                 } else {
                     // ドキュメントが存在するが、必要なデータがない場合の処理
                     print("Document found, but title data is missing.")

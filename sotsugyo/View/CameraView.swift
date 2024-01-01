@@ -8,44 +8,52 @@ struct Camera2View: View {
     @State private var isPresentingMain = false
     @Binding var isPresentingSearch : Bool
     @Binding var friendUid: String
-    
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-
-        ZStack {
-            
-            
-            CameraPreview(cameraManager: cameraManager)
-            Image("Image")
-                .resizable()
-                .scaledToFit()
-            
-            VStack {
-                Spacer()
-                Button("撮影") {
-                    cameraManager.captureImage()
-                }
+        NavigationView {
+            ZStack {
                 
-                .padding()
                 
-                .sheet(isPresented: $cameraManager.isImageUploadCompleted) {
+                CameraPreview(cameraManager: cameraManager)
+                Image("Image")
+                    .resizable()
+                    .scaledToFit()
+                
+                VStack {
+                    Spacer()
+                    Button("撮影") {
+                        cameraManager.captureImage()
+                    }
                     
+                    .padding()
                     
-                    PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, isPresentingSearch: $cameraManager.isPresentingSearch, documentId: $cameraManager.documentId, cameraManager: cameraManager, friendUid: $friendUid)
+                    .sheet(isPresented: $cameraManager.isImageUploadCompleted) {
+                        
+                        
+                        PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, isPresentingSearch: $cameraManager.isPresentingSearch, documentId: $cameraManager.documentId, cameraManager: cameraManager, friendUid: $friendUid)
+                        
+                    }
                     
                 }
             }
+            .navigationBarItems(leading: Button(action: {
+                isPresentingCamera.toggle()
+            }) {
+                Image(systemName: "arrow.left")
+            })
+            .background(Color.yellow)
+            .onAppear {
+                
+                cameraManager.setupCaptureSession()
+            }
+            .onDisappear {
+                
+                cameraManager.stopSession()
+            }
+           
             
         }
-        .background(Color.yellow)
-        .onAppear {
-            
-            cameraManager.setupCaptureSession()
-        }
-        .onDisappear {
-            
-            cameraManager.stopSession()
-        }
+       
     }
 }

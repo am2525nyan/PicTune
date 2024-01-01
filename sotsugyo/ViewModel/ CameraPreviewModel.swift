@@ -11,7 +11,7 @@ struct CameraPreview: UIViewRepresentable {
                 previewLayer.videoGravity = .resizeAspectFill
                 
                 let previewX = CGFloat(27)
-                let previewY = CGFloat(131)
+                let previewY = CGFloat(108)
                 let previewWidth = UIScreen.main.bounds.width * 0.864
                 let previewHeight = UIScreen.main.bounds.height * 0.536
                 previewLayer.frame = CGRect(x: previewX, y: previewY, width: previewWidth, height: previewHeight)
