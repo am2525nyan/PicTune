@@ -1,4 +1,5 @@
 import SwiftUI
+import ARKit
 
 struct Camera2View: View {
     @Binding var isPresentingCamera: Bool
@@ -9,13 +10,34 @@ struct Camera2View: View {
     @Binding var isPresentingSearch : Bool
     @Binding var friendUid: String
     @Environment(\.dismiss) private var dismiss
+    @State private var laughingmanNode: SCNReferenceNode?
+    let previewWidth = UIScreen.main.bounds.width * 0.864
+    let previewHeight = UIScreen.main.bounds.height * 0.6
+    @State private var faceGeometry: ARSCNFaceGeometry? = ARSCNFaceGeometry()
     
     var body: some View {
         NavigationView {
             ZStack {
                 
-                
-                CameraPreview(cameraManager: cameraManager)
+              
+             
+                ZStack {
+                           // Display the camera preview
+                           CameraPreview(cameraManager: cameraManager)
+                    ARFaceTrackingView(laughingmanNode: $laughingmanNode)
+                        .frame(width: previewWidth, height: previewHeight)
+
+                           // Display the ARFaceTrackingView
+       /*             ARFaceTrackingView(faceGeometry: $faceGeometry)
+                        .frame(width: previewWidth, height: previewHeight)
+                        .onAppear {
+                                       // Ensure faceGeometry is initialized with a non-nil value
+                                       if faceGeometry == nil {
+                                           faceGeometry = ARSCNFaceGeometry()
+                                       }
+                                   }
+        */
+                       }
                 Image("Image")
                     .resizable()
                     .scaledToFit()
@@ -46,6 +68,7 @@ struct Camera2View: View {
             .onAppear {
                 
                 cameraManager.setupCaptureSession()
+         resetTracking()
             }
             .onDisappear {
                 
@@ -56,4 +79,21 @@ struct Camera2View: View {
         }
        
     }
+ func resetTracking() {
+           guard ARFaceTrackingConfiguration.isSupported else {
+               // Face tracking is not supported.
+               return
+           }
+
+           let configuration = ARFaceTrackingConfiguration()
+           configuration.isLightEstimationEnabled = true
+           let options: ARSession.RunOptions = [.resetTracking, .removeExistingAnchors]
+
+           // laughingmanNodeを初期化
+           let path = Bundle.main.path(forResource: "filter", ofType: "scn")!
+           let url = URL(fileURLWithPath: path)
+           laughingmanNode = SCNReferenceNode(url: url)
+
+        
+       }
 }

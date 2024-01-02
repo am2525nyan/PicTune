@@ -25,12 +25,12 @@ struct MainImageView: View {
             }
         }
         .refreshable {
-                               Task {
-                                   do {
-                                       try await viewModel.getUrl()
-                                   }
-                               }
-                           }
+            Task {
+                do {
+                    try await viewModel.getUrl()
+                }
+            }
+        }
         .onChange(of: viewModel.getimage) {
             Task {
                 do {

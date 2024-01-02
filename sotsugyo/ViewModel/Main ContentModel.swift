@@ -67,7 +67,7 @@ class MainContentModel: ObservableObject {
             }
             let storage = Storage.storage()
             let storageRef = storage.reference()
-
+            
             for (index, photo) in urlArray.enumerated() {
                 
                 
@@ -85,9 +85,9 @@ class MainContentModel: ObservableObject {
                     DispatchQueue.main.async {
                         if index <= self.images.count {
                             let image = UIImage(data: data)
-                            DispatchQueue.main.async {
+                            
                                 self.images.insert(image!, at: index)
-                            }
+                            
                         } else {
                             print("Index out of range. Ignoring data insertion.")
                         }
@@ -96,8 +96,8 @@ class MainContentModel: ObservableObject {
                     print("Error occurred! : \(error)")
                 }
             }
-
-          
+            
+            
             
         }
         if let currentUser = Auth.auth().currentUser {
@@ -152,7 +152,7 @@ class MainContentModel: ObservableObject {
                     } else {
                         let imageRef = storageRef.child("images/" + photo)
                         do {
-                           
+                            
                             let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
                                 imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
                                     if let error = error {
@@ -203,12 +203,11 @@ class MainContentModel: ObservableObject {
                     
                     if let currentUser = Auth.auth().currentUser {
                         let uid = currentUser.uid
-                        let folders = UUID().uuidString
                         db.collection("users").document(uid).collection("folders").document("all").setData([
                             "title": "all",
                             "date": FieldValue.serverTimestamp()
                         ])
-                       
+                        
                         db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
                     }
                     
@@ -304,7 +303,7 @@ class MainContentModel: ObservableObject {
                 self.foldersDocumentId.append(folders)
                 print(self.folders,self.foldersDocumentId)
             }
-         
+            
             db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
         }
         
@@ -381,8 +380,8 @@ class MainContentModel: ObservableObject {
             var urlArray = [String]()
             self.folderDocument = self.foldersDocumentId[folderId]
             DispatchQueue.main.async {
-          
-                    self.images = []
+                
+                self.images = []
                 self.documentIdArray = []
                 self.dates  = []
                 
@@ -415,11 +414,11 @@ class MainContentModel: ObservableObject {
             let storage = Storage.storage()
             let storageRef = storage.reference()
             
-           
+            
             for (index, photo) in urlArray.enumerated() {
                 let imageRef = storageRef.child("images/" + photo)
-
-             
+                
+                
                 if let cachedData = photoDataCache[photo] {
                     let image = UIImage(data: cachedData)
                     DispatchQueue.main.async {
@@ -439,27 +438,29 @@ class MainContentModel: ObservableObject {
                                 }
                             }
                         }
-
-                     
-                        if index <= self.images.count {
-                            let image = UIImage(data: data)
-
-                            photoDataCache[photo] = data
-
-                            DispatchQueue.main.async {
-                              
+                        
+                        DispatchQueue.main.async {
+                            if index <= self.images.count {
+                                let image = UIImage(data: data)
+                                
+                                
+                                
+                                self.photoDataCache[photo] = data
                                 self.images.insert(image!, at: index)
+                                
                             }
-                        } else {
-                            print("Index out of range. Ignoring data insertion.")
+                            
+                            else {
+                                print("Index out of range. Ignoring data insertion.")
+                            }
                         }
                     } catch {
                         print("Error occurred! : \(error)")
                     }
                 }
-            
-                          
-                      
+                
+                
+                
             }
             
             try await db.collection("users").document(uid ?? "").setData(["date": FieldValue.serverTimestamp()])
@@ -491,7 +492,9 @@ class MainContentModel: ObservableObject {
                     
                 } else {
                     print("Document does not exist")
-                    self.userDataList = ""
+                    DispatchQueue.main.async {
+                        self.userDataList = ""
+                    }
                 }
             }
         }
@@ -531,7 +534,7 @@ class MainContentModel: ObservableObject {
             
             let db = Firestore.firestore()
             var urlArray = [String]()
-           
+            
             if let document = try? await db.collection("users").document(NFCUid).collection("folders").document(NFCfolderid).getDocument() {
                 if let data = document.data(), let title = data["title"] {
                     try await db.collection("users").document(uid).collection("folders").document(NFCfolderid).setData(["title": title, "date": FieldValue.serverTimestamp()])
@@ -543,7 +546,7 @@ class MainContentModel: ObservableObject {
                 // ドキュメントが見つからなかった場合の処理
                 print("Document not found for update.")
             }
-
+            
             
             
             let destinationCollectionRef =  db.collection("users").document(uid).collection("folders").document(NFCfolderid).collection("photos")

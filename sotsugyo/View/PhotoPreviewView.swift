@@ -1,5 +1,6 @@
 import SwiftUI
-
+import ARKit
+import SceneKit
 
 struct PhotoPreviewView: View {
     var images: UIImage?
@@ -15,36 +16,31 @@ struct PhotoPreviewView: View {
     @Binding var friendUid: String
     
     @StateObject private var viewModel = PhotoPreviewViewModel()
+    
     var body: some View {
         VStack {
             if let image = images {
-                
                 Button("保存") {
                     viewModel.takeScreenshot()
-                    
                     UIImageWriteToSavedPhotosAlbum(viewModel.screenshotImage ?? image, nil, nil, nil)
                     cameraManager.uploadPhoto(viewModel.screenshotImage ?? image, friendUid: friendUid)
-                    
                 }
-                
-                .sheet(isPresented: $isPresentingSearch){
-                    SearchView(documentId: cameraManager.documentId, friendUid: $friendUid)
-                    
-                }
-                
                 .padding()
+                
+                .sheet(isPresented: $isPresentingSearch) {
+                    SearchView(documentId: documentId, friendUid: $friendUid)
+                }
+                
                 Image("Image")
                     .resizable()
                     .scaledToFit()
-                
                     .overlay {
                         Image(uiImage: image)
                             .resizable()
-                        
-                            .frame(width: previewWidth ,height: previewHeight)
+                            .frame(width: previewWidth, height: previewHeight)
                             .position(x: 195, y: 286)
                     }
-                    .overlay{
+                    .overlay {
                         PencilView()
                     }
                 
@@ -53,11 +49,6 @@ struct PhotoPreviewView: View {
             }
         }
         .background(Color.yellow)
+       
     }
-    
-    
-    
-    
 }
-
-

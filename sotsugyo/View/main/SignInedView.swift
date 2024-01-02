@@ -56,10 +56,12 @@ struct SignInedView: View {
             
                 .onAppear {
                     Task {
-                        if first {
+                        if first == true{
                             try await viewModel.firstgetUrl()
-                            try await viewModel.getDate()
                             try await viewModel.getFolder()
+                          
+                            try await viewModel.getDate()
+                           
                             first = false
                         } else {
                             try await viewModel.firstgetUrl()
