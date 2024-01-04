@@ -60,40 +60,14 @@ struct CameraFolderView: View {
             }
         // ボタンでの読み込み処理
         Button("読み込み") {
-            // ボタンが押されたときに一度だけ読み取りセッションを開始
-            session.startReadSession { text, NFCUid, error in
-                if let error = error {
-                    alertMessage = error.localizedDescription
-                } else {
-                    alertMessage = "読み込みできたよ"
-                    
-                    if let NFCUid = NFCUid {
-                        // 改行文字以降を削除
-                        if let cleanedNFCUid = NFCUid.components(separatedBy: "\n").first {
-                            // text をアンラップ
-                            if let unwrappedText = text {
-                                Task {
-                                    // viewModel.getNFCDataを呼び出す
-                                    do {
-                                        print(cleanedNFCUid as Any, "C")
-                                        print(unwrappedText as Any, "D")
-                                        try await viewModel.getNFCData(NFCUid: cleanedNFCUid, NFCfolderid: unwrappedText)
-                                       
-                                    } catch {
-                                        // エラーのハンドリング
-                                        print("Error: \(error)")
-                                    }
-                                    
-                                    // ハンドラに渡す
-                                    session.readHandler?(unwrappedText, cleanedNFCUid, nil)
-                                }
-                            }
-                        }
-                    }
-                }
-                isAlertShown = true
-            }
+            startNFCReadSession()
+                      }
+                      .alert(isPresented: $isAlertShown) {
+                          Alert(title: Text("NFC読み取り結果"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+                      
         }
+
+
 
         .alert(isPresented: $isAlertShown) {
                     Alert(
@@ -110,5 +84,39 @@ struct CameraFolderView: View {
             }
         
     }
+    private func startNFCReadSession() {
+         
+           
+           session.startReadSession { text, NFCUid, error in
+               if let error = error {
+                   alertMessage = error.localizedDescription
+               } else {
+                   alertMessage = "NFC読み取り成功！"
+                   
+                   if let NFCUid = NFCUid {
+                       // 上記で提供したコードをここに追加
+                       if let messageString = NFCUid as? String {
+                           // NFCUid が文字列の場合の処理
+                           // 例: 文字列を適切に処理する
+                           let components = messageString.components(separatedBy: " ")
+                           if let cleanedNFCUid = components.first, let unwrappedText = components.last {
+                               Task {
+                                   do {
+                                       try await viewModel.getNFCData(NFCUid: cleanedNFCUid, NFCfolderid: unwrappedText)
+                                   } catch {
+                                       print("Error: \(error)")
+                                   }
+                               }
+                               print(cleanedNFCUid, "cleanedNFCUid")
+                               print(unwrappedText, "unwrappedText")
+                           }
+                       
+                       }
+                   }
+               }
+               
+               isAlertShown = true
+           }
+       }
 }
 

@@ -15,13 +15,13 @@ struct SignInView: View {
             Spacer()
             Button {
                 viewModel.isShowSheet.toggle()
-                viewModel.saveUserData()
+               
             } label: {
                 Text("Sign-In")
             }
             .padding()
             .sheet(isPresented: $viewModel.isShowSheet) {
-                LoginView()
+                LoginView(viewModel: viewModel)
             }
         }
     }
