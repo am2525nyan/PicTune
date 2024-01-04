@@ -20,7 +20,6 @@
 		72576F772B16FD740064A362 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F762B16FD740064A362 /* UIView.swift */; };
 		72576F7B2B17010E0064A362 /* searchMusicViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F7A2B17010E0064A362 /* searchMusicViewModel.swift */; };
 		7257A6CB2B303954006FE747 /* FaceFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7257A6CA2B303954006FE747 /* FaceFilterViewModel.swift */; };
-		7257A6CD2B304671006FE747 /* Mask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7257A6CC2B304671006FE747 /* Mask.swift */; };
 		7257A6D02B30875E006FE747 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7257A6CF2B30875E006FE747 /* AVFoundation.framework */; };
 		7257A6D22B308769006FE747 /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7257A6D12B308769006FE747 /* ARKit.framework */; };
 		7257A6D42B308F33006FE747 /* ARFaceTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */; };
@@ -30,6 +29,7 @@
 		7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7266BF322AF374BE000D711B /* ImagePicker.swift */; };
 		7279F4252B13802900A64739 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7279F4242B13802900A64739 /* ProfileView.swift */; };
 		7279F4272B13837E00A64739 /* TabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7279F4262B13837E00A64739 /* TabView.swift */; };
+		727A72BA2B44EFF2006A4393 /* Mask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 727A72B92B44EFF2006A4393 /* Mask.swift */; };
 		7280C9D72B319648003025C6 /* Gifu in Frameworks */ = {isa = PBXBuildFile; productRef = 7280C9D62B319648003025C6 /* Gifu */; };
 		7280C9D92B3293CB003025C6 /* NFCView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7280C9D82B3293CB003025C6 /* NFCView.swift */; };
 		7280C9DB2B329581003025C6 /* NFCSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7280C9DA2B329581003025C6 /* NFCSession.swift */; };
@@ -58,6 +58,7 @@
 		728EFB552AEE36BC008C079B /* setupGitignore.command in Resources */ = {isa = PBXBuildFile; fileRef = 728EFB542AEE36BC008C079B /* setupGitignore.command */; };
 		72967E452B298E1700911D97 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72967E442B298E1700911D97 /* SignInView.swift */; };
 		72967E472B298E2200911D97 /* SignInedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72967E462B298E2200911D97 /* SignInedView.swift */; };
+		72AB59292B46963600A8E82D /* heart2.gif in Resources */ = {isa = PBXBuildFile; fileRef = 72AB59282B46963600A8E82D /* heart2.gif */; };
 		72B47F7B2B104A94008832F5 /* PenKitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */; };
 		72C5A1672B1DACAD00F890AD /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */; };
 		72CBE0AC2B2CA794007542EE /* CameraFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CBE0AB2B2CA794007542EE /* CameraFolderView.swift */; };
@@ -101,7 +102,6 @@
 /* Begin PBXFileReference section */
 		72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewView.swift; sourceTree = "<group>"; };
 		722AF4822B43DF0200CE104E /* heart.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = heart.gif; sourceTree = "<group>"; };
-		722AF4852B43FD3E00CE104E /* filter.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = filter.obj; sourceTree = "<group>"; };
 		722AF4862B43FEB300CE104E /* filter.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = filter.scn; sourceTree = "<group>"; };
 		72576F652B1466690064A362 /* SearchMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMusicView.swift; sourceTree = "<group>"; };
 		72576F722B16E5020064A362 /* Main ContentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Main ContentModel.swift"; sourceTree = "<group>"; };
@@ -109,7 +109,6 @@
 		72576F762B16FD740064A362 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		72576F7A2B17010E0064A362 /* searchMusicViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchMusicViewModel.swift; sourceTree = "<group>"; };
 		7257A6CA2B303954006FE747 /* FaceFilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceFilterViewModel.swift; sourceTree = "<group>"; };
-		7257A6CC2B304671006FE747 /* Mask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mask.swift; sourceTree = "<group>"; };
 		7257A6CF2B30875E006FE747 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		7257A6D12B308769006FE747 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
 		7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARFaceTrackingView.swift; sourceTree = "<group>"; };
@@ -119,6 +118,7 @@
 		7266BF322AF374BE000D711B /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		7279F4242B13802900A64739 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		7279F4262B13837E00A64739 /* TabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabView.swift; sourceTree = "<group>"; };
+		727A72B92B44EFF2006A4393 /* Mask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mask.swift; sourceTree = "<group>"; };
 		7280C9D82B3293CB003025C6 /* NFCView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCView.swift; sourceTree = "<group>"; };
 		7280C9DA2B329581003025C6 /* NFCSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCSession.swift; sourceTree = "<group>"; };
 		728384542B2055E20098856E /* FirebaseMusic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseMusic.swift; sourceTree = "<group>"; };
@@ -136,6 +136,8 @@
 		728EFB542AEE36BC008C079B /* setupGitignore.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = setupGitignore.command; sourceTree = "<group>"; };
 		72967E442B298E1700911D97 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		72967E462B298E2200911D97 /* SignInedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInedView.swift; sourceTree = "<group>"; };
+		72AB59282B46963600A8E82D /* heart2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = heart2.gif; path = ../../../../Downloads/heart2.gif; sourceTree = "<group>"; };
+		72AB592A2B4696B300A8E82D /* heart2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = heart2.gif; sourceTree = "<group>"; };
 		72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenKitViewModel.swift; sourceTree = "<group>"; };
 		72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
 		72CBE0AB2B2CA794007542EE /* CameraFolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraFolderView.swift; sourceTree = "<group>"; };
@@ -245,6 +247,7 @@
 				728EFB4E2AEE303B008C079B /* LoginViewModel.swift */,
 				72576F722B16E5020064A362 /* Main ContentModel.swift */,
 				72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */,
+				727A72B92B44EFF2006A4393 /* Mask.swift */,
 				72576F742B16F58B0064A362 /* PhotoPreviewViewModel.swift */,
 				72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */,
 				72576F7A2B17010E0064A362 /* searchMusicViewModel.swift */,
@@ -263,7 +266,6 @@
 				7266BF322AF374BE000D711B /* ImagePicker.swift */,
 				72F985632B17FD4A00FEEC05 /* SpotifyAPI.swift */,
 				72EC194C2B300EBE002CA76B /* QRCodeGenerator.swift */,
-				7257A6CC2B304671006FE747 /* Mask.swift */,
 				7280C9DA2B329581003025C6 /* NFCSession.swift */,
 			);
 			path = Utils;
@@ -282,6 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				722AF4862B43FEB300CE104E /* filter.scn */,
+				72AB592A2B4696B300A8E82D /* heart2.gif */,
 				725DAA682B4398FE00033106 /* heart.gif */,
 			);
 			path = gif;
@@ -313,8 +316,8 @@
 			isa = PBXGroup;
 			children = (
 				725DAA6A2B4399EE00033106 /* Assets.xcassets */,
+				72AB59282B46963600A8E82D /* heart2.gif */,
 				722AF4822B43DF0200CE104E /* heart.gif */,
-				722AF4852B43FD3E00CE104E /* filter.obj */,
 				725DAA672B4398E900033106 /* gif */,
 				72576F6B2B16E2670064A362 /* Model */,
 				72576F692B16E2560064A362 /* View */,
@@ -513,6 +516,7 @@
 			files = (
 				728EFB552AEE36BC008C079B /* setupGitignore.command in Resources */,
 				725DAA692B4398FE00033106 /* heart.gif in Resources */,
+				72AB59292B46963600A8E82D /* heart2.gif in Resources */,
 				72F8815E2B32AA5000AE8D87 /* GoogleService-Info.plist in Resources */,
 				728EFB102AEE1C15008C079B /* Preview Assets.xcassets in Resources */,
 				725DAA6B2B4399EE00033106 /* Assets.xcassets in Resources */,
@@ -564,7 +568,6 @@
 				72CBE0AC2B2CA794007542EE /* CameraFolderView.swift in Sources */,
 				72D0C0202B2CA58900456F96 /* MainImageView.swift in Sources */,
 				72EC194B2B30053B002CA76B /* FriendQRView.swift in Sources */,
-				7257A6CD2B304671006FE747 /* Mask.swift in Sources */,
 				72B47F7B2B104A94008832F5 /* PenKitViewModel.swift in Sources */,
 				72EC194D2B300EBE002CA76B /* QRCodeGenerator.swift in Sources */,
 				72CBE0B02B2DBD30007542EE /* WriteLetterView.swift in Sources */,
@@ -574,6 +577,7 @@
 				72CBE0AE2B2CA96B007542EE /* FolderTextView.swift in Sources */,
 				728384552B2055E20098856E /* FirebaseMusic.swift in Sources */,
 				72576F7B2B17010E0064A362 /* searchMusicViewModel.swift in Sources */,
+				727A72BA2B44EFF2006A4393 /* Mask.swift in Sources */,
 				72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */,
 				7280C9DB2B329581003025C6 /* NFCSession.swift in Sources */,
 				72967E472B298E2200911D97 /* SignInedView.swift in Sources */,

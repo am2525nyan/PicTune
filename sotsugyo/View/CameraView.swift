@@ -19,25 +19,25 @@ struct Camera2View: View {
         NavigationView {
             ZStack {
                 
-              
-             
+                
+                
                 ZStack {
-                           // Display the camera preview
-                           CameraPreview(cameraManager: cameraManager)
-                    ARFaceTrackingView(laughingmanNode: $laughingmanNode)
+                    // Display the camera preview
+              CameraPreview(cameraManager: cameraManager)
+                    /*      ARFaceView()
                         .frame(width: previewWidth, height: previewHeight)
-
-                           // Display the ARFaceTrackingView
-       /*             ARFaceTrackingView(faceGeometry: $faceGeometry)
-                        .frame(width: previewWidth, height: previewHeight)
-                        .onAppear {
-                                       // Ensure faceGeometry is initialized with a non-nil value
-                                       if faceGeometry == nil {
-                                           faceGeometry = ARSCNFaceGeometry()
-                                       }
-                                   }
-        */
-                       }
+                    
+                    // Display the ARFaceTrackingView
+                                ARFaceTrackingView(faceGeometry: $faceGeometry)
+                     .frame(width: previewWidth, height: previewHeight)
+                     .onAppear {
+                     // Ensure faceGeometry is initialized with a non-nil value
+                     if faceGeometry == nil {
+                     faceGeometry = ARSCNFaceGeometry()
+                     }
+                     }
+                     */
+                }
                 Image("Image")
                     .resizable()
                     .scaledToFit()
@@ -68,32 +68,32 @@ struct Camera2View: View {
             .onAppear {
                 
                 cameraManager.setupCaptureSession()
-         resetTracking()
+                resetTracking()
             }
             .onDisappear {
                 
                 cameraManager.stopSession()
             }
-           
+            
             
         }
-       
-    }
- func resetTracking() {
-           guard ARFaceTrackingConfiguration.isSupported else {
-               // Face tracking is not supported.
-               return
-           }
-
-           let configuration = ARFaceTrackingConfiguration()
-           configuration.isLightEstimationEnabled = true
-           let options: ARSession.RunOptions = [.resetTracking, .removeExistingAnchors]
-
-           // laughingmanNodeを初期化
-           let path = Bundle.main.path(forResource: "filter", ofType: "scn")!
-           let url = URL(fileURLWithPath: path)
-           laughingmanNode = SCNReferenceNode(url: url)
-
         
-       }
+    }
+    func resetTracking() {
+        guard ARFaceTrackingConfiguration.isSupported else {
+            // Face tracking is not supported.
+            return
+        }
+        
+        let configuration = ARFaceTrackingConfiguration()
+        configuration.isLightEstimationEnabled = true
+        let options: ARSession.RunOptions = [.resetTracking, .removeExistingAnchors]
+        
+        // laughingmanNodeを初期化
+        let path = Bundle.main.path(forResource: "filter", ofType: "scn")!
+        let url = URL(fileURLWithPath: path)
+        laughingmanNode = SCNReferenceNode(url: url)
+        
+        
+    }
 }

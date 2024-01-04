@@ -17,25 +17,25 @@ final class NFCSession: NSObject, ObservableObject {
     private var writeHandler: ((Error?) -> Void)?
  var readHandler: ((String?, String?, Error?) -> Void)?
     
-    func startWriteSession(UserUid: String,folder: String, writeHandler: ((Error?) -> Void)?) {
+    
+    func startWriteSession(UserUid: String, folder: String, writeHandler: ((Error?) -> Void)?) {
         self.writeHandler = writeHandler
         isWriting = true
+
+        // UserUid と folder をスペースで区切って1つの文字列に結合
+        let combinedString = "\(UserUid) \(folder)"
+
         let textPayload = NFCNDEFPayload(
             format: NFCTypeNameFormat.nfcWellKnown,
             type: "T".data(using: .utf8)!,
             identifier: Data(),
-            payload: UserUid.data(using: .utf8)!)
-        
-        let textPayload2 = NFCNDEFPayload(
-            format: NFCTypeNameFormat.nfcWellKnown,
-            type: "T".data(using: .utf8)!,
-            identifier: Data(),
-            payload: folder.data(using: .utf8)!)
-   
-        ndefMessage = NFCNDEFMessage(records: [textPayload,textPayload2])
+            payload: combinedString.data(using: .utf8)!  // スペースで区切った文字列をデータとして設定
+        )
+
+        ndefMessage = NFCNDEFMessage(records: [textPayload])
         startSession()
     }
-
+    
     func startReadSession(readHandler: ((String?, String?, Error?) -> Void)?) {
         self.readHandler = readHandler
         isWriting = false
@@ -50,6 +50,11 @@ final class NFCSession: NSObject, ObservableObject {
         session = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: false)
         session.alertMessage = "スキャン中"
         session.begin()
+        
+    }
+    func stopReadSession() {
+        session.invalidate()
+        session = nil
     }
 }
 

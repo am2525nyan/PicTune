@@ -23,26 +23,27 @@ struct FolderTextView: View {
     @State var playGif = true
         @State var isActive: Bool = false
     var gif = UIImageView()
-    let gifData = NSDataAsset(name:"heart")?.data
+    let gifData = NSDataAsset(name:"heart3")?.data
     var body: some View {
         VStack{
             HStack {
-                if let gifData = gifData {
-                    GIFImage(data: gifData)
-                                .frame(height: 200)
+              
+                    
+                    if viewModel.folders.indices.contains(selectedFolderIndex) {
+                        Text(viewModel.folders[selectedFolderIndex])
+                            .padding()
+                            .font(.system(size: 17))
+                    } else {
+                        ZStack{
+                          
+                            if let gifData = gifData {
+                                GIFImage(data: gifData)
+                                    .frame(height: 100)
+                            }
+                             Text("読み込み中")
                         }
-                
-                if viewModel.folders.indices.contains(selectedFolderIndex) {
-                    Text(viewModel.folders[selectedFolderIndex])
-                        .padding()
-                        .font(.system(size: 17))
-                } else {
-                    Text("読み込み中")
-                        .onAppear{
-                           
-                        }
-                }
-            
+                    }
+                    
                     
                 
                 if viewModel.folders.indices.contains(selectedFolderIndex) {
