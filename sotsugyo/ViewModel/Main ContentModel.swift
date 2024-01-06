@@ -189,39 +189,39 @@ class MainContentModel: ObservableObject {
     
     
     func saveUserData(){
-        
-        let db = Firestore.firestore()
-        
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            db.collection("users").document(uid).collection("personal").document("info").setData([
-                "uid": uid ,
-                "email": currentUser.email ?? "",
-                "name": currentUser.displayName ?? ""
-            ]) { error in
-                if let error = error {
-                    print("データの保存に失敗しました: \(error.localizedDescription)")
-                } else {
-                    
-                    if let currentUser = Auth.auth().currentUser {
-                        let uid = currentUser.uid
-                        db.collection("users").document(uid).collection("folders").document("all").setData([
-                            "title": "all",
-                            "date": FieldValue.serverTimestamp()
-                        ])
+            
+            let db = Firestore.firestore()
+            
+            if let currentUser = Auth.auth().currentUser {
+                let uid = currentUser.uid
+                db.collection("users").document(uid).collection("personal").document("info").setData([
+                    "uid": uid ,
+                    "email": currentUser.email ?? "",
+                    "name": currentUser.displayName ?? ""
+                ]) { error in
+                    if let error = error {
+                        print("データの保存に失敗しました: \(error.localizedDescription)")
+                    } else {
                         
-                        db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
+                        if let currentUser = Auth.auth().currentUser {
+                            let uid = currentUser.uid
+                            db.collection("users").document(uid).collection("folders").document("all").setData([
+                                "title": "all",
+                                "date": FieldValue.serverTimestamp()
+                            ])
+                            
+                            db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
+                        }
+                        
+                        print("データがFirestoreに保存されましたよ")
                     }
-                    
-                    print("データがFirestoreに保存されましたよ")
                 }
             }
         }
-    }
-    
-    
-    func getDate() async throws {
-        DispatchQueue.main.async {
+        
+        
+        func getDate() async throws {
+            DispatchQueue.main.async {
             self.dates = []
         }
         do {

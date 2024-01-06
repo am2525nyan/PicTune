@@ -40,25 +40,6 @@ import FirebaseFirestore
             print("Error")
         }
     }
-    func saveUserData(){
-        
-        let db = Firestore.firestore()
-        
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            db.collection("users").document(uid).collection("personal").document("info").setData([
-                "uid": uid ,
-                "email": currentUser.email ?? "",
-                "name": currentUser.displayName ?? ""
-            ]) { error in
-                if let error = error {
-                    print("データの保存に失敗しました: \(error.localizedDescription)")
-                } else {
-                    print("データがFirestoreに保存されました")
-                }
-            }
-        }
-    }
-    
+   
     
 }
