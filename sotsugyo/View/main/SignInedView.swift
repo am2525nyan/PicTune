@@ -28,6 +28,8 @@ struct SignInedView: View {
             HStack {
                 Button {
                     authenticationManager.signOut()
+                    first = true
+                    viewModel.folderDocumentIdArray = []
                 } label: {
                     Text("Sign-Out")
                 }
