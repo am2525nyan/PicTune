@@ -13,6 +13,7 @@ import Combine
 import AVFoundation
 import SwiftUI
 import Kingfisher
+import Photos
 class MainContentModel: ObservableObject {
     
     
@@ -87,7 +88,7 @@ class MainContentModel: ObservableObject {
                         if index <= self.images.count {
                             let image = UIImage(data: data)
                             
-                                self.images.insert(image!, at: index)
+                            self.images.insert(image!, at: index)
                             
                         } else {
                             print("Index out of range. Ignoring data insertion.")
@@ -338,8 +339,13 @@ class MainContentModel: ObservableObject {
         let db = Firestore.firestore()
         
         let document = self.documentIdArray[index]
+   
         
-        self.folderDocument = self.foldersDocumentId[folderId]
+      
+            self.folderDocument = self.foldersDocumentId[folderId]
+            
+            print(self.foldersDocumentId,folderId,self.folderDocument,"Aa")
+            
         
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
@@ -379,9 +385,12 @@ class MainContentModel: ObservableObject {
             let db = Firestore.firestore()
             let uid = Auth.auth().currentUser?.uid
             var urlArray = [String]()
+            
             self.folderDocument = self.foldersDocumentId[folderId]
+
+            
             DispatchQueue.main.async {
-                
+            
                 self.images = []
                 self.documentIdArray = []
                 self.dates  = []
@@ -529,7 +538,7 @@ class MainContentModel: ObservableObject {
         
         if nfc == false{
             nfc = true
-           
+            
             
             if let currentUser = Auth.auth().currentUser {
                 let uid = currentUser.uid
@@ -537,12 +546,12 @@ class MainContentModel: ObservableObject {
                 let db = Firestore.firestore()
                 var urlArray = [String]()
                 
-               let document = try await db.collection("users").document(NFCUid).collection("folders").document(NFCfolderid).getDocument()
-                     let data = document.data()
+                let document = try await db.collection("users").document(NFCUid).collection("folders").document(NFCfolderid).getDocument()
+                let data = document.data()
                 let title = data?["title"] as? String ?? "デフォルトのタイトル"
-
-              
-                        try await db.collection("users").document(uid).collection("folders").document(NFCfolderid).setData(["title": title, "date": FieldValue.serverTimestamp()])
+                
+                
+                try await db.collection("users").document(uid).collection("folders").document(NFCfolderid).setData(["title": title, "date": FieldValue.serverTimestamp()])
                 DispatchQueue.main.async {
                     self.folders.append(title)
                     self.foldersDocumentId.append(NFCfolderid)
@@ -615,6 +624,54 @@ class MainContentModel: ObservableObject {
         }else{
             print("2回目")
         }
-     
+        
+        
+        
     }
+    func downloadFile(documentId: String, folderId: String) {
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let db = Firestore.firestore()
+        if let currentUser = Auth.auth().currentUser {
+            let uid = currentUser.uid
+            let docRef = db.collection("users").document(uid).collection("folders").document(folderId).collection("photos").document(documentId)
+
+            docRef.getDocument { document, error in
+                if let error = error {
+                    print("Error getting document: \(error.localizedDescription)")
+                    return
+                }
+
+                if let data = document?.data(), let fileName = data["url"] as? String {
+                    print("File Name: \(fileName)")
+                    let storageRef = Storage.storage().reference().child("images/"+fileName)
+
+                            storageRef.getData(maxSize: 5 * 1024 * 1024) { data, error in
+                                if let error = error {
+                                    print("Error downloading image: \(error.localizedDescription)")
+                                    return
+                                }
+
+                                if let imageData = data, let image = UIImage(data: imageData) {
+                                    self.saveImageToCameraRoll(image: image)
+                                }
+                            }
+                } else {
+                    print("Document does not exist or does not contain 'url' key.")
+                }
+            }
+        }
+
+    }
+    private func saveImageToCameraRoll(image: UIImage) {
+           PHPhotoLibrary.shared().performChanges {
+               PHAssetChangeRequest.creationRequestForAsset(from: image)
+           } completionHandler: { success, error in
+               if let error = error {
+                   print("Error saving image to camera roll: \(error.localizedDescription)")
+               } else {
+                   print("Image saved to camera roll successfully.")
+               }
+           }
+       }
 }

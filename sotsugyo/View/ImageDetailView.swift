@@ -6,6 +6,10 @@
 //
 
 import SwiftUI
+import Photos
+import FirebaseStorage
+import FirebaseAuth
+import FirebaseFirestore
 // ImageDetailView.swift
 struct ImageDetailView: View {
     @Binding var image: UIImage?
@@ -28,8 +32,21 @@ struct ImageDetailView: View {
                             .resizable()
                             .scaledToFit()
                             .navigationBarTitle("画像詳細", displayMode: .inline)
+                            .navigationBarItems(
+                                          trailing: Button {
+                                              // ボタンがタップされたときの処理
+                                              print(documentId,viewModel.folderDocument)
+                                              viewModel.downloadFile(documentId: documentId, folderId: viewModel.folderDocument)
+                                          } label: {
+                                              Image(systemName: "square.and.arrow.down")
+                                          }
+                                      )
                     }
-                }
+                  
+                
+                        
+                    }
+                
                 VStack {
                     
                     if let music = viewModel.Music.first {
@@ -114,13 +131,7 @@ struct ImageDetailView: View {
                         }
                     }
                     
-                    Task {
-                        do {
-                            
-                        } catch {
-                            print("Error loading music: \(error.localizedDescription)")
-                        }
-                    }
+                    
                 }
                 .background(Color.white)
                 
@@ -133,6 +144,50 @@ struct ImageDetailView: View {
         
         
     }
+    func downloadFile(documentId: String, folderId: String) {
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let db = Firestore.firestore()
+        
+        if let currentUser = Auth.auth().currentUser {
+            let uid = currentUser.uid
+            db.collection("users").document(uid).collection("folders").document(folderId).collection("photos").document(documentId).getDocument { document, _ in
+                if let data = document?.data(), let fileName = data["url"] as? String {
+                    let localURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+                    
+                    // ダウンロードを実行
+                    storageRef.child(fileName).write(toFile: localURL) { localURL, error in
+                        if let error = error {
+                            print("Error downloading file: \(error)")
+                        } else {
+                            print("Download success! Local URL: \(localURL?.path ?? "")")
+                            
+                            // カメラロールに保存
+                            saveToCameraRoll(imageURL: localURL)
+                        }
+                    }
+                } else {
+                    print("Failed to get document data or file name from Firestore")
+                }
+            }
+        }
+    }
+   
     
+    func saveToCameraRoll(imageURL: URL?) {
+        guard let imageURL = imageURL else { return }
+        
+        // カメラロールに保存
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: imageURL)
+        }) { success, error in
+            if success {
+                print("Image saved to camera roll")
+            } else {
+                print("Error saving image to camera roll: \(error?.localizedDescription ?? "")")
+            }
+        }
+    }
+
     
 }

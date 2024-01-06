@@ -24,15 +24,6 @@ struct TabContentView: View {
                     .tag(1)
                     
                 }
-            
-            ProfileView( documentId: $documentId)
-                .tabItem {
-                    VStack {
-                        Label("Page2", systemImage: "2.circle")
-                    }
-                    .tag(2)
-                    
-                }
         }
         
     }
