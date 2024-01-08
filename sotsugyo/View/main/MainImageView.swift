@@ -11,7 +11,7 @@ struct MainImageView: View {
     @Binding var tapIndex: Int
     @Binding var tapdocumentId: String
     @Binding var selectedFolderIndex: String
-    @Binding var selectedFolderIndex2: Int
+  
     @ObservedObject var viewModel: MainContentModel
     
     

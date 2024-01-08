@@ -14,13 +14,13 @@ struct FriendQRView: View {
     @Binding var isPresentingCamera: Bool
     @StateObject var cameraManager: CameraManager
     @Environment(\.dismiss) private var dismiss
-    @State private var isPresentingQR = false
+    @Binding var isPresentingQR: Bool
+    @State var isPresentingQRCode =  false
     
     @State private var isPresentingScanner = false
     @State private var scannedCode: String?
     @State private var showAlert = false
     @State private var alertMessage = ""
-    
     @State private var qrCodeImage: UIImage?
     @State var friendUid: String
     private let qrCodeGenerator = QRCodeGenerator()
@@ -35,7 +35,9 @@ struct FriendQRView: View {
                     .frame(width: 200, height: 200)
             }
             Button("QRコードを読み取る") {
+               
                 isPresentingScanner.toggle()
+               
             }
             .sheet(isPresented: $isPresentingScanner) {
                 CodeScannerView(codeTypes: [.qr], simulatedData: "Simulated QR Code") { result in
@@ -47,14 +49,23 @@ struct FriendQRView: View {
                     title: Text("相手を確認しました"),
                     message: Text(alertMessage),
                     dismissButton: .default(Text("OK")){
-                        isPresentingQR = true
+                       
+                        isPresentingQRCode.toggle()
+                       
                     }
                 )
             }
-            .fullScreenCover(isPresented: $isPresentingQR) {
+            .fullScreenCover(isPresented: $isPresentingQRCode) {
+                
                 Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true),friendUid: $friendUid)
+                
             }
-            
+            .onChange(of: isPresentingQRCode) { newValue,_ in
+                if newValue {
+                    isPresentingQR.toggle()
+                }
+            }
+
             
             
         }
@@ -64,6 +75,7 @@ struct FriendQRView: View {
                 qrCodeImage = qrCodeGenerator.generate(with: uid)
             }
         }
+       
     }
     
     private func handleScanResult(_ result: Result<CodeScanner.ScanResult, CodeScanner.ScanError>) {

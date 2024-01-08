@@ -22,115 +22,181 @@ struct FolderTextView: View {
     @Binding var folderDocument: String
     @State var playGif = true
         @State var isActive: Bool = false
+    @State var isdeletefolder = false
     var gif = UIImageView()
     let gifData = NSDataAsset(name:"heart3")?.data
     var body: some View {
-        VStack{
-            HStack {
-              
-                    
-                    if viewModel.folders.indices.contains(selectedFolderIndex) {
-                        Text(viewModel.folders[selectedFolderIndex])
-                            .padding()
-                            .font(.system(size: 17))
-                    } else {
-                        ZStack{
-                          
-                            if let gifData = gifData {
-                                GIFImage(data: gifData)
-                                    .frame(height: 100)
-                            }
-                             Text("読み込み中")
-                        }
-                    }
-                    
-                    
+        
+        
+        
+        VStack(alignment: .center, spacing: 12) {
+            VStack(alignment: .leading, spacing: 0) {
                 
-                if viewModel.folders.indices.contains(selectedFolderIndex) {
-                    Button {
-                        isWrite = true
-                    } label: {
-                        Text("+")
-                            .frame(width: 50, height: 50)
-                            .font(.system(size: 17))
-                    }
-                    
-                    .background(.white)
-                    .cornerRadius(8)
-                }
-                if viewModel.folders.indices.contains(selectedFolderIndex) {
-                    
-                    
-                    if viewModel.folders[selectedFolderIndex] != "all"{
-                        Button {
-                            viewModel.deletefolder()
-                        } label: {
-                            HStack {
-                                Image(systemName: "trash")
-                                
-                                
-                            }
-                            .frame(width: 50, height: 50)
-                            .font(.system(size: 17))
-                        }
-                    }else{
+                VStack(alignment: .center, spacing: 0) {
+                    HStack(alignment: .center, spacing: 8) {
                         
-                    }
-                }
-                if viewModel.folders.indices.contains(selectedFolderIndex) {
-                    Button {
-                        isNFC .toggle()
-                    } label: {
-                        Text("♡")
-                            .frame(width: 50, height: 50)
-                            .font(.system(size: 17))
-                    }
-                    
-                    .background(.white)
-                    .cornerRadius(8)
-                    .alert("コード交換", isPresented: $isNFC) {
                         
-                        Button("する", role: .cancel){
-                            if let currentUser = Auth.auth().currentUser {
-                                let uid = currentUser.uid
-                                session.startWriteSession(UserUid: uid, folder: folderDocument) { error in
-                                    if let error = error {
-                                        alertMessage = error.localizedDescription
-                                        isAlertShown = true
+                        VStack(alignment: .leading, spacing: 0) {
+                            if viewModel.folders.indices.contains(selectedFolderIndex) {
+                                Text(viewModel.folders[selectedFolderIndex])
+                                    .font(.custom("Roboto", size: 14))
+                                    .foregroundColor(Color(red: 0, green: 0, blue: 0))
+                                
+                            } else {
+                                ZStack{
+                                    
+                                    if let gifData = gifData {
+                                        GIFImage(data: gifData)
+                                            .frame(height: 100)
                                     }
+                                    Text("読み込み中")
+                                        .font(.custom("Roboto", size: 14))
+                                        .foregroundColor(Color(red: 0, green: 0, blue: 0))
                                 }
                             }
+                            
                         }
-                        Button("しない", role: .destructive){
-                            isNFC.toggle()
-                        }
-                    } message: {
-                        Text("このフォルダをNFCカードに入れますか？")
+                        .frame(maxWidth: .infinity, alignment: .topLeading)
                     }
-                    .alert(isPresented: $isAlertShown) {
-                        Alert(
-                            title: Text(""),
-                            message: Text(alertMessage),
-                            dismissButton: .default(Text("OK")))
-                    }
+                    .padding(.vertical, 12)
+                    .frame(maxWidth: .infinity)
                 }
+                .padding(.horizontal, 12)
+                .frame(maxWidth: .infinity)
+                HStack(alignment: .top, spacing: 8) {
+                    if viewModel.folders.indices.contains(selectedFolderIndex) {
+                        if viewModel.folders[selectedFolderIndex] != "all"{
+                    VStack(alignment: .center, spacing: 0) {
+                       
+                            
+                          
+                                Button {
+                                    isdeletefolder.toggle()
+                                  
+                                } label: {
+                                    Text("フォルダ削除")
+                                        .font(.custom("Roboto", size: 16))
+                                        .foregroundColor(Color(red: 0, green: 0, blue: 0))
+                                        .frame(width: 120, height: 30)
+                                      
+                                    
+                                }
+                                .alert("フォルダ削除", isPresented: $isdeletefolder) {
+                                    Button("する", role: .cancel){
+                                        viewModel.deletefolder()
+                                    }
+                                    Button("しない", role: .destructive){
+                                        isdeletefolder.toggle()
+                                    }
+                                } message: {
+                                    Text("このフォルダを削除しますか？")
+                                }
+                            }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 10)
+                    .frame(maxWidth: .infinity)
+                    .background(Color(red: 1, green: 1, blue: 1))
+                    .cornerRadius(8)
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(red: 0, green: 0, blue: 0), lineWidth: 1))
+                        }
+                   
+                        
+                    }
+                  
+                    if viewModel.folders.indices.contains(selectedFolderIndex) {
+                    VStack(alignment: .center, spacing: 0) {
+                       
+                            Button {
+                                isWrite = true
+                            } label: {
+                                Text("フォルダに\n文字追加")
+                                    .font(.custom("Roboto", size: 13))
+                                    .foregroundColor(Color(red: 1, green: 1, blue: 1))
+                                    .frame(width: 120, height: 30)
+                            }
+                        }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 10)
+                    .frame(maxWidth: .infinity)
+                    .background(Color(red: 0, green: 0, blue: 0))
+                    .cornerRadius(8)
+                   
+                    }
+                   
+                }
+                
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+                .padding(.vertical, 10)
+                if viewModel.folders.indices.contains(selectedFolderIndex) {
+                HStack(alignment: .top, spacing: 8) {
+                   
+                    VStack(alignment: .center, spacing: 4) {
+                      
+                            Button {
+                                isNFC .toggle()
+                            } label: {
+                                Text("NFCにデータ追加")
+                                    .font(.custom("Roboto", size: 12))
+                                    .foregroundColor(Color(red: 0, green: 0, blue: 0))
+                                    .frame(width: 240, height: 20)
+                            }
+                            
+                            
+                            .alert("コード交換", isPresented: $isNFC) {
+                                
+                                Button("する", role: .cancel){
+                                    if let currentUser = Auth.auth().currentUser {
+                                        let uid = currentUser.uid
+                                        session.startWriteSession(UserUid: uid, folder: folderDocument) { error in
+                                            if let error = error {
+                                                alertMessage = error.localizedDescription
+                                                isAlertShown = true
+                                            }
+                                        }
+                                    }
+                                }
+                                Button("しない", role: .destructive){
+                                    isNFC.toggle()
+                                }
+                            } message: {
+                                Text("このフォルダをNFCカードに入れますか？")
+                            }
+                            .alert(isPresented: $isAlertShown) {
+                                Alert(
+                                    title: Text(""),
+                                    message: Text(alertMessage),
+                                    dismissButton: .default(Text("OK")))
+                            }
+                        }
+                    }
+                .padding(.all, 8)
+                .frame(maxWidth: .infinity, alignment: .top)
+                .cornerRadius(6)
+                .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color(red: 0, green: 0, blue: 0, opacity: 0.10), lineWidth: 1))
+                }
+
             }
+            .padding(.horizontal, 12)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
             
+            
+            
+        
+        }
+        
+       
             Text(userDataList.userDataList)
             
-        }
+        
         .sheet(isPresented: $isWrite){
             WriteLetterView(isWrite: $isWrite, viewModel: viewModel, userDataList: userDataList)
-        }
-        .onAppear{
-            
-            
-            
         }
         
     }
     
 }
+
+
 class UIGIFImageView: UIView {
     private var image = UIImage()
     var imageView = UIImageView()
@@ -232,3 +298,4 @@ struct GIFImage: UIViewRepresentable {
         }
     }
 }
+

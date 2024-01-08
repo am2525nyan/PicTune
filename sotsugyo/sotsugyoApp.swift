@@ -29,11 +29,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct sotsugyoApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    
+
     var body: some Scene {
         WindowGroup {
            
-            TabContentView(documentId: .constant(""))
+            TabContentView(documentId: .constant(""), selectedImage: .constant(UIImage()))
         }
     }
 

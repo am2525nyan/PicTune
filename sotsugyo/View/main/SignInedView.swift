@@ -44,6 +44,8 @@ struct SignInedView: View {
                 )
                 
             }
+            //  FolderButtonsView(viewModel: viewModel)
+            
             FolderContentView(viewModel: viewModel, selectedFolderIndex: $selectedIndex)
             FolderTextView(viewModel: viewModel, selectedFolderIndex: $selectedIndex, userDataList: viewModel, folderDocument:  $viewModel.folderDocument)
             
@@ -51,7 +53,7 @@ struct SignInedView: View {
             MainImageView(
                 tapImage: $selectedImage,
                 tapIndex: $selectedIndex,
-                tapdocumentId: $tapDocumentId, selectedFolderIndex: $viewModel.folderDocument, selectedFolderIndex2: $selectedIndex,
+                tapdocumentId: $tapDocumentId, selectedFolderIndex: $viewModel.folderDocument,
                 viewModel: viewModel
             )
             Spacer()
@@ -61,9 +63,9 @@ struct SignInedView: View {
                         if first == true{
                             try await viewModel.firstgetUrl()
                             try await viewModel.getFolder()
-                          
+                            
                             try await viewModel.getDate()
-                           
+                            
                             first = false
                         } else {
                             try await viewModel.firstgetUrl()

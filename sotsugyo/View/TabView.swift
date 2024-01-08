@@ -10,13 +10,15 @@ import SwiftUI
 struct TabContentView: View {
     @State var selection = 1
     @Binding var documentId: String
-    
+  
+    @Binding  var selectedImage: UIImage?
+
     
     var body: some View {
         TabView(selection: $selection) {
             
             
-            MainContentView()
+         MainContentView()
                 .tabItem {
                     VStack {
                         Label("Page1", systemImage: "1.circle")
@@ -28,3 +30,4 @@ struct TabContentView: View {
         
     }
 }
+

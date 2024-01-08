@@ -60,7 +60,8 @@ struct Camera2View: View {
                 }
             }
             .navigationBarItems(leading: Button(action: {
-                isPresentingCamera.toggle()
+              dismiss()
+                
             }) {
                 Image(systemName: "arrow.left")
             })

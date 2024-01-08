@@ -12,8 +12,10 @@
 		7209E38F2B12EBD200FC44D3 /* NukeExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E38E2B12EBD200FC44D3 /* NukeExtensions */; };
 		7209E3912B12EBD200FC44D3 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E3902B12EBD200FC44D3 /* NukeUI */; };
 		7209E3932B12EBD200FC44D3 /* NukeVideo in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E3922B12EBD200FC44D3 /* NukeVideo */; };
+		722067462B4AFDE200408FBD /* NewSignInedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 722067452B4AFDE200408FBD /* NewSignInedView.swift */; };
 		7223A54E2B2567DF009D6704 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 7223A54D2B2567DF009D6704 /* Kingfisher */; };
 		722AF4872B43FEB300CE104E /* filter.scn in Resources */ = {isa = PBXBuildFile; fileRef = 722AF4862B43FEB300CE104E /* filter.scn */; };
+		725678D52B4C5C8D00D30460 /* ButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725678D42B4C5C8D00D30460 /* ButtonView.swift */; };
 		72576F662B1466690064A362 /* SearchMusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F652B1466690064A362 /* SearchMusicView.swift */; };
 		72576F732B16E5020064A362 /* Main ContentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F722B16E5020064A362 /* Main ContentModel.swift */; };
 		72576F752B16F58B0064A362 /* PhotoPreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F742B16F58B0064A362 /* PhotoPreviewViewModel.swift */; };
@@ -31,7 +33,6 @@
 		7279F4272B13837E00A64739 /* TabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7279F4262B13837E00A64739 /* TabView.swift */; };
 		727A72BA2B44EFF2006A4393 /* Mask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 727A72B92B44EFF2006A4393 /* Mask.swift */; };
 		7280C9D72B319648003025C6 /* Gifu in Frameworks */ = {isa = PBXBuildFile; productRef = 7280C9D62B319648003025C6 /* Gifu */; };
-		7280C9D92B3293CB003025C6 /* NFCView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7280C9D82B3293CB003025C6 /* NFCView.swift */; };
 		7280C9DB2B329581003025C6 /* NFCSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7280C9DA2B329581003025C6 /* NFCSession.swift */; };
 		728384552B2055E20098856E /* FirebaseMusic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728384542B2055E20098856E /* FirebaseMusic.swift */; };
 		728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728EFB082AEE1C10008C079B /* sotsugyoApp.swift */; };
@@ -101,8 +102,10 @@
 
 /* Begin PBXFileReference section */
 		72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewView.swift; sourceTree = "<group>"; };
+		722067452B4AFDE200408FBD /* NewSignInedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSignInedView.swift; sourceTree = "<group>"; };
 		722AF4822B43DF0200CE104E /* heart.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = heart.gif; sourceTree = "<group>"; };
 		722AF4862B43FEB300CE104E /* filter.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = filter.scn; sourceTree = "<group>"; };
+		725678D42B4C5C8D00D30460 /* ButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonView.swift; sourceTree = "<group>"; };
 		72576F652B1466690064A362 /* SearchMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMusicView.swift; sourceTree = "<group>"; };
 		72576F722B16E5020064A362 /* Main ContentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Main ContentModel.swift"; sourceTree = "<group>"; };
 		72576F742B16F58B0064A362 /* PhotoPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewViewModel.swift; sourceTree = "<group>"; };
@@ -119,7 +122,6 @@
 		7279F4242B13802900A64739 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		7279F4262B13837E00A64739 /* TabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabView.swift; sourceTree = "<group>"; };
 		727A72B92B44EFF2006A4393 /* Mask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mask.swift; sourceTree = "<group>"; };
-		7280C9D82B3293CB003025C6 /* NFCView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCView.swift; sourceTree = "<group>"; };
 		7280C9DA2B329581003025C6 /* NFCSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCSession.swift; sourceTree = "<group>"; };
 		728384542B2055E20098856E /* FirebaseMusic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseMusic.swift; sourceTree = "<group>"; };
 		728EFB052AEE1C10008C079B /* sotsugyo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sotsugyo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -368,7 +370,8 @@
 				72CBE0AD2B2CA96B007542EE /* FolderTextView.swift */,
 				72CBE0AF2B2DBD30007542EE /* WriteLetterView.swift */,
 				7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */,
-				7280C9D82B3293CB003025C6 /* NFCView.swift */,
+				722067452B4AFDE200408FBD /* NewSignInedView.swift */,
+				725678D42B4C5C8D00D30460 /* ButtonView.swift */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -555,13 +558,13 @@
 				72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */,
 				7257A6D42B308F33006FE747 /* ARFaceTrackingView.swift in Sources */,
 				72F9855D2B17540800FEEC05 /* CameraMusicViewModel.swift in Sources */,
-				7280C9D92B3293CB003025C6 /* NFCView.swift in Sources */,
 				72C5A1672B1DACAD00F890AD /* ImageDetailView.swift in Sources */,
 				72576F772B16FD740064A362 /* UIView.swift in Sources */,
 				72EC19482B300463002CA76B /* PencilView.swift in Sources */,
 				72576F732B16E5020064A362 /* Main ContentModel.swift in Sources */,
 				7279F4252B13802900A64739 /* ProfileView.swift in Sources */,
 				7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */,
+				725678D52B4C5C8D00D30460 /* ButtonView.swift in Sources */,
 				728EFB4F2AEE303C008C079B /* LoginViewModel.swift in Sources */,
 				728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */,
 				7257A6CB2B303954006FE747 /* FaceFilterViewModel.swift in Sources */,
@@ -577,6 +580,7 @@
 				72CBE0AE2B2CA96B007542EE /* FolderTextView.swift in Sources */,
 				728384552B2055E20098856E /* FirebaseMusic.swift in Sources */,
 				72576F7B2B17010E0064A362 /* searchMusicViewModel.swift in Sources */,
+				722067462B4AFDE200408FBD /* NewSignInedView.swift in Sources */,
 				727A72BA2B44EFF2006A4393 /* Mask.swift in Sources */,
 				72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */,
 				7280C9DB2B329581003025C6 /* NFCSession.swift in Sources */,
