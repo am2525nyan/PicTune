@@ -14,9 +14,10 @@ struct WriteLetterView: View {
     
     var body: some View {
         VStack {
-            TextField("Enter text", text: $userInput)
+            TextField("手紙を書く", text: $userInput ,axis: .vertical)
+                .lineLimit(0...10)
                 .padding()
-            
+           
             Button("保存") {
                 userDataList.userDataList = userInput
                 viewModel.saveLetter()
@@ -26,6 +27,11 @@ struct WriteLetterView: View {
                 
             }
             .padding()
+        }
+        .onAppear{
+            if userDataList.userDataList != ""{
+                userInput = userDataList.userDataList
+            }
         }
     }
     

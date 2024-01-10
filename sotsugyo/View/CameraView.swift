@@ -19,16 +19,18 @@ struct Camera2View: View {
         NavigationView {
             ZStack {
                 
-                
+                self.backGroundColor().edgesIgnoringSafeArea(.all)
                 
                 ZStack {
                     // Display the camera preview
-              CameraPreview(cameraManager: cameraManager)
-                    /*      ARFaceView()
-                        .frame(width: previewWidth, height: previewHeight)
+                    CameraPreview(cameraManager: cameraManager)
                     
-                    // Display the ARFaceTrackingView
-                                ARFaceTrackingView(faceGeometry: $faceGeometry)
+                       
+                    /*      ARFaceView()
+                     .frame(width: previewWidth, height: previewHeight)
+                     
+                     // Display the ARFaceTrackingView
+                     ARFaceTrackingView(faceGeometry: $faceGeometry)
                      .frame(width: previewWidth, height: previewHeight)
                      .onAppear {
                      // Ensure faceGeometry is initialized with a non-nil value
@@ -41,17 +43,20 @@ struct Camera2View: View {
                 Image("Image")
                     .resizable()
                     .scaledToFit()
+                    .padding(.bottom, 70)
                 
                 VStack {
                     Spacer()
-                    Button("撮影") {
+                    Button {
                         cameraManager.captureImage()
+                    } label: {
+                        Image("CameraButton")
+                            .resizable()
+                            .frame(width: 75,height: 75)
                     }
-                    
-                    .padding()
+
                     
                     .sheet(isPresented: $cameraManager.isImageUploadCompleted) {
-                        
                         
                         PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, isPresentingSearch: $cameraManager.isPresentingSearch, documentId: $cameraManager.documentId, cameraManager: cameraManager, friendUid: $friendUid)
                         
@@ -60,19 +65,17 @@ struct Camera2View: View {
                 }
             }
             .navigationBarItems(leading: Button(action: {
-              dismiss()
+                dismiss()
                 
             }) {
                 Image(systemName: "arrow.left")
             })
-            .background(Color.yellow)
+           
             .onAppear {
-                
                 cameraManager.setupCaptureSession()
                 resetTracking()
             }
             .onDisappear {
-                
                 cameraManager.stopSession()
             }
             
@@ -96,5 +99,16 @@ struct Camera2View: View {
         laughingmanNode = SCNReferenceNode(url: url)
         
         
+    }
+    private func backGroundColor() -> LinearGradient {
+        let start = UnitPoint.init(x: 0, y: 0)
+        let end = UnitPoint.init(x: 1, y: 1)
+
+        let colors = Gradient(colors: [Color(red: 0.78, green: 0.83, blue: 0.98),
+                                       Color(red: 0.89, green: 0.75, blue: 0.99)])
+
+        let gradientColor = LinearGradient(gradient: colors, startPoint: start, endPoint: end)
+
+        return gradientColor
     }
 }

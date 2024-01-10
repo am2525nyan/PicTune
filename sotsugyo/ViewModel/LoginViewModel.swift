@@ -59,11 +59,37 @@ struct LoginView: UIViewControllerRepresentable {
             handle = Auth.auth().addStateDidChangeListener { [weak self] (_, user) in
                 if let user = user {
                     self?.viewModel.saveUserData()
+                //    self?.reauthenticateUser(user)
                 }
             }
         }
 
-
+        func reauthenticateUser(_ user: User) {
+            Auth.auth().addStateDidChangeListener { (auth, user) in
+                   if let user = user {
+                       user.getIDToken { (token, error) in
+                           if let error = error {
+                               print("ID Tokenの取得に失敗しました: \(error.localizedDescription)")
+                           } else if let token = token {
+                               
+                               let db = Firestore.firestore()
+                               
+                               if let currentUser = Auth.auth().currentUser {
+                                   let uid = currentUser.uid
+                                   db.collection("users").document(uid).collection("personal").document("info").updateData([
+                                    "token": token
+                                   ]) { error in
+                                       if let error = error {
+                                           print("データの保存に失敗しました: \(error.localizedDescription)")
+                                       }
+                                   }
+                               }
+                           }
+                       }
+                   }
+               }
+               }
+        
                 func stopListening() {
                     if let handle = handle {
                         Auth.auth().removeStateDidChangeListener(handle)

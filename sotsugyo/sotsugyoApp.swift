@@ -33,7 +33,7 @@ struct sotsugyoApp: App {
     var body: some Scene {
         WindowGroup {
            
-            TabContentView(documentId: .constant(""), selectedImage: .constant(UIImage()))
+            MainContentView()
         }
     }
 

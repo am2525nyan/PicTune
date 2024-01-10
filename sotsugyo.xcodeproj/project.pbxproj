@@ -26,7 +26,6 @@
 		7257A6D22B308769006FE747 /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7257A6D12B308769006FE747 /* ARKit.framework */; };
 		7257A6D42B308F33006FE747 /* ARFaceTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */; };
 		725DAA662B4398CF00033106 /* SwiftyGif in Frameworks */ = {isa = PBXBuildFile; productRef = 725DAA652B4398CF00033106 /* SwiftyGif */; };
-		725DAA692B4398FE00033106 /* heart.gif in Resources */ = {isa = PBXBuildFile; fileRef = 725DAA682B4398FE00033106 /* heart.gif */; };
 		725DAA6B2B4399EE00033106 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 725DAA6A2B4399EE00033106 /* Assets.xcassets */; };
 		7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7266BF322AF374BE000D711B /* ImagePicker.swift */; };
 		7279F4252B13802900A64739 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7279F4242B13802900A64739 /* ProfileView.swift */; };
@@ -59,12 +58,12 @@
 		728EFB552AEE36BC008C079B /* setupGitignore.command in Resources */ = {isa = PBXBuildFile; fileRef = 728EFB542AEE36BC008C079B /* setupGitignore.command */; };
 		72967E452B298E1700911D97 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72967E442B298E1700911D97 /* SignInView.swift */; };
 		72967E472B298E2200911D97 /* SignInedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72967E462B298E2200911D97 /* SignInedView.swift */; };
-		72AB59292B46963600A8E82D /* heart2.gif in Resources */ = {isa = PBXBuildFile; fileRef = 72AB59282B46963600A8E82D /* heart2.gif */; };
 		72B47F7B2B104A94008832F5 /* PenKitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */; };
 		72C5A1672B1DACAD00F890AD /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */; };
 		72CBE0AC2B2CA794007542EE /* CameraFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CBE0AB2B2CA794007542EE /* CameraFolderView.swift */; };
 		72CBE0AE2B2CA96B007542EE /* FolderTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CBE0AD2B2CA96B007542EE /* FolderTextView.swift */; };
 		72CBE0B02B2DBD30007542EE /* WriteLetterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CBE0AF2B2DBD30007542EE /* WriteLetterView.swift */; };
+		72CEE0E52B4D8BB900255428 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CEE0E42B4D8BB900255428 /* SettingView.swift */; };
 		72D0C0202B2CA58900456F96 /* MainImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D0C01F2B2CA58900456F96 /* MainImageView.swift */; };
 		72D0C0222B2CA5EC00456F96 /* FolderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D0C0212B2CA5EC00456F96 /* FolderContentView.swift */; };
 		72EC19482B300463002CA76B /* PencilView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EC19472B300463002CA76B /* PencilView.swift */; };
@@ -103,7 +102,6 @@
 /* Begin PBXFileReference section */
 		72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewView.swift; sourceTree = "<group>"; };
 		722067452B4AFDE200408FBD /* NewSignInedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSignInedView.swift; sourceTree = "<group>"; };
-		722AF4822B43DF0200CE104E /* heart.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = heart.gif; sourceTree = "<group>"; };
 		722AF4862B43FEB300CE104E /* filter.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = filter.scn; sourceTree = "<group>"; };
 		725678D42B4C5C8D00D30460 /* ButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonView.swift; sourceTree = "<group>"; };
 		72576F652B1466690064A362 /* SearchMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMusicView.swift; sourceTree = "<group>"; };
@@ -115,7 +113,6 @@
 		7257A6CF2B30875E006FE747 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		7257A6D12B308769006FE747 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
 		7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARFaceTrackingView.swift; sourceTree = "<group>"; };
-		725DAA682B4398FE00033106 /* heart.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = heart.gif; path = ../../../../../Downloads/heart.gif; sourceTree = "<group>"; };
 		725DAA6A2B4399EE00033106 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = ../../../../.Trash/Assets.xcassets; sourceTree = "<group>"; };
 		7265CAC62AEFDB60000058BC /* sotsugyo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = sotsugyo.entitlements; sourceTree = "<group>"; };
 		7266BF322AF374BE000D711B /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
@@ -138,13 +135,12 @@
 		728EFB542AEE36BC008C079B /* setupGitignore.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = setupGitignore.command; sourceTree = "<group>"; };
 		72967E442B298E1700911D97 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		72967E462B298E2200911D97 /* SignInedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInedView.swift; sourceTree = "<group>"; };
-		72AB59282B46963600A8E82D /* heart2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = heart2.gif; path = ../../../../Downloads/heart2.gif; sourceTree = "<group>"; };
-		72AB592A2B4696B300A8E82D /* heart2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = heart2.gif; sourceTree = "<group>"; };
 		72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenKitViewModel.swift; sourceTree = "<group>"; };
 		72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
 		72CBE0AB2B2CA794007542EE /* CameraFolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraFolderView.swift; sourceTree = "<group>"; };
 		72CBE0AD2B2CA96B007542EE /* FolderTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTextView.swift; sourceTree = "<group>"; };
 		72CBE0AF2B2DBD30007542EE /* WriteLetterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteLetterView.swift; sourceTree = "<group>"; };
+		72CEE0E42B4D8BB900255428 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		72D0C01F2B2CA58900456F96 /* MainImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainImageView.swift; sourceTree = "<group>"; };
 		72D0C0212B2CA5EC00456F96 /* FolderContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderContentView.swift; sourceTree = "<group>"; };
 		72EC19472B300463002CA76B /* PencilView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilView.swift; sourceTree = "<group>"; };
@@ -286,8 +282,6 @@
 			isa = PBXGroup;
 			children = (
 				722AF4862B43FEB300CE104E /* filter.scn */,
-				72AB592A2B4696B300A8E82D /* heart2.gif */,
-				725DAA682B4398FE00033106 /* heart.gif */,
 			);
 			path = gif;
 			sourceTree = "<group>";
@@ -318,8 +312,6 @@
 			isa = PBXGroup;
 			children = (
 				725DAA6A2B4399EE00033106 /* Assets.xcassets */,
-				72AB59282B46963600A8E82D /* heart2.gif */,
-				722AF4822B43DF0200CE104E /* heart.gif */,
 				725DAA672B4398E900033106 /* gif */,
 				72576F6B2B16E2670064A362 /* Model */,
 				72576F692B16E2560064A362 /* View */,
@@ -372,6 +364,7 @@
 				7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */,
 				722067452B4AFDE200408FBD /* NewSignInedView.swift */,
 				725678D42B4C5C8D00D30460 /* ButtonView.swift */,
+				72CEE0E42B4D8BB900255428 /* SettingView.swift */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -518,8 +511,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				728EFB552AEE36BC008C079B /* setupGitignore.command in Resources */,
-				725DAA692B4398FE00033106 /* heart.gif in Resources */,
-				72AB59292B46963600A8E82D /* heart2.gif in Resources */,
 				72F8815E2B32AA5000AE8D87 /* GoogleService-Info.plist in Resources */,
 				728EFB102AEE1C15008C079B /* Preview Assets.xcassets in Resources */,
 				725DAA6B2B4399EE00033106 /* Assets.xcassets in Resources */,
@@ -569,6 +560,7 @@
 				728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */,
 				7257A6CB2B303954006FE747 /* FaceFilterViewModel.swift in Sources */,
 				72CBE0AC2B2CA794007542EE /* CameraFolderView.swift in Sources */,
+				72CEE0E52B4D8BB900255428 /* SettingView.swift in Sources */,
 				72D0C0202B2CA58900456F96 /* MainImageView.swift in Sources */,
 				72EC194B2B30053B002CA76B /* FriendQRView.swift in Sources */,
 				72B47F7B2B104A94008832F5 /* PenKitViewModel.swift in Sources */,

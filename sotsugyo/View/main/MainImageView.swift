@@ -58,7 +58,7 @@ struct MainImageView: View {
                 Image(uiImage: viewModel.images[index])
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 200, height: 350)
+                    .frame(width: 180, height: 315)
                     .clipped()
                     .onTapGesture {
                         tapdocumentId = viewModel.documentIdArray[index]
