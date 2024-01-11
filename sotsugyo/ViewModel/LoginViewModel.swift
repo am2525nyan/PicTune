@@ -88,7 +88,7 @@ struct LoginView: UIViewControllerRepresentable {
                 try await db.collection("users").document(uid).collection("personal").document("info").setData([
                     "uid": uid ,
                     "email": currentUser.email ?? "",
-                    "name": currentUser.displayName
+                    "name": currentUser.displayName ?? ""
                 ])
                 Task{
                     

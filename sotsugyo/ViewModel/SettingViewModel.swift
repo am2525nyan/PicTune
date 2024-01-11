@@ -16,13 +16,14 @@ import FirebaseAuthUI
 import FirebaseGoogleAuthUI
 import FirebaseOAuthUI
 import FirebaseEmailAuthUI
+import CryptoKit
 
 
 class SettingViewModel: ObservableObject {
     @Published internal var showingPasswordAlert = false
     @Published internal var mailAddress = ""
     @Published internal var name = ""
-    
+    @Published var authorizationDelegate = AuthorizationDelegate()
     func getMail()async throws ->String {
         let db = Firestore.firestore()
         
@@ -76,7 +77,8 @@ class SettingViewModel: ObservableObject {
         
         // Appleログインの場合
         if user.providerData.first(where: { $0.providerID == "apple.com" }) != nil {
-            reauthenticateUser(user)
+            authorizationDelegate.onAppear()
+            
         }
         
         // Googleログインの場合
@@ -103,7 +105,8 @@ class SettingViewModel: ObservableObject {
                 }
             })
             
-        } else {
+        }
+        if user.providerData.first(where: { $0.providerID == "password" }) != nil {
             // パスワード再認証のアラートを表示
             showingPasswordAlert = true
         }
@@ -134,38 +137,34 @@ class SettingViewModel: ObservableObject {
             }
         }
     }
-    func reauthenticateUser(_ user: User) {
-        let nonce = UUID().uuidString
-        
-        user.getIDToken { (token, error) in
-            if let error = error {
-                print("ID Tokenの取得に失敗しました: \(error.localizedDescription)")
-            } else if let token = token {
-                // 認証情報を作成する
-                let credential = OAuthProvider.credential(withProviderID: "apple.com", idToken: token, rawNonce: nonce)
-                
-                // 再認証を実行する
-                user.reauthenticate(with: credential) { (_, error) in
-                    if let error = error {
-                        // 再認証に失敗した場合
-                        print("Reauthentication failed: \(error.localizedDescription)")
-                    } else {
-                        // ユーザーを削除する
-                        user.delete { error in
-                            if let error = error {
-                                // 削除に失敗した場合
-                                print("Delete user failed: \(error.localizedDescription)")
-                            } else {
-                                // 削除成功の場合の処理を追加
-                                print("User deleted successfully")
-                            }
-                        }
-                    }
-                }
-            }
+  
+    func reauthenticateAndDeleteUser(_ user: User) {
+            // nonceの生成
+            let nonce = UUID().uuidString
+
+            // Apple IDプロバイダーを取得
+            let appleIDProvider = ASAuthorizationAppleIDProvider()
+
+            // 認証リクエストの作成
+            let request = appleIDProvider.createRequest()
+            request.requestedScopes = [.fullName, .email]
+            request.nonce = authorizationDelegate.sha256(nonce)
+
+            // 認証コントローラーの作成
+            let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+            authorizationController.delegate = authorizationDelegate
+            authorizationController.presentationContextProvider = authorizationDelegate
+
+            // 認証リクエストの実行
+            authorizationController.performRequests()
         }
-    }
-    
-    
-    
+    func sha256(_ input: String) -> String {
+           let inputData = Data(input.utf8)
+           let hashedData = SHA256.hash(data: inputData)
+           let hashString = hashedData.compactMap {
+               String(format: "%02x", $0)
+           }.joined()
+
+           return hashString
+       }
 }
