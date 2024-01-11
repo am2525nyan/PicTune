@@ -11,7 +11,7 @@ struct MainImageView: View {
     @Binding var tapIndex: Int
     @Binding var tapdocumentId: String
     @Binding var selectedFolderIndex: String
-  
+    
     @ObservedObject var viewModel: MainContentModel
     
     
@@ -27,7 +27,7 @@ struct MainImageView: View {
         .refreshable {
             Task {
                 do {
-                    try await viewModel.getUrl()
+                    try await viewModel.FoldergetUrl(folderId: tapIndex)
                 }
             }
         }

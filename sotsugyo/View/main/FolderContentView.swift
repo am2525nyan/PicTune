@@ -19,7 +19,6 @@ struct FolderContentView: View {
                     Button {
                         selectedFolderIndex = folderIndex
                         selectedFolderIndex2 = folderIndex
-                        
                         Task {
                             do {
                                 
@@ -33,7 +32,7 @@ struct FolderContentView: View {
                         
                     } label: {
                         Text(viewModel.folders[folderIndex] )
-                         
+                        
                             .font(.system(size: 12))
                     }
                     .padding()

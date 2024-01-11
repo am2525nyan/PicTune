@@ -17,7 +17,7 @@ struct WriteLetterView: View {
             TextField("手紙を書く", text: $userInput ,axis: .vertical)
                 .lineLimit(0...10)
                 .padding()
-           
+            
             Button("保存") {
                 userDataList.userDataList = userInput
                 viewModel.saveLetter()

@@ -51,12 +51,9 @@ class SearchViewModel: ObservableObject {
                 
             ])
         }
-        DispatchQueue.main.async {
-            
-            print("firebaseに保存しました！,",self.documentId,self.isPresentingSearch)
-            
-            
-        }
+        
+        print("firebaseに保存しました！")
+        
         
     }
     

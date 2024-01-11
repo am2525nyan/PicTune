@@ -12,6 +12,8 @@ struct ContentView: View {
     @ObservedObject var viewModel: MainContentModel
     @StateObject  var session = NFCSession()
     @StateObject var cameraManager: CameraManager
+    @StateObject private var Color = ColorModel()
+    
     @State private var selectedImage: UIImage?
     @State private var selectedIndex = 0
     @State private var tapDocumentId = ""
@@ -38,7 +40,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                self.backGroundColor().edgesIgnoringSafeArea(.all)
+                Color.backGroundColor().edgesIgnoringSafeArea(.all)
                 VStack(alignment: .center, spacing: 12) {
                     
                     
@@ -78,19 +80,19 @@ struct ContentView: View {
                 .frame(width: 400, alignment: .top)
             }
             .navigationTitle("PicTune")
-                       .navigationBarTitleDisplayMode(.inline)
-                       .toolbar {
-                           ToolbarItem(placement: .navigationBarTrailing) {
-                               Button {
-                                   isSetting.toggle()
-                               } label: {
-                                  Image(systemName: "gearshape.fill")
-                               }
-                           }
-                       }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        isSetting.toggle()
+                    } label: {
+                        Image(systemName: "gearshape.fill")
+                    }
+                }
+            }
         }
-       
-        //      .background(Color(red: 1, green: 1, blue: 1))
+        
+        
         
         .fullScreenCover(isPresented: $isPresentingCamera) {
             Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true), friendUid: .constant(""))
@@ -100,14 +102,15 @@ struct ContentView: View {
             
         }
         .fullScreenCover(isPresented: $isSetting) {
-         SettingView()
+            SettingView()
         }
         
         .onAppear {
             Task {
                 if first == true{
-                    try await viewModel.firstgetUrl()
                     try await viewModel.getFolder()
+                    try await viewModel.firstgetUrl()
+                    
                     
                     try await viewModel.getDate()
                     
@@ -119,16 +122,4 @@ struct ContentView: View {
             }
         }
     }
-       private func backGroundColor() -> LinearGradient {
-           let start = UnitPoint.init(x: 0, y: 0)
-           let end = UnitPoint.init(x: 1, y: 1)
-
-           let colors = Gradient(colors: [Color(red: 0.78, green: 0.83, blue: 0.98),
-                                          Color(red: 0.89, green: 0.75, blue: 0.99)])
-
-           let gradientColor = LinearGradient(gradient: colors, startPoint: start, endPoint: end)
-
-           return gradientColor
-       }
-   
 }

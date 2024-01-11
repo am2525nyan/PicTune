@@ -70,13 +70,13 @@ struct FolderTextView: View {
                                         .font(.custom("Roboto", size: 16))
                                         .foregroundColor(Color(red: 0, green: 0, blue: 0))
                                         .frame(width: 120, height: 30)
-                                      
+                                    
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 10)
                                         .frame(maxWidth: .infinity)
                                         .background(Color(red: 0.902, green:  0.882, blue: 0.922))
                                         .cornerRadius(8)
-                                        
+                                    
                                         .overlay(
                                             RoundedRectangle(cornerRadius: 10)
                                                 .stroke()
@@ -90,14 +90,12 @@ struct FolderTextView: View {
                                         )
                                         .shadow(color: .black.opacity(0.3), radius: 5, y: 3)
                                 }
-                               
+                                
                                 .alert("フォルダ削除", isPresented: $isdeletefolder) {
-                                    Button("する", role: .cancel){
+                                    Button("OK", role: .destructive){
                                         viewModel.deletefolder()
                                     }
-                                    Button("しない", role: .destructive){
-                                        isdeletefolder.toggle()
-                                    }
+                                    
                                 } message: {
                                     Text("このフォルダを削除しますか？")
                                 }
@@ -112,7 +110,9 @@ struct FolderTextView: View {
                         VStack(alignment: .center, spacing: 0) {
                             
                             Button {
+                                viewModel.getLetter()
                                 isWrite = true
+                                
                             } label: {
                                 Text("手紙を見る/書く")
                                     .font(.custom("Roboto", size: 13))
@@ -123,7 +123,7 @@ struct FolderTextView: View {
                                     .frame(maxWidth: .infinity)
                                     .background(Color(red: 0, green: 0, blue: 0))
                                     .cornerRadius(8)
-                                    
+                                
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 10)
                                             .stroke()
@@ -136,10 +136,10 @@ struct FolderTextView: View {
                                             )
                                     )
                                     .shadow(color: .black.opacity(0.3), radius: 5, y: 3)
-                                    
+                                
                             }
                         }
-                       
+                        
                     }
                     
                 }
@@ -162,7 +162,7 @@ struct FolderTextView: View {
                                     .frame(maxWidth: .infinity, alignment: .top)
                                     .background(.ultraThinMaterial)
                                     .cornerRadius(6)
-                                    
+                                
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 10)
                                             .stroke()
@@ -175,13 +175,13 @@ struct FolderTextView: View {
                                             )
                                     )
                                     .shadow(color: .black.opacity(0.3), radius: 5, y: 3)
-                                  
+                                
                             }
                             
                             
                             .alert("NFCに保存", isPresented: $isNFC) {
                                 
-                                Button("する", role: .cancel){
+                                Button("OK"){
                                     if let currentUser = Auth.auth().currentUser {
                                         let uid = currentUser.uid
                                         session.startWriteSession(UserUid: uid, folder: folderDocument) { error in
@@ -192,9 +192,10 @@ struct FolderTextView: View {
                                         }
                                     }
                                 }
-                                Button("しない", role: .destructive){
-                                    isNFC.toggle()
+                                Button("cancel",role:.cancel){
+                                    
                                 }
+                                
                             } message: {
                                 Text("このフォルダをNFCカードに入れますか？")
                             }
@@ -206,7 +207,7 @@ struct FolderTextView: View {
                             }
                         }
                     }
-                   
+                    
                 }
                 
             }

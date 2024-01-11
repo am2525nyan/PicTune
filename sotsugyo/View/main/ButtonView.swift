@@ -59,27 +59,24 @@ struct ButtonView: View {
                             )
                     )
                     .shadow(color: .black.opacity(0.3), radius: 5, y: 3)
-                   
+                    
                 }
                 
                 
                 .alert("コード交換", isPresented: $showQRAlart) {
-                    
-                    Button("する", role: .cancel){
-                        isPresentingQR.toggle()
-                        
-                        
-                    }
                     Button("しない", role: .destructive){
                         isPresentingCamera.toggle()
                     }
+                    Button("する", role: .cancel){
+                        isPresentingQR.toggle()
+                        
+                    }
+                    
                 } message: {
                     Text("一緒のお友達のコードを読み込みますか？")
                 }
                 
-            }
-
-            
+            } 
             VStack(alignment: .center, spacing: 4) {
                 
                 Button {
@@ -87,7 +84,7 @@ struct ButtonView: View {
                 } label: {
                     VStack(alignment: .center, spacing: 4) {
                         ZStack {
-                            Text("🔍")
+                            Text("📁")
                                 .font(.custom("Roboto", size: 30))
                                 .foregroundColor(Color(red: 0, green: 0, blue: 0))
                         }
@@ -118,13 +115,13 @@ struct ButtonView: View {
                 }
                 .alert("フォルダを作成", isPresented: $showAlart) {
                     TextField("フォルダ名", text: $folderBuf)
-                    Button("OK", role: .cancel){
+                    Button("OK"){
                         viewModel.makeFolder(folderName: folderBuf)
                         folderBuf = ""
                         showAlart = false
                         
                     }
-                    Button("Cancel", role: .destructive){
+                    Button("Cancel", role: .cancel){
                     }
                 } message: {
                     Text("フォルダ名を入力")
@@ -166,25 +163,19 @@ struct ButtonView: View {
                     )
                     .shadow(color: .black.opacity(0.3), radius: 5, y: 3)
                 }
-               
-            }
-                
                 
             }
-            .alert(isPresented: $isAlertShown) {
-                Alert(title: Text("NFC読み取り結果"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
-                
-                
-                
-            }
-           
-        
-        .alert(isPresented: $isAlertShown) {
-            Alert(
-                title: Text(""),
-                message: Text(alertMessage),
-                dismissButton: .default(Text("OK")))
+            
+            
         }
+        .alert(isPresented: $isAlertShown) {
+            Alert(title: Text("NFC読み取り結果"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+            
+            
+            
+        }
+        
+        
         
         
         .padding(.horizontal, 12)
@@ -213,8 +204,6 @@ struct ButtonView: View {
                                     print("Error: \(error)")
                                 }
                             }
-                            print(cleanedNFCUid, "cleanedNFCUid")
-                            print(unwrappedText, "unwrappedText")
                         }
                         
                     }

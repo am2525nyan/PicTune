@@ -98,7 +98,7 @@ struct SearchView: View {
                         }
                     }
                     .alert("保存", isPresented: $showAlert) {
-                        Button("音楽を保存します") {
+                        Button("OK") {
                             showAlert = false
                             Task{
                                 do{
@@ -110,7 +110,7 @@ struct SearchView: View {
                             }
                         }
                     } message: {
-                        Text("詳細メッセージ")
+                        Text("音楽を保存します")
                     }
                     
                     
@@ -126,7 +126,6 @@ struct SearchView: View {
             .padding()
             .onAppear{
                 SpotifyAuth.shared.requestAccessToken()
-                print("SearchView appeared")
             }
             .navigationTitle("音楽検索")
         }

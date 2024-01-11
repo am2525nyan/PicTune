@@ -16,39 +16,46 @@ struct PhotoPreviewView: View {
     @Binding var friendUid: String
     
     @StateObject private var viewModel = PhotoPreviewViewModel()
+    @StateObject private var mainViewModel = MainContentModel()
+    @StateObject private var Color = ColorModel()
+    
     
     var body: some View {
-        VStack {
-            if let image = images {
-                Button("保存") {
-                    viewModel.takeScreenshot()
-                    UIImageWriteToSavedPhotosAlbum(viewModel.screenshotImage ?? image, nil, nil, nil)
-                    cameraManager.uploadPhoto(viewModel.screenshotImage ?? image, friendUid: friendUid)
-                }
-                .padding()
-                
-                .sheet(isPresented: $isPresentingSearch) {
-                    SearchView(documentId: documentId, friendUid: $friendUid)
-                }
-                
-                Image("Image")
-                    .resizable()
-                    .scaledToFit()
-                    .overlay {
-                        Image(uiImage: image)
-                            .resizable()
-                            .frame(width: previewWidth, height: previewHeight)
-                            .position(x: 195, y: 286)
+        ZStack{
+            Color.backGroundColor().edgesIgnoringSafeArea(.all)
+            VStack {
+                if let image = images {
+                    Button("保存") {
+                        viewModel.takeScreenshot()
+                        UIImageWriteToSavedPhotosAlbum(viewModel.screenshotImage ?? image, nil, nil, nil)
+                        cameraManager.uploadPhoto(viewModel.screenshotImage ?? image, friendUid: friendUid)
                     }
-                    .overlay {
-                        PencilView()
+                    .padding()
+                    
+                    .sheet(isPresented: $isPresentingSearch) {
+                        SearchView(documentId: documentId, friendUid: $friendUid)
                     }
-                
-            } else {
-                Text("写真がありません")
+                    
+                    Image("Image")
+                        .resizable()
+                        .scaledToFit()
+                        .overlay {
+                            Image(uiImage: image)
+                                .resizable()
+                                .frame(width: previewWidth, height: previewHeight)
+                                .position(x: 195, y: 286)
+                        }
+                        .overlay {
+                            PencilView()
+                        }
+                    
+                } else {
+                    Text("写真がありません")
+                }
             }
+            
+            
+            
         }
-        .background(Color.yellow)
-       
     }
 }

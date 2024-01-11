@@ -35,9 +35,9 @@ struct FriendQRView: View {
                     .frame(width: 200, height: 200)
             }
             Button("QRコードを読み取る") {
-               
+                
                 isPresentingScanner.toggle()
-               
+                
             }
             .sheet(isPresented: $isPresentingScanner) {
                 CodeScannerView(codeTypes: [.qr], simulatedData: "Simulated QR Code") { result in
@@ -49,9 +49,9 @@ struct FriendQRView: View {
                     title: Text("相手を確認しました"),
                     message: Text(alertMessage),
                     dismissButton: .default(Text("OK")){
-                       
+                        
                         isPresentingQRCode.toggle()
-                       
+                        
                     }
                 )
             }
@@ -65,7 +65,7 @@ struct FriendQRView: View {
                     isPresentingQR.toggle()
                 }
             }
-
+            
             
             
         }
@@ -75,7 +75,7 @@ struct FriendQRView: View {
                 qrCodeImage = qrCodeGenerator.generate(with: uid)
             }
         }
-       
+        
     }
     
     private func handleScanResult(_ result: Result<CodeScanner.ScanResult, CodeScanner.ScanError>) {
