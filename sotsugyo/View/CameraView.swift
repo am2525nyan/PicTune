@@ -1,7 +1,7 @@
 import SwiftUI
 import ARKit
 
-struct Camera2View: View {
+struct CameraView: View {
     @Binding var isPresentingCamera: Bool
     
     @ObservedObject var cameraManager: CameraManager
@@ -14,64 +14,54 @@ struct Camera2View: View {
     let previewWidth = UIScreen.main.bounds.width * 0.864
     let previewHeight = UIScreen.main.bounds.height * 0.6
     @State private var faceGeometry: ARSCNFaceGeometry? = ARSCNFaceGeometry()
+    @StateObject private var viewModel = MainContentModel()
+    @StateObject private var Color = ColorModel()
     
     var body: some View {
         NavigationView {
             ZStack {
                 
+                Color.backGroundColor().edgesIgnoringSafeArea(.all)
                 
-                
-                ZStack {
-                    // Display the camera preview
-              CameraPreview(cameraManager: cameraManager)
-                    /*      ARFaceView()
-                        .frame(width: previewWidth, height: previewHeight)
-                    
-                    // Display the ARFaceTrackingView
-                                ARFaceTrackingView(faceGeometry: $faceGeometry)
-                     .frame(width: previewWidth, height: previewHeight)
-                     .onAppear {
-                     // Ensure faceGeometry is initialized with a non-nil value
-                     if faceGeometry == nil {
-                     faceGeometry = ARSCNFaceGeometry()
-                     }
-                     }
-                     */
-                }
                 Image("Image")
                     .resizable()
                     .scaledToFit()
+                    .padding(.bottom, 70)
                 
                 VStack {
                     Spacer()
-                    Button("撮影") {
+                    Button {
                         cameraManager.captureImage()
+                    } label: {
+                        Image("CameraButton")
+                            .resizable()
+                            .frame(width: 75,height: 75)
+                        
                     }
                     
-                    .padding()
+                    
                     
                     .sheet(isPresented: $cameraManager.isImageUploadCompleted) {
-                        
                         
                         PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, isPresentingSearch: $cameraManager.isPresentingSearch, documentId: $cameraManager.documentId, cameraManager: cameraManager, friendUid: $friendUid)
                         
                     }
                     
                 }
+                .padding(.bottom,  -5)
             }
             .navigationBarItems(leading: Button(action: {
-                isPresentingCamera.toggle()
+                dismiss()
+                
             }) {
                 Image(systemName: "arrow.left")
             })
-            .background(Color.yellow)
+            
             .onAppear {
-                
                 cameraManager.setupCaptureSession()
                 resetTracking()
             }
             .onDisappear {
-                
                 cameraManager.stopSession()
             }
             
@@ -96,4 +86,5 @@ struct Camera2View: View {
         
         
     }
+    
 }

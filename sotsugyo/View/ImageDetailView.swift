@@ -18,6 +18,7 @@ struct ImageDetailView: View {
     @Binding var index: Int
     @State private var tracks: [Track] = []
     @ObservedObject var viewModel: MainContentModel
+    @StateObject private var ImageViewModel = ImageDetailViewModel()
     @Binding var friendUid: String
     var selectedIndex: Int
     
@@ -27,25 +28,38 @@ struct ImageDetailView: View {
                 .edgesIgnoringSafeArea(.all)
             VStack {
                 VStack {
+                    VStack{
+                        if selectedIndex < viewModel.dates.count {
+                            let correspondingDate = viewModel.dates[selectedIndex]
+                            Text("日付: \(correspondingDate)")
+                                .padding()
+                        } else {
+                            Text("日付情報なし")
+                                .padding()
+                        }
+                    }
+                    .frame(width: 333, height: 40)
+                    .background(Color.white)
+                    
                     if let unwrappedImage = image {
                         Image(uiImage: unwrappedImage)
                             .resizable()
                             .scaledToFit()
+                            .frame(width: 333)
                             .navigationBarTitle("画像詳細", displayMode: .inline)
                             .navigationBarItems(
-                                          trailing: Button {
-                                              // ボタンがタップされたときの処理
-                                              print(documentId,viewModel.folderDocument)
-                                              viewModel.downloadFile(documentId: documentId, folderId: viewModel.folderDocument)
-                                          } label: {
-                                              Image(systemName: "square.and.arrow.down")
-                                          }
-                                      )
-                    }
-                  
-                
+                                trailing: Button {
+                                    
+                                } label: {
+                                    Image(systemName: "square.and.arrow.down")
+                                }
+                            )
                         
                     }
+                    
+                    
+                    
+                }
                 
                 VStack {
                     
@@ -101,24 +115,18 @@ struct ImageDetailView: View {
                             
                             
                         }
+                        
                     } else {
                         Text("ないよ")
                     }
-                    if selectedIndex < viewModel.dates.count {
-                        let correspondingDate = viewModel.dates[selectedIndex]
-                        Text("日付: \(correspondingDate)")
-                            .padding()
-                    } else {
-                        Text("日付情報なし")
-                            .padding()
-                    }
-                    
                     
                 }
+                
+                .frame(width: 333)
+                
                 .onDisappear{
                     viewModel.stop()
                 }
-                
                 
                 .onAppear {
                     Task {
@@ -133,11 +141,14 @@ struct ImageDetailView: View {
                     
                     
                 }
-                .background(Color.white)
                 
-            }
-            .onTapGesture {
-                viewModel.startPlay()
+                .background(Color.white)
+                .onTapGesture {
+                    viewModel.startPlay()
+                }
+                
+                
+                
             }
             
         }
@@ -172,7 +183,7 @@ struct ImageDetailView: View {
             }
         }
     }
-   
+    
     
     func saveToCameraRoll(imageURL: URL?) {
         guard let imageURL = imageURL else { return }
@@ -188,6 +199,6 @@ struct ImageDetailView: View {
             }
         }
     }
-
+    
     
 }

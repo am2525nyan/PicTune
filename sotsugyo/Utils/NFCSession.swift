@@ -10,28 +10,28 @@ import CoreNFC
 import SwiftUI
 
 final class NFCSession: NSObject, ObservableObject {
-
+    
     private var session: NFCNDEFReaderSession!
     private var isWriting = false
     private var ndefMessage: NFCNDEFMessage!
     private var writeHandler: ((Error?) -> Void)?
- var readHandler: ((String?, String?, Error?) -> Void)?
+    var readHandler: ((String?, String?, Error?) -> Void)?
     
     
     func startWriteSession(UserUid: String, folder: String, writeHandler: ((Error?) -> Void)?) {
         self.writeHandler = writeHandler
         isWriting = true
-
+        
         // UserUid と folder をスペースで区切って1つの文字列に結合
         let combinedString = "\(UserUid) \(folder)"
-
+        
         let textPayload = NFCNDEFPayload(
             format: NFCTypeNameFormat.nfcWellKnown,
             type: "T".data(using: .utf8)!,
             identifier: Data(),
             payload: combinedString.data(using: .utf8)!  // スペースで区切った文字列をデータとして設定
         )
-
+        
         ndefMessage = NFCNDEFMessage(records: [textPayload])
         startSession()
     }
@@ -41,8 +41,8 @@ final class NFCSession: NSObject, ObservableObject {
         isWriting = false
         startSession()
     }
-
-
+    
+    
     private func startSession() {
         guard NFCNDEFReaderSession.readingAvailable else {
             return
@@ -59,19 +59,19 @@ final class NFCSession: NSObject, ObservableObject {
 }
 
 extension NFCSession: NFCNDEFReaderSessionDelegate {
-
+    
     // 必須
     func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {
     }
-
+    
     // 必須
     func readerSession(_ session: NFCNDEFReaderSession, didInvalidateWithError error: Error) {
     }
-
+    
     // 必須ではないけどコンソールになんかでる
     func readerSessionDidBecomeActive(_ session: NFCNDEFReaderSession) {
     }
-
+    
     func readerSession(_ session: NFCNDEFReaderSession, didDetect tags: [NFCNDEFTag]) {
         let tag = tags.first!
         session.connect(to: tag) { error in
@@ -93,7 +93,7 @@ extension NFCSession: NFCNDEFReaderSessionDelegate {
             }
         }
     }
-
+    
     private func write(tag: NFCNDEFTag, session: NFCNDEFReaderSession) {
         tag.writeNDEF(self.ndefMessage) { [unowned self] error in
             session.alertMessage = "保存できました！"
@@ -103,7 +103,7 @@ extension NFCSession: NFCNDEFReaderSessionDelegate {
             }
         }
     }
-
+    
     private func read(tag: NFCNDEFTag, session: NFCNDEFReaderSession) {
         tag.readNDEF { [unowned self] message, error in
             session.alertMessage = "読み取りできました！"

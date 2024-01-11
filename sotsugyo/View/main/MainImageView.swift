@@ -11,7 +11,7 @@ struct MainImageView: View {
     @Binding var tapIndex: Int
     @Binding var tapdocumentId: String
     @Binding var selectedFolderIndex: String
-    @Binding var selectedFolderIndex2: Int
+    
     @ObservedObject var viewModel: MainContentModel
     
     
@@ -27,7 +27,7 @@ struct MainImageView: View {
         .refreshable {
             Task {
                 do {
-                    try await viewModel.getUrl()
+                    try await viewModel.FoldergetUrl(folderId: tapIndex)
                 }
             }
         }
@@ -58,7 +58,7 @@ struct MainImageView: View {
                 Image(uiImage: viewModel.images[index])
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 200, height: 350)
+                    .frame(width: 180, height: 315)
                     .clipped()
                     .onTapGesture {
                         tapdocumentId = viewModel.documentIdArray[index]

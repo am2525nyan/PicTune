@@ -19,7 +19,6 @@ struct FolderContentView: View {
                     Button {
                         selectedFolderIndex = folderIndex
                         selectedFolderIndex2 = folderIndex
-                        
                         Task {
                             do {
                                 
@@ -33,15 +32,18 @@ struct FolderContentView: View {
                         
                     } label: {
                         Text(viewModel.folders[folderIndex] )
-                         
+                        
                             .font(.system(size: 12))
                     }
                     .padding()
-                    .background(selectedFolderIndex2 == folderIndex ? Color.blue : Color.gray)
+                    .background(selectedFolderIndex2 == folderIndex ? 
+                                
+                                Color(red: 0.741, green: 0.584, blue: 0.933, opacity: 1) : Color.gray)
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     
-                    
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(6)
                     
                 }
             }

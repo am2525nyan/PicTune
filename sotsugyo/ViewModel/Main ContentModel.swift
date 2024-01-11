@@ -34,10 +34,13 @@ class MainContentModel: ObservableObject {
     @Published internal var folderDocument = String()
     @Published internal var photoDataCache: [String: Data] = [:]
     @Published internal var nfc = false
+    @Published internal var mailAddress = ""
+    @Published internal var name = ""
     
     @Published var userDataList: String = ""
     var audioPlayer: AVPlayer?
     var url = URL.init(string: "https://www.hello.com/sample.wav")
+    
     
     func firstgetUrl() async throws {
         do {
@@ -51,6 +54,7 @@ class MainContentModel: ObservableObject {
             DispatchQueue.main.async {
                 self.images = []
                 self.documentIdArray = []
+                self.folderDocument = "all"
             }
             
             let ref = try await db.collection("users").document(uid).collection("folders").document("all").collection("photos").order(by: "date").getDocuments()
@@ -105,9 +109,7 @@ class MainContentModel: ObservableObject {
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             let db = Firestore.firestore()
-            DispatchQueue.main.async {
-                self.folderDocument = "all"
-            }
+            
             try await db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
             
             
@@ -169,7 +171,6 @@ class MainContentModel: ObservableObject {
                                 self.photoDataCache[photo] = data
                             }
                             let image = UIImage(data: data)
-                            print(index)
                             DispatchQueue.main.async {
                                 self.images.insert(image!, at: index)
                             }
@@ -188,40 +189,10 @@ class MainContentModel: ObservableObject {
     }
     
     
-    func saveUserData(){
-            
-            let db = Firestore.firestore()
-            
-            if let currentUser = Auth.auth().currentUser {
-                let uid = currentUser.uid
-                db.collection("users").document(uid).collection("personal").document("info").setData([
-                    "uid": uid ,
-                    "email": currentUser.email ?? "",
-                    "name": currentUser.displayName ?? ""
-                ]) { error in
-                    if let error = error {
-                        print("データの保存に失敗しました: \(error.localizedDescription)")
-                    } else {
-                        
-                        if let currentUser = Auth.auth().currentUser {
-                            let uid = currentUser.uid
-                            db.collection("users").document(uid).collection("folders").document("all").setData([
-                                "title": "all",
-                                "date": FieldValue.serverTimestamp()
-                            ])
-                            
-                            db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
-                        }
-                        
-                        print("データがFirestoreに保存されましたよ")
-                    }
-                }
-            }
-        }
-        
-        
-        func getDate() async throws {
-            DispatchQueue.main.async {
+    
+    
+    func getDate() async throws {
+        DispatchQueue.main.async {
             self.dates = []
         }
         do {
@@ -301,9 +272,8 @@ class MainContentModel: ObservableObject {
                 "date": FieldValue.serverTimestamp()
             ])
             DispatchQueue.main.async {
-                self.folders.append(folderName)
-                self.foldersDocumentId.append(folders)
-                print(self.folders,self.foldersDocumentId)
+                self.folders.insert(folderName, at:1)
+                self.foldersDocumentId.insert(folders, at:1)
             }
             
             db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
@@ -339,13 +309,7 @@ class MainContentModel: ObservableObject {
         let db = Firestore.firestore()
         
         let document = self.documentIdArray[index]
-   
-        
-      
-            self.folderDocument = self.foldersDocumentId[folderId]
-            
-            print(self.foldersDocumentId,folderId,self.folderDocument,"Aa")
-            
+        self.folderDocument = self.foldersDocumentId[folderId]
         
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
@@ -374,10 +338,7 @@ class MainContentModel: ObservableObject {
             }
         }
     }
-    func isImageInFolder(index: Int, folderIndex: Int) -> Bool {
-        let documentId = documentIdArray[index]
-        return folderImages[documentId] != nil
-    }
+    
     
     
     func FoldergetUrl(folderId: Int) async throws {
@@ -387,14 +348,11 @@ class MainContentModel: ObservableObject {
             var urlArray = [String]()
             
             self.folderDocument = self.foldersDocumentId[folderId]
-
             
             DispatchQueue.main.async {
-            
                 self.images = []
                 self.documentIdArray = []
                 self.dates  = []
-                
             }
             getLetter()
             
@@ -417,7 +375,6 @@ class MainContentModel: ObservableObject {
                     self.documentIdArray.append(documentId)
                     self.dates.append(createdDate)
                     self.images = []
-                    
                 }
                 
             }
@@ -453,11 +410,8 @@ class MainContentModel: ObservableObject {
                             if index <= self.images.count {
                                 let image = UIImage(data: data)
                                 
-                                
-                                
                                 self.photoDataCache[photo] = data
                                 self.images.insert(image!, at: index)
-                                
                             }
                             
                             else {
@@ -468,8 +422,6 @@ class MainContentModel: ObservableObject {
                         print("Error occurred! : \(error)")
                     }
                 }
-                
-                
                 
             }
             
@@ -529,7 +481,6 @@ class MainContentModel: ObservableObject {
                     self.foldersDocumentId.remove(at: indexToRemove)
                     self.folders.remove(at: indexToRemove)
                 }
-                
             }
         }
         
@@ -539,24 +490,32 @@ class MainContentModel: ObservableObject {
         if nfc == false{
             nfc = true
             
-            
             if let currentUser = Auth.auth().currentUser {
                 let uid = currentUser.uid
                 
                 let db = Firestore.firestore()
+                Task{
+                    do{
+                        try await  db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
+                    }catch{
+                        print(error)
+                    }
+                }
+                
                 var urlArray = [String]()
                 
                 let document = try await db.collection("users").document(NFCUid).collection("folders").document(NFCfolderid).getDocument()
                 let data = document.data()
                 let title = data?["title"] as? String ?? "デフォルトのタイトル"
+                let letter = data?["letter"] as? String ?? ""
                 
                 
-                try await db.collection("users").document(uid).collection("folders").document(NFCfolderid).setData(["title": title, "date": FieldValue.serverTimestamp()])
                 DispatchQueue.main.async {
                     self.folders.append(title)
                     self.foldersDocumentId.append(NFCfolderid)
                 }
                 
+                try await db.collection("users").document(uid).collection("folders").document(NFCfolderid).setData(["title": title, "date": FieldValue.serverTimestamp(),"letter": letter])
                 let destinationCollectionRef =  db.collection("users").document(uid).collection("folders").document(NFCfolderid).collection("photos")
                 
                 
@@ -565,7 +524,7 @@ class MainContentModel: ObservableObject {
                 for document in sourceCollectionRef.documents {
                     let data = document.data()
                     let DocumentID = document.documentID
-                    
+                    destinationCollectionRef.addDocument(data: data)
                     let url = data["url"]
                     if url != nil {
                         urlArray.append(url as! String)
@@ -583,41 +542,6 @@ class MainContentModel: ObservableObject {
                         )
                     }
                     
-                    
-                    
-                    destinationCollectionRef.addDocument(data: data)
-                }
-                
-                let storage = Storage.storage()
-                let storageRef = storage.reference()
-                
-                for (index, photo) in urlArray.enumerated() {
-                    
-                    
-                    do {
-                        let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
-                            let imageRef = storageRef.child("images/" + photo)
-                            imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
-                                if let error = error {
-                                    continuation.resume(throwing: error)
-                                } else if let data = data {
-                                    continuation.resume(returning: data)
-                                }
-                            }
-                        }
-                        
-                        if index <= self.images.count {
-                            let image = UIImage(data: data)
-                            DispatchQueue.main.async {
-                                self.images.insert(image!, at: index)
-                                
-                            }
-                        } else {
-                            print("Index out of range. Ignoring data insertion.")
-                        }
-                    } catch {
-                        print("Error occurred! : \(error)")
-                    }
                 }
             }
             
@@ -628,50 +552,8 @@ class MainContentModel: ObservableObject {
         
         
     }
-    func downloadFile(documentId: String, folderId: String) {
-        let storage = Storage.storage()
-        let storageRef = storage.reference()
-        let db = Firestore.firestore()
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            let docRef = db.collection("users").document(uid).collection("folders").document(folderId).collection("photos").document(documentId)
-
-            docRef.getDocument { document, error in
-                if let error = error {
-                    print("Error getting document: \(error.localizedDescription)")
-                    return
-                }
-
-                if let data = document?.data(), let fileName = data["url"] as? String {
-                    print("File Name: \(fileName)")
-                    let storageRef = Storage.storage().reference().child("images/"+fileName)
-
-                            storageRef.getData(maxSize: 5 * 1024 * 1024) { data, error in
-                                if let error = error {
-                                    print("Error downloading image: \(error.localizedDescription)")
-                                    return
-                                }
-
-                                if let imageData = data, let image = UIImage(data: imageData) {
-                                    self.saveImageToCameraRoll(image: image)
-                                }
-                            }
-                } else {
-                    print("Document does not exist or does not contain 'url' key.")
-                }
-            }
-        }
-
-    }
-    private func saveImageToCameraRoll(image: UIImage) {
-           PHPhotoLibrary.shared().performChanges {
-               PHAssetChangeRequest.creationRequestForAsset(from: image)
-           } completionHandler: { success, error in
-               if let error = error {
-                   print("Error saving image to camera roll: \(error.localizedDescription)")
-               } else {
-                   print("Image saved to camera roll successfully.")
-               }
-           }
-       }
+    
+    
+    
+    
 }
