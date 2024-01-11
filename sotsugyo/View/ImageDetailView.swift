@@ -18,7 +18,7 @@ struct ImageDetailView: View {
     @Binding var index: Int
     @State private var tracks: [Track] = []
     @ObservedObject var viewModel: MainContentModel
-    @ObservedObject var ImageViewModel: ImageDetailViewModel
+    @StateObject private var ImageViewModel = ImageDetailViewModel()
     @Binding var friendUid: String
     var selectedIndex: Int
     

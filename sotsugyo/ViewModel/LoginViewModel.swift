@@ -63,7 +63,7 @@ struct LoginView: UIViewControllerRepresentable {
                 if user != nil {
                     Task{
                         do{
-                            try await self?.saveUserData(name:  "")
+                            try await self?.saveUserData()
                         }
                         catch{
                             print(error)
@@ -74,7 +74,7 @@ struct LoginView: UIViewControllerRepresentable {
                 }
             }
         }
-        func saveUserData(name:String)async throws{
+        func saveUserData()async throws{
             
             let db = Firestore.firestore()
             
@@ -88,7 +88,7 @@ struct LoginView: UIViewControllerRepresentable {
                 try await db.collection("users").document(uid).collection("personal").document("info").setData([
                     "uid": uid ,
                     "email": currentUser.email ?? "",
-                    "name": name
+                    "name": currentUser.displayName
                 ])
                 Task{
                     

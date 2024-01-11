@@ -7,7 +7,7 @@ struct MainContentView: View {
     
     @ObservedObject private var cameraManager = CameraManager()
     @StateObject private var viewModel = MainContentModel()
-    @StateObject var Color: ColorModel
+    @StateObject private var Color =  ColorModel()
     
     var body: some View {
         NavigationView {

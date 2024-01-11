@@ -95,7 +95,7 @@ struct ContentView: View {
         
         
         .fullScreenCover(isPresented: $isPresentingCamera) {
-            Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true), friendUid: .constant(""))
+            CameraView(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true), friendUid: .constant(""))
         }
         .sheet(isPresented: $isPresentingQR){
             FriendQRView(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingQR: $isPresentingQR, friendUid:"")

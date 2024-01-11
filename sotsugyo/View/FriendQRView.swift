@@ -57,7 +57,7 @@ struct FriendQRView: View {
             }
             .fullScreenCover(isPresented: $isPresentingQRCode) {
                 
-                Camera2View(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true),friendUid: $friendUid)
+                CameraView(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true),friendUid: $friendUid)
                 
             }
             .onChange(of: isPresentingQRCode) { newValue,_ in

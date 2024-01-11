@@ -1,7 +1,7 @@
 import SwiftUI
 import ARKit
 
-struct Camera2View: View {
+struct CameraView: View {
     @Binding var isPresentingCamera: Bool
     
     @ObservedObject var cameraManager: CameraManager
