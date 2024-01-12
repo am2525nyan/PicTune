@@ -247,19 +247,7 @@ class MainContentModel: ObservableObject {
     }
     
     
-    func startPlay() {
-        url =  URL.init(string: Music.first!.previewURL )
-        let sampleUrl = URL.init(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/8f/c1/32/8fc1329a-bf7d-03f2-3082-6536f60666ee/mzaf_1239907852510333018.plus.aac.p.m4a")
-        audioPlayer = AVPlayer.init(playerItem: AVPlayerItem(url: url ?? sampleUrl! ))
-        
-        audioPlayer?.play()
-    }
-    
-    
-    
-    func stop() {
-        audioPlayer?.pause()
-    }
+ 
     
     func makeFolder(folderName: String){
         let db = Firestore.firestore()
@@ -553,7 +541,62 @@ class MainContentModel: ObservableObject {
         
     }
     
+    func downloadFile(documentId: String, folderId: String) {
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let db = Firestore.firestore()
+        if let currentUser = Auth.auth().currentUser {
+            let uid = currentUser.uid
+            let docRef = db.collection("users").document(uid).collection("folders").document(folderId).collection("photos").document(documentId)
+            
+            docRef.getDocument { document, error in
+                if let error = error {
+                    print("Error getting document: \(error.localizedDescription)")
+                    return
+                }
+                
+                if let data = document?.data(), let fileName = data["url"] as? String {
+                    print("File Name: \(fileName)")
+                    let storageRef = Storage.storage().reference().child("images/"+fileName)
+                    
+                    storageRef.getData(maxSize: 5 * 1024 * 1024) { data, error in
+                        if let error = error {
+                            print("Error downloading image: \(error.localizedDescription)")
+                            return
+                        }
+                        
+                        if let imageData = data, let image = UIImage(data: imageData) {
+                            self.saveImageToCameraRoll(image: image)
+                        }
+                    }
+                } else {
+                    print("Document does not exist or does not contain 'url' key.")
+                }
+            }
+        }
+        
+    }
+    private func saveImageToCameraRoll(image: UIImage) {
+        PHPhotoLibrary.shared().performChanges {
+            PHAssetChangeRequest.creationRequestForAsset(from: image)
+        } completionHandler: { success, error in
+            if let error = error {
+                print("Error saving image to camera roll: \(error.localizedDescription)")
+            } else {
+                print("Image saved to camera roll successfully.")
+            }
+        }
+    }
+    func startPlay() {
+        let sampleUrl = URL.init(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/8f/c1/32/8fc1329a-bf7d-03f2-3082-6536f60666ee/mzaf_1239907852510333018.plus.aac.p.m4a")
+        audioPlayer = AVPlayer.init(playerItem: AVPlayerItem(url: url ?? sampleUrl! ))
+        audioPlayer?.play()
+    }
     
+    
+    func stop() {
+        audioPlayer?.pause()
+    }
     
     
 }

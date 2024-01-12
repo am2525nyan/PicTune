@@ -18,9 +18,10 @@ struct ImageDetailView: View {
     @Binding var index: Int
     @State private var tracks: [Track] = []
     @ObservedObject var viewModel: MainContentModel
-    @StateObject private var ImageViewModel = ImageDetailViewModel()
+  
     @Binding var friendUid: String
     var selectedIndex: Int
+    @State var isDownload = false
     
     var body: some View {
         ZStack{
@@ -49,11 +50,19 @@ struct ImageDetailView: View {
                             .navigationBarTitle("画像詳細", displayMode: .inline)
                             .navigationBarItems(
                                 trailing: Button {
-                                    
+                                    viewModel.downloadFile(documentId: documentId, folderId: viewModel.folderDocument)
+                                    isDownload.toggle()
                                 } label: {
                                     Image(systemName: "square.and.arrow.down")
                                 }
+                                    .alert(isPresented: $isDownload) {
+                                        Alert(
+                                            title: Text("保存"),
+                                            message: Text("カメラロールに保存しました！"),
+                                            dismissButton: .default(Text("OK")))
+                                    }
                             )
+                        
                         
                     }
                     

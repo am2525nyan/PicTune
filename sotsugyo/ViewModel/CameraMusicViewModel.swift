@@ -25,14 +25,5 @@ class CameraMusicViewModel: ObservableObject {
         }
     }
     
-    func startPlay() {
-        let sampleUrl = URL.init(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/8f/c1/32/8fc1329a-bf7d-03f2-3082-6536f60666ee/mzaf_1239907852510333018.plus.aac.p.m4a")
-        audioPlayer = AVPlayer.init(playerItem: AVPlayerItem(url: url ?? sampleUrl! ))
-        audioPlayer?.play()
-    }
-    
-    
-    func stop() {
-        audioPlayer?.pause()
-    }
+   
 }
