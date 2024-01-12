@@ -36,6 +36,8 @@ class MainContentModel: ObservableObject {
     @Published internal var nfc = false
     @Published internal var mailAddress = ""
     @Published internal var name = ""
+    @Published var isAnimating: Bool = false
+   
     
     @Published var userDataList: String = ""
     var audioPlayer: AVPlayer?
@@ -476,8 +478,9 @@ class MainContentModel: ObservableObject {
     func getNFCData( NFCUid: String, NFCfolderid: String)async throws{
         
         if nfc == false{
-            nfc = true
-            
+            DispatchQueue.main.async {
+                self.nfc = true
+            }
             if let currentUser = Auth.auth().currentUser {
                 let uid = currentUser.uid
                 
@@ -496,7 +499,7 @@ class MainContentModel: ObservableObject {
                 let data = document.data()
                 let title = data?["title"] as? String ?? "デフォルトのタイトル"
                 let letter = data?["letter"] as? String ?? ""
-                
+                let date = data?["date"]  ?? FieldValue.serverTimestamp()
                 
                 DispatchQueue.main.async {
                     self.folders.append(title)
@@ -531,6 +534,9 @@ class MainContentModel: ObservableObject {
                     }
                     
                 }
+            }
+            DispatchQueue.main.async {
+                self.nfc = false
             }
             
         }else{
@@ -588,15 +594,30 @@ class MainContentModel: ObservableObject {
         }
     }
     func startPlay() {
-        let sampleUrl = URL.init(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/8f/c1/32/8fc1329a-bf7d-03f2-3082-6536f60666ee/mzaf_1239907852510333018.plus.aac.p.m4a")
-        audioPlayer = AVPlayer.init(playerItem: AVPlayerItem(url: url ?? sampleUrl! ))
-        audioPlayer?.play()
-    }
+        DispatchQueue.main.async {
+            self.url =  URL.init(string: self.Music.first!.previewURL )
+            let sampleUrl = URL.init(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/8f/c1/32/8fc1329a-bf7d-03f2-3082-6536f60666ee/mzaf_1239907852510333018.plus.aac.p.m4a")
+            self.audioPlayer = AVPlayer.init(playerItem: AVPlayerItem(url: self.url ?? sampleUrl! ))
+            
+            self.audioPlayer?.play()
+        }
+       }
     
     
     func stop() {
-        audioPlayer?.pause()
+        DispatchQueue.main.async {
+            self.audioPlayer?.pause()
+        }
     }
-    
+    func startAnimation() {
+        DispatchQueue.main.async {
+            self.isAnimating = true
+        }
+        }
+    func stopAnimation() {
+        DispatchQueue.main.async {
+            self.isAnimating = false
+        }
+        }
     
 }

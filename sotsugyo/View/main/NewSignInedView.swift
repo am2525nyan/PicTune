@@ -78,6 +78,9 @@ struct ContentView: View {
                 }
                 .padding(.bottom, 12)
                 .frame(width: 400, alignment: .top)
+                if viewModel.isAnimating == true{
+                    LottieStartView(viewModel: viewModel)
+                }
             }
             .navigationTitle("PicTune")
             .navigationBarTitleDisplayMode(.inline)
@@ -108,10 +111,10 @@ struct ContentView: View {
         .onAppear {
             Task {
                 if first == true{
-                    try await viewModel.getFolder()
+                    
                     try await viewModel.firstgetUrl()
                     
-                    
+                    try await viewModel.getFolder()
                     try await viewModel.getDate()
                     
                     first = false

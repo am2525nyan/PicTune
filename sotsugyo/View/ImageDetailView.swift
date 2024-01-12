@@ -18,7 +18,7 @@ struct ImageDetailView: View {
     @Binding var index: Int
     @State private var tracks: [Track] = []
     @ObservedObject var viewModel: MainContentModel
-  
+    
     @Binding var friendUid: String
     var selectedIndex: Int
     @State var isDownload = false
@@ -63,10 +63,7 @@ struct ImageDetailView: View {
                                     }
                             )
                         
-                        
                     }
-                    
-                    
                     
                 }
                 

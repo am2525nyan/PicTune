@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 struct MainImageView: View {
     @Binding var tapImage: UIImage?
     @Binding var tapIndex: Int
@@ -44,6 +45,7 @@ struct MainImageView: View {
                 }
             }
         }
+       
     }
     
     

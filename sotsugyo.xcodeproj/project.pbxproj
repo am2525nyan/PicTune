@@ -27,6 +27,8 @@
 		7257A6D22B308769006FE747 /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7257A6D12B308769006FE747 /* ARKit.framework */; };
 		7257A6D42B308F33006FE747 /* ARFaceTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */; };
 		725D760E2B50E09900A131AF /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 725D760D2B50E09900A131AF /* Lottie */; };
+		725D76112B50F64E00A131AF /* fireworks.json in Resources */ = {isa = PBXBuildFile; fileRef = 725D76102B50F64E00A131AF /* fireworks.json */; };
+		725D76132B50F78500A131AF /* Lottie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725D76122B50F78500A131AF /* Lottie.swift */; };
 		725DAA662B4398CF00033106 /* SwiftyGif in Frameworks */ = {isa = PBXBuildFile; productRef = 725DAA652B4398CF00033106 /* SwiftyGif */; };
 		725DAA6B2B4399EE00033106 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 725DAA6A2B4399EE00033106 /* Assets.xcassets */; };
 		7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7266BF322AF374BE000D711B /* ImagePicker.swift */; };
@@ -99,6 +101,19 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		725D762F2B51048200A131AF /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewView.swift; sourceTree = "<group>"; };
 		722067452B4AFDE200408FBD /* NewSignInedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSignInedView.swift; sourceTree = "<group>"; };
@@ -114,6 +129,11 @@
 		7257A6CF2B30875E006FE747 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		7257A6D12B308769006FE747 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
 		7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARFaceTrackingView.swift; sourceTree = "<group>"; };
+		725D76102B50F64E00A131AF /* fireworks.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = fireworks.json; sourceTree = "<group>"; };
+		725D76122B50F78500A131AF /* Lottie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lottie.swift; sourceTree = "<group>"; };
+		725D76192B51047E00A131AF /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		725D761B2B51047F00A131AF /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		725D763E2B51157D00A131AF /* PicTuneWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PicTuneWidgetExtension.entitlements; sourceTree = "<group>"; };
 		725DAA6A2B4399EE00033106 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = ../../../../.Trash/Assets.xcassets; sourceTree = "<group>"; };
 		7265CAC62AEFDB60000058BC /* sotsugyo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = sotsugyo.entitlements; sourceTree = "<group>"; };
 		7266BF322AF374BE000D711B /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
@@ -267,6 +287,7 @@
 				72EC194C2B300EBE002CA76B /* QRCodeGenerator.swift */,
 				7280C9DA2B329581003025C6 /* NFCSession.swift */,
 				7231037C2B4FDEDC00A25AC7 /* UIGIFImageView.swift */,
+				725D76122B50F78500A131AF /* Lottie.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -276,8 +297,18 @@
 			children = (
 				7257A6D12B308769006FE747 /* ARKit.framework */,
 				7257A6CF2B30875E006FE747 /* AVFoundation.framework */,
+				725D76192B51047E00A131AF /* WidgetKit.framework */,
+				725D761B2B51047F00A131AF /* SwiftUI.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		725D760F2B50F5FA00A131AF /* Lottie */ = {
+			isa = PBXGroup;
+			children = (
+				725D76102B50F64E00A131AF /* fireworks.json */,
+			);
+			path = Lottie;
 			sourceTree = "<group>";
 		};
 		725DAA672B4398E900033106 /* gif */ = {
@@ -291,6 +322,7 @@
 		728EFAFC2AEE1C10008C079B = {
 			isa = PBXGroup;
 			children = (
+				725D763E2B51157D00A131AF /* PicTuneWidgetExtension.entitlements */,
 				728EFB542AEE36BC008C079B /* setupGitignore.command */,
 				728EFB072AEE1C10008C079B /* sotsugyo */,
 				728EFB182AEE1C15008C079B /* sotsugyoTests */,
@@ -313,6 +345,7 @@
 		728EFB072AEE1C10008C079B /* sotsugyo */ = {
 			isa = PBXGroup;
 			children = (
+				725D760F2B50F5FA00A131AF /* Lottie */,
 				725DAA6A2B4399EE00033106 /* Assets.xcassets */,
 				725DAA672B4398E900033106 /* gif */,
 				72576F6B2B16E2670064A362 /* Model */,
@@ -378,6 +411,7 @@
 				728EFB012AEE1C10008C079B /* Sources */,
 				728EFB022AEE1C10008C079B /* Frameworks */,
 				728EFB032AEE1C10008C079B /* Resources */,
+				725D762F2B51048200A131AF /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -458,7 +492,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
+				LastSwiftUpdateCheck = 1510;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					728EFB042AEE1C10008C079B = {
@@ -515,6 +549,7 @@
 				72F8815E2B32AA5000AE8D87 /* GoogleService-Info.plist in Resources */,
 				728EFB102AEE1C15008C079B /* Preview Assets.xcassets in Resources */,
 				725DAA6B2B4399EE00033106 /* Assets.xcassets in Resources */,
+				725D76112B50F64E00A131AF /* fireworks.json in Resources */,
 				722AF4872B43FEB300CE104E /* filter.scn in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -578,6 +613,7 @@
 				72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */,
 				7280C9DB2B329581003025C6 /* NFCSession.swift in Sources */,
 				72F985622B17FD2F00FEEC05 /* Track.swift in Sources */,
+				725D76132B50F78500A131AF /* Lottie.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
