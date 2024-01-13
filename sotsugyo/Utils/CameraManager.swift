@@ -1,4 +1,6 @@
 import AVFoundation
+import Photos
+import Vision
 import FirebaseAuth
 import FirebaseStorage
 import SwiftUI
@@ -22,7 +24,8 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     @Published var newImage: UIImage?
     @Published var documentId = "default_value"
     
-    
+    private var compressedData: Data?
+    var livePhotoCompanionMovieURL: URL?
     //カメラの準備
     func setupCaptureSession() {
         captureSession.beginConfiguration()
@@ -47,7 +50,9 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
             print(error.localizedDescription)
             return
         }
-        
+        if self.photoOutput.isLivePhotoCaptureSupported {
+          self.photoOutput.isLivePhotoCaptureEnabled = true
+        }
         captureSession.commitConfiguration()
         
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
@@ -84,21 +89,35 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     
     func captureImage() {
         
-        let settings = AVCapturePhotoSettings()
-        
+      
+       var settingsForMonitoring = AVCapturePhotoSettings()
         let previewWidth = UIScreen.main.bounds.width * 0.864
         let previewHeight = UIScreen.main.bounds.height * 0.536
         
-        settings.previewPhotoFormat = [
+        settingsForMonitoring.previewPhotoFormat = [
             kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
             kCVPixelBufferWidthKey as String: previewWidth,
             kCVPixelBufferHeightKey as String: previewHeight
         ]
         
-        
-        self.photoOutput.capturePhoto(with: settings, delegate: self)
+       
+        settingsForMonitoring.embeddedThumbnailPhotoFormat = [AVVideoCodecKey : AVVideoCodecType.jpeg]
+     settingsForMonitoring.isHighResolutionPhotoEnabled = false
+
+        if self.photoOutput.isLivePhotoCaptureSupported {
+            // 動画の保存先URLの作成
+            let livePhotoMovieFileName = NSUUID().uuidString
+            let livePhotoMovieFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((livePhotoMovieFileName as NSString).appendingPathExtension("mov")!)
+            settingsForMonitoring.livePhotoMovieFileURL = URL(fileURLWithPath: livePhotoMovieFilePath)
+        }
+        self.photoOutput.capturePhoto(with: settingsForMonitoring, delegate: self)
+     
         
     }
+    func photoOutput(_ output: AVCapturePhotoOutput, willBeginCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
+       print("撮影開始")
+    }
+    
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         guard let imageData = photo.fileDataRepresentation(),
@@ -133,7 +152,67 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
             self.isImageUploadCompleted = true
             self.newImage = filteredImage
         }
+    
+    guard let photoData = photo.fileDataRepresentation() else {
+        print("No photo data to write.")
+        return
     }
+    self.compressedData = photoData // 保持
+    }
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishRecordingLivePhotoMovieForEventualFileAt outputFileURL: URL, resolvedSettings: AVCaptureResolvedPhotoSettings) {
+       print("撮影終わり")
+    }
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingLivePhotoToMovieFileAt outputFileURL: URL, duration: CMTime, photoDisplayTime: CMTime, resolvedSettings: AVCaptureResolvedPhotoSettings, error: Error?) {
+      if error != nil {
+        print("Error processing Live Photo companion movie: \(String(describing: error))")
+        return
+      }
+      self.livePhotoCompanionMovieURL = outputFileURL
+    }
+    
+    
+    
+    func photoOutput(_ output: AVCapturePhotoOutput,
+                     didFinishCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings,
+                     error: Error?) {
+        
+        guard error == nil else {
+
+            print("Error capture photo: \(error!)")
+            return
+        }
+        
+        guard let compressedData = self.compressedData else {
+         
+            print("The expected photo data isn't available.")
+            return
+        }
+        
+        PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
+            guard status == .authorized else { return }
+            PHPhotoLibrary.shared().performChanges {
+                let creationRequest = PHAssetCreationRequest.forAsset()
+                creationRequest.addResource(with: .photo, data: compressedData, options: nil)
+                if let livePhotoCompanionMovieURL = self.livePhotoCompanionMovieURL {
+                    let livePhotoCompanionMovieFileOptions = PHAssetResourceCreationOptions()
+                    livePhotoCompanionMovieFileOptions.shouldMoveFile = true
+                    creationRequest.addResource(with: .pairedVideo,
+                                                fileURL: livePhotoCompanionMovieURL,
+                                                options: livePhotoCompanionMovieFileOptions)
+                }
+            } completionHandler: { success, error in
+              
+                
+                if let _ = error {
+                    print("Error save photo: \(error!)")
+                }
+            }
+        }
+    }
+    
+    
+    
+    
     
     func applySepiaFilter(to inputImage: UIImage) -> UIImage? {
         let context = CIContext()
@@ -256,4 +335,6 @@ extension UIImage {
         return self
     }
     
-}
+ 
+    }
+

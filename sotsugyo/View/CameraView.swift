@@ -23,6 +23,8 @@ struct CameraView: View {
                 
                 Color.backGroundColor().edgesIgnoringSafeArea(.all)
                 CameraPreview(cameraManager: cameraManager)
+               
+                
                 Image("Image")
                     .resizable()
                     .scaledToFit()
