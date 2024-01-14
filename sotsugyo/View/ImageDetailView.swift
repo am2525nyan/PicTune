@@ -17,6 +17,7 @@ struct ImageDetailView: View {
     @Binding var tapdocumentId: String
     @Binding var index: Int
     @State private var tracks: [Track] = []
+    @State private var livePhoto = false
     @ObservedObject var viewModel: MainContentModel
     
     @Binding var friendUid: String
@@ -41,28 +42,33 @@ struct ImageDetailView: View {
                     }
                     .frame(width: 333, height: 40)
                     .background(Color.white)
-                    
-                    if let unwrappedImage = image {
-                        Image(uiImage: unwrappedImage)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 333)
-                            .navigationBarTitle("画像詳細", displayMode: .inline)
-                            .navigationBarItems(
-                                trailing: Button {
-                                    viewModel.downloadFile(documentId: documentId, folderId: viewModel.folderDocument)
-                                    isDownload.toggle()
-                                } label: {
-                                    Image(systemName: "square.and.arrow.down")
-                                }
-                                    .alert(isPresented: $isDownload) {
-                                        Alert(
-                                            title: Text("保存"),
-                                            message: Text("カメラロールに保存しました！"),
-                                            dismissButton: .default(Text("OK")))
+                    ZStack{
+                        if livePhoto == true{
+                        //    LivePhotoView(livePhoto: <#PHLivePhoto#>)
+                            
+                        }
+                        if let unwrappedImage = image {
+                            Image(uiImage: unwrappedImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 333)
+                                .navigationBarTitle("画像詳細", displayMode: .inline)
+                                .navigationBarItems(
+                                    trailing: Button {
+                                        viewModel.downloadFile(documentId: documentId, folderId: viewModel.folderDocument)
+                                        isDownload.toggle()
+                                    } label: {
+                                        Image(systemName: "square.and.arrow.down")
                                     }
-                            )
-                        
+                                        .alert(isPresented: $isDownload) {
+                                            Alert(
+                                                title: Text("保存"),
+                                                message: Text("カメラロールに保存しました！"),
+                                                dismissButton: .default(Text("OK")))
+                                        }
+                                )
+                            
+                        }
                     }
                     
                 }

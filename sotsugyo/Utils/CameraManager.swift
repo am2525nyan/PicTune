@@ -8,6 +8,8 @@ import FirebaseFirestore
 import Combine
 import CoreImage
 import CoreImage.CIFilterBuiltins
+import PhotosUI
+import Photos
 
 class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     let captureSession = AVCaptureSession()
@@ -23,9 +25,10 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     let savedata = UserDefaults.standard
     @Published var newImage: UIImage?
     @Published var documentId = "default_value"
-    
+    @Published var friendUid = ""
     private var compressedData: Data?
     var livePhotoCompanionMovieURL: URL?
+    var liveurl = ""
     //カメラの準備
     func setupCaptureSession() {
         captureSession.beginConfiguration()
@@ -162,6 +165,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishRecordingLivePhotoMovieForEventualFileAt outputFileURL: URL, resolvedSettings: AVCaptureResolvedPhotoSettings) {
        print("撮影終わり")
     }
+    
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingLivePhotoToMovieFileAt outputFileURL: URL, duration: CMTime, photoDisplayTime: CMTime, resolvedSettings: AVCaptureResolvedPhotoSettings, error: Error?) {
       if error != nil {
         print("Error processing Live Photo companion movie: \(String(describing: error))")
@@ -188,6 +192,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
             return
         }
         
+  
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
             guard status == .authorized else { return }
             PHPhotoLibrary.shared().performChanges {
@@ -285,7 +290,10 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
                                 "url": url,
                                 "date": FieldValue.serverTimestamp()])
                             
+                            
+                            
                         }
+                        db.collection("users").document(uid!).collection("folders").document("all").collection("photos").document(documentId).updateData(["livephotoUrl":self.liveurl])
                         continuation.resume(returning: documentId)
                         
                     } else {
@@ -307,7 +315,10 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         
     }
     
-    
+ 
+        
+
+  
     func resizeImage(_ image: UIImage, newSize: CGSize) -> UIImage {
         let renderer = UIGraphicsImageRenderer(size: newSize)
         return renderer.image { (context) in

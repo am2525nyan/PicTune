@@ -14,6 +14,7 @@ import AVFoundation
 import SwiftUI
 import Kingfisher
 import Photos
+import PhotosUI
 class MainContentModel: ObservableObject {
     
     
@@ -37,6 +38,7 @@ class MainContentModel: ObservableObject {
     @Published internal var mailAddress = ""
     @Published internal var name = ""
     @Published var isAnimating: Bool = false
+    @Published internal var livePhoto : PHLivePhoto?
    
     
     @Published var userDataList: String = ""
@@ -247,10 +249,7 @@ class MainContentModel: ObservableObject {
             
         }
     }
-    
-    
- 
-    
+   
     func makeFolder(folderName: String){
         let db = Firestore.firestore()
         

@@ -15,7 +15,6 @@
 		722067462B4AFDE200408FBD /* NewSignInedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 722067452B4AFDE200408FBD /* NewSignInedView.swift */; };
 		7223A54E2B2567DF009D6704 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 7223A54D2B2567DF009D6704 /* Kingfisher */; };
 		722AF4872B43FEB300CE104E /* filter.scn in Resources */ = {isa = PBXBuildFile; fileRef = 722AF4862B43FEB300CE104E /* filter.scn */; };
-		7231037B2B4FD7F000A25AC7 /* ImageDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7231037A2B4FD7F000A25AC7 /* ImageDetailViewModel.swift */; };
 		7231037D2B4FDEDC00A25AC7 /* UIGIFImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7231037C2B4FDEDC00A25AC7 /* UIGIFImageView.swift */; };
 		725678D52B4C5C8D00D30460 /* ButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725678D42B4C5C8D00D30460 /* ButtonView.swift */; };
 		72576F662B1466690064A362 /* SearchMusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F652B1466690064A362 /* SearchMusicView.swift */; };
@@ -118,7 +117,6 @@
 		72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewView.swift; sourceTree = "<group>"; };
 		722067452B4AFDE200408FBD /* NewSignInedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSignInedView.swift; sourceTree = "<group>"; };
 		722AF4862B43FEB300CE104E /* filter.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = filter.scn; sourceTree = "<group>"; };
-		7231037A2B4FD7F000A25AC7 /* ImageDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailViewModel.swift; sourceTree = "<group>"; };
 		7231037C2B4FDEDC00A25AC7 /* UIGIFImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIGIFImageView.swift; sourceTree = "<group>"; };
 		725678D42B4C5C8D00D30460 /* ButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonView.swift; sourceTree = "<group>"; };
 		72576F652B1466690064A362 /* SearchMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMusicView.swift; sourceTree = "<group>"; };
@@ -271,7 +269,6 @@
 				72F9855C2B17540800FEEC05 /* CameraMusicViewModel.swift */,
 				72BB5A4B2B4EF47600486FF3 /* SettingViewModel.swift */,
 				72BB5A4D2B4EF92700486FF3 /* ColorModel.swift */,
-				7231037A2B4FD7F000A25AC7 /* ImageDetailViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -576,7 +573,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				728EFB0B2AEE1C10008C079B /* MainContentView.swift in Sources */,
-				7231037B2B4FD7F000A25AC7 /* ImageDetailViewModel.swift in Sources */,
 				72576F662B1466690064A362 /* SearchMusicView.swift in Sources */,
 				728EFB512AEE318C008C079B /* AuthenticationManager.swift in Sources */,
 				72F985642B17FD4A00FEEC05 /* SpotifyAPI.swift in Sources */,

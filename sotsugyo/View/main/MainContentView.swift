@@ -23,9 +23,6 @@ struct MainContentView: View {
                 
             }
         }
-        .onAppear{
-           
-        }
     }
     
 }
