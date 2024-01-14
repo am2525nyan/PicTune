@@ -24,6 +24,7 @@ struct ButtonView: View {
     
     @State var isAlertShown = false
     @State  var alertMessage = ""
+    
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             VStack(alignment: .center, spacing: 4) {
@@ -182,7 +183,8 @@ struct ButtonView: View {
         .frame(maxWidth: .infinity, alignment: .topLeading)
     }
     private func startNFCReadSession() {
-        
+        viewModel.startAnimation()
+      
         
         session.startReadSession { text, NFCUid, error in
             if let error = error {
@@ -200,6 +202,10 @@ struct ButtonView: View {
                             Task {
                                 do {
                                     try await viewModel.getNFCData(NFCUid: cleanedNFCUid, NFCfolderid: unwrappedText)
+                       
+                                  //  viewModel.startAnimation()
+                                 
+                                    
                                 } catch {
                                     print("Error: \(error)")
                                 }
@@ -212,5 +218,6 @@ struct ButtonView: View {
             
             isAlertShown = true
         }
+        viewModel.stopAnimation()
     }
 }

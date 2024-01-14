@@ -22,6 +22,8 @@ struct CameraView: View {
             ZStack {
                 
                 Color.backGroundColor().edgesIgnoringSafeArea(.all)
+                CameraPreview(cameraManager: cameraManager)
+               
                 
                 Image("Image")
                     .resizable()

@@ -15,7 +15,6 @@
 		722067462B4AFDE200408FBD /* NewSignInedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 722067452B4AFDE200408FBD /* NewSignInedView.swift */; };
 		7223A54E2B2567DF009D6704 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 7223A54D2B2567DF009D6704 /* Kingfisher */; };
 		722AF4872B43FEB300CE104E /* filter.scn in Resources */ = {isa = PBXBuildFile; fileRef = 722AF4862B43FEB300CE104E /* filter.scn */; };
-		7231037B2B4FD7F000A25AC7 /* ImageDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7231037A2B4FD7F000A25AC7 /* ImageDetailViewModel.swift */; };
 		7231037D2B4FDEDC00A25AC7 /* UIGIFImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7231037C2B4FDEDC00A25AC7 /* UIGIFImageView.swift */; };
 		725678D52B4C5C8D00D30460 /* ButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725678D42B4C5C8D00D30460 /* ButtonView.swift */; };
 		72576F662B1466690064A362 /* SearchMusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F652B1466690064A362 /* SearchMusicView.swift */; };
@@ -26,6 +25,9 @@
 		7257A6D02B30875E006FE747 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7257A6CF2B30875E006FE747 /* AVFoundation.framework */; };
 		7257A6D22B308769006FE747 /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7257A6D12B308769006FE747 /* ARKit.framework */; };
 		7257A6D42B308F33006FE747 /* ARFaceTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */; };
+		725D760E2B50E09900A131AF /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 725D760D2B50E09900A131AF /* Lottie */; };
+		725D76112B50F64E00A131AF /* fireworks.json in Resources */ = {isa = PBXBuildFile; fileRef = 725D76102B50F64E00A131AF /* fireworks.json */; };
+		725D76132B50F78500A131AF /* Lottie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725D76122B50F78500A131AF /* Lottie.swift */; };
 		725DAA662B4398CF00033106 /* SwiftyGif in Frameworks */ = {isa = PBXBuildFile; productRef = 725DAA652B4398CF00033106 /* SwiftyGif */; };
 		725DAA6B2B4399EE00033106 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 725DAA6A2B4399EE00033106 /* Assets.xcassets */; };
 		7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7266BF322AF374BE000D711B /* ImagePicker.swift */; };
@@ -98,11 +100,23 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		725D762F2B51048200A131AF /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewView.swift; sourceTree = "<group>"; };
 		722067452B4AFDE200408FBD /* NewSignInedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSignInedView.swift; sourceTree = "<group>"; };
 		722AF4862B43FEB300CE104E /* filter.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = filter.scn; sourceTree = "<group>"; };
-		7231037A2B4FD7F000A25AC7 /* ImageDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailViewModel.swift; sourceTree = "<group>"; };
 		7231037C2B4FDEDC00A25AC7 /* UIGIFImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIGIFImageView.swift; sourceTree = "<group>"; };
 		725678D42B4C5C8D00D30460 /* ButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonView.swift; sourceTree = "<group>"; };
 		72576F652B1466690064A362 /* SearchMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMusicView.swift; sourceTree = "<group>"; };
@@ -113,6 +127,11 @@
 		7257A6CF2B30875E006FE747 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		7257A6D12B308769006FE747 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
 		7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARFaceTrackingView.swift; sourceTree = "<group>"; };
+		725D76102B50F64E00A131AF /* fireworks.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = fireworks.json; sourceTree = "<group>"; };
+		725D76122B50F78500A131AF /* Lottie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lottie.swift; sourceTree = "<group>"; };
+		725D76192B51047E00A131AF /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		725D761B2B51047F00A131AF /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		725D763E2B51157D00A131AF /* PicTuneWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PicTuneWidgetExtension.entitlements; sourceTree = "<group>"; };
 		725DAA6A2B4399EE00033106 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = ../../../../.Trash/Assets.xcassets; sourceTree = "<group>"; };
 		7265CAC62AEFDB60000058BC /* sotsugyo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = sotsugyo.entitlements; sourceTree = "<group>"; };
 		7266BF322AF374BE000D711B /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
@@ -178,6 +197,7 @@
 				728EFB4B2AEE2FF2008C079B /* FirebaseOAuthUI in Frameworks */,
 				72EC19502B301196002CA76B /* CodeScanner in Frameworks */,
 				7209E38D2B12EBD200FC44D3 /* Nuke in Frameworks */,
+				725D760E2B50E09900A131AF /* Lottie in Frameworks */,
 				728EFB472AEE2FF2008C079B /* FirebaseFirestoreUI in Frameworks */,
 				728EFB3E2AEE2E4A008C079B /* FirebaseStorage in Frameworks */,
 				728EFB432AEE2FF2008C079B /* FirebaseAuthUI in Frameworks */,
@@ -249,7 +269,6 @@
 				72F9855C2B17540800FEEC05 /* CameraMusicViewModel.swift */,
 				72BB5A4B2B4EF47600486FF3 /* SettingViewModel.swift */,
 				72BB5A4D2B4EF92700486FF3 /* ColorModel.swift */,
-				7231037A2B4FD7F000A25AC7 /* ImageDetailViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -265,6 +284,7 @@
 				72EC194C2B300EBE002CA76B /* QRCodeGenerator.swift */,
 				7280C9DA2B329581003025C6 /* NFCSession.swift */,
 				7231037C2B4FDEDC00A25AC7 /* UIGIFImageView.swift */,
+				725D76122B50F78500A131AF /* Lottie.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -274,8 +294,18 @@
 			children = (
 				7257A6D12B308769006FE747 /* ARKit.framework */,
 				7257A6CF2B30875E006FE747 /* AVFoundation.framework */,
+				725D76192B51047E00A131AF /* WidgetKit.framework */,
+				725D761B2B51047F00A131AF /* SwiftUI.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		725D760F2B50F5FA00A131AF /* Lottie */ = {
+			isa = PBXGroup;
+			children = (
+				725D76102B50F64E00A131AF /* fireworks.json */,
+			);
+			path = Lottie;
 			sourceTree = "<group>";
 		};
 		725DAA672B4398E900033106 /* gif */ = {
@@ -289,6 +319,7 @@
 		728EFAFC2AEE1C10008C079B = {
 			isa = PBXGroup;
 			children = (
+				725D763E2B51157D00A131AF /* PicTuneWidgetExtension.entitlements */,
 				728EFB542AEE36BC008C079B /* setupGitignore.command */,
 				728EFB072AEE1C10008C079B /* sotsugyo */,
 				728EFB182AEE1C15008C079B /* sotsugyoTests */,
@@ -311,6 +342,7 @@
 		728EFB072AEE1C10008C079B /* sotsugyo */ = {
 			isa = PBXGroup;
 			children = (
+				725D760F2B50F5FA00A131AF /* Lottie */,
 				725DAA6A2B4399EE00033106 /* Assets.xcassets */,
 				725DAA672B4398E900033106 /* gif */,
 				72576F6B2B16E2670064A362 /* Model */,
@@ -376,6 +408,7 @@
 				728EFB012AEE1C10008C079B /* Sources */,
 				728EFB022AEE1C10008C079B /* Frameworks */,
 				728EFB032AEE1C10008C079B /* Resources */,
+				725D762F2B51048200A131AF /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -407,6 +440,7 @@
 				72EC194F2B301196002CA76B /* CodeScanner */,
 				7280C9D62B319648003025C6 /* Gifu */,
 				725DAA652B4398CF00033106 /* SwiftyGif */,
+				725D760D2B50E09900A131AF /* Lottie */,
 			);
 			productName = sotsugyo;
 			productReference = 728EFB052AEE1C10008C079B /* sotsugyo.app */;
@@ -455,7 +489,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
+				LastSwiftUpdateCheck = 1510;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					728EFB042AEE1C10008C079B = {
@@ -490,6 +524,7 @@
 				72EC194E2B301196002CA76B /* XCRemoteSwiftPackageReference "CodeScanner" */,
 				7280C9D52B319648003025C6 /* XCRemoteSwiftPackageReference "gifu" */,
 				725DAA642B4398CF00033106 /* XCRemoteSwiftPackageReference "SwiftyGif" */,
+				725D760C2B50E09900A131AF /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			productRefGroup = 728EFB062AEE1C10008C079B /* Products */;
 			projectDirPath = "";
@@ -511,6 +546,7 @@
 				72F8815E2B32AA5000AE8D87 /* GoogleService-Info.plist in Resources */,
 				728EFB102AEE1C15008C079B /* Preview Assets.xcassets in Resources */,
 				725DAA6B2B4399EE00033106 /* Assets.xcassets in Resources */,
+				725D76112B50F64E00A131AF /* fireworks.json in Resources */,
 				722AF4872B43FEB300CE104E /* filter.scn in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -537,7 +573,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				728EFB0B2AEE1C10008C079B /* MainContentView.swift in Sources */,
-				7231037B2B4FD7F000A25AC7 /* ImageDetailViewModel.swift in Sources */,
 				72576F662B1466690064A362 /* SearchMusicView.swift in Sources */,
 				728EFB512AEE318C008C079B /* AuthenticationManager.swift in Sources */,
 				72F985642B17FD4A00FEEC05 /* SpotifyAPI.swift in Sources */,
@@ -574,6 +609,7 @@
 				72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */,
 				7280C9DB2B329581003025C6 /* NFCSession.swift in Sources */,
 				72F985622B17FD2F00FEEC05 /* Track.swift in Sources */,
+				725D76132B50F78500A131AF /* Lottie.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -941,6 +977,14 @@
 				minimumVersion = 7.10.1;
 			};
 		};
+		725D760C2B50E09900A131AF /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.3.4;
+			};
+		};
 		725DAA642B4398CF00033106 /* XCRemoteSwiftPackageReference "SwiftyGif" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kirualex/SwiftyGif";
@@ -1024,6 +1068,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7223A54C2B2567DE009D6704 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		725D760D2B50E09900A131AF /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 725D760C2B50E09900A131AF /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
 		};
 		725DAA652B4398CF00033106 /* SwiftyGif */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -18,6 +18,7 @@ struct MainContentView: View {
                     } else {
                         ContentView(viewModel: viewModel, cameraManager: cameraManager, selectedFolderIndex: .constant(0), isPresentingCamera: $viewModel.isPresentingCamera, DocumentId: .constant(""))
                     }
+                    
                 }
                 
             }
