@@ -139,13 +139,13 @@
 		728384542B2055E20098856E /* FirebaseMusic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseMusic.swift; sourceTree = "<group>"; };
 		728BE2102B5D774600C4D6C2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		728BE2162B5D845C00C4D6C2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		728EFB052AEE1C10008C079B /* sotsugyo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sotsugyo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		728EFB052AEE1C10008C079B /* PIcTune.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PIcTune.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		728EFB082AEE1C10008C079B /* sotsugyoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sotsugyoApp.swift; sourceTree = "<group>"; };
 		728EFB0A2AEE1C10008C079B /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
 		728EFB0F2AEE1C15008C079B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		728EFB152AEE1C15008C079B /* sotsugyoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = sotsugyoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		728EFB152AEE1C15008C079B /* PIcTuneTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PIcTuneTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		728EFB192AEE1C15008C079B /* sotsugyoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sotsugyoTests.swift; sourceTree = "<group>"; };
-		728EFB1F2AEE1C15008C079B /* sotsugyoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = sotsugyoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		728EFB1F2AEE1C15008C079B /* PIcTuneUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PIcTuneUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		728EFB232AEE1C15008C079B /* sotsugyoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sotsugyoUITests.swift; sourceTree = "<group>"; };
 		728EFB252AEE1C15008C079B /* sotsugyoUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sotsugyoUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		728EFB4E2AEE303B008C079B /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
@@ -332,9 +332,9 @@
 		728EFB062AEE1C10008C079B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				728EFB052AEE1C10008C079B /* sotsugyo.app */,
-				728EFB152AEE1C15008C079B /* sotsugyoTests.xctest */,
-				728EFB1F2AEE1C15008C079B /* sotsugyoUITests.xctest */,
+				728EFB052AEE1C10008C079B /* PIcTune.app */,
+				728EFB152AEE1C15008C079B /* PIcTuneTests.xctest */,
+				728EFB1F2AEE1C15008C079B /* PIcTuneUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -401,9 +401,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		728EFB042AEE1C10008C079B /* sotsugyo */ = {
+		728EFB042AEE1C10008C079B /* PIcTune */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 728EFB292AEE1C15008C079B /* Build configuration list for PBXNativeTarget "sotsugyo" */;
+			buildConfigurationList = 728EFB292AEE1C15008C079B /* Build configuration list for PBXNativeTarget "PIcTune" */;
 			buildPhases = (
 				728EFB012AEE1C10008C079B /* Sources */,
 				728EFB022AEE1C10008C079B /* Frameworks */,
@@ -414,7 +414,7 @@
 			);
 			dependencies = (
 			);
-			name = sotsugyo;
+			name = PIcTune;
 			packageProductDependencies = (
 				728EFB332AEE2E4A008C079B /* FirebaseAuth */,
 				728EFB352AEE2E4A008C079B /* FirebaseAuthCombine-Community */,
@@ -443,12 +443,12 @@
 				725D760D2B50E09900A131AF /* Lottie */,
 			);
 			productName = sotsugyo;
-			productReference = 728EFB052AEE1C10008C079B /* sotsugyo.app */;
+			productReference = 728EFB052AEE1C10008C079B /* PIcTune.app */;
 			productType = "com.apple.product-type.application";
 		};
-		728EFB142AEE1C15008C079B /* sotsugyoTests */ = {
+		728EFB142AEE1C15008C079B /* PIcTuneTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 728EFB2C2AEE1C15008C079B /* Build configuration list for PBXNativeTarget "sotsugyoTests" */;
+			buildConfigurationList = 728EFB2C2AEE1C15008C079B /* Build configuration list for PBXNativeTarget "PIcTuneTests" */;
 			buildPhases = (
 				728EFB112AEE1C15008C079B /* Sources */,
 				728EFB122AEE1C15008C079B /* Frameworks */,
@@ -459,14 +459,14 @@
 			dependencies = (
 				728EFB172AEE1C15008C079B /* PBXTargetDependency */,
 			);
-			name = sotsugyoTests;
+			name = PIcTuneTests;
 			productName = sotsugyoTests;
-			productReference = 728EFB152AEE1C15008C079B /* sotsugyoTests.xctest */;
+			productReference = 728EFB152AEE1C15008C079B /* PIcTuneTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		728EFB1E2AEE1C15008C079B /* sotsugyoUITests */ = {
+		728EFB1E2AEE1C15008C079B /* PIcTuneUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 728EFB2F2AEE1C15008C079B /* Build configuration list for PBXNativeTarget "sotsugyoUITests" */;
+			buildConfigurationList = 728EFB2F2AEE1C15008C079B /* Build configuration list for PBXNativeTarget "PIcTuneUITests" */;
 			buildPhases = (
 				728EFB1B2AEE1C15008C079B /* Sources */,
 				728EFB1C2AEE1C15008C079B /* Frameworks */,
@@ -477,9 +477,9 @@
 			dependencies = (
 				728EFB212AEE1C15008C079B /* PBXTargetDependency */,
 			);
-			name = sotsugyoUITests;
+			name = PIcTuneUITests;
 			productName = sotsugyoUITests;
-			productReference = 728EFB1F2AEE1C15008C079B /* sotsugyoUITests.xctest */;
+			productReference = 728EFB1F2AEE1C15008C079B /* PIcTuneUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -505,7 +505,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 728EFB002AEE1C10008C079B /* Build configuration list for PBXProject "sotsugyo" */;
+			buildConfigurationList = 728EFB002AEE1C10008C079B /* Build configuration list for PBXProject "PIcTune" */;
 			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -530,9 +530,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				728EFB042AEE1C10008C079B /* sotsugyo */,
-				728EFB142AEE1C15008C079B /* sotsugyoTests */,
-				728EFB1E2AEE1C15008C079B /* sotsugyoUITests */,
+				728EFB042AEE1C10008C079B /* PIcTune */,
+				728EFB142AEE1C15008C079B /* PIcTuneTests */,
+				728EFB1E2AEE1C15008C079B /* PIcTuneUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -635,12 +635,12 @@
 /* Begin PBXTargetDependency section */
 		728EFB172AEE1C15008C079B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 728EFB042AEE1C10008C079B /* sotsugyo */;
+			target = 728EFB042AEE1C10008C079B /* PIcTune */;
 			targetProxy = 728EFB162AEE1C15008C079B /* PBXContainerItemProxy */;
 		};
 		728EFB212AEE1C15008C079B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 728EFB042AEE1C10008C079B /* sotsugyo */;
+			target = 728EFB042AEE1C10008C079B /* PIcTune */;
 			targetProxy = 728EFB202AEE1C15008C079B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -787,8 +787,8 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -800,6 +800,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -828,8 +829,8 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -841,6 +842,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -863,7 +865,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/sotsugyo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/sotsugyo";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PIcTune.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PIcTune";
 			};
 			name = Debug;
 		};
@@ -883,7 +885,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/sotsugyo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/sotsugyo";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PIcTune.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PIcTune";
 			};
 			name = Release;
 		};
@@ -924,7 +926,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		728EFB002AEE1C10008C079B /* Build configuration list for PBXProject "sotsugyo" */ = {
+		728EFB002AEE1C10008C079B /* Build configuration list for PBXProject "PIcTune" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				728EFB272AEE1C15008C079B /* Debug */,
@@ -933,7 +935,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		728EFB292AEE1C15008C079B /* Build configuration list for PBXNativeTarget "sotsugyo" */ = {
+		728EFB292AEE1C15008C079B /* Build configuration list for PBXNativeTarget "PIcTune" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				728EFB2A2AEE1C15008C079B /* Debug */,
@@ -942,7 +944,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		728EFB2C2AEE1C15008C079B /* Build configuration list for PBXNativeTarget "sotsugyoTests" */ = {
+		728EFB2C2AEE1C15008C079B /* Build configuration list for PBXNativeTarget "PIcTuneTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				728EFB2D2AEE1C15008C079B /* Debug */,
@@ -951,7 +953,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		728EFB2F2AEE1C15008C079B /* Build configuration list for PBXNativeTarget "sotsugyoUITests" */ = {
+		728EFB2F2AEE1C15008C079B /* Build configuration list for PBXNativeTarget "PIcTuneUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				728EFB302AEE1C15008C079B /* Debug */,

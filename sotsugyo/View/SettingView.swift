@@ -214,8 +214,6 @@ class AuthorizationDelegate: NSObject, ObservableObject, ASAuthorizationControll
                    // 再認証に失敗した場合
                    print("Reauthentication failed: \(error.localizedDescription)")
                } else {
-                   // Appleユーザーが成功裏に再認証された場合
-                   // authResultを使用して必要な処理を追加することもできます
                    print("Apple user successfully re-authenticated.")
                }
            }
@@ -304,4 +302,7 @@ class AuthorizationDelegate: NSObject, ObservableObject, ASAuthorizationControll
         }
     }
     
+}
+#Preview{
+    SettingView()
 }
