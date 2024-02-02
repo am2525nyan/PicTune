@@ -6,3 +6,17 @@
 //
 
 import Foundation
+import TipKit
+
+struct PostNFCTip: Tip {
+
+    var title: Text {
+        Text("NFC")
+    }
+   
+    var message: Text? {
+        Text("NFCカードにアルバムを保存できます")
+    }
+
+    
+}

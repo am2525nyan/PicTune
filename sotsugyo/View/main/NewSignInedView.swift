@@ -126,3 +126,6 @@ struct ContentView: View {
         }
     }
 }
+#Preview{
+    ContentView(viewModel: MainContentModel(), cameraManager: CameraManager(), selectedFolderIndex: .constant(0), isPresentingCamera: .constant(false), DocumentId: .constant(""))
+}

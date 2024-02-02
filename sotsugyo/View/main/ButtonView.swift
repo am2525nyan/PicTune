@@ -32,6 +32,7 @@ struct ButtonView: View {
                     showQRAlart.toggle()
                 } label: {
                     VStack(alignment: .center, spacing: 4) {
+                       
                         ZStack {
                             Text("📸")
                                 .font(.custom("Roboto", size: 30))
@@ -62,6 +63,7 @@ struct ButtonView: View {
                     .shadow(color: .black.opacity(0.3), radius: 5, y: 3)
                     
                 }
+                .popoverTip(CameraTip())
                 
                 
                 .alert("コード交換", isPresented: $showQRAlart) {
@@ -164,6 +166,7 @@ struct ButtonView: View {
                     )
                     .shadow(color: .black.opacity(0.3), radius: 5, y: 3)
                 }
+                .popoverTip(NFCTip())
                 
             }
             

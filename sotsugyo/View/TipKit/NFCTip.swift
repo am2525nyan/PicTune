@@ -6,3 +6,17 @@
 //
 
 import Foundation
+import TipKit
+
+struct NFCTip: Tip {
+
+    var title: Text {
+        Text("NFC")
+    }
+
+    var message: Text? {
+        Text("NFCカードにあるデータを保存できます")
+    }
+
+    
+}

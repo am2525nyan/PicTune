@@ -6,3 +6,20 @@
 //
 
 import Foundation
+import TipKit
+
+struct LetterTip: Tip {
+
+    var title: Text {
+        Text("手紙")
+    }
+
+    var message: Text? {
+        Text("フォルダに手紙を書いたり見ることができます")
+    }
+    var image: Image? {
+            Image(systemName: "rectangle.and.pencil.and.ellipsis")
+        }
+
+    
+}
