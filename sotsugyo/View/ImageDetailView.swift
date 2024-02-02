@@ -43,10 +43,7 @@ struct ImageDetailView: View {
                     .frame(width: 333, height: 40)
                     .background(Color.white)
                     ZStack{
-                        if livePhoto == true{
-                        //    LivePhotoView(livePhoto: <#PHLivePhoto#>)
-                            
-                        }
+                      
                         if let unwrappedImage = image {
                             Image(uiImage: unwrappedImage)
                                 .resizable()
