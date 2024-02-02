@@ -325,7 +325,43 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
             image.draw(in: CGRect(origin: .zero, size: newSize))
         }
     }
-    
+    func uploadLivePhotoToFirebase() {
+         guard let livePhotoData = self.compressedData else {
+             print("No Live Photo data to upload.")
+             return
+         }
+
+         let livePhotoFileName = UUID().uuidString
+         let livePhotoFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((livePhotoFileName as NSString).appendingPathExtension("mov")!)
+
+         do {
+             try livePhotoData.write(to: URL(fileURLWithPath: livePhotoFilePath), options: [.atomic])
+         } catch {
+             print("Failed to write Live Photo data to file: \(error.localizedDescription)")
+             return
+         }
+
+         let storageRef = Storage.storage().reference().child("livephotos/\(livePhotoFileName).mov")
+
+         storageRef.putFile(from: URL(fileURLWithPath: livePhotoFilePath), metadata: nil) { (metadata, error) in
+             if let error = error {
+                 print("Error uploading Live Photo to Firebase Storage: \(error.localizedDescription)")
+             } else {
+                 print("Live Photo uploaded successfully. Metadata: \(String(describing: metadata))")
+
+                 // Firebase StorageからダウンロードするためのURLを取得
+                 storageRef.downloadURL { (url, error) in
+                     if let downloadURL = url {
+                         self.liveurl = downloadURL.absoluteString
+                         print("Live Photo download URL: \(self.liveurl)")
+                     } else if let error = error {
+                         print("Error getting Live Photo download URL: \(error.localizedDescription)")
+                     }
+                 }
+             }
+         }
+     }
+
 }
 extension UIImage {
     func rotateLeft90Degrees() -> UIImage {

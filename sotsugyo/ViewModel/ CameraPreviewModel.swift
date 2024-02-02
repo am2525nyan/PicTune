@@ -8,15 +8,19 @@ struct CameraPreview: UIViewRepresentable {
     
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
+        
+      
+      
+        
         DispatchQueue.main.async {
             if let previewLayer = cameraManager.previewLayer {
                 previewLayer.videoGravity = .resizeAspectFill
                 
-                let previewX = CGFloat(27)
-                let previewY = CGFloat(73)
-                let previewWidth = UIScreen.main.bounds.width * 0.864
-                let previewHeight = UIScreen.main.bounds.height * 0.536
-                previewLayer.frame = CGRect(x: previewX, y: previewY, width: previewWidth, height: previewHeight)
+                // Adjust preview size relative to screen size
+                
+                
+                
+                previewLayer.frame = CGRect(x: (UIScreen.main.bounds.width - 285) / 2, y: (UIScreen.main.bounds.height - 390) / 2 - 55, width: 285, height: 390)
                 
                 view.layer.addSublayer(previewLayer)
             }
@@ -25,6 +29,4 @@ struct CameraPreview: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: UIView, context: Context) {}
-    
 }
-

@@ -18,7 +18,7 @@ struct PhotoPreviewView: View {
     @StateObject private var viewModel = PhotoPreviewViewModel()
     @StateObject private var mainViewModel = MainContentModel()
     @StateObject private var Color = ColorModel()
-    
+
     
     var body: some View {
         ZStack{
@@ -58,4 +58,7 @@ struct PhotoPreviewView: View {
             
         }
     }
+}
+#Preview{
+    PhotoPreviewView(isPresentingCamera: .constant(false), isPresentingSearch: .constant(false), documentId: .constant(""), cameraManager: CameraManager(), friendUid: .constant(""))
 }
