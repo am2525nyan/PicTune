@@ -26,6 +26,7 @@ struct WriteLetterView: View {
                 userInput = ""
                 
             }
+            .foregroundColor(.blue)
             .padding()
         }
         .onAppear{

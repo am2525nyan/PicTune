@@ -30,6 +30,7 @@ struct PhotoPreviewView: View {
                         UIImageWriteToSavedPhotosAlbum(viewModel.screenshotImage ?? image, nil, nil, nil)
                         cameraManager.uploadPhoto(viewModel.screenshotImage ?? image, friendUid: friendUid)
                     }
+                    .foregroundColor(.blue)
                     .padding()
                     
                     .sheet(isPresented: $isPresentingSearch) {

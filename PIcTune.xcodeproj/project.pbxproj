@@ -76,6 +76,7 @@
 		72EDABCA2B6D36BD00A28859 /* NFCTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EDABC92B6D36BD00A28859 /* NFCTip.swift */; };
 		72EDABCC2B6D395000A28859 /* PostNFCTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EDABCB2B6D395000A28859 /* PostNFCTip.swift */; };
 		72EDABCE2B6D3ABA00A28859 /* LetterTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EDABCD2B6D3ABA00A28859 /* LetterTip.swift */; };
+		72EDABD02B6D48F900A28859 /* SettingTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EDABCF2B6D48F900A28859 /* SettingTip.swift */; };
 		72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226C82AF8C35D002BA0A6 /* CameraManager.swift */; };
 		72F226CB2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */; };
 		72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CC2AF8C496002BA0A6 /* CameraView.swift */; };
@@ -172,6 +173,7 @@
 		72EDABC92B6D36BD00A28859 /* NFCTip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCTip.swift; sourceTree = "<group>"; };
 		72EDABCB2B6D395000A28859 /* PostNFCTip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostNFCTip.swift; sourceTree = "<group>"; };
 		72EDABCD2B6D3ABA00A28859 /* LetterTip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterTip.swift; sourceTree = "<group>"; };
+		72EDABCF2B6D48F900A28859 /* SettingTip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingTip.swift; sourceTree = "<group>"; };
 		72F226C82AF8C35D002BA0A6 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " CameraPreviewModel.swift"; sourceTree = "<group>"; };
 		72F226CC2AF8C496002BA0A6 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
@@ -246,6 +248,7 @@
 				72EDABC92B6D36BD00A28859 /* NFCTip.swift */,
 				72EDABCB2B6D395000A28859 /* PostNFCTip.swift */,
 				72EDABCD2B6D3ABA00A28859 /* LetterTip.swift */,
+				72EDABCF2B6D48F900A28859 /* SettingTip.swift */,
 			);
 			path = TipKit;
 			sourceTree = "<group>";
@@ -594,6 +597,7 @@
 			files = (
 				728EFB0B2AEE1C10008C079B /* MainContentView.swift in Sources */,
 				72576F662B1466690064A362 /* SearchMusicView.swift in Sources */,
+				72EDABD02B6D48F900A28859 /* SettingTip.swift in Sources */,
 				728EFB512AEE318C008C079B /* AuthenticationManager.swift in Sources */,
 				723B0C182B6D217C00239E95 /* CameraTip.swift in Sources */,
 				72F985642B17FD4A00FEEC05 /* SpotifyAPI.swift in Sources */,

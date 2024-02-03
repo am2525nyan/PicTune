@@ -36,7 +36,6 @@ struct sotsugyoApp: App {
            
             MainContentView()
                 .task {
-                    Tips.showAllTipsForTesting()
                     try? Tips.configure([
                         .displayFrequency(.immediate),
                         .datastoreLocation(.applicationDefault)

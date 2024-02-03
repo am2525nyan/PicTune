@@ -18,5 +18,10 @@ struct NFCTip: Tip {
         Text("NFCカードにあるデータを保存できます")
     }
 
-    
+    var options: [TipOption] {
+           [MaxDisplayCount(1)]
+       }
+    var rules: [Rule] {
+           #Rule(SettingTip.openCamera) { $0.donations.count >= 10 }
+       }
 }
