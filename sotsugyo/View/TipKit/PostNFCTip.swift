@@ -17,6 +17,11 @@ struct PostNFCTip: Tip {
     var message: Text? {
         Text("NFCカードにアルバムを保存できます")
     }
-
+    var options: [TipOption] {
+           [MaxDisplayCount(1)]
+       }
+    var rules: [Rule] {
+        #Rule(SettingTip.openCamera) { $0.donations.count >= 12 }
+         }
     
 }

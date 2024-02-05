@@ -90,8 +90,13 @@ struct ContentView: View {
                         isSetting.toggle()
                     } label: {
                         Image(systemName: "gearshape.fill")
+                            .foregroundColor(.blue)
                     }
+                   
+                    .popoverTip(SettingTip())
+                   
                 }
+               
             }
         }
         

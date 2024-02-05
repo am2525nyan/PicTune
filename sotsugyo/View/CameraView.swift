@@ -39,7 +39,6 @@ struct CameraView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .padding(.bottom, 70)
-                                    .opacity(0.5)
                                     .frame(width: 375, height: 603)
                                     .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                                 
@@ -67,18 +66,22 @@ struct CameraView: View {
                     }
                     
                 }
-                .padding(.bottom,  10)
+                .padding(.bottom,  30)
             }
             .navigationBarItems(leading: Button(action: {
                 dismiss()
                 
             }) {
                 Image(systemName: "arrow.left")
+                    .foregroundColor(.blue)
             })
             
             .onAppear {
                 cameraManager.setupCaptureSession()
                 resetTracking()
+                Task{
+                    await SettingTip.openCamera.donate()
+                }
             }
             .onDisappear {
                 cameraManager.stopSession()

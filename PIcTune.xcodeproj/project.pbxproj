@@ -12,6 +12,7 @@
 		7209E38F2B12EBD200FC44D3 /* NukeExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E38E2B12EBD200FC44D3 /* NukeExtensions */; };
 		7209E3912B12EBD200FC44D3 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E3902B12EBD200FC44D3 /* NukeUI */; };
 		7209E3932B12EBD200FC44D3 /* NukeVideo in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E3922B12EBD200FC44D3 /* NukeVideo */; };
+		720EA8362B70A72200E4D8BA /* SelectedImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 720EA8352B70A72200E4D8BA /* SelectedImageManager.swift */; };
 		722067462B4AFDE200408FBD /* NewSignInedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 722067452B4AFDE200408FBD /* NewSignInedView.swift */; };
 		7223A54E2B2567DF009D6704 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 7223A54D2B2567DF009D6704 /* Kingfisher */; };
 		722AF4872B43FEB300CE104E /* filter.scn in Resources */ = {isa = PBXBuildFile; fileRef = 722AF4862B43FEB300CE104E /* filter.scn */; };
@@ -69,6 +70,7 @@
 		72CEE0E52B4D8BB900255428 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CEE0E42B4D8BB900255428 /* SettingView.swift */; };
 		72D0C0202B2CA58900456F96 /* MainImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D0C01F2B2CA58900456F96 /* MainImageView.swift */; };
 		72D0C0222B2CA5EC00456F96 /* FolderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D0C0212B2CA5EC00456F96 /* FolderContentView.swift */; };
+		72EB017E2B6E8C47007E0AED /* StampView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EB017D2B6E8C47007E0AED /* StampView.swift */; };
 		72EC19482B300463002CA76B /* PencilView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EC19472B300463002CA76B /* PencilView.swift */; };
 		72EC194B2B30053B002CA76B /* FriendQRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EC194A2B30053B002CA76B /* FriendQRView.swift */; };
 		72EC194D2B300EBE002CA76B /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EC194C2B300EBE002CA76B /* QRCodeGenerator.swift */; };
@@ -76,6 +78,7 @@
 		72EDABCA2B6D36BD00A28859 /* NFCTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EDABC92B6D36BD00A28859 /* NFCTip.swift */; };
 		72EDABCC2B6D395000A28859 /* PostNFCTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EDABCB2B6D395000A28859 /* PostNFCTip.swift */; };
 		72EDABCE2B6D3ABA00A28859 /* LetterTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EDABCD2B6D3ABA00A28859 /* LetterTip.swift */; };
+		72EDABD02B6D48F900A28859 /* SettingTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EDABCF2B6D48F900A28859 /* SettingTip.swift */; };
 		72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226C82AF8C35D002BA0A6 /* CameraManager.swift */; };
 		72F226CB2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */; };
 		72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CC2AF8C496002BA0A6 /* CameraView.swift */; };
@@ -119,6 +122,7 @@
 
 /* Begin PBXFileReference section */
 		72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewView.swift; sourceTree = "<group>"; };
+		720EA8352B70A72200E4D8BA /* SelectedImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedImageManager.swift; sourceTree = "<group>"; };
 		722067452B4AFDE200408FBD /* NewSignInedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSignInedView.swift; sourceTree = "<group>"; };
 		722AF4862B43FEB300CE104E /* filter.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = filter.scn; sourceTree = "<group>"; };
 		7231037C2B4FDEDC00A25AC7 /* UIGIFImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIGIFImageView.swift; sourceTree = "<group>"; };
@@ -166,12 +170,14 @@
 		72CEE0E42B4D8BB900255428 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		72D0C01F2B2CA58900456F96 /* MainImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainImageView.swift; sourceTree = "<group>"; };
 		72D0C0212B2CA5EC00456F96 /* FolderContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderContentView.swift; sourceTree = "<group>"; };
+		72EB017D2B6E8C47007E0AED /* StampView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StampView.swift; sourceTree = "<group>"; };
 		72EC19472B300463002CA76B /* PencilView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilView.swift; sourceTree = "<group>"; };
 		72EC194A2B30053B002CA76B /* FriendQRView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendQRView.swift; sourceTree = "<group>"; };
 		72EC194C2B300EBE002CA76B /* QRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeGenerator.swift; sourceTree = "<group>"; };
 		72EDABC92B6D36BD00A28859 /* NFCTip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCTip.swift; sourceTree = "<group>"; };
 		72EDABCB2B6D395000A28859 /* PostNFCTip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostNFCTip.swift; sourceTree = "<group>"; };
 		72EDABCD2B6D3ABA00A28859 /* LetterTip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterTip.swift; sourceTree = "<group>"; };
+		72EDABCF2B6D48F900A28859 /* SettingTip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingTip.swift; sourceTree = "<group>"; };
 		72F226C82AF8C35D002BA0A6 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " CameraPreviewModel.swift"; sourceTree = "<group>"; };
 		72F226CC2AF8C496002BA0A6 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
@@ -246,6 +252,7 @@
 				72EDABC92B6D36BD00A28859 /* NFCTip.swift */,
 				72EDABCB2B6D395000A28859 /* PostNFCTip.swift */,
 				72EDABCD2B6D3ABA00A28859 /* LetterTip.swift */,
+				72EDABCF2B6D48F900A28859 /* SettingTip.swift */,
 			);
 			path = TipKit;
 			sourceTree = "<group>";
@@ -263,6 +270,7 @@
 				72C5A1662B1DACAD00F890AD /* ImageDetailView.swift */,
 				72967E442B298E1700911D97 /* SignInView.swift */,
 				72EC194A2B30053B002CA76B /* FriendQRView.swift */,
+				72EB017D2B6E8C47007E0AED /* StampView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -289,6 +297,7 @@
 				72F9855C2B17540800FEEC05 /* CameraMusicViewModel.swift */,
 				72BB5A4B2B4EF47600486FF3 /* SettingViewModel.swift */,
 				72BB5A4D2B4EF92700486FF3 /* ColorModel.swift */,
+				720EA8352B70A72200E4D8BA /* SelectedImageManager.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -594,6 +603,7 @@
 			files = (
 				728EFB0B2AEE1C10008C079B /* MainContentView.swift in Sources */,
 				72576F662B1466690064A362 /* SearchMusicView.swift in Sources */,
+				72EDABD02B6D48F900A28859 /* SettingTip.swift in Sources */,
 				728EFB512AEE318C008C079B /* AuthenticationManager.swift in Sources */,
 				723B0C182B6D217C00239E95 /* CameraTip.swift in Sources */,
 				72F985642B17FD4A00FEEC05 /* SpotifyAPI.swift in Sources */,
@@ -609,6 +619,7 @@
 				72576F732B16E5020064A362 /* Main ContentModel.swift in Sources */,
 				72EDABCC2B6D395000A28859 /* PostNFCTip.swift in Sources */,
 				7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */,
+				72EB017E2B6E8C47007E0AED /* StampView.swift in Sources */,
 				725678D52B4C5C8D00D30460 /* ButtonView.swift in Sources */,
 				728EFB4F2AEE303C008C079B /* LoginViewModel.swift in Sources */,
 				728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */,
@@ -627,6 +638,7 @@
 				728384552B2055E20098856E /* FirebaseMusic.swift in Sources */,
 				7231037D2B4FDEDC00A25AC7 /* UIGIFImageView.swift in Sources */,
 				72576F7B2B17010E0064A362 /* searchMusicViewModel.swift in Sources */,
+				720EA8362B70A72200E4D8BA /* SelectedImageManager.swift in Sources */,
 				722067462B4AFDE200408FBD /* NewSignInedView.swift in Sources */,
 				727A72BA2B44EFF2006A4393 /* Mask.swift in Sources */,
 				72BB5A4C2B4EF47600486FF3 /* SettingViewModel.swift in Sources */,

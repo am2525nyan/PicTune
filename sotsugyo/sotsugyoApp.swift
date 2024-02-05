@@ -35,8 +35,8 @@ struct sotsugyoApp: App {
         WindowGroup {
            
             MainContentView()
+                .environmentObject(SelectedImageManager.shared)
                 .task {
-                    Tips.showAllTipsForTesting()
                     try? Tips.configure([
                         .displayFrequency(.immediate),
                         .datastoreLocation(.applicationDefault)

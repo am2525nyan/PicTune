@@ -137,7 +137,7 @@ struct FolderTextView: View {
                                     .shadow(color: .black.opacity(0.3), radius: 5, y: 3)
                                 
                             }
-                            .popoverTip(LetterTip())
+            //                .popoverTip(LetterTip())
                         }
                         
                     }
@@ -177,7 +177,7 @@ struct FolderTextView: View {
                                     .shadow(color: .black.opacity(0.3), radius: 5, y: 3)
                                 
                             }
-                            .popoverTip(PostNFCTip())
+                         //   .popoverTip(PostNFCTip())
                             
                             
                             .alert("NFCに保存", isPresented: $isNFC) {

@@ -20,6 +20,10 @@ struct LetterTip: Tip {
     var image: Image? {
             Image(systemName: "rectangle.and.pencil.and.ellipsis")
         }
-
-    
+    var options: [TipOption] {
+           [MaxDisplayCount(1)]
+       }
+    var rules: [Rule] {
+        #Rule(SettingTip.openCamera) { $0.donations.count >= 6 }
+         }
 }

@@ -10,14 +10,33 @@ import PencilKit
 
 
 struct PenKitView:UIViewRepresentable {
+    func makeCoordinator() -> Coordinator {
+           return Coordinator(parent: self)
+       }
+
+    class Coordinator: NSObject, PKToolPickerObserver {
+           var parent: PenKitView
+
+           init(parent: PenKitView) {
+               self.parent = parent
+           }
+
+           func toolPickerVisibilityDidChange(_ toolPicker: PKToolPicker) {
+               parent.isPencilKitVisible = toolPicker.isVisible
+           }
+       }
+    
     typealias UIViewType = PKCanvasView
     let toolPicker = PKToolPicker()
+    @Binding var isPencilKitVisible: Bool
+    let pkcView = PKCanvasView()
     
     func makeUIView(context: Context) -> PKCanvasView {
-        let pkcView = PKCanvasView()
+    
         pkcView.drawingPolicy = PKCanvasViewDrawingPolicy.anyInput
         toolPicker.addObserver(pkcView)
         toolPicker.setVisible(true, forFirstResponder: pkcView)
+      
         pkcView.becomeFirstResponder()
         pkcView.isOpaque = false
         
@@ -26,7 +45,12 @@ struct PenKitView:UIViewRepresentable {
     
     func updateUIView(_ uiView: PKCanvasView, context: Context) {
     }
-    
+    func changepenkit(isPencilKitVisible: Bool) {
+           if !isPencilKitVisible {
+               toolPicker.setVisible(false, forFirstResponder: pkcView)
+           }
+       }
+   
 }
 
 

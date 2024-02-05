@@ -20,5 +20,10 @@ struct CameraTip: Tip {
 
     var image: Image? {
             Image(systemName: "camera.fill")
+          
         }
+    
+    var options: [TipOption] {
+           [MaxDisplayCount(1)]
+       }
 }
