@@ -20,7 +20,7 @@ struct CameraPreview: UIViewRepresentable {
                 
                 
                 
-                previewLayer.frame = CGRect(x: (UIScreen.main.bounds.width - 285) / 2, y: (UIScreen.main.bounds.height - 390) / 2 - 55, width: 285, height: 390)
+                previewLayer.frame = CGRect(x: (UIScreen.main.bounds.width - 282) / 2, y: (UIScreen.main.bounds.height - 390) / 2 - 55, width: 285, height: 390)
                 
                 view.layer.addSublayer(previewLayer)
             }

@@ -18,39 +18,58 @@ struct PhotoPreviewView: View {
     @StateObject private var viewModel = PhotoPreviewViewModel()
     @StateObject private var mainViewModel = MainContentModel()
     @StateObject private var Color = ColorModel()
+    @EnvironmentObject private var selectedImageManager: SelectedImageManager
 
+    @State var isPencilKitVisible = false
+    @State var selectedImage = "0"
     
     var body: some View {
         ZStack{
             Color.backGroundColor().edgesIgnoringSafeArea(.all)
             VStack {
                 if let image = images {
-                    Button("保存") {
-                        viewModel.takeScreenshot()
-                        UIImageWriteToSavedPhotosAlbum(viewModel.screenshotImage ?? image, nil, nil, nil)
-                        cameraManager.uploadPhoto(viewModel.screenshotImage ?? image, friendUid: friendUid)
-                    }
-                    .foregroundColor(.blue)
-                    .padding()
-                    
-                    .sheet(isPresented: $isPresentingSearch) {
-                        SearchView(documentId: documentId, friendUid: $friendUid)
-                    }
-                    
-                    Image("Image")
-                        .resizable()
-                        .scaledToFit()
-                        .overlay {
-                            Image(uiImage: image)
-                                .resizable()
-                                .frame(width: previewWidth, height: previewHeight)
-                                .position(x: 195, y: 286)
+                    HStack{
+                        Button("保存") {
+                            viewModel.takeScreenshot()
+                            UIImageWriteToSavedPhotosAlbum(viewModel.screenshotImage ?? image, nil, nil, nil)
+                            cameraManager.uploadPhoto(viewModel.screenshotImage ?? image, friendUid: friendUid)
                         }
-                        .overlay {
-                            PencilView()
+                        Button(action: {
+                            self.isPencilKitVisible.toggle()
+                        }) {
+                            Text(isPencilKitVisible ? "Hide PencilKit" : "Show PencilKit")
                         }
+                        .foregroundColor(.blue)
+                        .padding()
+                        
+                        .sheet(isPresented: $isPresentingSearch) {
+                            SearchView(documentId: documentId, friendUid: $friendUid)
+                        }
+                    }
+                    ZStack{
+                        Image("Image")
+                            .resizable()
+                            .scaledToFit()
+                            .overlay {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .frame(width: previewWidth, height: previewHeight)
+                                    .position(x: 195, y: 286)
+                            }
+                        Image(selectedImageManager.selectedImage ?? "1")
+                            .resizable()
+                            .frame(width: previewWidth * 1.15, height: previewHeight * 1.325)
+                            .position(x: 194, y: 335)
+                          
+                           
+                           
+                        
+                        PencilView(isPencilKitVisible: $isPencilKitVisible)
+                    }
                     
                 } else {
+                  
+                        
                     Text("写真がありません")
                 }
             }

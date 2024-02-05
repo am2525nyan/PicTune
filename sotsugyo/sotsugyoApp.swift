@@ -35,6 +35,7 @@ struct sotsugyoApp: App {
         WindowGroup {
            
             MainContentView()
+                .environmentObject(SelectedImageManager.shared)
                 .task {
                     try? Tips.configure([
                         .displayFrequency(.immediate),

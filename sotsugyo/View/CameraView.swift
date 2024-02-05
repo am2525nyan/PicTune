@@ -39,7 +39,6 @@ struct CameraView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .padding(.bottom, 70)
-                                    .opacity(0.5)
                                     .frame(width: 375, height: 603)
                                     .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                                 

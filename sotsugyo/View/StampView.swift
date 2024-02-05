@@ -8,11 +8,33 @@
 import SwiftUI
 
 struct StampView: View {
+    @Binding var selectedImage: String
+    @EnvironmentObject private var selectedImageManager: SelectedImageManager
+    
+   
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+      
+        Spacer()
+        ScrollView(.horizontal) {  // ⬅︎
+            
+            HStack { // ⬅︎
+                ForEach(1..<12) { index in
+                    Image("\(index)")
+                        .resizable()
+                        .frame(width: 70, height: 120)
+                        .padding(3)
+                        .onTapGesture {
+                            selectedImageManager.selectedImage = "\(index)"
+                            print(selectedImageManager.selectedImage ?? "u", "a", index)
+                        }
+                }
+            } // HStack
+            .frame(maxHeight: 120)
+        } // ScrollView
+        .background(Color.white)
     }
 }
 
 #Preview {
-    StampView()
+    StampView(selectedImage: .constant(""))
 }
