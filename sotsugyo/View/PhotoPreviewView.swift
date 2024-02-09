@@ -3,7 +3,7 @@ import ARKit
 import SceneKit
 
 struct PhotoPreviewView: View {
-    var images: UIImage?
+    var images = UIImage(named: "1")
     @Binding var isPresentingCamera: Bool
     @Binding var isPresentingSearch: Bool
     @Binding var documentId: String
@@ -19,9 +19,11 @@ struct PhotoPreviewView: View {
     @StateObject private var mainViewModel = MainContentModel()
     @StateObject private var Color = ColorModel()
     @EnvironmentObject private var selectedImageManager: SelectedImageManager
-
+    
     @State var isPencilKitVisible = false
     @State var selectedImage = "0"
+    @State var isHidden = false
+    @State var customGeometry : GeometryProxy?
     
     var body: some View {
         ZStack{
@@ -30,14 +32,21 @@ struct PhotoPreviewView: View {
                 if let image = images {
                     HStack{
                         Button("保存") {
-                            viewModel.takeScreenshot()
-                            UIImageWriteToSavedPhotosAlbum(viewModel.screenshotImage ?? image, nil, nil, nil)
-                            cameraManager.uploadPhoto(viewModel.screenshotImage ?? image, friendUid: friendUid)
+                            
+                            isHidden = true
+                            
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                // 透明になった後にスクリーンショットを撮影
+                                viewModel.takeScreenshot(geometry: customGeometry!)
+                                UIImageWriteToSavedPhotosAlbum(viewModel.screenshotImage ?? image, nil, nil, nil)
+                                cameraManager.uploadPhoto(viewModel.screenshotImage ?? image, friendUid: friendUid)
+                            }
                         }
                         Button(action: {
                             self.isPencilKitVisible.toggle()
                         }) {
-                            Text(isPencilKitVisible ? "Hide PencilKit" : "Show PencilKit")
+                            Text(isPencilKitVisible ? "スタンプ" : "ペン")
                         }
                         .foregroundColor(.blue)
                         .padding()
@@ -46,30 +55,49 @@ struct PhotoPreviewView: View {
                             SearchView(documentId: documentId, friendUid: $friendUid)
                         }
                     }
-                    ZStack{
-                        Image("Image")
-                            .resizable()
-                            .scaledToFit()
-                            .overlay {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .frame(width: previewWidth, height: previewHeight)
-                                    .position(x: 195, y: 286)
-                            }
-                        Image(selectedImageManager.selectedImage ?? "1")
-                            .resizable()
-                            .frame(width: previewWidth * 1.15, height: previewHeight * 1.325)
-                            .position(x: 194, y: 335)
-                          
-                           
-                           
+                    GeometryReader { geometry in
+                       
+                        ZStack {
+                            Image("Image")
+                                .resizable()
+                                .scaledToFit()
+                                .padding(.bottom, 70)
+                                .frame(width: 375, height: 603)
+                                .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                                .overlay() {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                    
+                                        .frame(width: 290,height: 388)
+                                        .padding(.bottom, 110)
+                                        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                                    
+                                    
+                                    
+                                    Image(selectedImageManager.selectedImage ?? "")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 338, height: 603)
+                                        .position(x: geometry.size.width / 2, y: (geometry.size.height / 2) - 34)
+                                    
+                                }
+                                    
+                                    
+                                    PencilView(isPencilKitVisible: $isPencilKitVisible)
+                                        .opacity(isHidden ? 0 : 1)
+                                    
+                                
+                            
+                        }
+                   
+                        .onAppear(){
+                            self.customGeometry = geometry
+                        }
                         
-                        PencilView(isPencilKitVisible: $isPencilKitVisible)
                     }
-                    
                 } else {
-                  
-                        
+                    
+                    
                     Text("写真がありません")
                 }
             }
@@ -77,8 +105,8 @@ struct PhotoPreviewView: View {
             
             
         }
+        .edgesIgnoringSafeArea(.all)
     }
+  
 }
-#Preview{
-    PhotoPreviewView(isPresentingCamera: .constant(false), isPresentingSearch: .constant(false), documentId: .constant(""), cameraManager: CameraManager(), friendUid: .constant(""))
-}
+

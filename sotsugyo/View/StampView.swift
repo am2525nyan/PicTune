@@ -25,7 +25,7 @@ struct StampView: View {
                         .padding(3)
                         .onTapGesture {
                             selectedImageManager.selectedImage = "\(index)"
-                            print(selectedImageManager.selectedImage ?? "u", "a", index)
+                          
                         }
                 }
             } // HStack
