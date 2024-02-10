@@ -136,7 +136,7 @@ struct SettingView: View {
                         
                     }
                 }
-              
+                
                 
                 
             }
@@ -161,7 +161,7 @@ struct SettingView: View {
 
 class AuthorizationDelegate: NSObject, ObservableObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-      
+        
         return ASPresentationAnchor()
     }
     
@@ -195,30 +195,30 @@ class AuthorizationDelegate: NSObject, ObservableObject, ASAuthorizationControll
             authorizationController.presentationContextProvider = self
             authorizationController.performRequests()
         } catch {
-           print(error)
+            print(error)
             
         }
     }
     func reauthenticateUser(_ user: User, appleIdToken: String, rawNonce: String) {
         let nonce = UUID().uuidString
-
+        
         let credential = OAuthProvider.credential(
-               withProviderID: "apple.com",
-               idToken: appleIdToken,
-               rawNonce: rawNonce
-           )
-           
-           // Reauthenticate current Apple user with fresh Apple credential.
-           user.reauthenticate(with: credential) { (authResult, error) in
-               if let error = error {
-                   // 再認証に失敗した場合
-                   print("Reauthentication failed: \(error.localizedDescription)")
-               } else {
-                   print("Apple user successfully re-authenticated.")
-               }
-           }
+            withProviderID: "apple.com",
+            idToken: appleIdToken,
+            rawNonce: rawNonce
+        )
+        
+        // Reauthenticate current Apple user with fresh Apple credential.
+        user.reauthenticate(with: credential) { (authResult, error) in
+            if let error = error {
+                // 再認証に失敗した場合
+                print("Reauthentication failed: \(error.localizedDescription)")
+            } else {
+                print("Apple user successfully re-authenticated.")
+            }
+        }
     }
-
+    
     func randomNonceString(length: Int = 32) -> String {
         precondition(length > 0)
         var randomBytes = [UInt8](repeating: 0, count: length)
@@ -267,7 +267,7 @@ class AuthorizationDelegate: NSObject, ObservableObject, ASAuthorizationControll
             return
         }
         
-
+        
         
         guard let appleAuthCode = appleIDCredential.authorizationCode else {
             print("Unable to fetch authorization code")
@@ -284,17 +284,17 @@ class AuthorizationDelegate: NSObject, ObservableObject, ASAuthorizationControll
             return
         }
         if let appleIdToken = String(data: appleIDCredential.identityToken!, encoding: .utf8) {
-               // appleIdToken を使用して再認証などの処理を行う
+            // appleIdToken を使用して再認証などの処理を行う
             reauthenticateUser(user, appleIdToken: appleIdToken, rawNonce: currentNonce!)
-           } else {
-               print("Unable to fetch Apple ID Token")
-           }
+        } else {
+            print("Unable to fetch Apple ID Token")
+        }
         Task {
             do {
                 // ここにAuth.auth().revokeTokenとuser?.delete()を実行する処理を追加する
                 try await Auth.auth().revokeToken(withAuthorizationCode: authCodeString)
-             
-              try await user.delete()
+                
+                try await user.delete()
             } catch {
                 // エラーの処理を追加
                 print("Error deleting user: \(error.localizedDescription)")

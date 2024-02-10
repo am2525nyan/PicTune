@@ -45,7 +45,7 @@ struct MainImageView: View {
                 }
             }
         }
-       
+        
     }
     
     

@@ -9,19 +9,19 @@ import Foundation
 import TipKit
 
 struct NFCTip: Tip {
-
+    
     var title: Text {
         Text("NFC")
     }
-
+    
     var message: Text? {
         Text("NFCカードにあるデータを保存できます")
     }
-
+    
     var options: [TipOption] {
-           [MaxDisplayCount(1)]
-       }
+        [MaxDisplayCount(1)]
+    }
     var rules: [Rule] {
-           #Rule(SettingTip.openCamera) { $0.donations.count >= 10 }
-       }
+        #Rule(SettingTip.openCamera) { $0.donations.count >= 10 }
+    }
 }

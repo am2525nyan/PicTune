@@ -10,18 +10,11 @@ struct CameraPreview: UIViewRepresentable {
         let view = UIView()
         
       
-      
-        
         DispatchQueue.main.async {
             if let previewLayer = cameraManager.previewLayer {
                 previewLayer.videoGravity = .resizeAspectFill
                 
-                // Adjust preview size relative to screen size
-                
-                
-                
-                previewLayer.frame = CGRect(x: (UIScreen.main.bounds.width - 282) / 2, y: (UIScreen.main.bounds.height - 390) / 2 - 55, width: 285, height: 390)
-                
+                previewLayer.frame = CGRect(x: (UIScreen.main.bounds.width - 284) / 2, y: (UIScreen.main.bounds.height - 390) / 2 - 55, width: 287, height: 390)
                 view.layer.addSublayer(previewLayer)
             }
         }
