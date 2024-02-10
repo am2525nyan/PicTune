@@ -16,7 +16,7 @@ struct CameraView: View {
     @State private var faceGeometry: ARSCNFaceGeometry? = ARSCNFaceGeometry()
     @StateObject private var viewModel = MainContentModel()
     @StateObject private var color = ColorModel()
-  
+    
     let previewWidth2 = UIScreen.main.bounds.width * 0.8
     let previewHeight2 = UIScreen.main.bounds.height * 0.497
     
@@ -28,23 +28,23 @@ struct CameraView: View {
                 
                 color.backGroundColor().edgesIgnoringSafeArea(.all)
                 GeometryReader { geometry in
-                            ZStack {
-                                // CameraPreview
-                                CameraPreview(cameraManager: cameraManager)
-                                  
-                                    .frame(width: geometry.size.width, height: geometry.size.height)
-
-                                // Image
-                                Image("Image")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .padding(.bottom, 70)
-                                    .frame(width: 375, height: 603)
-                                    .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-                                
-                            }
-                        }
-                    
+                    ZStack {
+                        // CameraPreview
+                        CameraPreview(cameraManager: cameraManager)
+                        
+                            .frame(width: geometry.size.width, height: geometry.size.height)
+                        
+                        // Image
+                        Image("Image")
+                            .resizable()
+                            .scaledToFit()
+                            .padding(.bottom, 70)
+                            .frame(width: 375, height: 603)
+                            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                        
+                    }
+                }
+                
                 
                 VStack {
                     Spacer()
@@ -109,7 +109,7 @@ struct CameraView: View {
         
         
     }
-  
+    
 }
 #Preview {
     CameraView(isPresentingCamera: .constant(true), cameraManager: CameraManager(), isPresentingSearch: .constant(false), friendUid: .constant("nil"))

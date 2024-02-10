@@ -27,7 +27,7 @@ struct FolderTextView: View {
     let gifData = NSDataAsset(name:"heart3")?.data
     let gifData2 = NSDataAsset(name:"fun")?.data
     var body: some View {
-
+        
         VStack(alignment: .center, spacing: 12) {
             VStack(alignment: .leading, spacing: 0) {
                 VStack(alignment: .center, spacing: 0) {
@@ -137,7 +137,7 @@ struct FolderTextView: View {
                                     .shadow(color: .black.opacity(0.3), radius: 5, y: 3)
                                 
                             }
-            //                .popoverTip(LetterTip())
+                            //                .popoverTip(LetterTip())
                         }
                         
                     }
@@ -177,7 +177,7 @@ struct FolderTextView: View {
                                     .shadow(color: .black.opacity(0.3), radius: 5, y: 3)
                                 
                             }
-                         //   .popoverTip(PostNFCTip())
+                            //   .popoverTip(PostNFCTip())
                             
                             
                             .alert("NFCに保存", isPresented: $isNFC) {

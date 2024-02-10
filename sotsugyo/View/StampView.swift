@@ -11,9 +11,9 @@ struct StampView: View {
     @Binding var selectedImage: String
     @EnvironmentObject private var selectedImageManager: SelectedImageManager
     
-   
+    
     var body: some View {
-      
+        
         Spacer()
         ScrollView(.horizontal) {  // ⬅︎
             
@@ -25,7 +25,7 @@ struct StampView: View {
                         .padding(3)
                         .onTapGesture {
                             selectedImageManager.selectedImage = "\(index)"
-                          
+                            
                         }
                 }
             } // HStack

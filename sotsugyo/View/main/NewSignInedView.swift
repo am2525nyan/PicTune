@@ -92,11 +92,11 @@ struct ContentView: View {
                         Image(systemName: "gearshape.fill")
                             .foregroundColor(.blue)
                     }
-                   
+                    
                     .popoverTip(SettingTip())
-                   
+                    
                 }
-               
+                
             }
         }
         

@@ -10,7 +10,7 @@ import SwiftUI
 struct PencilView: View {
     @Binding var isPencilKitVisible : Bool
     @State private var penKitView = PenKitView(isPencilKitVisible: .constant(false))
-
+    
     var body: some View {
         if isPencilKitVisible {
             penKitView
@@ -24,9 +24,9 @@ struct PencilView: View {
                 .transition(.opacity)
                 .offset(x: 0, y: 290)
         }
-            
+        
     }
-      
+    
 }
 #Preview {
     PencilView(isPencilKitVisible:  .constant(false))

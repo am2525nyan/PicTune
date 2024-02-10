@@ -32,7 +32,7 @@ struct ButtonView: View {
                     showQRAlart.toggle()
                 } label: {
                     VStack(alignment: .center, spacing: 4) {
-                       
+                        
                         ZStack {
                             Text("📸")
                                 .font(.custom("Roboto", size: 30))
@@ -66,8 +66,8 @@ struct ButtonView: View {
                 
                 .popoverTip(CameraTip())
                 
-               
-          
+                
+                
                 
                 
                 .alert("コード交換", isPresented: $showQRAlart) {
@@ -170,7 +170,7 @@ struct ButtonView: View {
                     )
                     .shadow(color: .black.opacity(0.3), radius: 5, y: 3)
                 }
-          //      .popoverTip(NFCTip())
+                //      .popoverTip(NFCTip())
                 
             }
             
@@ -191,7 +191,7 @@ struct ButtonView: View {
     }
     private func startNFCReadSession() {
         viewModel.startAnimation()
-      
+        
         
         session.startReadSession { text, NFCUid, error in
             if let error = error {
@@ -209,9 +209,9 @@ struct ButtonView: View {
                             Task {
                                 do {
                                     try await viewModel.getNFCData(NFCUid: cleanedNFCUid, NFCfolderid: unwrappedText)
-                       
-                                  //  viewModel.startAnimation()
-                                 
+                                    
+                                    //  viewModel.startAnimation()
+                                    
                                     
                                 } catch {
                                     print("Error: \(error)")

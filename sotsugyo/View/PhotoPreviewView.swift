@@ -47,6 +47,9 @@ struct PhotoPreviewView: View {
                             self.isPencilKitVisible.toggle()
                         }) {
                             Text(isPencilKitVisible ? "スタンプ" : "ペン")
+                                .padding(5)
+                                .background(.white)
+                              
                         }
                         .foregroundColor(.blue)
                         .padding()
@@ -56,7 +59,7 @@ struct PhotoPreviewView: View {
                         }
                     }
                     GeometryReader { geometry in
-                       
+                        
                         ZStack {
                             Image("Image")
                                 .resizable()
@@ -81,15 +84,15 @@ struct PhotoPreviewView: View {
                                         .position(x: geometry.size.width / 2, y: (geometry.size.height / 2) - 34)
                                     
                                 }
-                                    
-                                    
-                                    PencilView(isPencilKitVisible: $isPencilKitVisible)
-                                        .opacity(isHidden ? 0 : 1)
-                                    
-                                
+                            
+                            
+                            PencilView(isPencilKitVisible: $isPencilKitVisible)
+                                .opacity(isHidden ? 0 : 1)
+                            
+                            
                             
                         }
-                   
+                        
                         .onAppear(){
                             self.customGeometry = geometry
                         }
@@ -107,6 +110,6 @@ struct PhotoPreviewView: View {
         }
         .edgesIgnoringSafeArea(.all)
     }
-  
+    
 }
 
