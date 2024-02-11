@@ -27,6 +27,16 @@
 		7257A6D02B30875E006FE747 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7257A6CF2B30875E006FE747 /* AVFoundation.framework */; };
 		7257A6D22B308769006FE747 /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7257A6D12B308769006FE747 /* ARKit.framework */; };
 		7257A6D42B308F33006FE747 /* ARFaceTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */; };
+		725C780A2B77CAE0008C8751 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 725D76192B51047E00A131AF /* WidgetKit.framework */; };
+		725C780B2B77CAE0008C8751 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 725D761B2B51047F00A131AF /* SwiftUI.framework */; };
+		725C780E2B77CAE0008C8751 /* PictuneWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725C780D2B77CAE0008C8751 /* PictuneWidgetBundle.swift */; };
+		725C78102B77CAE0008C8751 /* PictuneWidgetLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725C780F2B77CAE0008C8751 /* PictuneWidgetLiveActivity.swift */; };
+		725C78122B77CAE0008C8751 /* PictuneWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725C78112B77CAE0008C8751 /* PictuneWidget.swift */; };
+		725C78142B77CAE0008C8751 /* AppIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725C78132B77CAE0008C8751 /* AppIntent.swift */; };
+		725C78162B77CAE0008C8751 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 725C78152B77CAE0008C8751 /* Assets.xcassets */; };
+		725C781A2B77CAE0008C8751 /* PictuneWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 725C78092B77CAE0008C8751 /* PictuneWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		725C78202B786C76008C8751 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 725C781F2B786C76008C8751 /* Realm */; };
+		725C78222B786C76008C8751 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 725C78212B786C76008C8751 /* RealmSwift */; };
 		725D760E2B50E09900A131AF /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 725D760D2B50E09900A131AF /* Lottie */; };
 		725D76112B50F64E00A131AF /* fireworks.json in Resources */ = {isa = PBXBuildFile; fileRef = 725D76102B50F64E00A131AF /* fireworks.json */; };
 		725D76132B50F78500A131AF /* Lottie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725D76122B50F78500A131AF /* Lottie.swift */; };
@@ -91,6 +101,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		725C78182B77CAE0008C8751 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 728EFAFD2AEE1C10008C079B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 725C78082B77CAE0008C8751;
+			remoteInfo = PictuneWidgetExtension;
+		};
 		728EFB162AEE1C15008C079B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 728EFAFD2AEE1C10008C079B /* Project object */;
@@ -114,6 +131,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				725C781A2B77CAE0008C8751 /* PictuneWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -136,6 +154,13 @@
 		7257A6CF2B30875E006FE747 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		7257A6D12B308769006FE747 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
 		7257A6D32B308F33006FE747 /* ARFaceTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARFaceTrackingView.swift; sourceTree = "<group>"; };
+		725C78092B77CAE0008C8751 /* PictuneWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PictuneWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		725C780D2B77CAE0008C8751 /* PictuneWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictuneWidgetBundle.swift; sourceTree = "<group>"; };
+		725C780F2B77CAE0008C8751 /* PictuneWidgetLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictuneWidgetLiveActivity.swift; sourceTree = "<group>"; };
+		725C78112B77CAE0008C8751 /* PictuneWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictuneWidget.swift; sourceTree = "<group>"; };
+		725C78132B77CAE0008C8751 /* AppIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntent.swift; sourceTree = "<group>"; };
+		725C78152B77CAE0008C8751 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		725C78172B77CAE0008C8751 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		725D76102B50F64E00A131AF /* fireworks.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = fireworks.json; sourceTree = "<group>"; };
 		725D76122B50F78500A131AF /* Lottie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lottie.swift; sourceTree = "<group>"; };
 		725D76192B51047E00A131AF /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -187,6 +212,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		725C78062B77CAE0008C8751 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				725C780B2B77CAE0008C8751 /* SwiftUI.framework in Frameworks */,
+				725C780A2B77CAE0008C8751 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		728EFB022AEE1C10008C079B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -198,6 +232,7 @@
 				728EFB4D2AEE2FF2008C079B /* FirebaseStorageUI in Frameworks */,
 				728EFB342AEE2E4A008C079B /* FirebaseAuth in Frameworks */,
 				7257A6D22B308769006FE747 /* ARKit.framework in Frameworks */,
+				725C78222B786C76008C8751 /* RealmSwift in Frameworks */,
 				728EFB3A2AEE2E4A008C079B /* FirebaseFirestoreCombine-Community in Frameworks */,
 				7280C9D72B319648003025C6 /* Gifu in Frameworks */,
 				728EFB362AEE2E4A008C079B /* FirebaseAuthCombine-Community in Frameworks */,
@@ -205,6 +240,7 @@
 				7223A54E2B2567DF009D6704 /* Kingfisher in Frameworks */,
 				7257A6D02B30875E006FE747 /* AVFoundation.framework in Frameworks */,
 				725DAA662B4398CF00033106 /* SwiftyGif in Frameworks */,
+				725C78202B786C76008C8751 /* Realm in Frameworks */,
 				7209E3932B12EBD200FC44D3 /* NukeVideo in Frameworks */,
 				7209E3912B12EBD200FC44D3 /* NukeUI in Frameworks */,
 				728EFB452AEE2FF2008C079B /* FirebaseEmailAuthUI in Frameworks */,
@@ -329,6 +365,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		725C780C2B77CAE0008C8751 /* PictuneWidget */ = {
+			isa = PBXGroup;
+			children = (
+				725C780D2B77CAE0008C8751 /* PictuneWidgetBundle.swift */,
+				725C780F2B77CAE0008C8751 /* PictuneWidgetLiveActivity.swift */,
+				725C78112B77CAE0008C8751 /* PictuneWidget.swift */,
+				725C78132B77CAE0008C8751 /* AppIntent.swift */,
+				725C78152B77CAE0008C8751 /* Assets.xcassets */,
+				725C78172B77CAE0008C8751 /* Info.plist */,
+			);
+			path = PictuneWidget;
+			sourceTree = "<group>";
+		};
 		725D760F2B50F5FA00A131AF /* Lottie */ = {
 			isa = PBXGroup;
 			children = (
@@ -353,6 +402,7 @@
 				728EFB072AEE1C10008C079B /* sotsugyo */,
 				728EFB182AEE1C15008C079B /* sotsugyoTests */,
 				728EFB222AEE1C15008C079B /* sotsugyoUITests */,
+				725C780C2B77CAE0008C8751 /* PictuneWidget */,
 				728EFB062AEE1C10008C079B /* Products */,
 				7257A6CE2B30875E006FE747 /* Frameworks */,
 			);
@@ -364,6 +414,7 @@
 				728EFB052AEE1C10008C079B /* PIcTune.app */,
 				728EFB152AEE1C15008C079B /* PIcTuneTests.xctest */,
 				728EFB1F2AEE1C15008C079B /* PIcTuneUITests.xctest */,
+				725C78092B77CAE0008C8751 /* PictuneWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -430,6 +481,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		725C78082B77CAE0008C8751 /* PictuneWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 725C781B2B77CAE1008C8751 /* Build configuration list for PBXNativeTarget "PictuneWidgetExtension" */;
+			buildPhases = (
+				725C78052B77CAE0008C8751 /* Sources */,
+				725C78062B77CAE0008C8751 /* Frameworks */,
+				725C78072B77CAE0008C8751 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PictuneWidgetExtension;
+			productName = PictuneWidgetExtension;
+			productReference = 725C78092B77CAE0008C8751 /* PictuneWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		728EFB042AEE1C10008C079B /* PIcTune */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 728EFB292AEE1C15008C079B /* Build configuration list for PBXNativeTarget "PIcTune" */;
@@ -442,6 +510,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				725C78192B77CAE0008C8751 /* PBXTargetDependency */,
 			);
 			name = PIcTune;
 			packageProductDependencies = (
@@ -470,6 +539,8 @@
 				7280C9D62B319648003025C6 /* Gifu */,
 				725DAA652B4398CF00033106 /* SwiftyGif */,
 				725D760D2B50E09900A131AF /* Lottie */,
+				725C781F2B786C76008C8751 /* Realm */,
+				725C78212B786C76008C8751 /* RealmSwift */,
 			);
 			productName = sotsugyo;
 			productReference = 728EFB052AEE1C10008C079B /* PIcTune.app */;
@@ -521,6 +592,9 @@
 				LastSwiftUpdateCheck = 1510;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					725C78082B77CAE0008C8751 = {
+						CreatedOnToolsVersion = 15.1;
+					};
 					728EFB042AEE1C10008C079B = {
 						CreatedOnToolsVersion = 15.0;
 					};
@@ -554,6 +628,7 @@
 				7280C9D52B319648003025C6 /* XCRemoteSwiftPackageReference "gifu" */,
 				725DAA642B4398CF00033106 /* XCRemoteSwiftPackageReference "SwiftyGif" */,
 				725D760C2B50E09900A131AF /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				725C781E2B786C76008C8751 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			productRefGroup = 728EFB062AEE1C10008C079B /* Products */;
 			projectDirPath = "";
@@ -562,11 +637,20 @@
 				728EFB042AEE1C10008C079B /* PIcTune */,
 				728EFB142AEE1C15008C079B /* PIcTuneTests */,
 				728EFB1E2AEE1C15008C079B /* PIcTuneUITests */,
+				725C78082B77CAE0008C8751 /* PictuneWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		725C78072B77CAE0008C8751 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				725C78162B77CAE0008C8751 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		728EFB032AEE1C10008C079B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -597,6 +681,17 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		725C78052B77CAE0008C8751 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				725C780E2B77CAE0008C8751 /* PictuneWidgetBundle.swift in Sources */,
+				725C78142B77CAE0008C8751 /* AppIntent.swift in Sources */,
+				725C78122B77CAE0008C8751 /* PictuneWidget.swift in Sources */,
+				725C78102B77CAE0008C8751 /* PictuneWidgetLiveActivity.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		728EFB012AEE1C10008C079B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -669,6 +764,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		725C78192B77CAE0008C8751 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 725C78082B77CAE0008C8751 /* PictuneWidgetExtension */;
+			targetProxy = 725C78182B77CAE0008C8751 /* PBXContainerItemProxy */;
+		};
 		728EFB172AEE1C15008C079B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 728EFB042AEE1C10008C079B /* PIcTune */;
@@ -682,6 +782,66 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		725C781C2B77CAE1008C8751 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = PictuneWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TVH687AC7F;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PictuneWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PictuneWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyou.PicTuneWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		725C781D2B77CAE1008C8751 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = PictuneWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TVH687AC7F;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PictuneWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PictuneWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyou.PicTuneWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		728EFB272AEE1C15008C079B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -804,6 +964,7 @@
 		728EFB2A2AEE1C15008C079B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = sotsugyo/sotsugyo.entitlements;
@@ -846,6 +1007,7 @@
 		728EFB2B2AEE1C15008C079B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = sotsugyo/sotsugyo.entitlements;
@@ -962,6 +1124,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		725C781B2B77CAE1008C8751 /* Build configuration list for PBXNativeTarget "PictuneWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				725C781C2B77CAE1008C8751 /* Debug */,
+				725C781D2B77CAE1008C8751 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		728EFB002AEE1C10008C079B /* Build configuration list for PBXProject "PIcTune" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1015,6 +1186,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 7.10.1;
+			};
+		};
+		725C781E2B786C76008C8751 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
 			};
 		};
 		725D760C2B50E09900A131AF /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
@@ -1108,6 +1287,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7223A54C2B2567DE009D6704 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		725C781F2B786C76008C8751 /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 725C781E2B786C76008C8751 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		725C78212B786C76008C8751 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 725C781E2B786C76008C8751 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
 		};
 		725D760D2B50E09900A131AF /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
