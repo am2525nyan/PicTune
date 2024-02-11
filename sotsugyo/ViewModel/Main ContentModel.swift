@@ -15,6 +15,7 @@ import SwiftUI
 import Kingfisher
 import Photos
 import PhotosUI
+
 class MainContentModel: ObservableObject {
     
     
@@ -39,11 +40,21 @@ class MainContentModel: ObservableObject {
     @Published internal var name = ""
     @Published var isAnimating: Bool = false
     @Published internal var livePhoto : PHLivePhoto?
-   
+    
+    
     
     @Published var userDataList: String = ""
     var audioPlayer: AVPlayer?
     var url = URL.init(string: "https://www.hello.com/sample.wav")
+    
+    
+    // ドキュメントディレクトリの「ファイルURL」（URL型）定義
+    var documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    
+    // ドキュメントディレクトリの「パス」（String型）定義
+    let filePath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+    
+    
     
     
     func firstgetUrl() async throws {
@@ -67,8 +78,7 @@ class MainContentModel: ObservableObject {
             for document in ref.documents {
                 let data = document.data()
                 let url = data["url"]
-                let artistname = data["artistName"]
-              
+                
                 if url != nil {
                     urlArray.append(url as! String)
                 }
@@ -81,6 +91,60 @@ class MainContentModel: ObservableObject {
             }
             let storage = Storage.storage()
             let storageRef = storage.reference()
+            
+            if urlArray.count >= 3{
+                
+            var picphoto = urlArray.randomElement()
+             
+                
+                var storageRef = storage.reference().child("images/\(picphoto!)")
+                storageRef.downloadURL { url, error in
+                    if (error != nil) {
+                        print("Uh-oh, an error occurred!")
+                    } else {
+                        print("download success!! URL1:", url!)
+                        let userdefaults = UserDefaults(suiteName: "group.PIcTune")
+                        let stringUrl = url!.absoluteString
+                        userdefaults!.set(stringUrl, forKey: "first")
+                        
+                    }
+                }
+                
+              picphoto = urlArray.randomElement()
+             
+            storageRef = storage.reference().child("images/\(picphoto!)")
+                storageRef.downloadURL { url, error in
+                    if (error != nil) {
+                        print("Uh-oh, an error occurred!")
+                    } else {
+                        print("download success!! URL2:", url!)
+                        let userdefaults = UserDefaults(suiteName: "group.PIcTune")
+                        let stringUrl = url!.absoluteString
+                        userdefaults!.set(stringUrl, forKey: "second")
+                        
+                        
+                    }
+                }
+      picphoto = urlArray.randomElement()
+             
+     storageRef = storage.reference().child("images/\(picphoto!)")
+                storageRef.downloadURL { url, error in
+                    if (error != nil) {
+                        print("Uh-oh, an error occurred!")
+                    } else {
+                        print("download success!! URL3:", url!)
+                        let userdefaults = UserDefaults(suiteName: "group.PIcTune")
+                        let stringUrl = url!.absoluteString
+                        userdefaults!.set(stringUrl, forKey: "third")
+                        
+                        
+                    }
+                }
+
+   
+                
+            }
+            
             
             for (index, photo) in urlArray.enumerated() {
                 
@@ -253,7 +317,7 @@ class MainContentModel: ObservableObject {
             
         }
     }
-   
+    
     func makeFolder(folderName: String){
         let db = Firestore.firestore()
         
@@ -605,7 +669,7 @@ class MainContentModel: ObservableObject {
             
             self.audioPlayer!.play()
         }
-       }
+    }
     
     
     func stop() {
@@ -617,11 +681,12 @@ class MainContentModel: ObservableObject {
         DispatchQueue.main.async {
             self.isAnimating = true
         }
-        }
+    }
     func stopAnimation() {
         DispatchQueue.main.async {
             self.isAnimating = false
         }
-        }
+    }
     
+  
 }

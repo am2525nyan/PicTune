@@ -100,7 +100,6 @@ struct CameraView: View {
         
         let configuration = ARFaceTrackingConfiguration()
         configuration.isLightEstimationEnabled = true
-        let options: ARSession.RunOptions = [.resetTracking, .removeExistingAnchors]
         
         // laughingmanNodeを初期化
         let path = Bundle.main.path(forResource: "filter", ofType: "scn")!
