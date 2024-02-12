@@ -17,7 +17,7 @@ struct PhotoPreviewView: View {
     
     @StateObject private var viewModel = PhotoPreviewViewModel()
     @StateObject private var mainViewModel = MainContentModel()
-    @StateObject private var Color = ColorModel()
+    @StateObject private var color = ColorModel()
     @EnvironmentObject private var selectedImageManager: SelectedImageManager
     
     @State var isPencilKitVisible = false
@@ -27,11 +27,12 @@ struct PhotoPreviewView: View {
     
     var body: some View {
         ZStack{
-            Color.backGroundColor().edgesIgnoringSafeArea(.all)
+            color.backGroundColor().edgesIgnoringSafeArea(.all)
             VStack {
                 if let image = images {
                     HStack{
                         Button("保存") {
+                            self.isPencilKitVisible = true
                             
                             isHidden = true
                             
@@ -46,9 +47,16 @@ struct PhotoPreviewView: View {
                         Button(action: {
                             self.isPencilKitVisible.toggle()
                         }) {
-                            Text(isPencilKitVisible ? "スタンプ" : "ペン")
-                                .padding(5)
-                                .background(.white)
+                            ZStack{
+                                Color.white
+                                    .frame(width: 100,height: 30)
+                                HStack{
+                                    Image(systemName:isPencilKitVisible ? "heart.circle.fill" : "pencil.tip.crop.circle.fill")
+                                    Text(isPencilKitVisible ? "スタンプ" : "ペン")
+                                }
+                            }
+                           
+                              
                               
                         }
                         .foregroundColor(.blue)
