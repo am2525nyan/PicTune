@@ -18,7 +18,7 @@ struct StampView: View {
         ScrollView(.horizontal) {  // ⬅︎
             
             HStack { // ⬅︎
-                ForEach(1..<12) { index in
+                ForEach(1..<17) { index in
                     Image("\(index)")
                         .resizable()
                         .frame(width: 70, height: 120)
