@@ -1,5 +1,5 @@
 import SwiftUI
-import ARKit
+
 
 struct CameraView: View {
     @Binding var isPresentingCamera: Bool
@@ -10,18 +10,17 @@ struct CameraView: View {
     @Binding var isPresentingSearch : Bool
     @Binding var friendUid: String
     @Environment(\.dismiss) private var dismiss
-    @State private var laughingmanNode: SCNReferenceNode?
+
     let previewWidth = UIScreen.main.bounds.width * 0.864
     let previewHeight = UIScreen.main.bounds.height * 0.6
-    @State private var faceGeometry: ARSCNFaceGeometry? = ARSCNFaceGeometry()
+    
     @StateObject private var viewModel = MainContentModel()
     @StateObject private var color = ColorModel()
     
     let previewWidth2 = UIScreen.main.bounds.width * 0.8
     let previewHeight2 = UIScreen.main.bounds.height * 0.497
     
-    let safeAreaInsets: UIEdgeInsets = UIApplication.shared.windows.first?.safeAreaInsets ?? .zero
-    
+   
     var body: some View {
         NavigationView {
             ZStack {
@@ -41,7 +40,7 @@ struct CameraView: View {
                             .padding(.bottom, 70)
                             .frame(width: 375, height: 603)
                             .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-                        
+                       
                     }
                 }
                 
@@ -78,7 +77,7 @@ struct CameraView: View {
             
             .onAppear {
                 cameraManager.setupCaptureSession()
-                resetTracking()
+               
                 Task{
                     await SettingTip.openCamera.donate()
                 }
@@ -92,24 +91,22 @@ struct CameraView: View {
         }
         
     }
-    func resetTracking() {
-        guard ARFaceTrackingConfiguration.isSupported else {
-            // Face tracking is not supported.
-            return
-        }
-        
-        let configuration = ARFaceTrackingConfiguration()
-        configuration.isLightEstimationEnabled = true
-        
-        // laughingmanNodeを初期化
-        let path = Bundle.main.path(forResource: "filter", ofType: "scn")!
-        let url = URL(fileURLWithPath: path)
-        laughingmanNode = SCNReferenceNode(url: url)
-        
-        
-    }
+
     
 }
+extension View {
+    // 発光エフェクトを追加する拡張
+    func glow(radius: CGFloat = 10.0, color: Color = .blue) -> some View {
+        self.overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(color, lineWidth: 2)
+                .blur(radius: radius)
+                .offset(x: 0, y: 0)
+                .opacity(0.7)
+        )
+    }
+}
+
 #Preview {
     CameraView(isPresentingCamera: .constant(true), cameraManager: CameraManager(), isPresentingSearch: .constant(false), friendUid: .constant("nil"))
 }

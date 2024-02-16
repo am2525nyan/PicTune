@@ -1,6 +1,5 @@
 import SwiftUI
-import ARKit
-import SceneKit
+
 import UIKit
 
 struct CameraPreview: UIViewRepresentable {

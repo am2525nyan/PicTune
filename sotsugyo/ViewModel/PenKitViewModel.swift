@@ -46,11 +46,11 @@ struct PenKitView:UIViewRepresentable {
     func updateUIView(_ uiView: PKCanvasView, context: Context) {
     }
     func changepenkit(isPencilKitVisible: Bool) {
-           if !isPencilKitVisible {
-               toolPicker.setVisible(false, forFirstResponder: pkcView)
-           }
+        
+               toolPicker.setVisible(isPencilKitVisible, forFirstResponder: pkcView)
+   //     pkcView.drawingData = pkcView.drawing.dataRepresentation()
+           
        }
    
 }
-
 
