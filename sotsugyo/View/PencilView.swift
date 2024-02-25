@@ -12,21 +12,26 @@ struct PencilView: View {
     @State private var penKitView = PenKitView(isPencilKitVisible: .constant(false))
     
     var body: some View {
-        if isPencilKitVisible {
-            penKitView
-                .onAppear {
-                    penKitView.changepenkit(isPencilKitVisible: isPencilKitVisible)
-                }
-                .transition(.opacity)
-        } else {
+
+            penKitView // ここを変更
+               
+        
+        if !isPencilKitVisible {
             // 何か別の View を表示したい場合はここに追加
             StampView(selectedImage:.constant(""))
                 .transition(.opacity)
                 .offset(x: 0, y: 290)
+                .onAppear {
+                    penKitView.changepenkit(isPencilKitVisible: false) // ここを追加
+                }
+                .onDisappear {
+                    penKitView.changepenkit(isPencilKitVisible: true) // ここを追加
+                }
+
         }
         
     }
-    
+
 }
 #Preview {
     PencilView(isPencilKitVisible:  .constant(false))

@@ -1,6 +1,6 @@
 import SwiftUI
-import ARKit
-import SceneKit
+
+
 
 struct PhotoPreviewView: View {
     var images = UIImage(named: "1")
@@ -34,7 +34,7 @@ struct PhotoPreviewView: View {
                         Button("保存") {
                             self.isPencilKitVisible = true
                             
-                            isHidden = true
+                         
                             
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -46,6 +46,8 @@ struct PhotoPreviewView: View {
                         }
                         Button(action: {
                             self.isPencilKitVisible.toggle()
+                        
+                            
                         }) {
                             ZStack{
                                 Color.white

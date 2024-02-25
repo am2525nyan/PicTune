@@ -105,7 +105,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         
        
         settingsForMonitoring.embeddedThumbnailPhotoFormat = [AVVideoCodecKey : AVVideoCodecType.jpeg]
-     settingsForMonitoring.isHighResolutionPhotoEnabled = false
+        settingsForMonitoring.isHighResolutionPhotoEnabled = false
 
         if self.photoOutput.isLivePhotoCaptureSupported {
             // 動画の保存先URLの作成
@@ -113,6 +113,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
             let livePhotoMovieFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((livePhotoMovieFileName as NSString).appendingPathExtension("mov")!)
             settingsForMonitoring.livePhotoMovieFileURL = URL(fileURLWithPath: livePhotoMovieFilePath)
         }
+        AudioServicesPlaySystemSound(1108)
         self.photoOutput.capturePhoto(with: settingsForMonitoring, delegate: self)
      
         
