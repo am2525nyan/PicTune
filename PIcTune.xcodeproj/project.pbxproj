@@ -607,11 +607,12 @@
 			};
 			buildConfigurationList = 728EFB002AEE1C10008C079B /* Build configuration list for PBXProject "PIcTune" */;
 			compatibilityVersion = "Xcode 15.0";
-			developmentRegion = en;
+			developmentRegion = ja;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				ja,
 			);
 			mainGroup = 728EFAFC2AEE1C10008C079B;
 			packageReferences = (
@@ -966,7 +967,7 @@
 				CODE_SIGN_ENTITLEMENTS = sotsugyo/sotsugyo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"sotsugyo/Preview Content\"";
 				DEVELOPMENT_TEAM = TVH687AC7F;
 				ENABLE_PREVIEWS = YES;
@@ -987,7 +988,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.01;
+				MARKETING_VERSION = 1.04;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyou;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1009,7 +1010,7 @@
 				CODE_SIGN_ENTITLEMENTS = sotsugyo/sotsugyo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"sotsugyo/Preview Content\"";
 				DEVELOPMENT_TEAM = TVH687AC7F;
 				ENABLE_PREVIEWS = YES;
@@ -1030,7 +1031,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.01;
+				MARKETING_VERSION = 1.04;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyou;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

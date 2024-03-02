@@ -20,7 +20,7 @@ class PhotoPreviewViewModel: ObservableObject {
                 let positionY = geometry.frame(in: .global).midY
                 
                 let screenshotRect = CGRect(x: positionX - 335 / 2,
-                                            y: positionY - 525 / 2 - 40, // 調整した値
+                                            y: positionY - 525 / 2 - 38, // 調整した値
                                             width: 333,
                                             height: 525)
                 

@@ -661,14 +661,24 @@ class MainContentModel: ObservableObject {
         }
     }
     func startPlay() {
-        DispatchQueue.main.async {
+       
             self.url =  URL.init(string: self.Music.first!.previewURL )
             let sampleUrl = URL.init(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/8f/c1/32/8fc1329a-bf7d-03f2-3082-6536f60666ee/mzaf_1239907852510333018.plus.aac.p.m4a")
-            print(self.url as Any,"music")
-            self.audioPlayer = AVPlayer.init(playerItem: AVPlayerItem(url: self.url ?? sampleUrl! ))
-            
-            self.audioPlayer!.play()
+          
+        do {
+                   //ここでミュート中でも音が出るようになります。
+                   try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
+                   do {
+                       //オーディオセッションをアクティブにする(ここも必要)
+                       try AVAudioSession.sharedInstance().setActive(true)
+                self.audioPlayer = AVPlayer.init(playerItem: AVPlayerItem(url: self.url ?? sampleUrl! ))
+                
+                self.audioPlayer!.play()
+            }
+        }catch{
+            print(error)
         }
+            
     }
     
     

@@ -46,7 +46,7 @@ struct PhotoPreviewView: View {
                         }
                         Button(action: {
                             self.isPencilKitVisible.toggle()
-                        
+                           
                             
                         }) {
                             ZStack{
@@ -97,7 +97,7 @@ struct PhotoPreviewView: View {
                             
                             
                             PencilView(isPencilKitVisible: $isPencilKitVisible)
-                                .opacity(isHidden ? 0 : 1)
+                              
                             
                             
                             
@@ -122,4 +122,3 @@ struct PhotoPreviewView: View {
     }
     
 }
-
