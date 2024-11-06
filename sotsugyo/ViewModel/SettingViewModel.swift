@@ -18,7 +18,7 @@ import FirebaseOAuthUI
 import FirebaseEmailAuthUI
 import CryptoKit
 
-
+//コメントアウト
 class SettingViewModel: ObservableObject {
     @Published internal var showingPasswordAlert = false
     @Published internal var mailAddress = ""

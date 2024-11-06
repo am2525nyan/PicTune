@@ -18,7 +18,6 @@ import PhotosUI
 
 class MainContentModel: ObservableObject {
     
-    
     @Published internal var isShowSheet = false
     @Published internal var images: [UIImage] = []
     @Published internal var foldersImages: [UIImage] = []
@@ -53,7 +52,7 @@ class MainContentModel: ObservableObject {
     
     // ドキュメントディレクトリの「パス」（String型）定義
     let filePath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-    
+    let db = Firestore.firestore()
     
     
     
@@ -62,9 +61,6 @@ class MainContentModel: ObservableObject {
             guard let uid = Auth.auth().currentUser?.uid else {
                 throw NSError(domain: "FirebaseError", code: -1, userInfo: [NSLocalizedDescriptionKey: "uid is nil"])
             }
-            
-            let db = Firestore.firestore()
-            
             
             var urlArray = [String]()
             DispatchQueue.main.async {
@@ -180,7 +176,6 @@ class MainContentModel: ObservableObject {
         }
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
-            let db = Firestore.firestore()
             
             try await db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
             
@@ -193,7 +188,6 @@ class MainContentModel: ObservableObject {
     
     func getUrl() async throws {
         do {
-            let db = Firestore.firestore()
             let uid = Auth.auth().currentUser?.uid
             var urlArray = [String]()
             
@@ -271,8 +265,6 @@ class MainContentModel: ObservableObject {
             guard let uid = Auth.auth().currentUser?.uid else {
                 throw NSError(domain: "FirebaseError", code: -1, userInfo: [NSLocalizedDescriptionKey: "uid is nil"])
             }
-            
-            let db = Firestore.firestore()
             let ref = try await db.collection("users").document(uid).collection("folders").document("all").collection("photos").order(by: "date").getDocuments()
             
             for document in ref.documents {
@@ -298,7 +290,6 @@ class MainContentModel: ObservableObject {
         
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
-            let db = Firestore.firestore()
             
             let ref = try await db.collection("users").document(uid).collection("folders").document(folder).collection("photos").document(documentId).getDocument()
             let data = ref.data()
@@ -319,7 +310,7 @@ class MainContentModel: ObservableObject {
     }
     
     func makeFolder(folderName: String){
-        let db = Firestore.firestore()
+     
         
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
@@ -343,8 +334,6 @@ class MainContentModel: ObservableObject {
         DispatchQueue.main.async {
             self.folders = []
         }
-        let db = Firestore.firestore()
-        
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             
@@ -363,8 +352,6 @@ class MainContentModel: ObservableObject {
         
     }
     func appendFolder(folderId: Int, index: Int) {
-        let db = Firestore.firestore()
-        
         let document = self.documentIdArray[index]
         self.folderDocument = self.foldersDocumentId[folderId]
         
@@ -400,7 +387,6 @@ class MainContentModel: ObservableObject {
     
     func FoldergetUrl(folderId: Int) async throws {
         do {
-            let db = Firestore.firestore()
             let uid = Auth.auth().currentUser?.uid
             var urlArray = [String]()
             
@@ -489,7 +475,6 @@ class MainContentModel: ObservableObject {
         }
     }
     func saveLetter(){
-        let db = Firestore.firestore()
         
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
@@ -499,8 +484,6 @@ class MainContentModel: ObservableObject {
         }
     }
     func getLetter(){
-        let db = Firestore.firestore()
-        
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             db.collection("users").document(uid).collection("folders").document(folderDocument).getDocument { (document, error) in
@@ -520,14 +503,12 @@ class MainContentModel: ObservableObject {
     }
     
     func deletePhoto(document: String){
-        let db = Firestore.firestore()
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             db.collection("users").document(uid).collection("folders").document(folderDocument).collection("photos").document(document).delete()
         }
     }
     func deletefolder(){
-        let db = Firestore.firestore()
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             db.collection("users").document(uid).collection("folders").document(folderDocument).delete()
@@ -551,7 +532,6 @@ class MainContentModel: ObservableObject {
             if let currentUser = Auth.auth().currentUser {
                 let uid = currentUser.uid
                 
-                let db = Firestore.firestore()
                 Task{
                     do{
                         try await  db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
@@ -616,8 +596,6 @@ class MainContentModel: ObservableObject {
     
     func downloadFile(documentId: String, folderId: String) {
         let storage = Storage.storage()
-        let storageRef = storage.reference()
-        let db = Firestore.firestore()
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             let docRef = db.collection("users").document(uid).collection("folders").document(folderId).collection("photos").document(documentId)
