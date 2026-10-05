@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 110;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -35,8 +35,6 @@
 		725C78142B77CAE0008C8751 /* AppIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725C78132B77CAE0008C8751 /* AppIntent.swift */; };
 		725C78162B77CAE0008C8751 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 725C78152B77CAE0008C8751 /* Assets.xcassets */; };
 		725C781A2B77CAE0008C8751 /* PictuneWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 725C78092B77CAE0008C8751 /* PictuneWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		725C78202B786C76008C8751 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 725C781F2B786C76008C8751 /* Realm */; };
-		725C78222B786C76008C8751 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 725C78212B786C76008C8751 /* RealmSwift */; };
 		725D760E2B50E09900A131AF /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 725D760D2B50E09900A131AF /* Lottie */; };
 		725D76112B50F64E00A131AF /* fireworks.json in Resources */ = {isa = PBXBuildFile; fileRef = 725D76102B50F64E00A131AF /* fireworks.json */; };
 		725D76132B50F78500A131AF /* Lottie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725D76122B50F78500A131AF /* Lottie.swift */; };
@@ -57,7 +55,6 @@
 		728EFB362AEE2E4A008C079B /* FirebaseAuthCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 728EFB352AEE2E4A008C079B /* FirebaseAuthCombine-Community */; };
 		728EFB382AEE2E4A008C079B /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 728EFB372AEE2E4A008C079B /* FirebaseFirestore */; };
 		728EFB3A2AEE2E4A008C079B /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 728EFB392AEE2E4A008C079B /* FirebaseFirestoreCombine-Community */; };
-		728EFB3C2AEE2E4A008C079B /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 728EFB3B2AEE2E4A008C079B /* FirebaseFirestoreSwift */; };
 		728EFB3E2AEE2E4A008C079B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 728EFB3D2AEE2E4A008C079B /* FirebaseStorage */; };
 		728EFB402AEE2E4A008C079B /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 728EFB3F2AEE2E4A008C079B /* FirebaseStorageCombine-Community */; };
 		728EFB432AEE2FF2008C079B /* FirebaseAuthUI in Frameworks */ = {isa = PBXBuildFile; productRef = 728EFB422AEE2FF2008C079B /* FirebaseAuthUI */; };
@@ -126,14 +123,12 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		725D762F2B51048200A131AF /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 13;
+			dstSubfolder = PlugIns;
 			files = (
 				725C781A2B77CAE0008C8751 /* PictuneWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -212,25 +207,20 @@
 /* Begin PBXFrameworksBuildPhase section */
 		725C78062B77CAE0008C8751 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				725C780B2B77CAE0008C8751 /* SwiftUI.framework in Frameworks */,
 				725C780A2B77CAE0008C8751 /* WidgetKit.framework in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB022AEE1C10008C079B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
-				728EFB3C2AEE2E4A008C079B /* FirebaseFirestoreSwift in Frameworks */,
 				72F9856C2B19880800FEEC05 /* URLImageStore in Frameworks */,
 				728EFB402AEE2E4A008C079B /* FirebaseStorageCombine-Community in Frameworks */,
 				72F985672B17FD8200FEEC05 /* Alamofire in Frameworks */,
 				728EFB4D2AEE2FF2008C079B /* FirebaseStorageUI in Frameworks */,
 				728EFB342AEE2E4A008C079B /* FirebaseAuth in Frameworks */,
 				7257A6D22B308769006FE747 /* ARKit.framework in Frameworks */,
-				725C78222B786C76008C8751 /* RealmSwift in Frameworks */,
 				728EFB3A2AEE2E4A008C079B /* FirebaseFirestoreCombine-Community in Frameworks */,
 				7280C9D72B319648003025C6 /* Gifu in Frameworks */,
 				728EFB362AEE2E4A008C079B /* FirebaseAuthCombine-Community in Frameworks */,
@@ -238,7 +228,6 @@
 				7223A54E2B2567DF009D6704 /* Kingfisher in Frameworks */,
 				7257A6D02B30875E006FE747 /* AVFoundation.framework in Frameworks */,
 				725DAA662B4398CF00033106 /* SwiftyGif in Frameworks */,
-				725C78202B786C76008C8751 /* Realm in Frameworks */,
 				7209E3932B12EBD200FC44D3 /* NukeVideo in Frameworks */,
 				7209E3912B12EBD200FC44D3 /* NukeUI in Frameworks */,
 				728EFB452AEE2FF2008C079B /* FirebaseEmailAuthUI in Frameworks */,
@@ -253,21 +242,16 @@
 				72F9856A2B19880800FEEC05 /* URLImage in Frameworks */,
 				7209E38F2B12EBD200FC44D3 /* NukeExtensions in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB122AEE1C15008C079B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB1C2AEE1C15008C079B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -363,7 +347,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		725C780C2B77CAE0008C8751 /* PictuneWidget */ = {
+		725C780C2B77CAE0008C8751 /* PicTuneWidget */ = {
 			isa = PBXGroup;
 			children = (
 				725C780D2B77CAE0008C8751 /* PictuneWidgetBundle.swift */,
@@ -373,7 +357,7 @@
 				725C78152B77CAE0008C8751 /* Assets.xcassets */,
 				725C78172B77CAE0008C8751 /* Info.plist */,
 			);
-			path = PictuneWidget;
+			path = PicTuneWidget;
 			sourceTree = "<group>";
 		};
 		725D760F2B50F5FA00A131AF /* Lottie */ = {
@@ -400,7 +384,7 @@
 				728EFB072AEE1C10008C079B /* sotsugyo */,
 				728EFB182AEE1C15008C079B /* sotsugyoTests */,
 				728EFB222AEE1C15008C079B /* sotsugyoUITests */,
-				725C780C2B77CAE0008C8751 /* PictuneWidget */,
+				725C780C2B77CAE0008C8751 /* PicTuneWidget */,
 				728EFB062AEE1C10008C079B /* Products */,
 				7257A6CE2B30875E006FE747 /* Frameworks */,
 			);
@@ -488,8 +472,6 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			name = PictuneWidgetExtension;
 			productName = PictuneWidgetExtension;
 			productReference = 725C78092B77CAE0008C8751 /* PictuneWidgetExtension.appex */;
@@ -515,7 +497,6 @@
 				728EFB352AEE2E4A008C079B /* FirebaseAuthCombine-Community */,
 				728EFB372AEE2E4A008C079B /* FirebaseFirestore */,
 				728EFB392AEE2E4A008C079B /* FirebaseFirestoreCombine-Community */,
-				728EFB3B2AEE2E4A008C079B /* FirebaseFirestoreSwift */,
 				728EFB3D2AEE2E4A008C079B /* FirebaseStorage */,
 				728EFB3F2AEE2E4A008C079B /* FirebaseStorageCombine-Community */,
 				728EFB422AEE2FF2008C079B /* FirebaseAuthUI */,
@@ -536,8 +517,6 @@
 				7280C9D62B319648003025C6 /* Gifu */,
 				725DAA652B4398CF00033106 /* SwiftyGif */,
 				725D760D2B50E09900A131AF /* Lottie */,
-				725C781F2B786C76008C8751 /* Realm */,
-				725C78212B786C76008C8751 /* RealmSwift */,
 			);
 			productName = sotsugyo;
 			productReference = 728EFB052AEE1C10008C079B /* PIcTune.app */;
@@ -606,7 +585,6 @@
 				};
 			};
 			buildConfigurationList = 728EFB002AEE1C10008C079B /* Build configuration list for PBXProject "PIcTune" */;
-			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = ja;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -626,8 +604,8 @@
 				7280C9D52B319648003025C6 /* XCRemoteSwiftPackageReference "gifu" */,
 				725DAA642B4398CF00033106 /* XCRemoteSwiftPackageReference "SwiftyGif" */,
 				725D760C2B50E09900A131AF /* XCRemoteSwiftPackageReference "lottie-ios" */,
-				725C781E2B786C76008C8751 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
+			preferredProjectObjectVersion = 110;
 			productRefGroup = 728EFB062AEE1C10008C079B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -643,15 +621,12 @@
 /* Begin PBXResourcesBuildPhase section */
 		725C78072B77CAE0008C8751 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				725C78162B77CAE0008C8751 /* Assets.xcassets in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB032AEE1C10008C079B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				728EFB552AEE36BC008C079B /* setupGitignore.command in Resources */,
 				728EFB102AEE1C15008C079B /* Preview Assets.xcassets in Resources */,
@@ -660,39 +635,31 @@
 				722AF4872B43FEB300CE104E /* filter.scn in Resources */,
 				728BE2172B5D845C00C4D6C2 /* GoogleService-Info.plist in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB132AEE1C15008C079B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB1D2AEE1C15008C079B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		725C78052B77CAE0008C8751 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				725C780E2B77CAE0008C8751 /* PictuneWidgetBundle.swift in Sources */,
 				725C78142B77CAE0008C8751 /* AppIntent.swift in Sources */,
 				725C78122B77CAE0008C8751 /* PictuneWidget.swift in Sources */,
 				725C78102B77CAE0008C8751 /* PictuneWidgetLiveActivity.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB012AEE1C10008C079B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				728EFB0B2AEE1C10008C079B /* MainContentView.swift in Sources */,
 				72576F662B1466690064A362 /* SearchMusicView.swift in Sources */,
@@ -739,24 +706,19 @@
 				72F985622B17FD2F00FEEC05 /* Track.swift in Sources */,
 				725D76132B50F78500A131AF /* Lottie.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB112AEE1C15008C079B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				728EFB1A2AEE1C15008C079B /* sotsugyoTests.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB1B2AEE1C15008C079B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				728EFB262AEE1C15008C079B /* sotsugyoUITestsLaunchTests.swift in Sources */,
 				728EFB242AEE1C15008C079B /* sotsugyoUITests.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -779,7 +741,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		725C781C2B77CAE1008C8751 /* Debug */ = {
+		725C781C2B77CAE1008C8751 /* Debug configuration for PBXNativeTarget "PictuneWidgetExtension" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -809,7 +771,7 @@
 			};
 			name = Debug;
 		};
-		725C781D2B77CAE1008C8751 /* Release */ = {
+		725C781D2B77CAE1008C8751 /* Release configuration for PBXNativeTarget "PictuneWidgetExtension" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -839,7 +801,7 @@
 			};
 			name = Release;
 		};
-		728EFB272AEE1C15008C079B /* Debug */ = {
+		728EFB272AEE1C15008C079B /* Debug configuration for PBXProject "PIcTune" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -902,7 +864,7 @@
 			};
 			name = Debug;
 		};
-		728EFB282AEE1C15008C079B /* Release */ = {
+		728EFB282AEE1C15008C079B /* Release configuration for PBXProject "PIcTune" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -958,7 +920,7 @@
 			};
 			name = Release;
 		};
-		728EFB2A2AEE1C15008C079B /* Debug */ = {
+		728EFB2A2AEE1C15008C079B /* Debug configuration for PBXNativeTarget "PIcTune" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -983,7 +945,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1001,7 +963,7 @@
 			};
 			name = Debug;
 		};
-		728EFB2B2AEE1C15008C079B /* Release */ = {
+		728EFB2B2AEE1C15008C079B /* Release configuration for PBXNativeTarget "PIcTune" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -1026,7 +988,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1044,7 +1006,7 @@
 			};
 			name = Release;
 		};
-		728EFB2D2AEE1C15008C079B /* Debug */ = {
+		728EFB2D2AEE1C15008C079B /* Debug configuration for PBXNativeTarget "PIcTuneTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -1064,7 +1026,7 @@
 			};
 			name = Debug;
 		};
-		728EFB2E2AEE1C15008C079B /* Release */ = {
+		728EFB2E2AEE1C15008C079B /* Release configuration for PBXNativeTarget "PIcTuneTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -1084,7 +1046,7 @@
 			};
 			name = Release;
 		};
-		728EFB302AEE1C15008C079B /* Debug */ = {
+		728EFB302AEE1C15008C079B /* Debug configuration for PBXNativeTarget "PIcTuneUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -1101,7 +1063,7 @@
 			};
 			name = Debug;
 		};
-		728EFB312AEE1C15008C079B /* Release */ = {
+		728EFB312AEE1C15008C079B /* Release configuration for PBXNativeTarget "PIcTuneUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -1124,46 +1086,41 @@
 		725C781B2B77CAE1008C8751 /* Build configuration list for PBXNativeTarget "PictuneWidgetExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				725C781C2B77CAE1008C8751 /* Debug */,
-				725C781D2B77CAE1008C8751 /* Release */,
+				725C781C2B77CAE1008C8751 /* Debug configuration for PBXNativeTarget "PictuneWidgetExtension" */,
+				725C781D2B77CAE1008C8751 /* Release configuration for PBXNativeTarget "PictuneWidgetExtension" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		728EFB002AEE1C10008C079B /* Build configuration list for PBXProject "PIcTune" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				728EFB272AEE1C15008C079B /* Debug */,
-				728EFB282AEE1C15008C079B /* Release */,
+				728EFB272AEE1C15008C079B /* Debug configuration for PBXProject "PIcTune" */,
+				728EFB282AEE1C15008C079B /* Release configuration for PBXProject "PIcTune" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		728EFB292AEE1C15008C079B /* Build configuration list for PBXNativeTarget "PIcTune" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				728EFB2A2AEE1C15008C079B /* Debug */,
-				728EFB2B2AEE1C15008C079B /* Release */,
+				728EFB2A2AEE1C15008C079B /* Debug configuration for PBXNativeTarget "PIcTune" */,
+				728EFB2B2AEE1C15008C079B /* Release configuration for PBXNativeTarget "PIcTune" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		728EFB2C2AEE1C15008C079B /* Build configuration list for PBXNativeTarget "PIcTuneTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				728EFB2D2AEE1C15008C079B /* Debug */,
-				728EFB2E2AEE1C15008C079B /* Release */,
+				728EFB2D2AEE1C15008C079B /* Debug configuration for PBXNativeTarget "PIcTuneTests" */,
+				728EFB2E2AEE1C15008C079B /* Release configuration for PBXNativeTarget "PIcTuneTests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		728EFB2F2AEE1C15008C079B /* Build configuration list for PBXNativeTarget "PIcTuneUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				728EFB302AEE1C15008C079B /* Debug */,
-				728EFB312AEE1C15008C079B /* Release */,
+				728EFB302AEE1C15008C079B /* Debug configuration for PBXNativeTarget "PIcTuneUITests" */,
+				728EFB312AEE1C15008C079B /* Release configuration for PBXNativeTarget "PIcTuneUITests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
@@ -1183,14 +1140,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 7.10.1;
-			};
-		};
-		725C781E2B786C76008C8751 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/realm-swift";
-			requirement = {
-				branch = master;
-				kind = branch;
 			};
 		};
 		725D760C2B50E09900A131AF /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
@@ -1222,15 +1171,15 @@
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 10.16.0;
+				minimumVersion = 12.19.2;
 			};
 		};
 		728EFB412AEE2FF2008C079B /* XCRemoteSwiftPackageReference "FirebaseUI-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/FirebaseUI-iOS.git";
 			requirement = {
-				branch = Master;
-				kind = branch;
+				kind = exactVersion;
+				version = 15.1.0;
 			};
 		};
 		72EC194E2B301196002CA76B /* XCRemoteSwiftPackageReference "CodeScanner" */ = {
@@ -1285,16 +1234,6 @@
 			package = 7223A54C2B2567DE009D6704 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
 		};
-		725C781F2B786C76008C8751 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 725C781E2B786C76008C8751 /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		725C78212B786C76008C8751 /* RealmSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 725C781E2B786C76008C8751 /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = RealmSwift;
-		};
 		725D760D2B50E09900A131AF /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 725D760C2B50E09900A131AF /* XCRemoteSwiftPackageReference "lottie-ios" */;
@@ -1329,11 +1268,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 728EFB322AEE2E4A008C079B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseFirestoreCombine-Community";
-		};
-		728EFB3B2AEE2E4A008C079B /* FirebaseFirestoreSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 728EFB322AEE2E4A008C079B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestoreSwift;
 		};
 		728EFB3D2AEE2E4A008C079B /* FirebaseStorage */ = {
 			isa = XCSwiftPackageProductDependency;

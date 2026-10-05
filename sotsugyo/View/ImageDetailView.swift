@@ -67,7 +67,7 @@ struct ImageDetailView: View {
                                         }
                                         
                                         
-                                        ShareLink(item: unwrappedImage, preview: SharePreview("Big Ben", image: unwrappedImage))
+                                        ShareLink(item: unwrappedImage, preview: SharePreview("チェキ", image: unwrappedImage))
                                         
                                         
                                         
@@ -151,7 +151,6 @@ struct ImageDetailView: View {
                 .onAppear {
                     Task {
                         do {
-                            try await viewModel.getDate()
                             try await viewModel.getMusic(documentId: tapdocumentId, folder: viewModel.folderDocument, friendUid: friendUid)
                             
                         } catch {

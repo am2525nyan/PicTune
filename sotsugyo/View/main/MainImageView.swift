@@ -1,105 +1,90 @@
-//
-//  MainImageView.swift
-//  sotsugyo
-//
-//  Created by saki on 2023/12/16.
-//
-
 import SwiftUI
-import FirebaseAuth
+
 struct MainImageView: View {
-    @Binding var tapImage: UIImage?
-    @Binding var tapIndex: Int
-    @Binding var tapdocumentId: String
-    @Binding var selectedFolderIndex: String
-    
     @ObservedObject var viewModel: MainContentModel
-    
-    
-    var body: some View {
-        ScrollView {
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 3) {
-                ForEach($viewModel.images.indices, id: \.self) { index in
-                    
-                    imageCell(index: index, selectedFolderIndex: $tapIndex)
-                }
-            }
-        }
-        .refreshable {
-            Task {
-                do {
-                    try await viewModel.FoldergetUrl(folderId: tapIndex)
-                }
-            }
-        }
-        .onChange(of: viewModel.getimage) {
-            Task {
-                do {
-                    try await viewModel.FoldergetUrl(folderId: tapIndex)
-                    
-                    
-                    
-                    
-                } catch {
-                    print("Error: \(error)")
-                }
-            }
-        }
-        
+    let folderId: String
+
+    private struct DisplayPhoto: Identifiable {
+        let id: String
+        let image: UIImage
+        let position: Int
     }
-    
-    
-    private func imageCell(index: Int, selectedFolderIndex: Binding<Int>) -> some View {
-        
-        
-        return NavigationLink(
-            destination: ImageDetailView(image: $tapImage, documentId: $tapdocumentId, tapdocumentId: $tapdocumentId, index: selectedFolderIndex, viewModel: viewModel, friendUid: .constant(""), selectedIndex: tapIndex),
-            tag: viewModel.images[index],
-            selection: $tapImage,
-            label: {
-                Image(uiImage: viewModel.images[index])
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 180, height: 315)
-                    .clipped()
-                    .onTapGesture {
-                        tapdocumentId = viewModel.documentIdArray[index]
-                        tapImage = viewModel.images[index]
-                        tapIndex = index
-                    }
-                    .contextMenu {
-                        ForEach(viewModel.folders.indices, id: \.self) { index1 in
-                            Button {
-                                viewModel.appendFolder(folderId: index1, index: index)
-                            } label: {
-                                Text(viewModel.folders[index1] )
-                            }
-                            
-                            
-                        }
-                        
-                        
-                        Button("削除", role: .destructive) {
-                            let intValue = selectedFolderIndex.wrappedValue
-                            viewModel.deletePhoto(document: viewModel.documentIdArray[index])
-                            Task {
-                                do {
-                                    try await viewModel.FoldergetUrl(folderId: intValue)
-                                    try await viewModel.getUrl()
-                                } catch {
-                                    print("Error: \(error)")
+
+    private var photos: [DisplayPhoto] {
+        let count = min(viewModel.images.count, viewModel.documentIdArray.count)
+        return (0..<count).map { index in
+            DisplayPhoto(id: viewModel.documentIdArray[index], image: viewModel.images[index], position: index)
+        }
+    }
+
+    private let columns = [GridItem(.adaptive(minimum: 160, maximum: 260), spacing: 12)]
+
+    var body: some View {
+        LazyVGrid(columns: columns, spacing: 16) {
+            ForEach(photos) { photo in
+                photoCell(photo)
+            }
+        }
+        .padding(.vertical, 8)
+    }
+
+    private func photoCell(_ photo: DisplayPhoto) -> some View {
+        return NavigationLink {
+            ImageDetailView(
+                image: .constant(photo.image),
+                documentId: .constant(photo.id),
+                tapdocumentId: .constant(photo.id),
+                index: .constant(photo.position),
+                viewModel: viewModel,
+                friendUid: .constant(""),
+                selectedIndex: photo.position
+            )
+        } label: {
+            Image(uiImage: photo.image)
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: .infinity)
+                .accessibilityHidden(true)
+        }
+        .accessibilityLabel("チェキ \(photo.position + 1)")
+        .contextMenu {
+            if folderId == "all" {
+                Menu("フォルダに追加") {
+                    ForEach(viewModel.foldersDocumentId.indices, id: \.self) { folderIndex in
+                        if viewModel.folders.indices.contains(folderIndex),
+                           viewModel.foldersDocumentId[folderIndex] != "all" {
+                            Button(viewModel.folders[folderIndex]) {
+                                Task {
+                                    try? await viewModel.appendFolder(
+                                        photoDocumentID: photo.id,
+                                        to: viewModel.foldersDocumentId[folderIndex]
+                                    )
                                 }
                             }
-                            
-                            
                         }
-                        
-                        
                     }
+                }
             }
-            
-        )
-        
+
+            Button("削除", role: .destructive) {
+                Task {
+                    do {
+                        try await viewModel.deletePhoto(document: photo.id, folderId: folderId)
+                        await reloadPhotos()
+                    } catch {
+                        print("写真の削除に失敗しました: \(error)")
+                    }
+                }
+            }
+        }
+    }
+
+    private func reloadPhotos() async {
+        if folderId == "all" {
+            try? await viewModel.firstgetUrl()
+            try? await viewModel.getDate()
+        } else if let folderIndex = viewModel.foldersDocumentId.firstIndex(of: folderId) {
+            try? await viewModel.FoldergetUrl(folderId: folderIndex)
+        }
     }
 }
-
