@@ -9,60 +9,45 @@ class SpotifyAPI {
     
     private init() {}
     
-    func searchTracks(query: String, completion: @escaping ([Track]) -> Void) {
+    func searchTracks(query: String, completion: @escaping (Result<[Track], Error>) -> Void) {
         SpotifyAuth.shared.fetchAccessToken { success in
             guard success, let accessToken = SpotifyAuth.shared.accessToken else {
-                print("Access token is nil or not available.")
+                completion(.failure(NSError(domain: "MusicSearch", code: 1)))
                 return
             }
-            
-            let headers: HTTPHeaders = [
-                "Authorization": "Bearer \(accessToken)"
-            ]
-            
-            let searchURL = "\(self.baseURL)/search"
-            let parameters: [String: Any] = [
-                "q": query,
-                "type": "track"
-            ]
-            
-            AF.request(searchURL, method: .get, parameters: parameters, headers: headers)
+            let headers: HTTPHeaders = ["Authorization": "Bearer \(accessToken)"]
+            let parameters = ["q": query, "type": "track"]
+            AF.request("\(self.baseURL)/search", method: .get, parameters: parameters, headers: headers)
                 .validate()
                 .responseJSON { response in
                     switch response.result {
                     case .success(let data):
-                        if let json = data as? [String: Any],
-                           let tracksJSON = json["tracks"] as? [String: Any],
-                           let items = tracksJSON["items"] as? [[String: Any]] {
-                            
-                            var tracks: [Track] = []
-                            
-                            for item in items {
-                                if let id = item["id"] as? String,
-                                   let name = item["name"] as? String,
-                                   let artists = item["artists"] as? [[String: Any]],
-                                   let artist = artists.first?["name"] as? String,
-                                   let albumData = item["album"] as? [String: Any],
-                                   let albumID = albumData["id"] as? String,
-                                   let previewUrl = item["preview_url"] as? String{
-                                    
-                                    self.getAlbumInfo(albumID: albumID) { albumImages in
-                                        let track = Track(id: id, name: name, artist: artist, albumImages: albumImages,previewURL: previewUrl)
-                                        tracks.append(track)
-                                        completion(tracks)
-                                    }
-                                }
-                            }
-                        } else {
-                            print("Invalid response format")
+                        guard let json = data as? [String: Any],
+                              let tracksJSON = json["tracks"] as? [String: Any],
+                              let items = tracksJSON["items"] as? [[String: Any]] else {
+                            completion(.failure(NSError(domain: "MusicSearch", code: 2)))
+                            return
                         }
+                        let tracks = items.compactMap { item -> Track? in
+                            guard let id = item["id"] as? String,
+                                  let name = item["name"] as? String,
+                                  let artists = item["artists"] as? [[String: Any]],
+                                  let artist = artists.first?["name"] as? String else { return nil }
+                            let album = item["album"] as? [String: Any]
+                            let images = album?["images"] as? [[String: Any]] ?? []
+                            return Track(id: id, name: name, artist: artist,
+                                         albumImages: images.compactMap { $0["url"] as? String },
+                                         previewURL: item["preview_url"] as? String,
+                                         albumName: album?["name"] as? String)
+                        }
+                        completion(.success(tracks))
                     case .failure(let error):
-                        print("Error: \(error)")
+                        completion(.failure(error))
                     }
                 }
         }
     }
-    
+
     func getAlbumInfo(albumID: String, completion: @escaping ([String]) -> Void) {
         guard let accessToken = SpotifyAuth.shared.accessToken else {
             print("Access token is nil.")
@@ -110,7 +95,7 @@ class SpotifyAuth: ObservableObject {
     
     private init() {}
     
-    func requestAccessToken() {
+    func requestAccessToken(completion: @escaping (Bool) -> Void = { _ in }) {
         let base64EncodedCredentials = self.base64EncodedCredentials
         
         AF.request("https://accounts.spotify.com/api/token", method: .post, parameters: [
@@ -123,21 +108,24 @@ class SpotifyAuth: ObservableObject {
                 if let json = data as? [String: Any],
                    let accessToken = json["access_token"] as? String {
                     self.accessToken = accessToken
+                    completion(true)
+                } else {
+                    completion(false)
                 }
             case .failure(let error):
                 print("Error: \(error)")
+                completion(false)
             }
         }
     }
     
     func fetchAccessToken(completion: @escaping (Bool) -> Void) {
-        if let accessToken = self.accessToken {
+        if self.accessToken != nil {
             completion(true)
             return
         }
         
-        requestAccessToken()
-        completion(true)
+        requestAccessToken(completion: completion)
     }
     
     private var base64EncodedCredentials: String {

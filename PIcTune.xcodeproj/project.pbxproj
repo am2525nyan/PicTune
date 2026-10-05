@@ -35,8 +35,6 @@
 		725C78142B77CAE0008C8751 /* AppIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725C78132B77CAE0008C8751 /* AppIntent.swift */; };
 		725C78162B77CAE0008C8751 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 725C78152B77CAE0008C8751 /* Assets.xcassets */; };
 		725C781A2B77CAE0008C8751 /* PictuneWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 725C78092B77CAE0008C8751 /* PictuneWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		725C78202B786C76008C8751 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 725C781F2B786C76008C8751 /* Realm */; };
-		725C78222B786C76008C8751 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 725C78212B786C76008C8751 /* RealmSwift */; };
 		725D760E2B50E09900A131AF /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 725D760D2B50E09900A131AF /* Lottie */; };
 		725D76112B50F64E00A131AF /* fireworks.json in Resources */ = {isa = PBXBuildFile; fileRef = 725D76102B50F64E00A131AF /* fireworks.json */; };
 		725D76132B50F78500A131AF /* Lottie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725D76122B50F78500A131AF /* Lottie.swift */; };
@@ -230,7 +228,6 @@
 				728EFB4D2AEE2FF2008C079B /* FirebaseStorageUI in Frameworks */,
 				728EFB342AEE2E4A008C079B /* FirebaseAuth in Frameworks */,
 				7257A6D22B308769006FE747 /* ARKit.framework in Frameworks */,
-				725C78222B786C76008C8751 /* RealmSwift in Frameworks */,
 				728EFB3A2AEE2E4A008C079B /* FirebaseFirestoreCombine-Community in Frameworks */,
 				7280C9D72B319648003025C6 /* Gifu in Frameworks */,
 				728EFB362AEE2E4A008C079B /* FirebaseAuthCombine-Community in Frameworks */,
@@ -238,7 +235,6 @@
 				7223A54E2B2567DF009D6704 /* Kingfisher in Frameworks */,
 				7257A6D02B30875E006FE747 /* AVFoundation.framework in Frameworks */,
 				725DAA662B4398CF00033106 /* SwiftyGif in Frameworks */,
-				725C78202B786C76008C8751 /* Realm in Frameworks */,
 				7209E3932B12EBD200FC44D3 /* NukeVideo in Frameworks */,
 				7209E3912B12EBD200FC44D3 /* NukeUI in Frameworks */,
 				728EFB452AEE2FF2008C079B /* FirebaseEmailAuthUI in Frameworks */,
@@ -536,8 +532,6 @@
 				7280C9D62B319648003025C6 /* Gifu */,
 				725DAA652B4398CF00033106 /* SwiftyGif */,
 				725D760D2B50E09900A131AF /* Lottie */,
-				725C781F2B786C76008C8751 /* Realm */,
-				725C78212B786C76008C8751 /* RealmSwift */,
 			);
 			productName = sotsugyo;
 			productReference = 728EFB052AEE1C10008C079B /* PIcTune.app */;
@@ -626,7 +620,6 @@
 				7280C9D52B319648003025C6 /* XCRemoteSwiftPackageReference "gifu" */,
 				725DAA642B4398CF00033106 /* XCRemoteSwiftPackageReference "SwiftyGif" */,
 				725D760C2B50E09900A131AF /* XCRemoteSwiftPackageReference "lottie-ios" */,
-				725C781E2B786C76008C8751 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			productRefGroup = 728EFB062AEE1C10008C079B /* Products */;
 			projectDirPath = "";
@@ -1053,7 +1046,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TVH687AC7F;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyoTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1073,7 +1066,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TVH687AC7F;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyoTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1091,6 +1084,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyoUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1108,6 +1102,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyoUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1185,14 +1180,6 @@
 				minimumVersion = 7.10.1;
 			};
 		};
-		725C781E2B786C76008C8751 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/realm-swift";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		725D760C2B50E09900A131AF /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
@@ -1229,8 +1216,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/FirebaseUI-iOS.git";
 			requirement = {
-				branch = Master;
-				kind = branch;
+				kind = exactVersion;
+				version = 15.1.0;
 			};
 		};
 		72EC194E2B301196002CA76B /* XCRemoteSwiftPackageReference "CodeScanner" */ = {
@@ -1284,16 +1271,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7223A54C2B2567DE009D6704 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
-		};
-		725C781F2B786C76008C8751 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 725C781E2B786C76008C8751 /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		725C78212B786C76008C8751 /* RealmSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 725C781E2B786C76008C8751 /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = RealmSwift;
 		};
 		725D760D2B50E09900A131AF /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;

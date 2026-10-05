@@ -137,7 +137,10 @@ struct ImageDetailView: View {
                         }
                         
                     } else {
-                        Text("ないよ")
+                        Label("音楽なし", systemImage: "music.note")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .padding()
                     }
                     
                 }
