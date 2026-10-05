@@ -22,6 +22,11 @@ struct ImageDetailView: View {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFit()
+                        .overlay {
+                            Rectangle()
+                                .strokeBorder(Color(uiColor: .separator).opacity(0.35), lineWidth: 0.5)
+                        }
+                        .shadow(color: .black.opacity(0.12), radius: 6, x: 0, y: 3)
                         .accessibilityLabel("チェキの写真")
                 } else {
                     ContentUnavailableView("画像を表示できません", systemImage: "photo")
@@ -39,7 +44,7 @@ struct ImageDetailView: View {
             .frame(maxWidth: .infinity)
             .padding()
         }
-        .background(Color(uiColor: .systemBackground))
+        .background(Color(uiColor: .systemGroupedBackground))
         .navigationTitle("チェキ")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -134,7 +139,7 @@ struct ImageDetailView: View {
                 }
             }
             .padding()
-            .background(Color(uiColor: .secondarySystemBackground), in: RoundedRectangle(cornerRadius: 16))
+            .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
         } else {
             Label("音楽は設定されていません", systemImage: "music.note")
                 .font(.subheadline)
