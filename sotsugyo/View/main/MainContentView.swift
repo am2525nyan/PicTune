@@ -3,26 +3,48 @@ import FirebaseAuth
 import FirebaseFirestore
 
 struct MainContentView: View {
-    var authenticationManager = AuthenticationManager()
+    @State var authenticationManager = AuthenticationManager()
     
-    @ObservedObject private var cameraManager = CameraManager()
+    @StateObject private var cameraManager = CameraManager()
     @StateObject private var viewModel = MainContentModel()
+    @StateObject private var folderViewModel = MainContentModel()
     @StateObject private var Color =  ColorModel()
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                VStack {
-                    if authenticationManager.isSignIn == false {
-                        SignInView(viewModel: viewModel, Color: Color)
-                    } else {
-                        ContentView(viewModel: viewModel, cameraManager: cameraManager, selectedFolderIndex: .constant(0), isPresentingCamera: $viewModel.isPresentingCamera, DocumentId: .constant(""))
-                    }
-                    
+        Group {
+            if authenticationManager.isSignIn == false {
+                NavigationStack {
+                    SignInView(viewModel: viewModel, Color: Color)
                 }
-                
+            } else {
+                TabView {
+                    NavigationStack {
+                        ContentView(viewModel: viewModel, cameraManager: cameraManager, isPresentingCamera: $viewModel.isPresentingCamera)
+                    }
+                    .tabItem {
+                        Label("写真", systemImage: "photo.on.rectangle")
+                    }
+
+                    NavigationStack {
+                        FolderLibraryView(viewModel: folderViewModel)
+                    }
+                    .tabItem {
+                        Label("フォルダ", systemImage: "folder")
+                    }
+
+                    NavigationStack {
+                        SettingView()
+                    }
+                    .tabItem {
+                        Label("設定", systemImage: "gearshape")
+                    }
+                }
             }
         }
     }
     
+}
+
+#Preview {
+    MainContentView(authenticationManager: AuthenticationManager())
 }
