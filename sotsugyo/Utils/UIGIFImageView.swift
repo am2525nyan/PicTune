@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import SwiftUI
+import SwiftyGif
 class UIGIFImageView: UIView {
     private var image = UIImage()
     var imageView = UIImageView()
