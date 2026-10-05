@@ -18,48 +18,38 @@ import FirebaseOAuthUI
 import FirebaseEmailAuthUI
 import CryptoKit
 
-//コメントアウト
+@MainActor
 class SettingViewModel: ObservableObject {
     @Published internal var showingPasswordAlert = false
     @Published internal var mailAddress = ""
     @Published internal var name = ""
     @Published var authorizationDelegate = AuthorizationDelegate()
-    func getMail()async throws ->String {
-        let db = Firestore.firestore()
-        
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            let document = try await db.collection("users").document(uid).collection("personal").document("info").getDocument()
-            
-            let data = document.data()
-            let mail = data?["email"] as? String ?? ""
-            self.mailAddress = mail
-            
+    func loadProfile() async throws {
+        guard let currentUser = Auth.auth().currentUser else {
+            throw NSError(domain: "SettingViewModel", code: 1, userInfo: [
+                NSLocalizedDescriptionKey: "ログインし直してください。"
+            ])
         }
-        return mailAddress
+
+        let document = try await Firestore.firestore()
+            .collection("users").document(currentUser.uid)
+            .collection("personal").document("info").getDocument()
+        let data = document.data()
+        mailAddress = data?["email"] as? String ?? currentUser.email ?? ""
+        name = data?["name"] as? String ?? ""
     }
-    func getName()async throws ->String {
-        let db = Firestore.firestore()
-        
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            let document = try await db.collection("users").document(uid).collection("personal").document("info").getDocument()
-            
-            let data = document.data()
-            let mail = data?["name"] as? String ?? ""
-            self.name = mail
-            
+
+    func saveName(name: String) async throws {
+        guard let currentUser = Auth.auth().currentUser else {
+            throw NSError(domain: "SettingViewModel", code: 1, userInfo: [
+                NSLocalizedDescriptionKey: "ログインし直してください。"
+            ])
         }
-        return name
-    }
-    func saveName(name: String){
+
         let db = Firestore.firestore()
-        
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            db.collection("users").document(uid).collection("personal").document("info").updateData(
-                ["name" : name])
-        }
+        try await db.collection("users").document(currentUser.uid)
+            .collection("personal").document("info").updateData(["name": name])
+        self.name = name
     }
     
     func logout(){
@@ -83,13 +73,16 @@ class SettingViewModel: ObservableObject {
         
         // Googleログインの場合
         if user.providerData.first(where: { $0.providerID == "google.com" }) != nil {
-            // 認証情報を作成する
             guard let googleUser = GIDSignIn.sharedInstance.currentUser,
                   let idToken = googleUser.idToken?.tokenString else {
-                print("Googleのログイン情報を取得できませんでした。")
                 return
             }
-            let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: googleUser.accessToken.tokenString)
+
+            // 認証情報を作成する
+            let credential = GoogleAuthProvider.credential(
+                withIDToken: idToken,
+                accessToken: googleUser.accessToken.tokenString
+            )
             
             // 再認証を実行する
             user.reauthenticate(with: credential, completion: { (authResult, error) in

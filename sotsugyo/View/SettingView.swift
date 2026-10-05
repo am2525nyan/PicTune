@@ -18,146 +18,242 @@ import AuthenticationServices
 import CryptoKit
 
 struct SettingView: View {
-    @State private var showingPasswordAlert = false
-    @State private var isSaveName = false
-    @State private var islogout = false
-    @State private var isdelete = false
-    @State private var password = ""
-    @State private var name = ""
-    @State private var mailAddress = ""
-    @State  var currentNonce = ""
-    @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = SettingViewModel()
-    @StateObject private var color = ColorModel()
-    @StateObject private var authorizationDelegate = AuthorizationDelegate()
-    
+    @State private var isEditingName = false
+    @State private var isShowingLogout = false
+    @State private var isShowingDelete = false
+    @State private var password = ""
+    @State private var isLoading = false
+    @State private var hasLoadedProfile = false
+    @State private var profileError: String?
+
     var body: some View {
-        NavigationView{
-            
-            VStack {
-                VStack(alignment: .leading) {
-                    Text("Name")
-                        .font(.custom("Roboto", size: 20))
-                        .foregroundColor(Color(red: 0, green: 0, blue: 0))
-                        .padding(.top,70)
-                    
-                    TextField("名前を入力", text: $name)
-                        .font(.custom("Roboto", size: 25))
-                        .padding(5)
-                        .border(.gray, width: 0.5)
-                        .padding(.trailing, 30)
-                    
+        Form {
+            Section("プロフィール") {
+                if hasLoadedProfile {
+                    Button {
+                        isEditingName = true
+                    } label: {
+                        HStack(spacing: 16) {
+                            LabeledContent("名前", value: viewModel.name.isEmpty ? "未設定" : viewModel.name)
+                            Image(systemName: "chevron.right")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(.tertiary)
+                                .accessibilityHidden(true)
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityHint("名前を編集します")
+                    .popoverTip(SettingTip())
+                }
+
+                if isLoading {
+                    ProgressView("読み込み中…")
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.vertical, 12)
+                } else if let profileError {
+                    Text(profileError)
+                        .foregroundStyle(.secondary)
+                    Button("再読み込み") {
+                        Task { await loadProfile() }
+                    }
+                }
+            }
+
+            if hasLoadedProfile {
+                Section {
+                    Text(viewModel.mailAddress.isEmpty ? "未登録" : viewModel.mailAddress)
+                        .textSelection(.enabled)
+                } header: {
                     Text("メールアドレス")
-                        .font(.custom("Roboto", size: 20))
-                        .foregroundColor(Color(red: 0, green: 0, blue: 0))
-                    Text(mailAddress)
-                        .font(.custom("Roboto", size: 25))
-                        .foregroundColor(Color(red: 0, green: 0, blue: 0))
-                    Spacer()
+                } footer: {
+                    Text("メールアドレスはこのアプリでは変更できません。")
                 }
-                .padding(.leading,30)
-                Button(action: {
-                    isSaveName.toggle()
-                }, label: {
-                    Text("保存")
-                        .foregroundColor(.white)
-                        .font(.custom("Roboto", size: 30))
-                        .padding(5)
-                        .padding(.horizontal, 60)
-                        .background(Color(red: 0.741, green: 0.584, blue: 0.933))
-                    
-                })
-                .padding(.top,30)
-                .alert("保存", isPresented: $isSaveName) {
-                    
-                    Button("cancel",role: .cancel) {
-                        
-                    }
-                    Button("OK") {
-                        viewModel.saveName(name: name)
-                    }
-                } message: {
-                    Text("保存しますか？")
-                }
-                
-                
-                
-                Button {
-                    islogout.toggle()
-                } label: {
-                    Text("ログアウト")
-                }
-                .padding(10)
-                .alert("ログアウト", isPresented: $islogout) {
-                    
-                    
-                    Button("OK",role: .destructive) {
-                        viewModel.logout()
-                    }
-                } message: {
-                    Text("本当にログアウトしますか？")
-                }
-                
-                
-                
-                Button("アカウント削除") {
-                    isdelete.toggle()
-                    
-                }
-                .foregroundColor(.red)
-                .padding(.bottom, 30)
-                .alert("削除", isPresented: $isdelete) {
-                    
-                    
-                    Button("OK",role: .destructive) {
-                        viewModel.deleteUser()
-                    }
-                } message: {
-                    Text("本当にアカウントを削除しますか？")
-                }
-                .alert("再認証", isPresented: $viewModel.showingPasswordAlert) {
-                    SecureField("パスワード", text: $password)
-                    
-                    
-                    Button("OK", role: .destructive) {
-                        viewModel.reauthenticateWithPassword(password: password)
-                    }
-                } message: {
-                    Text("パスワードを入力してください")
-                }
-                .environmentObject(authorizationDelegate)
             }
-            .onAppear{
-                Task{
-                    do{
-                        mailAddress = try await viewModel.getMail()
-                        name = try await viewModel.getName()
-                    }catch{
-                        
-                    }
+
+            Section {
+                Button("ログアウト") {
+                    isShowingLogout = true
                 }
-                
-                
-                
             }
-            .environmentObject(authorizationDelegate)
-            .navigationBarItems(leading: Button(action: {
-                dismiss()
-                
-            }) {
-                Image(systemName: "arrow.left")
-            })
-            .navigationTitle("Setting")
-            .toolbarBackground(color.backGroundColor2(), for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
+
+            Section {
+                Button("アカウントを削除", role: .destructive) {
+                    isShowingDelete = true
+                }
+            } footer: {
+                Text("アカウントを削除すると、元に戻すことはできません。")
+            }
+        }
+        .navigationTitle("設定")
+        .navigationBarTitleDisplayMode(.large)
+        .task {
+            if !hasLoadedProfile {
+                await loadProfile()
+            }
+        }
+        .sheet(isPresented: $isEditingName) {
+            NameEditView(name: viewModel.name) { name in
+                try await viewModel.saveName(name: name)
+            }
+        }
+        .alert("ログアウトしますか？", isPresented: $isShowingLogout) {
+            Button("キャンセル", role: .cancel) {}
+            Button("ログアウト") {
+                viewModel.logout()
+            }
+        }
+        .alert("アカウントを削除しますか？", isPresented: $isShowingDelete) {
+            Button("キャンセル", role: .cancel) {}
+            Button("削除", role: .destructive) {
+                viewModel.deleteUser()
+            }
+        } message: {
+            Text("この操作は取り消せません。")
+        }
+        .alert("再認証が必要です", isPresented: $viewModel.showingPasswordAlert) {
+            SecureField("パスワード", text: $password)
+            Button("キャンセル", role: .cancel) {
+                password = ""
+            }
+            Button("認証して削除", role: .destructive) {
+                viewModel.reauthenticateWithPassword(password: password)
+                password = ""
+            }
+            .disabled(password.isEmpty)
+        } message: {
+            Text("アカウントを削除するには、パスワードを入力してください。")
         }
     }
-    
-    
-    
+
+    @MainActor
+    private func loadProfile() async {
+        guard !isLoading else { return }
+        isLoading = true
+        profileError = nil
+        defer { isLoading = false }
+
+        do {
+            try await viewModel.loadProfile()
+            hasLoadedProfile = true
+        } catch {
+            profileError = "プロフィールを読み込めませんでした。もう一度お試しください。"
+        }
+    }
 }
 
+private struct NameEditView: View {
+    @Environment(\.dismiss) private var dismiss
+    @FocusState private var isNameFocused: Bool
+    @State private var draftName: String
+    @State private var isSaving = false
+    @State private var isShowingSaveError = false
+    @State private var isShowingDiscard = false
 
+    private let originalName: String
+    private let save: (String) async throws -> Void
+
+    init(name: String, save: @escaping (String) async throws -> Void) {
+        originalName = name
+        _draftName = State(initialValue: name)
+        self.save = save
+    }
+
+    private var trimmedName: String {
+        draftName.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var hasChanges: Bool {
+        draftName != originalName
+    }
+
+    private var canSave: Bool {
+        !isSaving && !trimmedName.isEmpty && trimmedName != originalName
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("名前") {
+                    TextField("名前を入力", text: $draftName)
+                        .textContentType(.name)
+                        .textInputAutocapitalization(.words)
+                        .autocorrectionDisabled()
+                        .accessibilityLabel("名前")
+                        .focused($isNameFocused)
+                        .submitLabel(.done)
+                        .disabled(isSaving)
+                        .onSubmit {
+                            if canSave {
+                                Task { await saveName() }
+                            }
+                        }
+                }
+
+                if isSaving {
+                    Section {
+                        ProgressView("保存中…")
+                    }
+                }
+            }
+            .navigationTitle("名前を編集")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("キャンセル") {
+                        if hasChanges {
+                            isNameFocused = false
+                            isShowingDiscard = true
+                        } else {
+                            dismiss()
+                        }
+                    }
+                    .disabled(isSaving)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("保存") {
+                        Task { await saveName() }
+                    }
+                    .fontWeight(.semibold)
+                    .disabled(!canSave)
+                }
+            }
+            .confirmationDialog("変更を破棄しますか？", isPresented: $isShowingDiscard, titleVisibility: .visible) {
+                Button("変更を破棄", role: .destructive) {
+                    dismiss()
+                }
+                Button("編集を続ける", role: .cancel) {
+                    isNameFocused = true
+                }
+            }
+            .alert("名前を保存できませんでした", isPresented: $isShowingSaveError) {
+                Button("閉じる", role: .cancel) {}
+            } message: {
+                Text("入力内容は保持されています。もう一度保存してください。")
+            }
+            .task {
+                isNameFocused = true
+            }
+        }
+        .interactiveDismissDisabled(hasChanges || isSaving)
+    }
+
+    @MainActor
+    private func saveName() async {
+        guard canSave else { return }
+        isSaving = true
+        isNameFocused = false
+        defer { isSaving = false }
+
+        do {
+            try await save(trimmedName)
+            dismiss()
+        } catch {
+            isShowingSaveError = true
+        }
+    }
+}
 
 class AuthorizationDelegate: NSObject, ObservableObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
@@ -200,12 +296,10 @@ class AuthorizationDelegate: NSObject, ObservableObject, ASAuthorizationControll
         }
     }
     func reauthenticateUser(_ user: User, appleIdToken: String, rawNonce: String) {
-        let nonce = UUID().uuidString
-        
-        let credential = OAuthProvider.credential(
-            withProviderID: "apple.com",
-            idToken: appleIdToken,
-            rawNonce: rawNonce
+        let credential = OAuthProvider.appleCredential(
+            withIDToken: appleIdToken,
+            rawNonce: rawNonce,
+            fullName: nil
         )
         
         // Reauthenticate current Apple user with fresh Apple credential.
@@ -303,6 +397,8 @@ class AuthorizationDelegate: NSObject, ObservableObject, ASAuthorizationControll
     }
     
 }
-#Preview{
-    SettingView()
+#Preview {
+    NavigationStack {
+        SettingView()
+    }
 }

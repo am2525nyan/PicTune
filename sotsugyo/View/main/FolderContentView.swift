@@ -1,59 +1,71 @@
 import SwiftUI
+import FirebaseAuth
+import CoreNFC
 
-struct FolderContentView: View {
+struct FolderLibraryView: View {
     @ObservedObject var viewModel: MainContentModel
-    @Binding var selectedFolderIndex: Int
-    @State private var pendingDeletion: FolderItem?
+    @StateObject private var nfcSession = NFCSession()
+    @State private var isLoading = true
+    @State private var isShowingCreateFolder = false
+    @State private var isShowingNFCResult = false
+    @State private var nfcResultMessage = ""
+    @State private var folderName = ""
+    @State private var pendingDeletion: FolderEntry?
     @State private var isConfirmingDeletion = false
     @State private var isDeleting = false
     @State private var errorMessage: String?
+    private let columns = [GridItem(.adaptive(minimum: 160, maximum: 240), spacing: 16)]
 
-    private struct FolderItem: Identifiable {
+    private struct FolderEntry: Identifiable {
         let id: String
         let name: String
     }
 
-    private var folderItems: [FolderItem] {
-        zip(viewModel.foldersDocumentId, viewModel.folders).map {
-            FolderItem(id: $0.0, name: $0.1)
-        }
+    private var folders: [FolderEntry] {
+        zip(viewModel.foldersDocumentId, viewModel.folders)
+            .filter { $0.0 != "all" }
+            .map { FolderEntry(id: $0.0, name: $0.1) }
     }
 
     var body: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 8) {
-                ForEach(folderItems) { folder in
-                    Button {
-                        guard let index = viewModel.foldersDocumentId.firstIndex(of: folder.id) else { return }
-                        selectedFolderIndex = index
-                        viewModel.folderDocument = folder.id
-                        viewModel.getimage.toggle()
-                    } label: {
-                        Text(folder.name)
-                            .font(.subheadline)
-                            .padding(.horizontal, 16)
-                            .frame(minHeight: 44)
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(viewModel.folderDocument == folder.id ? .accentColor : .secondary)
-                    .accessibilityAddTraits(viewModel.folderDocument == folder.id ? .isSelected : [])
-                    .contextMenu {
-                        if folder.id != "all" {
-                            Button("フォルダを削除", systemImage: "trash", role: .destructive) {
-                                pendingDeletion = folder
-                                isConfirmingDeletion = true
+        Group {
+            if isLoading {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if folders.isEmpty {
+                ContentUnavailableView(
+                    "フォルダがありません",
+                    systemImage: "folder",
+                    description: Text("作成したフォルダがここに表示されます")
+                )
+            } else {
+                ScrollView {
+                    LazyVGrid(columns: columns, alignment: .leading, spacing: 24) {
+                        ForEach(folders) { folder in
+                            NavigationLink {
+                                FolderDetailView(viewModel: viewModel, folderId: folder.id, folderName: folder.name)
+                            } label: {
+                                FolderLibraryCard(viewModel: viewModel, folderId: folder.id, folderName: folder.name)
+                            }
+                            .buttonStyle(.plain)
+                            .contextMenu {
+                                Button("フォルダを削除", systemImage: "trash", role: .destructive) {
+                                    pendingDeletion = folder
+                                    isConfirmingDeletion = true
+                                }
+                            }
+                            .accessibilityActions {
+                                Button("フォルダを削除", role: .destructive) {
+                                    pendingDeletion = folder
+                                    isConfirmingDeletion = true
+                                }
                             }
                         }
                     }
-                    .accessibilityActions {
-                        if folder.id != "all" {
-                            Button("フォルダを削除", role: .destructive) {
-                                pendingDeletion = folder
-                                isConfirmingDeletion = true
-                            }
-                        }
-                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 16)
                 }
+                .refreshable { await reloadFolders() }
             }
         }
         .disabled(isDeleting)
@@ -64,12 +76,58 @@ struct FolderContentView: View {
             Button("フォルダを削除", role: .destructive) { deleteFolder() }
             Button("キャンセル", role: .cancel) { pendingDeletion = nil }
         } message: {
-            Text("フォルダと手紙を削除します。「all」の写真は削除されません。この操作は取り消せません。")
+            Text("フォルダと手紙を削除します。写真タブの写真は削除されません。この操作は取り消せません。")
         }
         .alert("フォルダを削除できませんでした", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
             Button("OK", role: .cancel) { errorMessage = nil }
         } message: {
             Text(errorMessage ?? "")
+        }
+        .navigationTitle("フォルダ")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    startNFCReadSession()
+                } label: {
+                    Label("NFCを読み込む", systemImage: "wave.3.right")
+                }
+                .labelStyle(.iconOnly)
+                .accessibilityLabel("NFCを読み込む")
+            }
+            if #available(iOS 26.0, *) {
+                ToolbarSpacer(.fixed, placement: .topBarTrailing)
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    isShowingCreateFolder = true
+                } label: {
+                    Label("フォルダを作成", systemImage: "folder.badge.plus")
+                }
+                .labelStyle(.iconOnly)
+                .accessibilityLabel("フォルダを作成")
+                .disabled(isLoading)
+            }
+        }
+        .alert("フォルダを作成", isPresented: $isShowingCreateFolder) {
+            TextField("フォルダ名", text: $folderName)
+            Button("キャンセル", role: .cancel) {
+                folderName = ""
+            }
+            Button("作成") {
+                viewModel.makeFolder(folderName: folderName.trimmingCharacters(in: .whitespacesAndNewlines))
+                folderName = ""
+            }
+            .disabled(folderName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        } message: {
+            Text("新しいフォルダの名前を入力してください。")
+        }
+        .alert("NFC読み込み", isPresented: $isShowingNFCResult) {
+            Button("閉じる", role: .cancel) { }
+        } message: {
+            Text(nfcResultMessage)
+        }
+        .onAppear {
+            Task { await reloadFolders() }
         }
     }
 
@@ -80,10 +138,192 @@ struct FolderContentView: View {
             defer { isDeleting = false; pendingDeletion = nil }
             do {
                 try await viewModel.deleteFolder(id: folder.id)
-                selectedFolderIndex = viewModel.foldersDocumentId.firstIndex(of: viewModel.folderDocument) ?? 0
             } catch {
                 errorMessage = error.localizedDescription
             }
         }
+    }
+
+    private func startNFCReadSession() {
+        guard NFCNDEFReaderSession.readingAvailable else {
+            showNFCResult("このデバイスではNFCを読み込めません。")
+            return
+        }
+
+        nfcSession.startReadSession { _, payload, error in
+            if let error {
+                showNFCResult(error.localizedDescription)
+                return
+            }
+
+            let parts = payload?.split(separator: " ", maxSplits: 1).map(String.init) ?? []
+            guard parts.count == 2, !parts[0].isEmpty, !parts[1].isEmpty else {
+                showNFCResult("フォルダの情報を読み取れませんでした。")
+                return
+            }
+
+            Task {
+                do {
+                    try await viewModel.getNFCData(NFCUid: parts[0], NFCfolderid: parts[1])
+                    await reloadFolders()
+                    showNFCResult("フォルダを読み込みました。")
+                } catch {
+                    showNFCResult(error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    private func showNFCResult(_ message: String) {
+        nfcResultMessage = message
+        isShowingNFCResult = true
+    }
+
+    private func reloadFolders() async {
+        do {
+            try await viewModel.getFolder()
+        } catch {
+            print("フォルダの読み込みに失敗しました: \(error)")
+        }
+        isLoading = false
+    }
+}
+
+private struct FolderLibraryCard: View {
+    @ObservedObject var viewModel: MainContentModel
+    let folderId: String
+    let folderName: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            FolderCover(image: viewModel.folderCoverImages[folderId])
+            Text(folderName)
+                .font(.headline)
+                .lineLimit(2)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+        .task(id: folderId) {
+            try? await viewModel.loadFolderCover(folderId: folderId)
+        }
+    }
+}
+
+private struct FolderCover: View {
+    let image: UIImage?
+    var size: CGFloat? = nil
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                Color.purple.opacity(0.15)
+                if let image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
+                } else {
+                    Image(systemName: "folder.fill")
+                        .font(.system(size: min(geometry.size.width, geometry.size.height) * 0.4))
+                        .foregroundStyle(.purple)
+                }
+            }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+        }
+        .aspectRatio(1, contentMode: .fit)
+        .frame(width: size, height: size)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .accessibilityHidden(true)
+    }
+}
+
+struct FolderDetailView: View {
+    @ObservedObject var viewModel: MainContentModel
+    let folderId: String
+    let folderName: String
+
+    @StateObject private var color = ColorModel()
+    @Environment(\.dismiss) private var dismiss
+    @State private var showDeleteConfirmation = false
+    @State private var errorMessage = ""
+    @State private var showError = false
+
+    var body: some View {
+        ZStack {
+            color.backGroundColor().ignoresSafeArea()
+
+            ScrollView {
+                VStack(spacing: 18) {
+                    FolderCover(image: viewModel.folderCoverImages[folderId], size: 150)
+                        .padding(.top, 16)
+
+                    VStack(spacing: 4) {
+                        Text(folderName)
+                            .font(.title.bold())
+                            .multilineTextAlignment(.center)
+                        Text("\(viewModel.images.count)枚のチェキ")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    FolderTextView(viewModel: viewModel, folderDocument: .constant(folderId))
+
+                    MainImageView(viewModel: viewModel, folderId: folderId)
+                }
+                .padding(.horizontal, 16)
+            }
+            .refreshable { await reloadPhotos() }
+        }
+        .navigationTitle(folderName)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Button("フォルダを削除", role: .destructive) {
+                        showDeleteConfirmation = true
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+                .accessibilityLabel("その他")
+            }
+        }
+        .confirmationDialog("フォルダを削除しますか？", isPresented: $showDeleteConfirmation) {
+            Button("フォルダを削除", role: .destructive) {
+                Task {
+                    do {
+                        try await viewModel.deleteFolder(id: folderId)
+                        await MainActor.run { dismiss() }
+                    } catch {
+                        await MainActor.run { show(error) }
+                    }
+                }
+            }
+        }
+        .alert("エラー", isPresented: $showError) {
+            Button("閉じる", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
+        }
+        .task(id: folderId) {
+            await reloadPhotos()
+            try? await viewModel.loadFolderCover(folderId: folderId)
+        }
+    }
+
+    private func reloadPhotos() async {
+        guard let index = viewModel.foldersDocumentId.firstIndex(of: folderId) else { return }
+        do {
+            try await viewModel.FoldergetUrl(folderId: index)
+        } catch {
+            await MainActor.run { show(error) }
+        }
+    }
+
+    private func show(_ error: Error) {
+        errorMessage = error.localizedDescription
+        showError = true
     }
 }
