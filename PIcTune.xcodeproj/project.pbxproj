@@ -359,7 +359,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		725C780C2B77CAE0008C8751 /* PictuneWidget */ = {
+		725C780C2B77CAE0008C8751 /* PicTuneWidget */ = {
 			isa = PBXGroup;
 			children = (
 				725C780D2B77CAE0008C8751 /* PictuneWidgetBundle.swift */,
@@ -369,7 +369,7 @@
 				725C78152B77CAE0008C8751 /* Assets.xcassets */,
 				725C78172B77CAE0008C8751 /* Info.plist */,
 			);
-			path = PictuneWidget;
+			path = PicTuneWidget;
 			sourceTree = "<group>";
 		};
 		725D760F2B50F5FA00A131AF /* Lottie */ = {
@@ -396,7 +396,7 @@
 				728EFB072AEE1C10008C079B /* sotsugyo */,
 				728EFB182AEE1C15008C079B /* sotsugyoTests */,
 				728EFB222AEE1C15008C079B /* sotsugyoUITests */,
-				725C780C2B77CAE0008C8751 /* PictuneWidget */,
+				725C780C2B77CAE0008C8751 /* PicTuneWidget */,
 				728EFB062AEE1C10008C079B /* Products */,
 				7257A6CE2B30875E006FE747 /* Frameworks */,
 			);
@@ -777,13 +777,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = PictuneWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = PicTuneWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TVH687AC7F;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PictuneWidget/Info.plist;
+				INFOPLIST_FILE = PicTuneWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PictuneWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
@@ -807,13 +807,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = PictuneWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = PicTuneWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TVH687AC7F;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PictuneWidget/Info.plist;
+				INFOPLIST_FILE = PicTuneWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PictuneWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
