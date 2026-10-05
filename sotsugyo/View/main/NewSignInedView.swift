@@ -16,6 +16,7 @@ struct ContentView: View {
     
     @State private var selectedImage: UIImage?
     @State private var selectedIndex = 0
+    @State private var selectedPhotoIndex = 0
     @State private var tapDocumentId = ""
     @State private var showAlart = false
     @State private var folderBuf = ""
@@ -52,12 +53,12 @@ struct ContentView: View {
                             VStack(alignment: .center, spacing: 0) {
                                 
                                 FolderContentView(viewModel: viewModel, selectedFolderIndex: $selectedIndex)
-                                FolderTextView(viewModel: viewModel, selectedFolderIndex: $selectedIndex, userDataList: viewModel, folderDocument: $viewModel.folderDocument)
+                                FolderTextView(viewModel: viewModel, folderDocument: $viewModel.folderDocument)
                                 
                                 
                                 MainImageView(
                                     tapImage: $selectedImage,
-                                    tapIndex: $selectedIndex,
+                                    tapIndex: $selectedPhotoIndex, folderIndex: $selectedIndex,
                                     tapdocumentId: $tapDocumentId, selectedFolderIndex: $viewModel.folderDocument,
                                     viewModel: viewModel
                                 )
@@ -77,7 +78,7 @@ struct ContentView: View {
                     
                 }
                 .padding(.bottom, 12)
-                .frame(width: 400, alignment: .top)
+                .frame(maxWidth: .infinity, alignment: .top)
                 if viewModel.isAnimating == true{
                     LottieStartView(viewModel: viewModel)
                 }
@@ -113,6 +114,9 @@ struct ContentView: View {
             SettingView()
         }
         
+        .onChange(of: viewModel.foldersDocumentId) {
+            selectedIndex = viewModel.foldersDocumentId.firstIndex(of: viewModel.folderDocument) ?? 0
+        }
         .onAppear {
             Task {
                 if first == true{

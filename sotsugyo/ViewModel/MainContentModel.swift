@@ -43,6 +43,7 @@ class MainContentModel: ObservableObject {
     
     
     @Published var userDataList: String = ""
+    private var folderLoadID = UUID()
     var audioPlayer: AVPlayer?
     var url = URL.init(string: "https://www.hello.com/sample.wav")
     
@@ -330,37 +331,25 @@ class MainContentModel: ObservableObject {
         
     }
     
-    func getFolder()async throws{
-        DispatchQueue.main.async {
-            self.folders = []
-        }
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            
-            let ref =  try await db.collection("users").document(uid).collection("folders").order(by: "date", descending: true).getDocuments()
-            for document in ref.documents {
-                let data = document.data()
-                let folder = data["title"] as! String
-                let documentId = document.documentID
-                DispatchQueue.main.async {
-                    self.folders.append(folder)
-                    self.foldersDocumentId.append(documentId)
-                }
-            }
-            
-        }
-        
+    @MainActor
+    func getFolder() async throws {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let snapshot = try await db.collection("users").document(uid).collection("folders")
+            .order(by: "date", descending: true).getDocuments()
+        folders = snapshot.documents.map { $0.data()["title"] as? String ?? "名称未設定" }
+        foldersDocumentId = snapshot.documents.map(\.documentID)
     }
+
     func appendFolder(folderId: Int, index: Int) {
         let document = self.documentIdArray[index]
-        self.folderDocument = self.foldersDocumentId[folderId]
+        let destinationFolderID = self.foldersDocumentId[folderId]
         
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
             
             let newCollectionName = "photos"
             
-            let destinationCollectionRef = db.collection("users").document(uid).collection("folders").document(folderDocument).collection(newCollectionName).document()
+            let destinationCollectionRef = db.collection("users").document(uid).collection("folders").document(destinationFolderID).collection(newCollectionName).document()
             
             let batch = db.batch()
             
@@ -385,104 +374,77 @@ class MainContentModel: ObservableObject {
     
     
     
+    // Publish a complete snapshot only if this folder is still selected.
+    @MainActor
     func FoldergetUrl(folderId: Int) async throws {
-        do {
-            let uid = Auth.auth().currentUser?.uid
-            var urlArray = [String]()
-            
-            self.folderDocument = self.foldersDocumentId[folderId]
-            
-            DispatchQueue.main.async {
-                self.images = []
-                self.documentIdArray = []
-                self.dates  = []
+        guard foldersDocumentId.indices.contains(folderId),
+              let uid = Auth.auth().currentUser?.uid else { return }
+        let folderID = foldersDocumentId[folderId]
+        folderDocument = folderID
+        let requestID = UUID()
+        folderLoadID = requestID
+        images = []
+        documentIdArray = []
+        dates = []
+        userDataList = ""
+
+        let snapshot = try await db.collection("users").document(uid).collection("folders")
+            .document(folderID).collection("photos").order(by: "date").getDocuments()
+        var loadedImages: [UIImage] = []
+        var loadedIDs: [String] = []
+        var loadedDates: [String] = []
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd-HH:mm"
+        for document in snapshot.documents {
+            guard folderDocument == folderID, folderLoadID == requestID else { return }
+            let photo = document.data()
+            guard let path = photo["url"] as? String else { continue }
+            let data: Data
+            if let cached = photoDataCache[path] {
+                data = cached
+            } else {
+                data = try await Storage.storage().reference().child("images/" + path)
+                    .data(maxSize: 100 * 1024 * 1024)
+                photoDataCache[path] = data
             }
-            getLetter()
-            
-            let ref = try await db.collection("users").document(uid!).collection("folders").document(folderDocument).collection("photos").order(by: "date").getDocuments()
-            
-            for document in ref.documents {
-                let data = document.data()
-                
-                let url = data["url"]
-                let date = data["date"] as! Timestamp
-                
-                let formatterDate = DateFormatter()
-                formatterDate.dateFormat = "yyyy-MM-dd-HH:mm"
-                let createdDate = formatterDate.string(from: date.dateValue())
-                if url != nil {
-                    urlArray.append(url as! String)
-                }
-                let documentId = document.documentID
-                DispatchQueue.main.async {
-                    self.documentIdArray.append(documentId)
-                    self.dates.append(createdDate)
-                    self.images = []
-                }
-                
-            }
-            let storage = Storage.storage()
-            let storageRef = storage.reference()
-            
-            
-            for (index, photo) in urlArray.enumerated() {
-                let imageRef = storageRef.child("images/" + photo)
-                
-                
-                if let cachedData = photoDataCache[photo] {
-                    let image = UIImage(data: cachedData)
-                    DispatchQueue.main.async {
-                        if index <= self.images.count {
-                            self.images.insert(image!, at: index)
-                        }
-                    }
-                } else {
-                    
-                    do {
-                        let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
-                            imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
-                                if let error = error {
-                                    continuation.resume(throwing: error)
-                                } else if let data = data {
-                                    continuation.resume(returning: data)
-                                }
-                            }
-                        }
-                        
-                        DispatchQueue.main.async {
-                            if index <= self.images.count {
-                                let image = UIImage(data: data)
-                                
-                                self.photoDataCache[photo] = data
-                                self.images.insert(image!, at: index)
-                            }
-                            
-                            else {
-                                print("Index out of range. Ignoring data insertion.")
-                            }
-                        }
-                    } catch {
-                        print("Error occurred! : \(error)")
-                    }
-                }
-                
-            }
-            
-            try await db.collection("users").document(uid ?? "").setData(["date": FieldValue.serverTimestamp()])
-            
-        } catch {
-            throw error
+            guard let image = UIImage(data: data) else { continue }
+            loadedImages.append(image)
+            loadedIDs.append(document.documentID)
+            loadedDates.append((photo["date"] as? Timestamp).map {
+                formatter.string(from: $0.dateValue())
+            } ?? "")
         }
+        guard folderDocument == folderID, folderLoadID == requestID else { return }
+        images = loadedImages
+        documentIdArray = loadedIDs
+        dates = loadedDates
+        try await db.collection("users").document(uid).setData(["date": FieldValue.serverTimestamp()])
     }
-    func saveLetter(){
-        
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            db.collection("users").document(uid).collection("folders").document(folderDocument).updateData([
-                "letter": userDataList
-            ])
+
+    @MainActor
+    func saveLetter(_ text: String, folderID: String) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw folderError("ログイン状態を確認して、もう一度お試しください。")
         }
+        try await db.collection("users").document(uid).collection("folders")
+            .document(folderID).updateData(["letter": text])
+        if folderDocument == folderID { userDataList = text }
     }
+
+    func loadLetter(folderID: String) async throws -> String {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw folderError("ログイン状態を確認して、もう一度お試しください。")
+        }
+        let document = try await db.collection("users").document(uid).collection("folders")
+            .document(folderID).getDocument()
+        guard document.exists else { throw folderError("フォルダが見つかりませんでした。") }
+        return document.data()?["letter"] as? String ?? ""
+    }
+
+    private func folderError(_ message: String) -> NSError {
+        NSError(domain: "PicTune.Folder", code: 1, userInfo: [NSLocalizedDescriptionKey: message])
+    }
+
     func getLetter(){
         if let currentUser = Auth.auth().currentUser {
             let uid = currentUser.uid
@@ -508,21 +470,29 @@ class MainContentModel: ObservableObject {
             db.collection("users").document(uid).collection("folders").document(folderDocument).collection("photos").document(document).delete()
         }
     }
-    func deletefolder(){
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            db.collection("users").document(uid).collection("folders").document(folderDocument).delete()
-            DispatchQueue.main.async {
-                
-                if let indexToRemove = self.foldersDocumentId.firstIndex(where: { $0 == self.folderDocument }) {
-                    
-                    self.foldersDocumentId.remove(at: indexToRemove)
-                    self.folders.remove(at: indexToRemove)
-                }
-            }
+    @MainActor
+    func deleteFolder(id: String) async throws {
+        guard id != "all", !id.isEmpty else { throw folderError("このフォルダは削除できません。") }
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw folderError("ログイン状態を確認して、もう一度お試しください。")
         }
-        
+        let reference = db.collection("users").document(uid).collection("folders").document(id)
+        // Update the visible list only after the server accepts the deletion.
+        try await reference.delete()
+        if let index = foldersDocumentId.firstIndex(of: id), folders.indices.contains(index) {
+            foldersDocumentId.remove(at: index)
+            folders.remove(at: index)
+        }
+        if folderDocument == id {
+            folderDocument = "all"
+            images = []
+            documentIdArray = []
+            dates = []
+            userDataList = ""
+            getimage.toggle()
+        }
     }
+
     func getNFCData( NFCUid: String, NFCfolderid: String)async throws{
         
         if nfc == false{

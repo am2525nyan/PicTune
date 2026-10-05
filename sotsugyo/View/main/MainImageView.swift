@@ -10,6 +10,7 @@ import FirebaseAuth
 struct MainImageView: View {
     @Binding var tapImage: UIImage?
     @Binding var tapIndex: Int
+    @Binding var folderIndex: Int
     @Binding var tapdocumentId: String
     @Binding var selectedFolderIndex: String
     
@@ -28,14 +29,14 @@ struct MainImageView: View {
         .refreshable {
             Task {
                 do {
-                    try await viewModel.FoldergetUrl(folderId: tapIndex)
+                    try await viewModel.FoldergetUrl(folderId: folderIndex)
                 }
             }
         }
         .onChange(of: viewModel.getimage) {
             Task {
                 do {
-                    try await viewModel.FoldergetUrl(folderId: tapIndex)
+                    try await viewModel.FoldergetUrl(folderId: folderIndex)
                     
                     
                     
@@ -80,7 +81,7 @@ struct MainImageView: View {
                         
                         
                         Button("削除", role: .destructive) {
-                            let intValue = selectedFolderIndex.wrappedValue
+                            let intValue = folderIndex
                             viewModel.deletePhoto(document: viewModel.documentIdArray[index])
                             Task {
                                 do {
