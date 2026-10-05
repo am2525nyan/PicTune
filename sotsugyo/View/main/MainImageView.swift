@@ -54,7 +54,11 @@ struct MainImageView: View {
         
         
         return NavigationLink(
-            destination: ImageDetailView(image: $tapImage, documentId: $tapdocumentId, tapdocumentId: $tapdocumentId, index: selectedFolderIndex, viewModel: viewModel, friendUid: .constant(""), selectedIndex: tapIndex),
+            destination: ImageDetailView(
+                image: tapImage,
+                documentId: tapdocumentId,
+                folderId: viewModel.folderDocument
+            ),
             tag: viewModel.images[index],
             selection: $tapImage,
             label: {
