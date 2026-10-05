@@ -30,6 +30,7 @@ class MainContentModel: ObservableObject {
     @Published internal var folderUrl = []
     @Published internal var folders = [String]()
     @Published internal var foldersDocumentId = [String]()
+    @Published internal var folderCoverImages: [String: UIImage] = [:]
     @Published var folderImages: [String: [UIImage]] = [:]
     @Published internal var getimage = false
     @Published internal var folderDocument = String()
@@ -309,8 +310,9 @@ class MainContentModel: ObservableObject {
                 "date": FieldValue.serverTimestamp()
             ])
             DispatchQueue.main.async {
-                self.folders.insert(folderName, at:1)
-                self.foldersDocumentId.insert(folders, at:1)
+                let index = min(1, self.folders.count)
+                self.folders.insert(folderName, at: index)
+                self.foldersDocumentId.insert(folders, at: index)
             }
             
             db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
@@ -326,38 +328,44 @@ class MainContentModel: ObservableObject {
             .order(by: "date", descending: true).getDocuments()
         folders = snapshot.documents.map { $0.data()["title"] as? String ?? "名称未設定" }
         foldersDocumentId = snapshot.documents.map(\.documentID)
+        folderCoverImages = folderCoverImages.filter { foldersDocumentId.contains($0.key) }
     }
 
-    func appendFolder(folderId: Int, index: Int) {
-        let document = self.documentIdArray[index]
-        let destinationFolderID = self.foldersDocumentId[folderId]
-        
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            
-            let newCollectionName = "photos"
-            
-            let destinationCollectionRef = db.collection("users").document(uid).collection("folders").document(destinationFolderID).collection(newCollectionName).document()
-            
-            let batch = db.batch()
-            
-            let sourceDocumentRef =  db.collection("users").document(uid).collection("folders").document("all").collection("photos").document(document)
-            sourceDocumentRef.getDocument { (documentSnapshot, error) in
-                if let error = error {
-                    print("Error getting document: \(error)")
-                } else if let data = documentSnapshot?.data() {
-                    batch.setData(data, forDocument: destinationCollectionRef)
-                    batch.commit() { err in
-                        if let err = err {
-                            print("バッチの書き込みエラー: \(err)")
-                        } else {
-                            print("データが正常にコピーされました！")
-                            
-                        }
+    func loadFolderCover(folderId: String) async throws {
+        guard folderCoverImages[folderId] == nil,
+              let uid = Auth.auth().currentUser?.uid else { return }
+
+        let photos = try await db.collection("users").document(uid)
+            .collection("folders").document(folderId)
+            .collection("photos").order(by: "date", descending: true)
+            .limit(to: 1).getDocuments()
+        guard let fileName = photos.documents.first?.data()["url"] as? String else { return }
+
+        let data = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
+            Storage.storage().reference().child("images/" + fileName)
+                .getData(maxSize: 20 * 1024 * 1024) { data, error in
+                    if let error {
+                        continuation.resume(throwing: error)
+                    } else if let data {
+                        continuation.resume(returning: data)
+                    } else {
+                        continuation.resume(throwing: NSError(domain: "PhotoError", code: -1))
                     }
                 }
-            }
         }
+        if let image = UIImage(data: data) {
+            await MainActor.run { self.folderCoverImages[folderId] = image }
+        }
+    }
+
+    func appendFolder(photoDocumentID: String, to destinationFolderID: String) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let foldersRef = db.collection("users").document(uid).collection("folders")
+        let source = try await foldersRef.document("all").collection("photos")
+            .document(photoDocumentID).getDocument()
+        guard let data = source.data() else { return }
+        try await foldersRef.document(destinationFolderID).collection("photos")
+            .document().setData(data)
     }
     
     
@@ -408,7 +416,6 @@ class MainContentModel: ObservableObject {
         dates = loadedDates
         try await db.collection("users").document(uid).setData(["date": FieldValue.serverTimestamp()])
     }
-
     @MainActor
     func saveLetter(_ text: String, folderID: String) async throws {
         guard let uid = Auth.auth().currentUser?.uid else {
@@ -428,7 +435,6 @@ class MainContentModel: ObservableObject {
         guard document.exists else { throw folderError("フォルダが見つかりませんでした。") }
         return document.data()?["letter"] as? String ?? ""
     }
-
     private func folderError(_ message: String) -> NSError {
         NSError(domain: "PicTune.Folder", code: 1, userInfo: [NSLocalizedDescriptionKey: message])
     }
@@ -452,12 +458,13 @@ class MainContentModel: ObservableObject {
         }
     }
     
-    func deletePhoto(document: String){
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            db.collection("users").document(uid).collection("folders").document(folderDocument).collection("photos").document(document).delete()
-        }
+    func deletePhoto(document: String, folderId: String) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        try await db.collection("users").document(uid)
+            .collection("folders").document(folderId)
+            .collection("photos").document(document).delete()
     }
+
     @MainActor
     func deleteFolder(id: String) async throws {
         guard id != "all", !id.isEmpty else { throw folderError("このフォルダは削除できません。") }
@@ -471,6 +478,7 @@ class MainContentModel: ObservableObject {
             foldersDocumentId.remove(at: index)
             folders.remove(at: index)
         }
+        folderCoverImages.removeValue(forKey: id)
         if folderDocument == id {
             folderDocument = "all"
             images = []
@@ -480,7 +488,6 @@ class MainContentModel: ObservableObject {
             getimage.toggle()
         }
     }
-
     func getNFCData( NFCUid: String, NFCfolderid: String)async throws{
         
         if nfc == false{

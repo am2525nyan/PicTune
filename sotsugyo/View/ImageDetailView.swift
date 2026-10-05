@@ -69,7 +69,7 @@ struct ImageDetailView: View {
                                         }
                                         
                                         
-                                        ShareLink(item: unwrappedImage, preview: SharePreview("Big Ben", image: unwrappedImage))
+                                        ShareLink(item: unwrappedImage, preview: SharePreview("チェキ", image: unwrappedImage))
                                         
                                         
                                         
@@ -104,7 +104,6 @@ struct ImageDetailView: View {
                     musicLoadError = nil
                     do {
                         try await viewModel.getMusic(documentId: tapdocumentId, folder: viewModel.folderDocument, friendUid: friendUid)
-                        try await viewModel.getDate()
                     } catch {
                         if !Task.isCancelled { musicLoadError = "曲の情報を取得できませんでした。画面を開き直してください。" }
                     }
