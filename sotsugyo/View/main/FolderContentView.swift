@@ -10,6 +10,10 @@ struct FolderLibraryView: View {
     @State private var isShowingNFCResult = false
     @State private var nfcResultMessage = ""
     @State private var folderName = ""
+    @State private var pendingDeletion: FolderEntry?
+    @State private var isConfirmingDeletion = false
+    @State private var isDeleting = false
+    @State private var errorMessage: String?
     private let columns = [GridItem(.adaptive(minimum: 160, maximum: 240), spacing: 16)]
 
     private struct FolderEntry: Identifiable {
@@ -44,6 +48,18 @@ struct FolderLibraryView: View {
                                 FolderLibraryCard(viewModel: viewModel, folderId: folder.id, folderName: folder.name)
                             }
                             .buttonStyle(.plain)
+                            .contextMenu {
+                                Button("フォルダを削除", systemImage: "trash", role: .destructive) {
+                                    pendingDeletion = folder
+                                    isConfirmingDeletion = true
+                                }
+                            }
+                            .accessibilityActions {
+                                Button("フォルダを削除", role: .destructive) {
+                                    pendingDeletion = folder
+                                    isConfirmingDeletion = true
+                                }
+                            }
                         }
                     }
                     .padding(.horizontal, 16)
@@ -51,6 +67,21 @@ struct FolderLibraryView: View {
                 }
                 .refreshable { await reloadFolders() }
             }
+        }
+        .disabled(isDeleting)
+        .overlay {
+            if isDeleting { ProgressView("削除中…").padding().background(.regularMaterial) }
+        }
+        .confirmationDialog("「\(pendingDeletion?.name ?? "")」を削除しますか？", isPresented: $isConfirmingDeletion, titleVisibility: .visible) {
+            Button("フォルダを削除", role: .destructive) { deleteFolder() }
+            Button("キャンセル", role: .cancel) { pendingDeletion = nil }
+        } message: {
+            Text("フォルダと手紙を削除します。写真タブの写真は削除されません。この操作は取り消せません。")
+        }
+        .alert("フォルダを削除できませんでした", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
+            Button("OK", role: .cancel) { errorMessage = nil }
+        } message: {
+            Text(errorMessage ?? "")
         }
         .navigationTitle("フォルダ")
         .toolbar {
@@ -63,7 +94,9 @@ struct FolderLibraryView: View {
                 .labelStyle(.iconOnly)
                 .accessibilityLabel("NFCを読み込む")
             }
-            ToolbarSpacer(.fixed, placement: .topBarTrailing)
+            if #available(iOS 26.0, *) {
+                ToolbarSpacer(.fixed, placement: .topBarTrailing)
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     isShowingCreateFolder = true
@@ -95,6 +128,19 @@ struct FolderLibraryView: View {
         }
         .onAppear {
             Task { await reloadFolders() }
+        }
+    }
+
+    private func deleteFolder() {
+        guard let folder = pendingDeletion else { return }
+        isDeleting = true
+        Task { @MainActor in
+            defer { isDeleting = false; pendingDeletion = nil }
+            do {
+                try await viewModel.deleteFolder(id: folder.id)
+            } catch {
+                errorMessage = error.localizedDescription
+            }
         }
     }
 
@@ -199,10 +245,7 @@ struct FolderDetailView: View {
     let folderName: String
 
     @StateObject private var color = ColorModel()
-    @StateObject private var session = NFCSession()
     @Environment(\.dismiss) private var dismiss
-    @State private var isWritingLetter = false
-    @State private var showNFCConfirmation = false
     @State private var showDeleteConfirmation = false
     @State private var errorMessage = ""
     @State private var showError = false
@@ -225,25 +268,7 @@ struct FolderDetailView: View {
                             .foregroundStyle(.secondary)
                     }
 
-                    HStack(spacing: 12) {
-                        Button {
-                            viewModel.folderDocument = folderId
-                            viewModel.getLetter()
-                            isWritingLetter = true
-                        } label: {
-                            Label("手紙", systemImage: "envelope")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .accessibilityLabel("手紙を見る・書く")
-
-                        Button {
-                            showNFCConfirmation = true
-                        } label: {
-                            Text("NFCに保存")
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
-                    .buttonStyle(.bordered)
+                    FolderTextView(viewModel: viewModel, folderDocument: .constant(folderId))
 
                     MainImageView(viewModel: viewModel, folderId: folderId)
                 }
@@ -264,12 +289,6 @@ struct FolderDetailView: View {
                 }
                 .accessibilityLabel("その他")
             }
-        }
-        .sheet(isPresented: $isWritingLetter) {
-            WriteLetterView(isWrite: $isWritingLetter, viewModel: viewModel, userDataList: viewModel)
-        }
-        .confirmationDialog("このフォルダをNFCカードに保存しますか？", isPresented: $showNFCConfirmation) {
-            Button("NFCに保存") { writeToNFC() }
         }
         .confirmationDialog("フォルダを削除しますか？", isPresented: $showDeleteConfirmation) {
             Button("フォルダを削除", role: .destructive) {
@@ -300,15 +319,6 @@ struct FolderDetailView: View {
             try await viewModel.FoldergetUrl(folderId: index)
         } catch {
             await MainActor.run { show(error) }
-        }
-    }
-
-    private func writeToNFC() {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        session.startWriteSession(UserUid: uid, folder: folderId) { error in
-            if let error {
-                DispatchQueue.main.async { show(error) }
-            }
         }
     }
 

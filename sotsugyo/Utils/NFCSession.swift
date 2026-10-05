@@ -45,10 +45,12 @@ final class NFCSession: NSObject, ObservableObject {
     
     private func startSession() {
         guard NFCNDEFReaderSession.readingAvailable else {
+            let error = NSError(domain: "PicTune.NFC", code: 1, userInfo: [NSLocalizedDescriptionKey: "このデバイスではNFCを利用できません。"])
+            if isWriting { finishWriting(error: error) }
             return
         }
         session = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: false)
-        session.alertMessage = "スキャン中"
+        session.alertMessage = isWriting ? "iPhoneの上部をNFCカードに近づけてください。" : "スキャン中"
         session.begin()
         
     }
@@ -66,6 +68,8 @@ extension NFCSession: NFCNDEFReaderSessionDelegate {
     
     // 必須
     func readerSession(_ session: NFCNDEFReaderSession, didInvalidateWithError error: Error) {
+        guard self.session === session else { return }
+        if isWriting { finishWriting(error: error) }
     }
     
     // 必須ではないけどコンソールになんかでる
@@ -73,37 +77,66 @@ extension NFCSession: NFCNDEFReaderSessionDelegate {
     }
     
     func readerSession(_ session: NFCNDEFReaderSession, didDetect tags: [NFCNDEFTag]) {
-        let tag = tags.first!
+        guard tags.count == 1, let tag = tags.first else {
+            session.alertMessage = "NFCカードを1枚だけ近づけてください。"
+            session.restartPolling()
+            return
+        }
         session.connect(to: tag) { error in
-            tag.queryNDEFStatus() { [unowned self] status, capacity, error in
-                if self.isWriting {
-                    // 書き込み
-                    if status == .readWrite {
-                        self.write(tag: tag, session: session)
-                        return
-                    }
-                } else {
-                    // 読み込み
-                    if status == .readOnly || status == .readWrite {
-                        self.read(tag: tag, session: session)
-                        return
-                    }
+            if let error = error {
+                self.fail(session: session, error: error)
+                return
+            }
+            tag.queryNDEFStatus { status, capacity, error in
+                if let error = error {
+                    self.fail(session: session, error: error)
+                    return
                 }
-                session.invalidate(errorMessage: "タグがおかしいよ")
+                if self.isWriting, status == .readWrite {
+                    guard self.ndefMessage.length <= capacity else {
+                        self.fail(session: session, message: "NFCカードの容量が足りません。")
+                        return
+                    }
+                    self.write(tag: tag, session: session)
+                } else if !self.isWriting, status == .readOnly || status == .readWrite {
+                    self.read(tag: tag, session: session)
+                } else {
+                    self.fail(session: session, message: "このNFCカードには保存できません。書き込み可能なカードを使用してください。")
+                }
             }
         }
     }
-    
+
+    private func finishWriting(error: Error?) {
+        DispatchQueue.main.async {
+            let handler = self.writeHandler
+            self.writeHandler = nil
+            handler?(error)
+        }
+    }
+
+    private func fail(session: NFCNDEFReaderSession, message: String) {
+        fail(session: session, error: NSError(domain: "PicTune.NFC", code: 2,
+             userInfo: [NSLocalizedDescriptionKey: message]))
+    }
+
+    private func fail(session: NFCNDEFReaderSession, error: Error) {
+        if isWriting { finishWriting(error: error) }
+        session.invalidate(errorMessage: error.localizedDescription)
+    }
+
     private func write(tag: NFCNDEFTag, session: NFCNDEFReaderSession) {
-        tag.writeNDEF(self.ndefMessage) { [unowned self] error in
-            session.alertMessage = "保存できました！"
-            session.invalidate()
-            DispatchQueue.main.async {
-                self.writeHandler?(error)
+        tag.writeNDEF(self.ndefMessage) { error in
+            if let error = error {
+                self.fail(session: session, error: error)
+                return
             }
+            self.finishWriting(error: nil)
+            session.alertMessage = "フォルダを保存しました。"
+            session.invalidate()
         }
     }
-    
+
     private func read(tag: NFCNDEFTag, session: NFCNDEFReaderSession) {
         tag.readNDEF { [unowned self] message, error in
             session.alertMessage = "読み取りできました！"

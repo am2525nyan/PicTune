@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 110;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -55,6 +55,7 @@
 		728EFB362AEE2E4A008C079B /* FirebaseAuthCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 728EFB352AEE2E4A008C079B /* FirebaseAuthCombine-Community */; };
 		728EFB382AEE2E4A008C079B /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 728EFB372AEE2E4A008C079B /* FirebaseFirestore */; };
 		728EFB3A2AEE2E4A008C079B /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 728EFB392AEE2E4A008C079B /* FirebaseFirestoreCombine-Community */; };
+		728EFB3C2AEE2E4A008C079B /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 728EFB3B2AEE2E4A008C079B /* FirebaseFirestoreSwift */; };
 		728EFB3E2AEE2E4A008C079B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 728EFB3D2AEE2E4A008C079B /* FirebaseStorage */; };
 		728EFB402AEE2E4A008C079B /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 728EFB3F2AEE2E4A008C079B /* FirebaseStorageCombine-Community */; };
 		728EFB432AEE2FF2008C079B /* FirebaseAuthUI in Frameworks */ = {isa = PBXBuildFile; productRef = 728EFB422AEE2FF2008C079B /* FirebaseAuthUI */; };
@@ -123,12 +124,14 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		725D762F2B51048200A131AF /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolder = PlugIns;
+			dstSubfolderSpec = 13;
 			files = (
 				725C781A2B77CAE0008C8751 /* PictuneWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -207,14 +210,18 @@
 /* Begin PBXFrameworksBuildPhase section */
 		725C78062B77CAE0008C8751 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 				725C780B2B77CAE0008C8751 /* SwiftUI.framework in Frameworks */,
 				725C780A2B77CAE0008C8751 /* WidgetKit.framework in Frameworks */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB022AEE1C10008C079B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
+				728EFB3C2AEE2E4A008C079B /* FirebaseFirestoreSwift in Frameworks */,
 				72F9856C2B19880800FEEC05 /* URLImageStore in Frameworks */,
 				728EFB402AEE2E4A008C079B /* FirebaseStorageCombine-Community in Frameworks */,
 				72F985672B17FD8200FEEC05 /* Alamofire in Frameworks */,
@@ -242,16 +249,21 @@
 				72F9856A2B19880800FEEC05 /* URLImage in Frameworks */,
 				7209E38F2B12EBD200FC44D3 /* NukeExtensions in Frameworks */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB122AEE1C15008C079B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB1C2AEE1C15008C079B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -472,6 +484,8 @@
 			);
 			buildRules = (
 			);
+			dependencies = (
+			);
 			name = PictuneWidgetExtension;
 			productName = PictuneWidgetExtension;
 			productReference = 725C78092B77CAE0008C8751 /* PictuneWidgetExtension.appex */;
@@ -497,6 +511,7 @@
 				728EFB352AEE2E4A008C079B /* FirebaseAuthCombine-Community */,
 				728EFB372AEE2E4A008C079B /* FirebaseFirestore */,
 				728EFB392AEE2E4A008C079B /* FirebaseFirestoreCombine-Community */,
+				728EFB3B2AEE2E4A008C079B /* FirebaseFirestoreSwift */,
 				728EFB3D2AEE2E4A008C079B /* FirebaseStorage */,
 				728EFB3F2AEE2E4A008C079B /* FirebaseStorageCombine-Community */,
 				728EFB422AEE2FF2008C079B /* FirebaseAuthUI */,
@@ -585,6 +600,7 @@
 				};
 			};
 			buildConfigurationList = 728EFB002AEE1C10008C079B /* Build configuration list for PBXProject "PIcTune" */;
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = ja;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -605,7 +621,6 @@
 				725DAA642B4398CF00033106 /* XCRemoteSwiftPackageReference "SwiftyGif" */,
 				725D760C2B50E09900A131AF /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
-			preferredProjectObjectVersion = 110;
 			productRefGroup = 728EFB062AEE1C10008C079B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -621,12 +636,15 @@
 /* Begin PBXResourcesBuildPhase section */
 		725C78072B77CAE0008C8751 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 				725C78162B77CAE0008C8751 /* Assets.xcassets in Resources */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB032AEE1C10008C079B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 				728EFB552AEE36BC008C079B /* setupGitignore.command in Resources */,
 				728EFB102AEE1C15008C079B /* Preview Assets.xcassets in Resources */,
@@ -635,31 +653,39 @@
 				722AF4872B43FEB300CE104E /* filter.scn in Resources */,
 				728BE2172B5D845C00C4D6C2 /* GoogleService-Info.plist in Resources */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB132AEE1C15008C079B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB1D2AEE1C15008C079B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		725C78052B77CAE0008C8751 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 				725C780E2B77CAE0008C8751 /* PictuneWidgetBundle.swift in Sources */,
 				725C78142B77CAE0008C8751 /* AppIntent.swift in Sources */,
 				725C78122B77CAE0008C8751 /* PictuneWidget.swift in Sources */,
 				725C78102B77CAE0008C8751 /* PictuneWidgetLiveActivity.swift in Sources */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB012AEE1C10008C079B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 				728EFB0B2AEE1C10008C079B /* MainContentView.swift in Sources */,
 				72576F662B1466690064A362 /* SearchMusicView.swift in Sources */,
@@ -706,19 +732,24 @@
 				72F985622B17FD2F00FEEC05 /* Track.swift in Sources */,
 				725D76132B50F78500A131AF /* Lottie.swift in Sources */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB112AEE1C15008C079B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 				728EFB1A2AEE1C15008C079B /* sotsugyoTests.swift in Sources */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		728EFB1B2AEE1C15008C079B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 				728EFB262AEE1C15008C079B /* sotsugyoUITestsLaunchTests.swift in Sources */,
 				728EFB242AEE1C15008C079B /* sotsugyoUITests.swift in Sources */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -741,18 +772,18 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		725C781C2B77CAE1008C8751 /* Debug configuration for PBXNativeTarget "PictuneWidgetExtension" */ = {
+		725C781C2B77CAE1008C8751 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = PictuneWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = PicTuneWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TVH687AC7F;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PictuneWidget/Info.plist;
+				INFOPLIST_FILE = PicTuneWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PictuneWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
@@ -771,18 +802,18 @@
 			};
 			name = Debug;
 		};
-		725C781D2B77CAE1008C8751 /* Release configuration for PBXNativeTarget "PictuneWidgetExtension" */ = {
+		725C781D2B77CAE1008C8751 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = PictuneWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = PicTuneWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TVH687AC7F;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PictuneWidget/Info.plist;
+				INFOPLIST_FILE = PicTuneWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PictuneWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
@@ -801,7 +832,7 @@
 			};
 			name = Release;
 		};
-		728EFB272AEE1C15008C079B /* Debug configuration for PBXProject "PIcTune" */ = {
+		728EFB272AEE1C15008C079B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -864,7 +895,7 @@
 			};
 			name = Debug;
 		};
-		728EFB282AEE1C15008C079B /* Release configuration for PBXProject "PIcTune" */ = {
+		728EFB282AEE1C15008C079B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -920,7 +951,7 @@
 			};
 			name = Release;
 		};
-		728EFB2A2AEE1C15008C079B /* Debug configuration for PBXNativeTarget "PIcTune" */ = {
+		728EFB2A2AEE1C15008C079B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -945,7 +976,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -963,7 +994,7 @@
 			};
 			name = Debug;
 		};
-		728EFB2B2AEE1C15008C079B /* Release configuration for PBXNativeTarget "PIcTune" */ = {
+		728EFB2B2AEE1C15008C079B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -988,7 +1019,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1006,7 +1037,7 @@
 			};
 			name = Release;
 		};
-		728EFB2D2AEE1C15008C079B /* Debug configuration for PBXNativeTarget "PIcTuneTests" */ = {
+		728EFB2D2AEE1C15008C079B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -1015,7 +1046,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TVH687AC7F;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyoTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1026,7 +1057,7 @@
 			};
 			name = Debug;
 		};
-		728EFB2E2AEE1C15008C079B /* Release configuration for PBXNativeTarget "PIcTuneTests" */ = {
+		728EFB2E2AEE1C15008C079B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -1035,7 +1066,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TVH687AC7F;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyoTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1046,13 +1077,14 @@
 			};
 			name = Release;
 		};
-		728EFB302AEE1C15008C079B /* Debug configuration for PBXNativeTarget "PIcTuneUITests" */ = {
+		728EFB302AEE1C15008C079B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyoUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1063,13 +1095,14 @@
 			};
 			name = Debug;
 		};
-		728EFB312AEE1C15008C079B /* Release configuration for PBXNativeTarget "PIcTuneUITests" */ = {
+		728EFB312AEE1C15008C079B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyoUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1086,41 +1119,46 @@
 		725C781B2B77CAE1008C8751 /* Build configuration list for PBXNativeTarget "PictuneWidgetExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				725C781C2B77CAE1008C8751 /* Debug configuration for PBXNativeTarget "PictuneWidgetExtension" */,
-				725C781D2B77CAE1008C8751 /* Release configuration for PBXNativeTarget "PictuneWidgetExtension" */,
+				725C781C2B77CAE1008C8751 /* Debug */,
+				725C781D2B77CAE1008C8751 /* Release */,
 			);
+			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		728EFB002AEE1C10008C079B /* Build configuration list for PBXProject "PIcTune" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				728EFB272AEE1C15008C079B /* Debug configuration for PBXProject "PIcTune" */,
-				728EFB282AEE1C15008C079B /* Release configuration for PBXProject "PIcTune" */,
+				728EFB272AEE1C15008C079B /* Debug */,
+				728EFB282AEE1C15008C079B /* Release */,
 			);
+			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		728EFB292AEE1C15008C079B /* Build configuration list for PBXNativeTarget "PIcTune" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				728EFB2A2AEE1C15008C079B /* Debug configuration for PBXNativeTarget "PIcTune" */,
-				728EFB2B2AEE1C15008C079B /* Release configuration for PBXNativeTarget "PIcTune" */,
+				728EFB2A2AEE1C15008C079B /* Debug */,
+				728EFB2B2AEE1C15008C079B /* Release */,
 			);
+			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		728EFB2C2AEE1C15008C079B /* Build configuration list for PBXNativeTarget "PIcTuneTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				728EFB2D2AEE1C15008C079B /* Debug configuration for PBXNativeTarget "PIcTuneTests" */,
-				728EFB2E2AEE1C15008C079B /* Release configuration for PBXNativeTarget "PIcTuneTests" */,
+				728EFB2D2AEE1C15008C079B /* Debug */,
+				728EFB2E2AEE1C15008C079B /* Release */,
 			);
+			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		728EFB2F2AEE1C15008C079B /* Build configuration list for PBXNativeTarget "PIcTuneUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				728EFB302AEE1C15008C079B /* Debug configuration for PBXNativeTarget "PIcTuneUITests" */,
-				728EFB312AEE1C15008C079B /* Release configuration for PBXNativeTarget "PIcTuneUITests" */,
+				728EFB302AEE1C15008C079B /* Debug */,
+				728EFB312AEE1C15008C079B /* Release */,
 			);
+			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
@@ -1171,7 +1209,7 @@
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 12.19.2;
+				minimumVersion = 10.16.0;
 			};
 		};
 		728EFB412AEE2FF2008C079B /* XCRemoteSwiftPackageReference "FirebaseUI-iOS" */ = {
@@ -1268,6 +1306,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 728EFB322AEE2E4A008C079B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseFirestoreCombine-Community";
+		};
+		728EFB3B2AEE2E4A008C079B /* FirebaseFirestoreSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 728EFB322AEE2E4A008C079B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestoreSwift;
 		};
 		728EFB3D2AEE2E4A008C079B /* FirebaseStorage */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -153,8 +153,10 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         image = croppedImage.rotateLeft90Degrees()
         
         if let filteredImage = applySepiaFilter(to: image) {
-            self.isImageUploadCompleted = true
-            self.newImage = filteredImage
+            DispatchQueue.main.async {
+                self.newImage = filteredImage
+                self.isImageUploadCompleted = true
+            }
         }
     
     guard let photoData = photo.fileDataRepresentation() else {
@@ -236,90 +238,46 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     }
     
     
-    func uploadPhoto(_ image: UIImage, friendUid: String) {
-        
-        guard let imageData = image.jpegData(compressionQuality: 0.2) else {
-            return
+    @MainActor
+    func uploadPhoto(_ image: UIImage, friendUid: String, track: Track? = nil) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            throw NSError(domain: "PhotoSave", code: 1, userInfo: [NSLocalizedDescriptionKey: "ログイン状態を確認してください。"])
         }
-        
-        let imageName = UUID().uuidString
-        let imageReference = Storage.storage().reference().child("images/\(imageName).jpg")
-        let url = "\(imageName).jpg"
-        
-        imageReference.putData(imageData, metadata: nil) { metadata, error in
-            if let error = error {
-                print("Error uploading image to storage: \(error)")
-                return
-            }
-            
-            Task {
-                do {
-                    // Firestoreに写真のURLを保存し、documentIdを取得
-                    let newdocumentId = try await self.uploadLink(url: url, friendUid: friendUid)
-                    DispatchQueue.main.async {
-                        self.documentId = newdocumentId
-                        self.isPresentingSearch = true
-                    }
-                } catch {
-                    print("Error uploading link to Firestore: \(error)")
-                }
-            }
+        guard let imageData = image.jpegData(compressionQuality: 0.9) else {
+            throw NSError(domain: "PhotoSave", code: 2, userInfo: [NSLocalizedDescriptionKey: "写真を作成できませんでした。"])
         }
-    }
-    
-    
-    // Firestoreに写真のURLを保存し、documentIdを取得
-    func uploadLink(url: String,friendUid: String) async throws -> String {
-        return try await withCheckedThrowingContinuation { continuation in
-            let db = Firestore.firestore()
-            let uid = Auth.auth().currentUser?.uid
-            var ref: DocumentReference? = nil
-            
-            
-            ref = db.collection("users").document(uid!).collection("folders").document("all").collection("photos").addDocument(data: [
-                "url": url,
-                "date": FieldValue.serverTimestamp()
-            ]) { err in
-                if let err = err {
-                    print("Error writing document: \(err)")
-                    continuation.resume(throwing: err)
-                } else {
-                    
-                    if let documentId = ref?.documentID {
-                        if friendUid != ""{
-                            db.collection("users").document(friendUid).collection("folders").document("all").collection("photos").document(documentId).setData([
-                                "url": url,
-                                "date": FieldValue.serverTimestamp()])
-                            
-                            
-                            
-                        }
-                        db.collection("users").document(uid!).collection("folders").document("all").collection("photos").document(documentId).updateData(["livephotoUrl":self.liveurl])
-                        continuation.resume(returning: documentId)
-                        
-                    } else {
-                        
-                    }
-                    Task{
-                        do{
-                            try await db.collection("users").document(uid!).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
-                        }catch{
-                            
-                        }
-                    }
-                    
-                }
-                
-            }
-            
-        }
-        
-    }
-    
- 
-        
 
-  
+        let imageName = "\(UUID().uuidString).jpg"
+        let imageReference = Storage.storage().reference().child("images/\(imageName)")
+        _ = try await imageReference.putDataAsync(imageData)
+
+        let db = Firestore.firestore()
+        let folder = db.collection("users").document(uid).collection("folders").document("all")
+        let photo = folder.collection("photos").document()
+        var data: [String: Any] = ["url": imageName, "date": FieldValue.serverTimestamp(), "livephotoUrl": liveurl]
+        if let track {
+            data["artistName"] = track.artist
+            data["trackName"] = track.name
+            data["id"] = track.id
+            data["imageName"] = track.albumImages.first ?? ""
+            data["previewUrl"] = track.previewURL ?? ""
+        }
+        let batch = db.batch()
+        batch.setData(data, forDocument: photo)
+        batch.setData(["title": "all", "date": FieldValue.serverTimestamp()], forDocument: folder, merge: true)
+        if !friendUid.isEmpty && friendUid != uid {
+            let friendPhoto = db.collection("users").document(friendUid).collection("folders").document("all").collection("photos").document(photo.documentID)
+            batch.setData(data, forDocument: friendPhoto)
+        }
+        do {
+            try await batch.commit()
+            documentId = photo.documentID
+        } catch {
+            try? await imageReference.delete()
+            throw error
+        }
+    }
+
     func resizeImage(_ image: UIImage, newSize: CGSize) -> UIImage {
         let renderer = UIGraphicsImageRenderer(size: newSize)
         return renderer.image { (context) in

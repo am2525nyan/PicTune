@@ -60,7 +60,8 @@ struct CameraView: View {
                     
                     .sheet(isPresented: $cameraManager.isImageUploadCompleted) {
                         
-                        PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, isPresentingSearch: $cameraManager.isPresentingSearch, documentId: $cameraManager.documentId, cameraManager: cameraManager, friendUid: $friendUid)
+                        PhotoPreviewView(images: cameraManager.newImage, isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, friendUid: $friendUid)
+                            .presentationDetents([.large])
                         
                     }
                     
