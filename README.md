@@ -122,7 +122,7 @@ Xcode でスキーム `PIcTune` を選択し、Build（⌘B）または Test（�
 - 音楽検索・試聴は外部 API と試聴 URL の取得結果に依存します。試聴URLがなくても検索結果に表示します。
 - ウィジェットは共有領域の 3 件の画像 URL を前提に読み込む実装です。初回起動や写真が少ない状態も確認対象です。
 - Live Photo 関連の撮影・保存処理はありますが、機能全体の完成や実機動作を確認済みとは扱っていません。
-- Apple Developer Portalで対象App IDのMusicKitが無効であることを確認しました。有効化、Apple Musicの実通信・実機再生、QR・NFCの実機確認は未実施です。
+- Apple Developer Portalで対象App IDのMusicKitを有効化し、保存後の設定を確認しました。Apple Musicの実通信・実機再生、QR・NFCの実機確認は未実施です。
 
 ## 開発時のルール
 

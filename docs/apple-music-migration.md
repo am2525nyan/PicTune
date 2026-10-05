@@ -1,6 +1,6 @@
 # Apple Music移行調査・実装記録
 
-調査日：2026年10月6日。PicTuneの音楽連携をApple Musicへ移すため、公式資料、既存コード、ローカルSDKを確認しました。アプリ本体の検索・保存形式・写真詳細をApple Musicへ移行しました。外部サービス設定と実機検証は未完了です。
+調査日：2026年10月6日。PicTuneの音楽連携をApple Musicへ移すため、公式資料、既存コード、ローカルSDKを確認しました。アプリ本体の検索・保存形式・写真詳細をApple Musicへ移行しました。対象App IDのMusicKitは有効化済みですが、実通信・実機検証は未完了です。
 
 検索と曲情報取得の実装手段は確認できました。未契約者の試聴を目標としますが、PicTuneのApp IDでのトークン発行、未契約端末での検索、試聴の実再生は未確認です。BeRealで未契約でも音が出たというユーザーの観察は、PicTuneでの動作や利用許諾を保証するものではありません。
 
@@ -76,7 +76,7 @@ Spotify検索実装とそこにあったクライアント秘密情報は現在�
 
 現在のアプリBundle IDはcom.hosonuma.sakki.sotsugyou、署名チームはTVH687AC7Fです。アプリのDeployment TargetはiOS 18.0です。これらはローカル設定であり、Developer Programの有効状態やPortalでの権限を証明しません。
 
-Apple DeveloperのCertificates Identifiers and Profilesで、対象App IDのApp ServicesにあるMusicKitを有効にする必要があります。アプリのBundle IDを一致させます。2026年10月6日にPortalで同じTeam IDとBundle IDを確認し、対象のMusicKit App Serviceが無効（未チェック）であることを確認しました。設定の変更はしていません。FirebaseのSign in with Appleが実装済みでも、MusicKit設定が有効とは限りません。
+Apple DeveloperのCertificates Identifiers and Profilesで、対象App IDのApp ServicesにあるMusicKitを有効にする必要があります。アプリのBundle IDを一致させます。2026年10月6日にPortalで同じTeam IDとBundle IDを確認し、ユーザーの承認を受けてMusicKit App Serviceを有効化しました。Save・Confirm後に対象App IDを開き直し、MusicKitがチェック済みで保存されていることを確認しました。FirebaseのSign in with Appleが実装済みでも、MusicKit設定が有効とは限りません。
 
 MusicKitはランタイムサービスとしてApp IDに関連付くため、entitlementsにキーが見当たらないことだけでPortal側が無効とは判断しません。[公式設定手順](https://developer.apple.com/documentation/musickit/using-automatic-token-generation-for-apple-music-api)
 
@@ -107,7 +107,7 @@ xcodebuild -project PIcTune.xcodeproj -scheme PIcTune -configuration Debug \
 
 ### 未確認・公開前に必要な確認
 
-- 対象App IDのMusicKit App Service有効化と実機署名確認。Portal上で対象App IDの登録とMusicKitが無効であることは確認しましたが、有効化は未実施です。
+- 実機署名とプロビジョニングの確認。対象App IDのMusicKitは有効化済みですが、署名済みアプリによるトークン発行は未確認です。
 - 未契約・契約済み実機での認可、トークン取得、検索、アートワーク取得、試聴の実再生、停止・終了・失敗、地域差。
 - Firebaseへの本人・QR相手への実保存、フォルダコピー、NFC取り込み。保存形式とコピー経路のコード確認を実機動作確認とは扱いません。
 - AppleへのPicTune用途確認。プレビューを写真のBGMとして利用してよいと確定したわけではなく、問い合わせも送信していません。
