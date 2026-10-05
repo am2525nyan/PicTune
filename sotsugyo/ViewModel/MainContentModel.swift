@@ -383,6 +383,7 @@ class MainContentModel: ObservableObject {
     
     
     
+    // Publish a complete snapshot only if this folder is still selected.
     @MainActor
     func FoldergetUrl(folderId: Int) async throws {
         guard foldersDocumentId.indices.contains(folderId),
@@ -630,8 +631,7 @@ class MainContentModel: ObservableObject {
             print(error)
         }
     }
-    
-    
+
     func stop() {
         DispatchQueue.main.async {
             self.audioPlayer?.pause()
