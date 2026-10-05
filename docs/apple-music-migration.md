@@ -1,6 +1,6 @@
-# Apple Music移行調査
+# Apple Music移行調査・実装記録
 
-調査日：2026年10月6日。PicTuneの音楽連携をApple Musicへ移すため、公式資料、既存コード、ローカルSDKを確認しました。アプリ本体への移行は未実装です。
+調査日：2026年10月6日。PicTuneの音楽連携をApple Musicへ移すため、公式資料、既存コード、ローカルSDKを確認しました。アプリ本体の検索・保存形式・写真詳細をApple Musicへ移行しました。外部サービス設定と実機検証は未完了です。
 
 検索と曲情報取得の実装手段は確認できました。未契約者の試聴を目標としますが、PicTuneのApp IDでのトークン発行、未契約端末での検索、試聴の実再生は未確認です。BeRealで未契約でも音が出たというユーザーの観察は、PicTuneでの動作や利用許諾を保証するものではありません。
 
@@ -25,9 +25,9 @@ Apple Developer Programへの加入が必要です。標準年会費は99米ド�
 
 カタログに試聴URLがあることと、ネイティブMusicKitのプレイヤーが未契約者向けに自動で試聴へ切り替わることは別です。ApplicationMusicPlayerで再生を呼べば未契約でも試聴できる、という仕様は確認できていません。
 
-第一検証経路はMusicKitの検索から試聴URLを取得し、ユーザー操作でAVPlayerに渡す構成です。検索や試聴の前に有料会員かどうかだけで利用を拒否する実装にはしません。ただし、この構成の実通信・利用条件への適合は検証が必要です。
+実装はMusicKitで認可・Developer Token・利用者のStorefrontを取得し、カタログREST APIから試聴URLを取得して、ユーザー操作でAVPlayerに渡す構成です。検索や試聴の前に有料会員かどうかだけで利用を拒否する実装にはしません。ただし、この構成の実通信・利用条件への適合は検証が必要です。
 
-ネイティブ検索が未契約端末で成立しない場合は、Developer Tokenのみを使うカタログRESTリクエストを切り分けます。DefaultMusicTokenProviderのAPIも型チェックしましたが、ユーザー認可を省略できると確認したわけではありません。サーバーで署名する構成を採る場合はMedia IDと秘密鍵の管理が別途必要で、秘密鍵をアプリには埋め込みません。
+カタログ通信ではDeveloper Tokenのみをヘッダーに渡し、Music User Tokenは送信しません。ただし、先行するMusicKit認可やStorefront取得が未契約端末で成立することを実証したわけではありません。秘密鍵の埋め込みやサーバーによる独自署名は追加していません。
 
 WWDC26の新しいMusic Pickerは未契約時にユーザーのライブラリだけを表示する、と説明されています。未契約者の楽曲検索要件をそのまま満たす根拠にはならず、今回は既存の検索画面を維持する設計です。[WWDC26](https://developer.apple.com/videos/play/wwdc2026/254/)
 
@@ -43,32 +43,34 @@ PicTuneは現在、静止画の下に楽曲情報を置き、タップで試聴�
 
 用途確認時には、写真詳細画面、曲選択画面、手動再生、未契約者への試聴、QR・NFCによる曲情報共有、音声ファイルの書き出しがない点を正確に示します。Appleへの問い合わせは未送信です。
 
-## 現在の実装と変更範囲
+## 実装した変更
 
-| ファイル | 確認した内容と移行時の対応 |
+| 対象 | 内容 |
 | --- | --- |
-| sotsugyo/Utils/SpotifyAPI.swift | Client Credentialsによる検索をApple用検索処理へ置換します。現行の秘密情報は文書・ログへ転記しません |
-| sotsugyo/ViewModel/searchMusicViewModel.swift | SearchOperationを差し替えます。検索待機・古い検索結果の破棄・履歴は維持します |
-| sotsugyo/Model/Track.swift | provider、曲へのリンク、Storefront等を追加する設計です |
-| sotsugyo/Model/FirebaseMusic.swift | 保存データからサービス種別を復元できるようにします |
-| sotsugyo/Utils/CameraManager.swift | 写真と楽曲情報を本人・QR共有相手へ同じ形式で保存します |
-| sotsugyo/ViewModel/MainContentModel.swift | 新旧データの読み込み、試聴の再取得・失敗表示、NFC受信時の読み込みを扱います |
-| sotsugyo/View/ImageDetailView.swift | 手動の再生・停止、試聴不可、曲へのリンクを表示する設計です |
-| sotsugyo/Info.plist | MusicKit利用理由を追加します。現時点ではキーがありません |
-| PIcTune.xcodeproj | App IDと署名チームをApple側の登録に合わせます |
+| AppleMusicAPI | 認可・Developer Token自動取得・利用者のStorefrontによる検索。通信中断、401/403、404、429を処理 |
+| SearchViewModel / SearchView | Apple Musicへ検索を切り替え。既存の検索履歴・待機・古い応答破棄・選択保持を維持し、公式曲リンクを表示 |
+| Track / FirebaseMusic | サービス種別・曲リンク・Storefront・ISRCの保存と復元。旧SpotifyデータはSpotifyのまま扱う |
+| CameraManager | 本人とQR共有相手に同じ楽曲データを保存 |
+| MainContentModel | 新旧データの読み込み。NFCコピー後に誤った元IDで再取得していた処理を、新しいコピー先IDと保存内容による復元へ修正 |
+| MusicPreviewPlayer / ImageDetailView | 明示的な試聴・停止、試聴なし・取得失敗表示、サービスリンク。画面を閉じたときに停止 |
+| Info.plist | NSAppleMusicUsageDescriptionを追加 |
+| Xcode設定 | ソース登録、UIテスト対象名を実際のPIcTuneへ修正。Bundle ID・署名チームは変更なし |
+| UIGIFImageView | クリーンビルドで判明した既存のSwiftyGif import不足を1行補完 |
 
-NFC取り込みではaddDocumentで新IDを生成した直後に元IDで読み戻しており、楽曲情報を取得できない経路があります。Apple移行に伴う共有確認で扱う必要があります。既存処理の存在を共有動作確認済みとは扱いません。
+Spotify検索実装とそこにあったクライアント秘密情報は現在のソースから削除しました。過去のGit履歴やSpotify側の認証情報は変更・失効していません。
+
+試聴前にApple Musicの曲IDを利用者のStorefrontで再取得します。配信停止や地域差で取得できない場合は、保存済みの古い試聴URLにフォールバックせずエラーを表示します。旧Spotify曲は既存の試聴URLを使用するため、URLの失効等で再生できない場合があります。
 
 ## 保存データの互換設計
 
-以下は未実装の設計です。
+以下の保存・復元処理を実装しました。外部Firestoreへの保存・共有の実通信は未確認です。
 
-- 新規保存にmusicProvider = appleMusic、Appleの楽曲ID、musicURL、storefront、必要に応じてisrcを持たせます。既存の曲名・アーティスト等のキーは可能な範囲で維持します。
+- 新規保存にmusicProvider = appleMusic、Appleの楽曲ID、musicURL、storefront、必要に応じてisrcを保存します。既存の曲名・アーティスト等のキーは維持します。
 - providerがなく楽曲IDがある既存レコードはSpotifyとして読みます。曲なしレコードはそのまま扱います。
 - Spotify IDをApple IDとして解釈しません。既存曲の一括自動変換や削除は行いません。
 - 試聴URLを永久に有効な保存データと見なしません。AppleのIDを起点に地域と最新の取得結果を確認し、取得できない場合でも写真と手紙を閲覧できるようにします。
 - QR・フォルダコピー・NFCでサービス種別と曲リンクも引き継ぎます。共有先に音声ファイルや認証トークンは保存しません。
-- ISRC照合は将来移行時の手段ですが、現行データにISRCはなく、同じISRCで複数結果もあり得ます。今回の調査では旧曲の変換は行っていません。[ISRC検索](https://developer.apple.com/documentation/applemusicapi/get-multiple-catalog-songs-by-isrc)
+- ISRC照合は将来移行時の手段ですが、現行データにISRCはなく、同じISRCで複数結果もあり得ます。今回の移行では旧曲の変換は行っていません。[ISRC検索](https://developer.apple.com/documentation/applemusicapi/get-multiple-catalog-songs-by-isrc)
 
 ## 開発者設定
 
@@ -78,16 +80,34 @@ Apple DeveloperのCertificates Identifiers and Profilesで、対象App IDのApp 
 
 MusicKitはランタイムサービスとしてApp IDに関連付くため、entitlementsにキーが見当たらないことだけでPortal側が無効とは判断しません。[公式設定手順](https://developer.apple.com/documentation/musickit/using-automatic-token-generation-for-apple-music-api)
 
-## 検証結果と次の実装順序
+## 検証結果
 
-Xcode 27.2 Beta 2のiOS 27.2 SDKを使い、Swift 5モード、iOS 18.0ターゲットで次を型チェックし、終了コード0を確認しました。
+検証環境はXcode 27.2 Beta 2（iOS 27.2 SDK）、iPhone 18 Proシミュレーター（iOS 27.0）です。Deployment TargetはiOS 18.0を維持しています。
 
-- MusicCatalogSearchRequestからSongを取得し、既存モデル相当の値へ変換する処理。
-- DefaultMusicTokenProviderからDeveloper Tokenを要求し、日本カタログのURLRequestを構成する処理。
-- 試聴URLからAVPlayerを構成する処理。
+単体テストは、APIリクエスト形式、試聴URLなし、認可拒否、検索結果なし、429、利用者側Storefront、配信停止時に古いURLを使用しないこと、新旧データ互換、停止後の遅延応答を固定データで検証します。UIテストは実際のSwiftUI画面をDebug専用の固定データで起動し、検索・選択・結果なし・認可拒否・写真詳細の試聴なし表示を操作します。
 
-これは一時ファイルによるAPIの型検証です。App IDでの認可・トークン発行、実通信、試聴再生、アプリ全体のビルド成功を意味しません。検証コードでは認可・HTTPエラー処理等を省略しており、本番実装として使用しません。
+2026年10月6日の `xcodebuild test` は成功しました。単体テスト15件、対象UIテスト2件で失敗0件です。アプリ・ウィジェット・テストターゲットをシミュレーター向けにビルドしています。署名を無効にしたDebugビルドであり、実機署名・Release配布の確認ではありません。
 
-実装は、対象App IDの設定確認、未契約実機での検索・試聴検証、検索の差し替えと新旧データ互換、写真詳細・共有の確認の順に進める設計です。認可拒否・制限、未契約・契約済み、検索結果なし、試聴なし、通信失敗、配信停止、異なるStorefrontを確認対象にします。
+```sh
+xcodebuild -project PIcTune.xcodeproj -scheme PIcTune -configuration Debug \
+  -destination 'platform=iOS Simulator,name=iPhone 18 Pro,OS=27.0' \
+  test -only-testing:PIcTuneTests \
+  -only-testing:PIcTuneUITests/sotsugyoUITests/testAppleMusicSearchSelectionEmptyAndDeniedStates \
+  -only-testing:PIcTuneUITests/sotsugyoUITests/testPhotoDetailExplainsMissingPreview \
+  -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO
+```
 
-アプリの実装変更、ビルド・単体テスト、シミュレーター起動、実機再生、QR・NFC、Appleへの用途確認は未実施です。調査文書だけを追加しています。
+初回ビルド時に既存GIFコードのimport不足とUIテスト対象名の不一致を修正しました。初回UIテストの「追加」ボタン確認は、検索中にナビゲーションバーが隠れるOSの挙動に合わせ、検索を閉じてから確認する手順へ修正しました。
+
+画面は固定データによるものです。実在する楽曲名を使用していますが、その曲の試聴配信の有無を示すものではありません。
+
+- [検索・選択](screenshots/apple-music-search.png)
+- [認可拒否時の表示](screenshots/apple-music-permission.png)
+- [写真詳細・試聴音源なし](screenshots/apple-music-detail.png)
+
+### 未確認・公開前に必要な確認
+
+- Apple Developer Programの有効状態、対象App IDのMusicKit App Serviceと署名設定。この作業ではPortalを確認・変更していません。
+- 未契約・契約済み実機での認可、トークン取得、検索、アートワーク取得、試聴の実再生、停止・終了・失敗、地域差。
+- Firebaseへの本人・QR相手への実保存、フォルダコピー、NFC取り込み。保存形式とコピー経路のコード確認を実機動作確認とは扱いません。
+- AppleへのPicTune用途確認。プレビューを写真のBGMとして利用してよいと確定したわけではなく、問い合わせも送信していません。

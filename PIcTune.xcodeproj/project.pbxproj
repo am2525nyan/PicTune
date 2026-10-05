@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A61006000000000000000001 /* MusicPreviewPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61006000000000000000002 /* MusicPreviewPlayer.swift */; };
 		72012FA42B0DACB600B5BD71 /* PhotoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */; };
 		7209E38D2B12EBD200FC44D3 /* Nuke in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E38C2B12EBD200FC44D3 /* Nuke */; };
 		7209E38F2B12EBD200FC44D3 /* NukeExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 7209E38E2B12EBD200FC44D3 /* NukeExtensions */; };
@@ -91,7 +92,7 @@
 		72F226CD2AF8C496002BA0A6 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F226CC2AF8C496002BA0A6 /* CameraView.swift */; };
 		72F9855D2B17540800FEEC05 /* CameraMusicViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F9855C2B17540800FEEC05 /* CameraMusicViewModel.swift */; };
 		72F985622B17FD2F00FEEC05 /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F985612B17FD2F00FEEC05 /* Track.swift */; };
-		72F985642B17FD4A00FEEC05 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F985632B17FD4A00FEEC05 /* SpotifyAPI.swift */; };
+		72F985642B17FD4A00FEEC05 /* AppleMusicAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F985632B17FD4A00FEEC05 /* AppleMusicAPI.swift */; };
 		72F985672B17FD8200FEEC05 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 72F985662B17FD8200FEEC05 /* Alamofire */; };
 		72F9856A2B19880800FEEC05 /* URLImage in Frameworks */ = {isa = PBXBuildFile; productRef = 72F985692B19880800FEEC05 /* URLImage */; };
 		72F9856C2B19880800FEEC05 /* URLImageStore in Frameworks */ = {isa = PBXBuildFile; productRef = 72F9856B2B19880800FEEC05 /* URLImageStore */; };
@@ -136,6 +137,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A61006000000000000000002 /* MusicPreviewPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicPreviewPlayer.swift; sourceTree = "<group>"; };
 		72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewView.swift; sourceTree = "<group>"; };
 		720EA8352B70A72200E4D8BA /* SelectedImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedImageManager.swift; sourceTree = "<group>"; };
 		722067452B4AFDE200408FBD /* NewSignInedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSignInedView.swift; sourceTree = "<group>"; };
@@ -204,7 +206,7 @@
 		72F226CC2AF8C496002BA0A6 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		72F9855C2B17540800FEEC05 /* CameraMusicViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraMusicViewModel.swift; sourceTree = "<group>"; };
 		72F985612B17FD2F00FEEC05 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
-		72F985632B17FD4A00FEEC05 /* SpotifyAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAPI.swift; sourceTree = "<group>"; };
+		72F985632B17FD4A00FEEC05 /* AppleMusicAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicAPI.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -324,6 +326,7 @@
 				72576F742B16F58B0064A362 /* PhotoPreviewViewModel.swift */,
 				72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */,
 				72576F7A2B17010E0064A362 /* searchMusicViewModel.swift */,
+				A61006000000000000000002 /* MusicPreviewPlayer.swift */,
 				72F9855C2B17540800FEEC05 /* CameraMusicViewModel.swift */,
 				72BB5A4B2B4EF47600486FF3 /* SettingViewModel.swift */,
 				72BB5A4D2B4EF92700486FF3 /* ColorModel.swift */,
@@ -339,7 +342,7 @@
 				728EFB502AEE318C008C079B /* AuthenticationManager.swift */,
 				72F226C82AF8C35D002BA0A6 /* CameraManager.swift */,
 				7266BF322AF374BE000D711B /* ImagePicker.swift */,
-				72F985632B17FD4A00FEEC05 /* SpotifyAPI.swift */,
+				72F985632B17FD4A00FEEC05 /* AppleMusicAPI.swift */,
 				72EC194C2B300EBE002CA76B /* QRCodeGenerator.swift */,
 				7280C9DA2B329581003025C6 /* NFCSession.swift */,
 				7231037C2B4FDEDC00A25AC7 /* UIGIFImageView.swift */,
@@ -692,7 +695,8 @@
 				72EDABD02B6D48F900A28859 /* SettingTip.swift in Sources */,
 				728EFB512AEE318C008C079B /* AuthenticationManager.swift in Sources */,
 				723B0C182B6D217C00239E95 /* CameraTip.swift in Sources */,
-				72F985642B17FD4A00FEEC05 /* SpotifyAPI.swift in Sources */,
+				72F985642B17FD4A00FEEC05 /* AppleMusicAPI.swift in Sources */,
+				A61006000000000000000001 /* MusicPreviewPlayer.swift in Sources */,
 				72967E452B298E1700911D97 /* SignInView.swift in Sources */,
 				72F226CB2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift in Sources */,
 				72F226C92AF8C35D002BA0A6 /* CameraManager.swift in Sources */,
@@ -1091,7 +1095,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = sotsugyo;
+				TEST_TARGET_NAME = PIcTune;
 			};
 			name = Debug;
 		};
@@ -1109,7 +1113,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = sotsugyo;
+				TEST_TARGET_NAME = PIcTune;
 			};
 			name = Release;
 		};

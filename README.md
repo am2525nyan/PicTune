@@ -10,7 +10,7 @@
 | --- | --- |
 | ログイン・設定 | Google・Apple・メールによる認証、名前の変更、ログアウト、アカウント削除 |
 | 写真撮影・加工 | カメラ撮影、セピア加工、フレーム・スタンプ・手描きによる装飾 |
-| 音楽の紐づけ | Spotify API で検索した楽曲の情報を写真に保存し、写真詳細で表示・試聴 |
+| 音楽の紐づけ | Apple Musicで検索した楽曲情報を写真に保存し、写真詳細で表示・手動試聴（音源がある場合） |
 | フォルダ・手紙 | 写真の一覧・詳細表示、フォルダ作成、写真の追加・削除、フォルダに添える手紙の保存・表示 |
 | QR コード共有 | 撮影前に相手のコードを読み取り、写真と楽曲情報を相手にも保存 |
 | NFC 共有 | ユーザー ID とフォルダ ID をタグに書き込み、読み取ったフォルダの写真・楽曲情報・手紙を取り込み |
@@ -30,7 +30,7 @@
 - **画面・状態管理**：SwiftUI、UIKit、Combine
 - **撮影・加工・再生**：AVFoundation、Core Image、PencilKit、Photos
 - **認証・保存**：Firebase Authentication、FirebaseUI、Cloud Firestore、Firebase Storage
-- **音楽検索**：Spotify Web API、Alamofire
+- **音楽検索**：MusicKitによる認可・トークン取得、Apple Music API、URLSession
 - **共有・操作案内**：Core NFC、CodeScanner、TipKit
 - **ウィジェット**：WidgetKit、App Groups
 - **依存関係の管理**：Xcode の Swift Package Manager。定義は `PIcTune.xcodeproj/project.pbxproj` にあります。
@@ -66,9 +66,13 @@ macOS と、iOS 18.0 のターゲットをビルドできる Xcode・iOS SDK が
 - 利用する認証プロバイダー（Google・Apple・メール）、Cloud Firestore、Firebase Storage の設定とアクセス権を確認します。
 - Google 認証の URL Scheme は `sotsugyo/Info.plist`、Sign in with Apple の entitlement は `sotsugyo/sotsugyo.entitlements` にあります。Firebase の接続先や Bundle ID を変更する場合は、関連設定も合わせて確認します。
 
-### Spotify
+### Apple Music
 
-音楽検索とトークン取得の実装は `sotsugyo/Utils/SpotifyAPI.swift` にあります。現在は `SpotifyAuth` 内でクライアント認証情報を保持しており、環境変数や `.env` を読み込む仕組みは実装されていません。利用する開発環境の認証設定を確認してください。認証情報の値は README やログに転記しないでください。
+音楽検索は `sotsugyo/Utils/AppleMusicAPI.swift` にあります。Apple Developer Programに登録し、対象App ID（現在は `com.hosonuma.sakki.sotsugyou`）のApp ServicesでMusicKitを有効にしてください。アプリの署名チーム・Bundle IDと一致させます。Developer TokenはMusicKitから取得し、秘密鍵をアプリに埋め込みません。
+
+初回利用時に「メディアとApple Music」へのアクセスを要求します。利用理由は `Info.plist` の `NSAppleMusicUsageDescription` にあります。検索と試聴は有料契約の有無だけで制限しませんが、未契約実機での動作は未確認です。試聴URLがない曲も選択でき、写真詳細にはApple Musicへのリンクを表示します。
+
+以前のSpotifyデータはSpotifyとして読み込みます。新旧データの形式、利用条件、Developer設定と確認範囲は [移行調査・実装記録](docs/apple-music-migration.md) を参照してください。
 
 ### App Groups・NFC・権限
 
@@ -87,7 +91,7 @@ sotsugyo/
     TipKit/              操作ガイド
   ViewModel/             状態管理・データの取得と更新
   Model/                 楽曲などのデータモデル
-  Utils/                 カメラ・認証・Spotify・NFC・QR など
+  Utils/                 カメラ・認証・Apple Music・NFC・QR など
   Assets.xcassets/        画像・スタンプ・色
 PicTuneWidget/           ホーム画面ウィジェット
 sotsugyoTests/           単体テスト
@@ -113,12 +117,12 @@ sotsugyoUITests/         UI テスト
 
 Xcode でスキーム `PIcTune` を選択し、Build（⌘B）または Test（⌘U）を実行します。共有スキームには `PIcTuneTests` と `PIcTuneUITests` が登録されています。
 
-現在の単体テストは主にひな形で、UI テストも起動・起動性能の確認が中心です。テストの成功だけでは各機能の動作を確認できません。変更した画面・保存処理・共有処理について、実際の操作でも確認してください。
+単体テストには楽曲検索・保存形式・旧データ互換・試聴なし・停止後の応答を含みます。Apple Music用UIテストはDebug限定の固定データで検索・選択・エラー・写真詳細を確認します。テストの成功だけでは各機能の動作を確認できません。変更した画面・保存処理・共有処理について、実際の操作でも確認してください。
 
-- 音楽検索・試聴は外部 API と試聴 URL の取得結果に依存します。現在の検索処理は `preview_url` がある楽曲を結果に追加します。
+- 音楽検索・試聴は外部 API と試聴 URL の取得結果に依存します。試聴URLがなくても検索結果に表示します。
 - ウィジェットは共有領域の 3 件の画像 URL を前提に読み込む実装です。初回起動や写真が少ない状態も確認対象です。
 - Live Photo 関連の撮影・保存処理はありますが、機能全体の完成や実機動作を確認済みとは扱っていません。
-- この README の作成時にはビルド・テスト・実機確認を実施していません。
+- Apple Developer Portal設定、Apple Musicの実通信・実機再生、QR・NFCの実機確認は未実施です。
 
 ## 開発時のルール
 

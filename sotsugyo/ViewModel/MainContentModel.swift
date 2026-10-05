@@ -44,7 +44,7 @@ class MainContentModel: ObservableObject {
     
     @Published var userDataList: String = ""
     private var folderLoadID = UUID()
-    var audioPlayer: AVPlayer?
+    private var musicLoadID = UUID()
     var url = URL.init(string: "https://www.hello.com/sample.wav")
     
     
@@ -284,33 +284,20 @@ class MainContentModel: ObservableObject {
             throw error
         }
     }
-    func getMusic(documentId: String,folder: String,friendUid: String) async throws{
-        DispatchQueue.main.async {
-            self.Music = []
-        }
-        
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            
-            let ref = try await db.collection("users").document(uid).collection("folders").document(folder).collection("photos").document(documentId).getDocument()
-            let data = ref.data()
-            guard let trackId = data?["id"] as? String, !trackId.isEmpty else { return }
-            let artistName = data?["artistName"] as? String ?? ""
-            let imageName = data?["imageName"] as? String ?? ""
-            let trackName = data?["trackName"] as? String ?? ""
-            let id = data?["id"] as?String ?? "ないよ"
-            let previewUrl = data?["previewUrl"] as? String ?? ""
-            
-            DispatchQueue.main.async {
-                self.Music.append(FirebaseMusic(id: documentId, artistName: artistName , imageName: imageName , trackName: trackName , trackId: id , previewURL: previewUrl )
-                )
-            }
-            
-            
-            
-        }
+    @MainActor
+    func getMusic(documentId: String, folder: String, friendUid: String) async throws {
+        let requestID = UUID()
+        musicLoadID = requestID
+        Music = []
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let ref = try await db.collection("users").document(uid).collection("folders")
+            .document(folder).collection("photos").document(documentId).getDocument()
+        guard !Task.isCancelled, musicLoadID == requestID,
+              Auth.auth().currentUser?.uid == uid,
+              let data = ref.data(), let music = FirebaseMusic.from(documentID: documentId, data: data) else { return }
+        Music = [music]
     }
-    
+
     func makeFolder(folderName: String){
      
         
@@ -532,26 +519,14 @@ class MainContentModel: ObservableObject {
                 
                 for document in sourceCollectionRef.documents {
                     let data = document.data()
-                    let DocumentID = document.documentID
-                    _ = try await destinationCollectionRef.addDocument(data: data)
+                    let copiedDocument = try await destinationCollectionRef.addDocument(data: data)
                     let url = data["url"]
                     if url != nil {
                         urlArray.append(url as! String)
                     }
-                    let ref = try await db.collection("users").document(uid).collection("folders").document(NFCfolderid).collection("photos").document(DocumentID).getDocument()
-                    let data2 = ref.data()
-                    guard let trackId = data2?["id"] as? String, !trackId.isEmpty else { continue }
-                    let artistName =  data2?["artistName"] as?String ?? "ないよ"
-                    let imageName =  data2?["imageName"] as?String ?? "ないよ"
-                    let trackName =  data2?["trackName"] as?String ?? "ないよ"
-                    let id = data2?["id"] as?String ?? "ないよ"
-                    let previewUrl = data2?["previewUrl"] as?String ?? ""
-                    
-                    DispatchQueue.main.async {
-                        self.Music.append(FirebaseMusic(id: DocumentID, artistName: artistName , imageName: imageName , trackName: trackName , trackId: id , previewURL: previewUrl )
-                        )
+                    if let music = FirebaseMusic.from(documentID: copiedDocument.documentID, data: data) {
+                        await MainActor.run { self.Music.append(music) }
                     }
-                    
                 }
             }
             DispatchQueue.main.async {
@@ -608,26 +583,6 @@ class MainContentModel: ObservableObject {
             } else {
                 print("Image saved to camera roll successfully.")
             }
-        }
-    }
-    func startPlay() {
-        guard let preview = Music.first?.previewURL,
-              !preview.isEmpty,
-              let previewURL = URL(string: preview),
-              previewURL.scheme == "https" || previewURL.scheme == "http" else { return }
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback)
-            try AVAudioSession.sharedInstance().setActive(true)
-            audioPlayer = AVPlayer(url: previewURL)
-            audioPlayer?.play()
-        } catch {
-            print(error)
-        }
-    }
-
-    func stop() {
-        DispatchQueue.main.async {
-            self.audioPlayer?.pause()
         }
     }
     func startAnimation() {

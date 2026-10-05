@@ -256,11 +256,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         let photo = folder.collection("photos").document()
         var data: [String: Any] = ["url": imageName, "date": FieldValue.serverTimestamp(), "livephotoUrl": liveurl]
         if let track {
-            data["artistName"] = track.artist
-            data["trackName"] = track.name
-            data["id"] = track.id
-            data["imageName"] = track.albumImages.first ?? ""
-            data["previewUrl"] = track.previewURL ?? ""
+            data.merge(track.firestoreData) { _, new in new }
         }
         let batch = db.batch()
         batch.setData(data, forDocument: photo)
