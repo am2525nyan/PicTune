@@ -70,6 +70,51 @@ final class sotsugyoUITests: XCTestCase {
     }
 
     @MainActor
+    func testLiveAppleMusicSearchPlaybackAndStop() throws {
+        guard ProcessInfo.processInfo.environment["PICTUNE_RUN_LIVE_MUSIC"] == "1" else {
+            throw XCTSkip("Opt-in only: needs an authorized device and live Apple Music access")
+        }
+        continueAfterFailure = true
+        let app = XCUIApplication()
+        app.launchArguments = ["--music-live-check", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        defer {
+            attachScreenshot("接続確認終了時")
+            app.terminate()
+        }
+        app.buttons["検索を確認"].tap()
+        let permissionAlert = XCUIApplication(bundleIdentifier: "com.apple.springboard").alerts.firstMatch
+        if permissionAlert.waitForExistence(timeout: 3) {
+            attachScreenshot("MusicKitの権限確認待ち")
+            throw XCTSkip("Device permission needs user action; live verification has not completed")
+        }
+        let result = app.staticTexts["live.result"]
+        let completed = NSPredicate(format: "label BEGINSWITH %@ OR label BEGINSWITH %@", "取得成功", "取得失敗")
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: completed, object: result)], timeout: 45), .completed)
+        attachScreenshot("Apple Music検索結果（実通信）")
+        guard result.label.hasPrefix("取得成功") else {
+            XCTFail("\(result.label) / \(app.staticTexts["live.connectionDetails"].label)")
+            return
+        }
+        let preview = app.buttons["live.preview"]
+        guard preview.waitForExistence(timeout: 10) else { XCTFail("No preview in search results"); return }
+        preview.tap()
+        app.swipeUp()
+        let progressed = NSPredicate(format: "label MATCHES %@", "再生位置: ([3-9]|[1-9][0-9]+)秒")
+        guard XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: progressed, object: app.staticTexts["live.elapsed"])], timeout: 30) == .completed else {
+            let message = app.staticTexts["live.message"]
+            XCTFail("Preview did not advance: \(app.staticTexts["live.state"].label) / \(app.staticTexts["live.elapsed"].label) / \(message.exists ? message.label : "no error message")")
+            return
+        }
+        XCTAssertEqual(app.staticTexts["live.state"].label, "再生中")
+        print("Live preview verification: \(app.staticTexts["live.elapsed"].label)")
+        attachScreenshot("Apple Music試聴中（実通信）")
+        preview.tap()
+        XCTAssertEqual(app.staticTexts["live.state"].label, "停止中")
+        attachScreenshot("Apple Music停止（実通信）")
+    }
+
+    @MainActor
     private func attachScreenshot(_ name: String) {
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         attachment.name = name

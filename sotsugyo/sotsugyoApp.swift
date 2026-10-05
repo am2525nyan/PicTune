@@ -9,6 +9,10 @@ import SwiftUI
 import FirebaseCore
 import FirebaseAuthUI
 import TipKit
+#if DEBUG
+import MusicKit
+import AVFoundation
+#endif
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -34,7 +38,9 @@ struct sotsugyoApp: App {
     var body: some Scene {
         WindowGroup {
             #if DEBUG
-            if ProcessInfo.processInfo.arguments.contains("--music-ui-test") {
+            if ProcessInfo.processInfo.arguments.contains("--music-live-check") {
+                MusicLiveCheckScene()
+            } else if ProcessInfo.processInfo.arguments.contains("--music-ui-test") {
                 MusicUITestScene()
             } else {
                 mainContent
@@ -59,6 +65,97 @@ struct sotsugyoApp: App {
 }
 
 #if DEBUG
+/// Opt-in device verification against the real service; does not write photo data.
+private struct MusicLiveCheckScene: View {
+    @StateObject private var player = MusicPreviewPlayer()
+    @State private var track: Track?
+    @State private var result = "未実行"
+    @State private var elapsed = 0
+    @State private var subscription = "未取得"
+    @State private var connectionDetails = ""
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("実サービスへの接続確認") {
+                    Button("検索を確認") {
+                        Task {
+                            result = "検索中"
+                            connectionDetails = ""
+                            var catalogRequest: URLRequest?
+                            let api = AppleMusicAPI(transport: { request in
+                                catalogRequest = request
+                                let (data, response) = try await URLSession.shared.data(for: request)
+                                guard let response = response as? HTTPURLResponse else { throw AppleMusicError.invalidResponse }
+                                connectionDetails = "HTTP \(response.statusCode)"
+                                return (data, response)
+                            })
+                            do {
+                                let tracks = try await api.searchTracks(query: "YOASOBI アイドル")
+                                track = tracks.first { $0.previewURL != nil }
+                                result = "取得成功: \(tracks.count)曲"
+                                if let status = try? await MusicSubscription.current {
+                                    subscription = "canPlayCatalogContent=\(status.canPlayCatalogContent)"
+                                }
+                            } catch {
+                                let nsError = error as NSError
+                                let reason = (error as? AppleMusicError)?.errorDescription
+                                    ?? "\(nsError.domain) / \(nsError.code)"
+                                if var request = catalogRequest {
+                                    request.setValue(nil, forHTTPHeaderField: "Authorization")
+                                    do {
+                                        let response = try await MusicDataRequest(urlRequest: request).response()
+                                        connectionDetails += " / MusicDataRequest: \(response.data.count) bytes"
+                                    } catch let error as MusicDataRequest.Error {
+                                        connectionDetails += " / MusicDataRequest: HTTP \(error.status), code \(error.code)"
+                                    } catch {
+                                        let error = error as NSError
+                                        connectionDetails += " / MusicDataRequest: \(error.domain) / \(error.code)"
+                                    }
+                                }
+                                result = "取得失敗: \(reason)"
+                            }
+                        }
+                    }
+                    Text(result).accessibilityIdentifier("live.result")
+                    Text(connectionDetails).accessibilityIdentifier("live.connectionDetails")
+                    Text("認可: \(String(describing: MusicAuthorization.currentStatus))")
+                    Text(subscription).accessibilityIdentifier("live.subscription")
+                }
+                if let track {
+                    Section("取得した楽曲") {
+                        Text(track.name)
+                        Text(track.artist)
+                        Text("Storefront: \(track.storefront ?? "不明")")
+                        AsyncImage(url: track.albumImages.first.flatMap(URL.init(string:))) { image in
+                            image.resizable().scaledToFit()
+                        } placeholder: { ProgressView() }
+                        .frame(height: 100)
+                        Button(player.state == .idle ? "試聴を確認" : "停止を確認") {
+                            player.toggle(track)
+                        }.accessibilityIdentifier("live.preview")
+                        Text(player.state == .playing ? "再生中" : player.state == .loading ? "準備中" : "停止中")
+                            .accessibilityIdentifier("live.state")
+                        Text("再生位置: \(elapsed)秒").accessibilityIdentifier("live.elapsed")
+                        if let message = player.message { Text(message).accessibilityIdentifier("live.message") }
+                        if let url = track.serviceURL { Link("Apple Musicで聴く", destination: url) }
+                    }
+                }
+            }
+            .navigationTitle("Apple Music接続確認")
+            .navigationBarTitleDisplayMode(.inline)
+            .task {
+                while !Task.isCancelled {
+                    let seconds = player.audioPlayer?.currentTime().seconds ?? 0
+                    elapsed = seconds.isFinite ? Int(seconds) : 0
+                    try? await Task.sleep(for: .milliseconds(250))
+                }
+            }
+            .onDisappear { player.stop() }
+        }
+    }
+}
+
 /// Offline UI fixtures: no Apple Music or Firestore requests are made by this scene.
 private struct MusicUITestScene: View {
     @State private var selectedTrack: Track?
