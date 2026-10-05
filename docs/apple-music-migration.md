@@ -76,7 +76,7 @@ Spotify検索実装とそこにあったクライアント秘密情報は現在�
 
 現在のアプリBundle IDはcom.hosonuma.sakki.sotsugyou、署名チームはTVH687AC7Fです。アプリのDeployment TargetはiOS 18.0です。これらはローカル設定であり、Developer Programの有効状態やPortalでの権限を証明しません。
 
-Apple DeveloperのCertificates Identifiers and Profilesで、対象App IDのApp ServicesにあるMusicKitを有効にする必要があります。アプリのBundle IDを一致させます。この調査ではPortal設定を確認・変更していません。FirebaseのSign in with Appleが実装済みでも、MusicKit設定が有効とは限りません。
+Apple DeveloperのCertificates Identifiers and Profilesで、対象App IDのApp ServicesにあるMusicKitを有効にする必要があります。アプリのBundle IDを一致させます。2026年10月6日にPortalで同じTeam IDとBundle IDを確認し、対象のMusicKit App Serviceが無効（未チェック）であることを確認しました。設定の変更はしていません。FirebaseのSign in with Appleが実装済みでも、MusicKit設定が有効とは限りません。
 
 MusicKitはランタイムサービスとしてApp IDに関連付くため、entitlementsにキーが見当たらないことだけでPortal側が無効とは判断しません。[公式設定手順](https://developer.apple.com/documentation/musickit/using-automatic-token-generation-for-apple-music-api)
 
@@ -86,7 +86,7 @@ MusicKitはランタイムサービスとしてApp IDに関連付くため、ent
 
 単体テストは、APIリクエスト形式、試聴URLなし、認可拒否、検索結果なし、429、利用者側Storefront、配信停止時に古いURLを使用しないこと、新旧データ互換、停止後の遅延応答を固定データで検証します。UIテストは実際のSwiftUI画面をDebug専用の固定データで起動し、検索・選択・結果なし・認可拒否・写真詳細の試聴なし表示を操作します。
 
-2026年10月6日の `xcodebuild test` は成功しました。単体テスト15件、対象UIテスト2件で失敗0件です。アプリ・ウィジェット・テストターゲットをシミュレーター向けにビルドしています。署名を無効にしたDebugビルドであり、実機署名・Release配布の確認ではありません。
+2026年10月6日に最新mainを統合した後の `xcodebuild test` は成功しました。単体テスト15件、対象UIテスト2件で失敗0件です。アプリ・ウィジェット・テストターゲットをシミュレーター向けにビルドしています。署名を無効にしたDebugビルドであり、実機署名・Release配布の確認ではありません。
 
 ```sh
 xcodebuild -project PIcTune.xcodeproj -scheme PIcTune -configuration Debug \
@@ -107,7 +107,7 @@ xcodebuild -project PIcTune.xcodeproj -scheme PIcTune -configuration Debug \
 
 ### 未確認・公開前に必要な確認
 
-- Apple Developer Programの有効状態、対象App IDのMusicKit App Serviceと署名設定。この作業ではPortalを確認・変更していません。
+- 対象App IDのMusicKit App Service有効化と実機署名確認。Portal上で対象App IDの登録とMusicKitが無効であることは確認しましたが、有効化は未実施です。
 - 未契約・契約済み実機での認可、トークン取得、検索、アートワーク取得、試聴の実再生、停止・終了・失敗、地域差。
 - Firebaseへの本人・QR相手への実保存、フォルダコピー、NFC取り込み。保存形式とコピー経路のコード確認を実機動作確認とは扱いません。
 - AppleへのPicTune用途確認。プレビューを写真のBGMとして利用してよいと確定したわけではなく、問い合わせも送信していません。
