@@ -27,6 +27,7 @@ struct StampView: View {
                             selectedImageManager.selectedImage = "\(index)"
                             
                         }
+                       
                 }
             } // HStack
             .frame(maxHeight: 120)

@@ -20,7 +20,7 @@
 		723B0C182B6D217C00239E95 /* CameraTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 723B0C172B6D217C00239E95 /* CameraTip.swift */; };
 		725678D52B4C5C8D00D30460 /* ButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725678D42B4C5C8D00D30460 /* ButtonView.swift */; };
 		72576F662B1466690064A362 /* SearchMusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F652B1466690064A362 /* SearchMusicView.swift */; };
-		72576F732B16E5020064A362 /* Main ContentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F722B16E5020064A362 /* Main ContentModel.swift */; };
+		72576F732B16E5020064A362 /* MainContentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F722B16E5020064A362 /* MainContentModel.swift */; };
 		72576F752B16F58B0064A362 /* PhotoPreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F742B16F58B0064A362 /* PhotoPreviewViewModel.swift */; };
 		72576F772B16FD740064A362 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F762B16FD740064A362 /* UIView.swift */; };
 		72576F7B2B17010E0064A362 /* searchMusicViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72576F7A2B17010E0064A362 /* searchMusicViewModel.swift */; };
@@ -146,7 +146,7 @@
 		723B0C172B6D217C00239E95 /* CameraTip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraTip.swift; sourceTree = "<group>"; };
 		725678D42B4C5C8D00D30460 /* ButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonView.swift; sourceTree = "<group>"; };
 		72576F652B1466690064A362 /* SearchMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMusicView.swift; sourceTree = "<group>"; };
-		72576F722B16E5020064A362 /* Main ContentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Main ContentModel.swift"; sourceTree = "<group>"; };
+		72576F722B16E5020064A362 /* MainContentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentModel.swift; sourceTree = "<group>"; };
 		72576F742B16F58B0064A362 /* PhotoPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewViewModel.swift; sourceTree = "<group>"; };
 		72576F762B16FD740064A362 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		72576F7A2B17010E0064A362 /* searchMusicViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchMusicViewModel.swift; sourceTree = "<group>"; };
@@ -323,7 +323,7 @@
 			isa = PBXGroup;
 			children = (
 				728EFB4E2AEE303B008C079B /* LoginViewModel.swift */,
-				72576F722B16E5020064A362 /* Main ContentModel.swift */,
+				72576F722B16E5020064A362 /* MainContentModel.swift */,
 				72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */,
 				72576F742B16F58B0064A362 /* PhotoPreviewViewModel.swift */,
 				72B47F7A2B104A94008832F5 /* PenKitViewModel.swift */,
@@ -607,11 +607,12 @@
 			};
 			buildConfigurationList = 728EFB002AEE1C10008C079B /* Build configuration list for PBXProject "PIcTune" */;
 			compatibilityVersion = "Xcode 15.0";
-			developmentRegion = en;
+			developmentRegion = ja;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				ja,
 			);
 			mainGroup = 728EFAFC2AEE1C10008C079B;
 			packageReferences = (
@@ -707,7 +708,7 @@
 				72576F772B16FD740064A362 /* UIView.swift in Sources */,
 				72EC19482B300463002CA76B /* PencilView.swift in Sources */,
 				72EDABCE2B6D3ABA00A28859 /* LetterTip.swift in Sources */,
-				72576F732B16E5020064A362 /* Main ContentModel.swift in Sources */,
+				72576F732B16E5020064A362 /* MainContentModel.swift in Sources */,
 				72EDABCC2B6D395000A28859 /* PostNFCTip.swift in Sources */,
 				7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */,
 				72EB017E2B6E8C47007E0AED /* StampView.swift in Sources */,
@@ -966,7 +967,7 @@
 				CODE_SIGN_ENTITLEMENTS = sotsugyo/sotsugyo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"sotsugyo/Preview Content\"";
 				DEVELOPMENT_TEAM = TVH687AC7F;
 				ENABLE_PREVIEWS = YES;
@@ -982,12 +983,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.01;
+				MARKETING_VERSION = 1.04;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyou;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1009,7 +1010,7 @@
 				CODE_SIGN_ENTITLEMENTS = sotsugyo/sotsugyo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"sotsugyo/Preview Content\"";
 				DEVELOPMENT_TEAM = TVH687AC7F;
 				ENABLE_PREVIEWS = YES;
@@ -1025,12 +1026,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.01;
+				MARKETING_VERSION = 1.04;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hosonuma.sakki.sotsugyou;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
