@@ -84,7 +84,12 @@ class SettingViewModel: ObservableObject {
         // Googleログインの場合
         if user.providerData.first(where: { $0.providerID == "google.com" }) != nil {
             // 認証情報を作成する
-            let credential = GoogleAuthProvider.credential(withIDToken: GIDSignIn.sharedInstance.currentUser!.authentication.idToken!, accessToken: GIDSignIn.sharedInstance.currentUser!.authentication.accessToken)
+            guard let googleUser = GIDSignIn.sharedInstance.currentUser,
+                  let idToken = googleUser.idToken?.tokenString else {
+                print("Googleのログイン情報を取得できませんでした。")
+                return
+            }
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: googleUser.accessToken.tokenString)
             
             // 再認証を実行する
             user.reauthenticate(with: credential, completion: { (authResult, error) in

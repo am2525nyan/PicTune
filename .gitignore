@@ -77,3 +77,12 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+
+# Keep the resolved Swift package versions without Xcode workspace user settings.
+!PIcTune.xcodeproj/project.xcworkspace/
+PIcTune.xcodeproj/project.xcworkspace/*
+!PIcTune.xcodeproj/project.xcworkspace/xcshareddata/
+PIcTune.xcodeproj/project.xcworkspace/xcshareddata/*
+!PIcTune.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+PIcTune.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/*
+!PIcTune.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved

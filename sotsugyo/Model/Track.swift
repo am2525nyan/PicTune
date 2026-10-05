@@ -6,4 +6,5 @@ struct Track: Identifiable {
     var artist: String
     var albumImages: [String]
     var previewURL: String?
+    var albumName: String? = nil
 }

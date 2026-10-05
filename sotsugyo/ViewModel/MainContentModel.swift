@@ -294,11 +294,12 @@ class MainContentModel: ObservableObject {
             
             let ref = try await db.collection("users").document(uid).collection("folders").document(folder).collection("photos").document(documentId).getDocument()
             let data = ref.data()
-            let artistName =  data?["artistName"] as?String ?? "ないよ"
-            let imageName =  data?["imageName"] as?String ?? "ないよ"
-            let trackName =  data?["trackName"] as?String ?? "ないよ"
+            guard let trackId = data?["id"] as? String, !trackId.isEmpty else { return }
+            let artistName = data?["artistName"] as? String ?? ""
+            let imageName = data?["imageName"] as? String ?? ""
+            let trackName = data?["trackName"] as? String ?? ""
             let id = data?["id"] as?String ?? "ないよ"
-            let previewUrl = data?["previewUrl"] as?String ?? "ないよ"
+            let previewUrl = data?["previewUrl"] as? String ?? ""
             
             DispatchQueue.main.async {
                 self.Music.append(FirebaseMusic(id: documentId, artistName: artistName , imageName: imageName , trackName: trackName , trackId: id , previewURL: previewUrl )
@@ -532,18 +533,19 @@ class MainContentModel: ObservableObject {
                 for document in sourceCollectionRef.documents {
                     let data = document.data()
                     let DocumentID = document.documentID
-                    destinationCollectionRef.addDocument(data: data)
+                    _ = try await destinationCollectionRef.addDocument(data: data)
                     let url = data["url"]
                     if url != nil {
                         urlArray.append(url as! String)
                     }
                     let ref = try await db.collection("users").document(uid).collection("folders").document(NFCfolderid).collection("photos").document(DocumentID).getDocument()
                     let data2 = ref.data()
+                    guard let trackId = data2?["id"] as? String, !trackId.isEmpty else { continue }
                     let artistName =  data2?["artistName"] as?String ?? "ないよ"
                     let imageName =  data2?["imageName"] as?String ?? "ないよ"
                     let trackName =  data2?["trackName"] as?String ?? "ないよ"
                     let id = data2?["id"] as?String ?? "ないよ"
-                    let previewUrl = data2?["previewUrl"] as?String ?? "ないよ"
+                    let previewUrl = data2?["previewUrl"] as?String ?? ""
                     
                     DispatchQueue.main.async {
                         self.Music.append(FirebaseMusic(id: DocumentID, artistName: artistName , imageName: imageName , trackName: trackName , trackId: id , previewURL: previewUrl )
@@ -609,27 +611,20 @@ class MainContentModel: ObservableObject {
         }
     }
     func startPlay() {
-       
-            self.url =  URL.init(string: self.Music.first!.previewURL )
-            let sampleUrl = URL.init(string: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/8f/c1/32/8fc1329a-bf7d-03f2-3082-6536f60666ee/mzaf_1239907852510333018.plus.aac.p.m4a")
-          
+        guard let preview = Music.first?.previewURL,
+              !preview.isEmpty,
+              let previewURL = URL(string: preview),
+              previewURL.scheme == "https" || previewURL.scheme == "http" else { return }
         do {
-                   //ここでミュート中でも音が出るようになります。
-                   try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
-                   do {
-                       //オーディオセッションをアクティブにする(ここも必要)
-                       try AVAudioSession.sharedInstance().setActive(true)
-                self.audioPlayer = AVPlayer.init(playerItem: AVPlayerItem(url: self.url ?? sampleUrl! ))
-                
-                self.audioPlayer!.play()
-            }
-        }catch{
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+            try AVAudioSession.sharedInstance().setActive(true)
+            audioPlayer = AVPlayer(url: previewURL)
+            audioPlayer?.play()
+        } catch {
             print(error)
         }
-            
     }
-    
-    
+
     func stop() {
         DispatchQueue.main.async {
             self.audioPlayer?.pause()
