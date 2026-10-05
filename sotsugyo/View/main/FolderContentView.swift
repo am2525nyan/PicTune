@@ -10,21 +10,14 @@ struct FolderLibraryView: View {
     @State private var isShowingNFCResult = false
     @State private var nfcResultMessage = ""
     @State private var folderName = ""
-    @State private var pendingDeletion: FolderEntry?
+    @State private var pendingDeletion: PhotoFolder?
     @State private var isConfirmingDeletion = false
     @State private var isDeleting = false
     @State private var errorMessage: String?
     private let columns = [GridItem(.adaptive(minimum: 160, maximum: 240), spacing: 16)]
 
-    private struct FolderEntry: Identifiable {
-        let id: String
-        let name: String
-    }
-
-    private var folders: [FolderEntry] {
-        zip(viewModel.foldersDocumentId, viewModel.folders)
-            .filter { $0.0 != "all" }
-            .map { FolderEntry(id: $0.0, name: $0.1) }
+    private var folders: [PhotoFolder] {
+        viewModel.folders.filter { $0.id != PhotoFolder.allID }
     }
 
     var body: some View {
@@ -43,9 +36,9 @@ struct FolderLibraryView: View {
                     LazyVGrid(columns: columns, alignment: .leading, spacing: 24) {
                         ForEach(folders) { folder in
                             NavigationLink {
-                                FolderDetailView(viewModel: viewModel, folderId: folder.id, folderName: folder.name)
+                                FolderDetailView(viewModel: viewModel, folderId: folder.id, folderName: folder.title)
                             } label: {
-                                FolderLibraryCard(viewModel: viewModel, folderId: folder.id, folderName: folder.name)
+                                FolderLibraryCard(viewModel: viewModel, folderId: folder.id, folderName: folder.title)
                             }
                             .buttonStyle(.plain)
                             .contextMenu {
@@ -72,7 +65,7 @@ struct FolderLibraryView: View {
         .overlay {
             if isDeleting { ProgressView("削除中…").padding().background(.regularMaterial) }
         }
-        .confirmationDialog("「\(pendingDeletion?.name ?? "")」を削除しますか？", isPresented: $isConfirmingDeletion, titleVisibility: .visible) {
+        .confirmationDialog("「\(pendingDeletion?.title ?? "")」を削除しますか？", isPresented: $isConfirmingDeletion, titleVisibility: .visible) {
             Button("フォルダを削除", role: .destructive) { deleteFolder() }
             Button("キャンセル", role: .cancel) { pendingDeletion = nil }
         } message: {
@@ -156,15 +149,14 @@ struct FolderLibraryView: View {
                 return
             }
 
-            let parts = payload?.split(separator: " ", maxSplits: 1).map(String.init) ?? []
-            guard parts.count == 2, !parts[0].isEmpty, !parts[1].isEmpty else {
+            guard let payload, let reference = SharedFolderReference(payload: payload) else {
                 showNFCResult("フォルダの情報を読み取れませんでした。")
                 return
             }
 
             Task {
                 do {
-                    try await viewModel.getNFCData(NFCUid: parts[0], NFCfolderid: parts[1])
+                    try await viewModel.getNFCData(NFCUid: reference.userID, NFCfolderid: reference.folderID)
                     await reloadFolders()
                     showNFCResult("フォルダを読み込みました。")
                 } catch {
@@ -263,7 +255,7 @@ struct FolderDetailView: View {
                         Text(folderName)
                             .font(.title.bold())
                             .multilineTextAlignment(.center)
-                        Text("\(viewModel.images.count)枚のチェキ")
+                        Text("\(viewModel.photos.count)枚のチェキ")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -314,9 +306,8 @@ struct FolderDetailView: View {
     }
 
     private func reloadPhotos() async {
-        guard let index = viewModel.foldersDocumentId.firstIndex(of: folderId) else { return }
         do {
-            try await viewModel.FoldergetUrl(folderId: index)
+            try await viewModel.loadPhotos(folderID: folderId)
         } catch {
             await MainActor.run { show(error) }
         }

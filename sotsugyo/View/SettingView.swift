@@ -18,7 +18,7 @@ import AuthenticationServices
 import CryptoKit
 
 struct SettingView: View {
-    @StateObject private var viewModel = SettingViewModel()
+    @StateObject private var viewModel: SettingViewModel
     @State private var isEditingName = false
     @State private var isShowingLogout = false
     @State private var isShowingDelete = false
@@ -26,6 +26,11 @@ struct SettingView: View {
     @State private var isLoading = false
     @State private var hasLoadedProfile = false
     @State private var profileError: String?
+
+    init(viewModel: SettingViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? SettingViewModel())
+        _hasLoadedProfile = State(initialValue: viewModel != nil)
+    }
 
     var body: some View {
         Form {

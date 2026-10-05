@@ -34,7 +34,17 @@ struct sotsugyoApp: App {
     var body: some Scene {
         WindowGroup {
            
-            MainContentView()
+            Group {
+#if DEBUG
+                if UITestFixtures.isEnabled {
+                    UITestRootView()
+                } else {
+                    MainContentView()
+                }
+#else
+                MainContentView()
+#endif
+            }
                 .environmentObject(SelectedImageManager.shared)
                 .task {
                     

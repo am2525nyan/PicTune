@@ -1,0 +1,154 @@
+[
+  {
+    "screen": "01-photo-library",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "02-photo-with-music",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "03-photo-without-music",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "04-folder-library",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "05-nfc-read-unavailable",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "06-folder-detail",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "07-letter",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "08-nfc-write-unavailable",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "09-settings",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "10-name-editor",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "11-logout-confirmation",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "12-photo-editor",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "13-photo-editor-stamp",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.019
+  },
+  {
+    "screen": "14-photo-editor-pencil",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "15-music-search-empty",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "16-music-search-results",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "17-music-search-selected",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "18-music-search-no-results",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  },
+  {
+    "screen": "19-music-search-error",
+    "size": [
+      1206,
+      2622
+    ],
+    "mean_channel_difference": 0.0
+  }
+]

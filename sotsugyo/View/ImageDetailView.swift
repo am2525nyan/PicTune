@@ -1,30 +1,10 @@
-//
-//  ImageDetailView.swift
-//  sotsugyo
-//
-//  Created by saki on 2023/12/04.
-//
-
 import SwiftUI
-import Photos
-import FirebaseStorage
-import FirebaseAuth
-import FirebaseFirestore
-// ImageDetailView.swift
+
 struct ImageDetailView: View {
-    @Binding var image: UIImage?
-    @Binding var documentId: String
-    @Binding var tapdocumentId: String
-    @Binding var index: Int
-    @State private var tracks: [Track] = []
-    @State private var livePhoto = false
+    let photo: LibraryPhoto
     @ObservedObject var viewModel: MainContentModel
-    
-    @Binding var friendUid: String
-    var selectedIndex: Int
-    @State var isDownload = false
-    
-    
+    @State private var isDownload = false
+
     var body: some View {
         ZStack{
             Color(red: 229 / 255, green: 217 / 255, blue: 255 / 255, opacity: 1.0)
@@ -32,9 +12,8 @@ struct ImageDetailView: View {
             VStack {
                 VStack {
                     VStack{
-                        if selectedIndex < viewModel.dates.count {
-                            let correspondingDate = viewModel.dates[selectedIndex]
-                            Text("日付: \(correspondingDate)")
+                        if photo.record.date != nil {
+                            Text("日付: \(photo.dateText)")
                                 .padding()
                         } else {
                             Text("日付情報なし")
@@ -44,8 +23,9 @@ struct ImageDetailView: View {
                     .frame(width: 333, height: 40)
                     .background(Color.white)
                     ZStack{
-                        
-                        if let unwrappedImage = image {
+
+                        Group {
+                            let unwrappedImage = photo.image
                             Image(uiImage: unwrappedImage)
                                 .resizable()
                                 .scaledToFit()
@@ -54,7 +34,7 @@ struct ImageDetailView: View {
                                 .navigationBarItems(
                                     trailing: HStack{
                                         Button (action: {
-                                            viewModel.downloadFile(documentId: documentId, folderId: viewModel.folderDocument)
+                                            viewModel.downloadFile(photo: photo)
                                             isDownload.toggle()
                                         } , label: {
                                             Image(systemName: "square.and.arrow.down")
@@ -65,48 +45,38 @@ struct ImageDetailView: View {
                                                 message: Text("カメラロールに保存しました！"),
                                                 dismissButton: .default(Text("OK")))
                                         }
-                                        
-                                        
+
                                         ShareLink(item: unwrappedImage, preview: SharePreview("チェキ", image: unwrappedImage))
-                                        
-                                        
-                                        
-                                        
-                                        
+
                                     }
                                 )
                         }
                     }
-                    
-                    
+
                 }
-                
+
                 VStack {
-                    
-                    if let music = viewModel.Music.first {
-                        
+
+                    if let music = photo.record.music {
+
                         HStack {
                             AsyncImage(url: URL(string: music.imageName)) { phase in
                                 switch phase {
                                 case .empty:
-                                    // Placeholder image or view
                                     Image(systemName: "photo")
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
                                         .frame(width: 100, height: 100)
                                 case .success(let image):
-                                    // Successfully loaded image
                                     image
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
                                         .frame(width: 100, height: 100)
                                 case .failure:
-                                    // Failed to load image
                                     Image(systemName: "exclamationmark.triangle")
                                         .foregroundColor(.red)
                                         .frame(width: 100, height: 100)
                                 @unknown default:
-                                    // Placeholder image or view for unknown state
                                     Image(systemName: "photo")
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
@@ -118,13 +88,11 @@ struct ImageDetailView: View {
                                 Text(music.trackName)
                                     .font(.headline)
                                     .padding(.top, 8)
-                                
+
                                 Text(music.artistName)
                                     .font(.subheadline)
                                     .padding(.top, 4)
-                                
-                                
-                                
+
                             }
                             .padding(EdgeInsets(
                                 top: 10,
@@ -132,107 +100,40 @@ struct ImageDetailView: View {
                                 bottom: 10,
                                 trailing: 27
                             ))
-                            
-                            
+
                         }
-                        
+
                     } else {
                         Label("音楽なし", systemImage: "music.note")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .padding()
                     }
-                    
+
                 }
-                
+
                 .frame(width: 333)
-                
+
                 .onDisappear{
                     viewModel.stop()
                 }
-                
-                .onAppear {
-                    Task {
-                        do {
-                            try await viewModel.getMusic(documentId: tapdocumentId, folder: viewModel.folderDocument, friendUid: friendUid)
-                            
-                        } catch {
-                            print("テキスト情報の取得に失敗しました: \(error)")
-                        }
-                    }
-                    
-                    
-                }
-                
+
                 .background(Color.white)
                 .onTapGesture {
-                    viewModel.startPlay()
+                    viewModel.startPlay(music: photo.record.music)
                 }
-                
-                
-                
+
             }
-            
+
         }
-        
-        
+
     }
-    func downloadFile(documentId: String, folderId: String) {
-        let storage = Storage.storage()
-        let storageRef = storage.reference()
-        let db = Firestore.firestore()
-        
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            db.collection("users").document(uid).collection("folders").document(folderId).collection("photos").document(documentId).getDocument { document, _ in
-                if let data = document?.data(), let fileName = data["url"] as? String {
-                    let localURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-                    
-                    // ダウンロードを実行
-                    storageRef.child(fileName).write(toFile: localURL) { localURL, error in
-                        if let error = error {
-                            print("Error downloading file: \(error)")
-                        } else {
-                            print("Download success! Local URL: \(localURL?.path ?? "")")
-                            
-                            // カメラロールに保存
-                            saveToCameraRoll(imageURL: localURL)
-                        }
-                    }
-                } else {
-                    print("Failed to get document data or file name from Firestore")
-                }
-            }
-        }
-    }
-    
-    
-    func saveToCameraRoll(imageURL: URL?) {
-        guard let imageURL = imageURL else { return }
-        
-        // カメラロールに保存
-        PHPhotoLibrary.shared().performChanges({
-            PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: imageURL)
-        }) { success, error in
-            if success {
-                print("Image saved to camera roll")
-            } else {
-                print("Error saving image to camera roll: \(error?.localizedDescription ?? "")")
-            }
-        }
-    }
-    
-    func sharePhoto(documentId: String, folderId: String) {
-        
-        
-    }
-    
 }
 extension UIImage: Transferable {
     public static var transferRepresentation: some TransferRepresentation {
         ProxyRepresentation(exporting: \.image)
     }
-    
+
     var image: Image {
         Image(uiImage: self)
     }

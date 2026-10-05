@@ -23,7 +23,7 @@ final class NFCSession: NSObject, ObservableObject {
         isWriting = true
         
         // UserUid と folder をスペースで区切って1つの文字列に結合
-        let combinedString = "\(UserUid) \(folder)"
+        let combinedString = SharedFolderReference(userID: UserUid, folderID: folder).payload
         
         let textPayload = NFCNDEFPayload(
             format: NFCTypeNameFormat.nfcWellKnown,

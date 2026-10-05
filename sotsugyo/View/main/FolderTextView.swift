@@ -21,11 +21,10 @@ struct FolderTextView: View {
 
     var body: some View {
         Group {
-            if let index = viewModel.foldersDocumentId.firstIndex(of: folderDocument),
-               viewModel.folders.indices.contains(index) {
+            if let folder = viewModel.folders.first(where: { $0.id == folderDocument }) {
                 ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 12) { actions(name: viewModel.folders[index]) }
-                    VStack(spacing: 12) { actions(name: viewModel.folders[index]) }
+                    HStack(spacing: 12) { actions(name: folder.title) }
+                    VStack(spacing: 12) { actions(name: folder.title) }
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
