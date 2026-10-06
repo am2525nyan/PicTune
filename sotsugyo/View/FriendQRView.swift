@@ -6,21 +6,18 @@
 //
 
 import SwiftUI
-import FirebaseFirestore
 import FirebaseAuth
 import CodeScanner
 
 struct FriendQRView: View {
     @Binding var isPresentingCamera: Bool
     @StateObject var cameraManager: CameraManager
+    @StateObject private var viewModel = FriendQRViewModel()
     @Environment(\.dismiss) private var dismiss
     @Binding var isPresentingQR: Bool
     @State var isPresentingQRCode =  false
     
     @State private var isPresentingScanner = false
-    @State private var scannedCode: String?
-    @State private var showAlert = false
-    @State private var alertMessage = ""
     @State private var qrCodeImage: UIImage?
     @State var friendUid: String
     private let qrCodeGenerator = QRCodeGenerator()
@@ -44,10 +41,10 @@ struct FriendQRView: View {
                     handleScanResult(result)
                 }
             }
-            .alert(isPresented: $showAlert) {
+            .alert(isPresented: $viewModel.showAlert) {
                 Alert(
                     title: Text("相手を確認しました"),
-                    message: Text(alertMessage),
+                    message: Text(viewModel.alertMessage),
                     dismissButton: .default(Text("OK")){
                         
                         isPresentingQRCode.toggle()
@@ -81,10 +78,13 @@ struct FriendQRView: View {
     private func handleScanResult(_ result: Result<CodeScanner.ScanResult, CodeScanner.ScanError>) {
         switch result {
         case .success(let scanResult):
-            scannedCode = scanResult.string
             isPresentingScanner = false
-            
-            getUserInfo(uid: scannedCode!)
+
+            Task {
+                if let uid = await viewModel.loadFriendProfile(uid: scanResult.string) {
+                    friendUid = uid
+                }
+            }
         case .failure(let error):
             if let scanError = error as? CodeScanner.ScanError {
                 print("Scanning failed with error: \(scanError)")
@@ -94,36 +94,7 @@ struct FriendQRView: View {
             // Handle error as needed
         }
     }
-    
-    
-    private func getUserInfo(uid: String) {
-        let db = Firestore.firestore()
-        db.collection("users").document(uid).collection("personal").document("info").getDocument { document, error in
-            if let error = error {
-                print("Error getting user info: \(error.localizedDescription)")
-                showAlert(message: "Error getting user info")
-                return
-            }
-            
-            if let document = document, document.exists {
-                if let name = document["name"] as? String {
-                    showAlert(message: " \(name)さんと撮ります")
-                    friendUid = uid
-                } else {
-                    showAlert(message: "User info is incomplete")
-                }
-            } else {
-                showAlert(message: "User info not found")
-            }
-        }
-    }
-    
-    private func showAlert(message: String) {
-        alertMessage = message
-        showAlert = true
-    }
 }
-
 
 
 

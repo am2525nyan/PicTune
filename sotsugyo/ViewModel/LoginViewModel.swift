@@ -86,11 +86,9 @@ struct LoginView: UIViewControllerRepresentable {
                         try await      db.collection("users").document(uid).collection("folders").document("all").setData(["title": "all","date": FieldValue.serverTimestamp()])
                     }
                 }
-                try await db.collection("users").document(uid).collection("personal").document("info").setData([
-                    "uid": uid ,
-                    "email": currentUser.email ?? "",
-                    "name": currentUser.displayName ?? ""
-                ])
+                try await db.collection("users").document(uid).collection("personal").document("info").setData(
+                    UserProfile(name: currentUser.displayName, email: currentUser.email).firestoreData(userID: uid)
+                )
                 Task{
                     
                     

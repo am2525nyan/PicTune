@@ -1,41 +1,38 @@
 import SwiftUI
 import AVFoundation
 import Combine
-import FirebaseAuth
-import FirebaseFirestore
 import UniformTypeIdentifiers
 
 struct ImageDetailView: View {
-    let image: UIImage?
-    let documentId: String
-    let folderId: String
+    let photo: LibraryPhoto
 
-    @StateObject private var model = ChekiDetailModel()
+    @StateObject private var model: ChekiDetailModel
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.scenePhase) private var scenePhase
-    @State private var reloadID = UUID()
+
+    init(photo: LibraryPhoto) {
+        self.photo = photo
+        _model = StateObject(wrappedValue: ChekiDetailModel(music: photo.record.music))
+    }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                if let image {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .overlay {
-                            Rectangle()
-                                .strokeBorder(Color(uiColor: .separator).opacity(0.35), lineWidth: 0.5)
-                        }
-                        .shadow(color: .black.opacity(0.12), radius: 6, x: 0, y: 3)
-                        .accessibilityLabel("チェキの写真")
-                } else {
-                    ContentUnavailableView("画像を表示できません", systemImage: "photo")
-                }
+                Image(uiImage: photo.image)
+                    .resizable()
+                    .scaledToFit()
+                    .overlay {
+                        Rectangle()
+                            .strokeBorder(Color(uiColor: .separator).opacity(0.35), lineWidth: 0.5)
+                    }
+                    .shadow(color: .black.opacity(0.12), radius: 6, x: 0, y: 3)
+                    .accessibilityLabel("チェキの写真")
 
-                if let date = model.date {
+                if let date = photo.record.date {
                     Text(date, format: .dateTime.year().month().day().hour().minute())
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("cheki-date")
                 }
 
                 details
@@ -49,18 +46,13 @@ struct ImageDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                if let image {
-                    ShareLink(
-                        item: ChekiShareImage(image: image),
-                        preview: SharePreview("チェキ", image: Image(uiImage: image))
-                    ) {
-                        Label("共有", systemImage: "square.and.arrow.up")
-                    }
+                ShareLink(
+                    item: ChekiShareImage(image: photo.image),
+                    preview: SharePreview("チェキ", image: Image(uiImage: photo.image))
+                ) {
+                    Label("共有", systemImage: "square.and.arrow.up")
                 }
             }
-        }
-        .task(id: "\(folderId)/\(documentId)/\(reloadID)") {
-            await model.load(documentId: documentId, folderId: folderId)
         }
         .onDisappear { model.pause() }
         .onChange(of: scenePhase) { _, phase in
@@ -70,18 +62,7 @@ struct ImageDetailView: View {
 
     @ViewBuilder
     private var details: some View {
-        if model.isLoading {
-            ProgressView("チェキの情報を読み込み中")
-                .frame(maxWidth: .infinity)
-                .padding()
-        } else if model.loadFailed {
-            VStack(spacing: 8) {
-                Text("チェキの情報を読み込めませんでした")
-                    .foregroundStyle(.secondary)
-                Button("再読み込み") { reloadID = UUID() }
-                    .frame(minHeight: 44)
-            }
-        } else if let music = model.music {
+        if let music = model.music {
             VStack(alignment: .leading, spacing: 12) {
                 let layout = dynamicTypeSize.isAccessibilitySize
                     ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
@@ -167,10 +148,7 @@ private struct ChekiShareImage: Transferable {
 
 @MainActor
 private final class ChekiDetailModel: ObservableObject {
-    @Published private(set) var date: Date?
-    @Published private(set) var music: FirebaseMusic?
-    @Published private(set) var isLoading = true
-    @Published private(set) var loadFailed = false
+    let music: FirebaseMusic?
     @Published private(set) var isPlaying = false
     @Published private(set) var isBuffering = false
     @Published private(set) var playbackError: String?
@@ -179,63 +157,11 @@ private final class ChekiDetailModel: ObservableObject {
     private var subscriptions = Set<AnyCancellable>()
     private var reachedEnd = false
 
-    var previewURL: URL? {
-        guard let value = music?.previewURL,
-              let url = URL(string: value),
-              ["https", "http"].contains(url.scheme?.lowercased() ?? ""),
-              url.host != nil else { return nil }
-        return url
+    init(music: FirebaseMusic?) {
+        self.music = music
     }
 
-    func load(documentId: String, folderId: String) async {
-        pause()
-        subscriptions.removeAll()
-        player = nil
-        reachedEnd = false
-        date = nil
-        music = nil
-        playbackError = nil
-        loadFailed = false
-        isLoading = true
-
-        do {
-            guard let uid = Auth.auth().currentUser?.uid,
-                  !documentId.isEmpty, !folderId.isEmpty else {
-                throw CocoaError(.fileReadNoSuchFile)
-            }
-            let document = try await Firestore.firestore()
-                .collection("users").document(uid)
-                .collection("folders").document(folderId)
-                .collection("photos").document(documentId).getDocument()
-            try Task.checkCancellation()
-            guard let data = document.data() else {
-                throw CocoaError(.fileReadNoSuchFile)
-            }
-            date = (data["date"] as? Timestamp)?.dateValue()
-            if let trackName = Self.metadataString(data["trackName"]) {
-                music = FirebaseMusic(
-                    id: documentId,
-                    artistName: Self.metadataString(data["artistName"]) ?? "",
-                    imageName: Self.metadataString(data["imageName"]) ?? "",
-                    trackName: trackName,
-                    trackId: Self.metadataString(data["id"]) ?? "",
-                    previewURL: Self.metadataString(data["previewUrl"]) ?? ""
-                )
-            }
-            isLoading = false
-        } catch {
-            guard !Task.isCancelled else { return }
-            loadFailed = true
-            isLoading = false
-        }
-    }
-
-    private static func metadataString(_ value: Any?) -> String? {
-        guard let value = value as? String else { return nil }
-        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
-        // Older records and readers use this placeholder for missing metadata.
-        return trimmed.isEmpty || trimmed == "ないよ" ? nil : trimmed
-    }
+    var previewURL: URL? { music?.playablePreviewURL }
 
     func togglePlayback() {
         if isPlaying {
