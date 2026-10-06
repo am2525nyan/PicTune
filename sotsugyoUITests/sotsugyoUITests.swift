@@ -16,6 +16,98 @@ final class sotsugyoUITests: XCTestCase {
     }
 
     @MainActor
+    func testAppleMusicSearchSelectionEmptyAndDeniedStates() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["--music-ui-test", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        let search = app.searchFields.firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 10))
+        search.tap()
+        search.typeText("sample")
+        XCTAssertTrue(app.staticTexts["Entropy"].firstMatch.waitForExistence(timeout: 5))
+        app.staticTexts["Entropy"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["選択中"].waitForExistence(timeout: 3))
+        attachScreenshot("Apple Music検索と選択")
+        app.buttons["閉じる"].tap()
+        XCTAssertTrue(app.buttons["追加"].isEnabled)
+        search.tap()
+        search.typeText("none")
+        XCTAssertTrue(app.staticTexts["曲が見つかりません"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["選択中"].exists, "Selection should survive an empty result")
+        search.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 4) + "error")
+        XCTAssertTrue(app.staticTexts["設定アプリでPicTuneの「メディアとApple Music」へのアクセスを許可してください。"].waitForExistence(timeout: 5))
+        attachScreenshot("Apple Music認可エラー")
+        app.buttons["閉じる"].tap()
+        XCTAssertTrue(app.buttons["追加"].isEnabled, "Selection should survive a failed search")
+    }
+
+    @MainActor
+    func testPhotoDetailExplainsMissingPreview() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["--music-ui-test", "--music-detail", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        let preview = app.buttons["music.preview"]
+        XCTAssertTrue(preview.waitForExistence(timeout: 10))
+        preview.tap()
+        XCTAssertTrue(app.staticTexts["この曲には試聴音源がありません。"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.links["music.serviceLink"].exists || app.buttons["music.serviceLink"].exists)
+        attachScreenshot("写真詳細の試聴なし")
+    }
+
+    @MainActor
+    func testLiveAppleMusicSearchPlaybackAndStop() throws {
+        guard ProcessInfo.processInfo.environment["PICTUNE_RUN_LIVE_MUSIC"] == "1" else {
+            throw XCTSkip("Opt-in only: needs an authorized device and live Apple Music access")
+        }
+        continueAfterFailure = true
+        let app = XCUIApplication()
+        app.launchArguments = ["--music-live-check", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        defer {
+            attachScreenshot("接続確認終了時")
+            app.terminate()
+        }
+        app.buttons["検索を確認"].tap()
+        let permissionAlert = XCUIApplication(bundleIdentifier: "com.apple.springboard").alerts.firstMatch
+        if permissionAlert.waitForExistence(timeout: 3) {
+            attachScreenshot("MusicKitの権限確認待ち")
+            throw XCTSkip("Device permission needs user action; live verification has not completed")
+        }
+        let result = app.staticTexts["live.result"]
+        let completed = NSPredicate(format: "label BEGINSWITH %@ OR label BEGINSWITH %@", "取得成功", "取得失敗")
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: completed, object: result)], timeout: 45), .completed)
+        attachScreenshot("Apple Music検索結果（実通信）")
+        guard result.label.hasPrefix("取得成功") else {
+            XCTFail("\(result.label) / \(app.staticTexts["live.connectionDetails"].label)")
+            return
+        }
+        let preview = app.buttons["live.preview"]
+        guard preview.waitForExistence(timeout: 10) else { XCTFail("No preview in search results"); return }
+        preview.tap()
+        app.swipeUp()
+        let progressed = NSPredicate(format: "label MATCHES %@", "再生位置: ([3-9]|[1-9][0-9]+)秒")
+        guard XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: progressed, object: app.staticTexts["live.elapsed"])], timeout: 30) == .completed else {
+            let message = app.staticTexts["live.message"]
+            XCTFail("Preview did not advance: \(app.staticTexts["live.state"].label) / \(app.staticTexts["live.elapsed"].label) / \(message.exists ? message.label : "no error message")")
+            return
+        }
+        XCTAssertEqual(app.staticTexts["live.state"].label, "再生中")
+        print("Live preview verification: \(app.staticTexts["live.elapsed"].label)")
+        attachScreenshot("Apple Music試聴中（実通信）")
+        preview.tap()
+        XCTAssertEqual(app.staticTexts["live.state"].label, "停止中")
+        attachScreenshot("Apple Music停止（実通信）")
+    }
+
+    @MainActor
+    private func attachScreenshot(_ name: String) {
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    @MainActor
     private func capture(_ name: String, app: XCUIApplication) {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = name
@@ -35,7 +127,8 @@ final class sotsugyoUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["cheki-date"].label.contains("2024年3月1日"))
         XCTAssertTrue(app.staticTexts["cheki-date"].label.contains("12:30"))
         XCTAssertTrue(app.navigationBars.buttons["共有"].exists)
-        XCTAssertTrue(app.staticTexts["この曲は試聴できません"].exists)
+        app.buttons["music.preview"].tap()
+        XCTAssertTrue(app.staticTexts["この曲には試聴音源がありません。"].waitForExistence(timeout: 5))
         capture("02-photo-with-music", app: app)
         app.navigationBars.buttons.element(boundBy: 0).tap()
         app.buttons["チェキ 2"].tap()

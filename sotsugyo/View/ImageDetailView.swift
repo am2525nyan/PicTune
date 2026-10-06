@@ -1,19 +1,10 @@
 import SwiftUI
-import AVFoundation
-import Combine
 import UniformTypeIdentifiers
 
 struct ImageDetailView: View {
     let photo: LibraryPhoto
 
-    @StateObject private var model: ChekiDetailModel
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.scenePhase) private var scenePhase
-
-    init(photo: LibraryPhoto) {
-        self.photo = photo
-        _model = StateObject(wrappedValue: ChekiDetailModel(music: photo.record.music))
-    }
+    var resolvePreview: MusicPreviewPlayer.ResolveTrack? = nil
 
     var body: some View {
         ScrollView {
@@ -54,73 +45,14 @@ struct ImageDetailView: View {
                 }
             }
         }
-        .onDisappear { model.pause() }
-        .onChange(of: scenePhase) { _, phase in
-            if phase != .active { model.pause() }
-        }
     }
 
     @ViewBuilder
     private var details: some View {
-        if let music = model.music {
-            VStack(alignment: .leading, spacing: 12) {
-                let layout = dynamicTypeSize.isAccessibilitySize
-                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
-                    : AnyLayout(HStackLayout(spacing: 12))
-
-                layout {
-                    AsyncImage(url: URL(string: music.imageName)) { image in
-                        image.resizable().scaledToFill()
-                    } placeholder: {
-                        Image(systemName: "music.note")
-                            .font(.title2)
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Color(uiColor: .tertiarySystemFill))
-                    }
-                    .frame(width: 56, height: 56)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .accessibilityHidden(true)
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(music.trackName)
-                            .font(.headline)
-                        if !music.artistName.isEmpty {
-                            Text(music.artistName)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                    if model.previewURL != nil {
-                        Button(action: model.togglePlayback) {
-                            Label(model.isPlaying ? "一時停止" : "試聴", systemImage: model.isPlaying ? "pause.fill" : "play.fill")
-                                .labelStyle(.iconOnly)
-                                .font(.title3)
-                                .frame(minWidth: 44, minHeight: 44)
-                        }
-                        .buttonStyle(.bordered)
-                        .buttonBorderShape(.circle)
-                    }
-                }
-
-                if let error = model.playbackError {
-                    Text(error)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                } else if model.isBuffering {
-                    ProgressView("音楽を読み込み中")
-                        .font(.footnote)
-                } else if model.previewURL == nil {
-                    Text("この曲は試聴できません")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding()
-            .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
+        if let music = photo.record.music {
+            MusicAttachmentView(track: music.track, resolvePreview: resolvePreview)
+                .id(music.track.selectionID)
+                .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
         } else {
             Label("音楽は設定されていません", systemImage: "music.note")
                 .font(.subheadline)
@@ -146,92 +78,68 @@ private struct ChekiShareImage: Transferable {
     }
 }
 
-@MainActor
-private final class ChekiDetailModel: ObservableObject {
-    let music: FirebaseMusic?
-    @Published private(set) var isPlaying = false
-    @Published private(set) var isBuffering = false
-    @Published private(set) var playbackError: String?
+struct MusicAttachmentView: View {
+    let track: Track
+    @StateObject private var player: MusicPreviewPlayer
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.scenePhase) private var scenePhase
 
-    private var player: AVPlayer?
-    private var subscriptions = Set<AnyCancellable>()
-    private var reachedEnd = false
-
-    init(music: FirebaseMusic?) {
-        self.music = music
+    init(track: Track, resolvePreview: MusicPreviewPlayer.ResolveTrack? = nil) {
+        self.track = track
+        _player = StateObject(wrappedValue: MusicPreviewPlayer(resolveTrack: resolvePreview ?? {
+            try await AppleMusicAPI.shared.refreshTrack($0)
+        }))
     }
 
-    var previewURL: URL? { music?.playablePreviewURL }
+    private var displayedTrack: Track { player.resolvedTrack ?? track }
 
-    func togglePlayback() {
-        if isPlaying {
-            pause()
-            return
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            let layout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+                : AnyLayout(HStackLayout(spacing: 12))
+
+            layout {
+                AsyncImage(url: displayedTrack.albumImages.first.flatMap(URL.init(string:))) { image in
+                    image.resizable().scaledToFit()
+                } placeholder: {
+                    Image(systemName: "music.note").font(.title).foregroundStyle(.secondary)
+                }
+                .frame(width: 64, height: 64)
+                .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(displayedTrack.name).font(.headline)
+                    Text(displayedTrack.artist).font(.subheadline).foregroundStyle(.secondary)
+                }
+            }
+            layout {
+                Button {
+                    player.toggle(track)
+                } label: {
+                    Label(player.state == .idle ? "試聴" : "停止",
+                          systemImage: player.state == .idle ? "play.fill" : "stop.fill")
+                        .frame(minHeight: 44)
+                }
+                .buttonStyle(.bordered)
+                .disabled(track.provider == .unknown)
+                .accessibilityIdentifier("music.preview")
+                if player.state == .loading { ProgressView().accessibilityLabel("試聴を準備中") }
+                if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 0) }
+                if let url = displayedTrack.serviceURL {
+                    Link("\(displayedTrack.provider.name)で聴く", destination: url)
+                        .font(.subheadline)
+                        .accessibilityIdentifier("music.serviceLink")
+                }
+            }
+            if let message = player.message {
+                Text(message).font(.caption).foregroundStyle(.secondary)
+                    .accessibilityIdentifier("music.previewMessage")
+            }
         }
-        guard let url = previewURL else { return }
-        playbackError = nil
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback)
-            try AVAudioSession.sharedInstance().setActive(true)
-            if player == nil || player?.currentItem?.status == .failed {
-                configurePlayer(url: url)
-            }
-            if reachedEnd {
-                player?.seek(to: .zero)
-                reachedEnd = false
-            }
-            player?.play()
-        } catch {
-            playbackError = "音楽を再生できませんでした。もう一度お試しください。"
+        .padding()
+        .onDisappear { player.stop() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase != .active { player.stop() }
         }
-    }
-
-    func pause() {
-        player?.pause()
-        isPlaying = false
-        isBuffering = false
-    }
-
-    private func configurePlayer(url: URL) {
-        subscriptions.removeAll()
-        reachedEnd = false
-        let item = AVPlayerItem(url: url)
-        let player = AVPlayer(playerItem: item)
-        self.player = player
-
-        player.publisher(for: \.timeControlStatus)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] status in
-                self?.isPlaying = status != .paused
-                self?.isBuffering = status == .waitingToPlayAtSpecifiedRate
-            }
-            .store(in: &subscriptions)
-
-        item.publisher(for: \.status)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] status in
-                if status == .failed { self?.playbackFailed() }
-            }
-            .store(in: &subscriptions)
-
-        NotificationCenter.default.publisher(for: AVPlayerItem.didPlayToEndTimeNotification, object: item)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.pause()
-                self?.reachedEnd = true
-            }
-            .store(in: &subscriptions)
-
-        NotificationCenter.default.publisher(for: AVPlayerItem.failedToPlayToEndTimeNotification, object: item)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in self?.playbackFailed() }
-            .store(in: &subscriptions)
-    }
-
-    private func playbackFailed() {
-        pause()
-        subscriptions.removeAll()
-        player = nil
-        playbackError = "音楽を再生できませんでした。もう一度お試しください。"
     }
 }

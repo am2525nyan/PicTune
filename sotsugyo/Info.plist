@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>写真に添える曲をApple Musicで検索し、選んだ曲を試聴するために使用します。</string>
 	<key>ApAppearance</key>
 	<string>Light</string>
 	<key>CFBundleURLTypes</key>

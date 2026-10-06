@@ -22,11 +22,7 @@ final class SearchViewModel: ObservableObject {
 
     init(selection: Track? = nil, defaults: UserDefaults = .standard,
          search: @escaping SearchOperation = { query in
-             try await withCheckedThrowingContinuation { continuation in
-                 SpotifyAPI.shared.searchTracks(query: query) { result in
-                     continuation.resume(with: result)
-                 }
-             }
+             try await AppleMusicAPI.shared.searchTracks(query: query)
          }) {
         self.selection = selection
         self.defaults = defaults
@@ -60,7 +56,8 @@ final class SearchViewModel: ObservableObject {
             guard self.requestID == requestID else { return }
             isSearching = false
             guard !Task.isCancelled, !(error is CancellationError), self.query == query else { return }
-            searchError = "通信状況を確認して、もう一度お試しください。"
+            searchError = (error as? AppleMusicError)?.errorDescription
+                ?? "Apple Musicに接続できませんでした。通信状況を確認して、もう一度お試しください。"
         }
     }
 
