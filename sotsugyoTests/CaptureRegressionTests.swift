@@ -73,6 +73,34 @@ final class CaptureRegressionTests: XCTestCase {
         XCTAssertEqual(NFCSession.folderPayload(from: record), payload)
     }
 
+    func testNewNFCMessageCanBeReadByBothLegacyAndCurrentReaders() throws {
+        for uid in ["Alice", "friend", "0123456789"] {
+            let reference = SharedFolderReference(userID: uid, folderID: "existing-folder")
+            let message = NFCSession.folderMessage(for: reference)
+            XCTAssertEqual(message.records.count, 1)
+            // Reproduce the old reader, which joins all well-known raw UTF-8 payloads.
+            let legacyText = message.records.compactMap { record -> String? in
+                guard record.typeNameFormat == .nfcWellKnown else { return nil }
+                return record.wellKnownTypeURIPayload()?.absoluteString
+                    ?? String(data: record.payload, encoding: .utf8)
+            }.joined(separator: "\n\n")
+            XCTAssertEqual(legacyText, reference.payload)
+            XCTAssertEqual(SharedFolderReference(payload: legacyText), reference)
+            let record = try XCTUnwrap(message.records.first)
+            XCTAssertEqual(NFCSession.folderPayload(from: record), reference.payload)
+        }
+    }
+
+    func testStandardNFCHeaderWouldCorruptTheLegacyReadersUserID() throws {
+        let reference = SharedFolderReference(userID: "friend", folderID: "folder")
+        let record = try XCTUnwrap(NFCNDEFPayload.wellKnownTypeTextPayload(
+            string: reference.payload, locale: Locale(identifier: "en")))
+        let legacyUserID = String(data: record.payload, encoding: .utf8)?.components(separatedBy: " ").first
+        // Standard Text may use UTF-16, which the old reader cannot decode at all.
+        XCTAssertNotEqual(legacyUserID, reference.userID)
+        XCTAssertEqual(NFCSession.folderPayload(from: record), reference.payload)
+    }
+
     func testLegacyNFCTextRecordKeepsEntireUserID() {
         // 'A' can be mistaken for a one-byte language-code header by the standard decoder.
         for payload in ["Alice folder", "friend folder", "0123456789 all"] {

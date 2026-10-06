@@ -22,18 +22,17 @@ final class NFCSession: NSObject, ObservableObject {
         self.writeHandler = writeHandler
         isWriting = true
         
-        // UserUid と folder をスペースで区切って1つの文字列に結合
-        let combinedString = SharedFolderReference(userID: UserUid, folderID: folder).payload
-        
-        guard let textPayload = NFCNDEFPayload.wellKnownTypeTextPayload(
-            string: combinedString, locale: Locale(identifier: "en")) else {
-            finishWriting(error: NSError(domain: "PicTune.NFC", code: 2,
-                userInfo: [NSLocalizedDescriptionKey: "フォルダの情報を作成できませんでした。"]))
-            return
-        }
-        
-        ndefMessage = NFCNDEFMessage(records: [textPayload])
+        ndefMessage = Self.folderMessage(for: SharedFolderReference(userID: UserUid, folderID: folder))
         startSession()
+    }
+
+    static func folderMessage(for reference: SharedFolderReference) -> NFCNDEFMessage {
+        // Older PicTune versions decode the entire payload as UTF-8, including any
+        // standard Text header. Keep their single raw record on write until those
+        // readers are retired; multiple records also break their joined payload.
+        let record = NFCNDEFPayload(format: .nfcWellKnown, type: Data("T".utf8),
+                                   identifier: Data(), payload: Data(reference.payload.utf8))
+        return NFCNDEFMessage(records: [record])
     }
     
     func startReadSession(readHandler: ((String?, String?, Error?) -> Void)?) {

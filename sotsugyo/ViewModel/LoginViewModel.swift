@@ -35,8 +35,8 @@ enum UserAccountBootstrap {
         profile.firestoreData(userID: userID).filter { existing[$0.key] == nil }
     }
 
-    static func save(userID: String, profile: UserProfile) async throws {
-        let db = Firestore.firestore()
+    static func save(userID: String, profile: UserProfile, database: Firestore? = nil) async throws {
+        let db = database ?? Firestore.firestore()
         let user = db.collection("users").document(userID)
         let profileReference = user.collection("personal").document("info")
         let libraryReference = user.collection("folders").document("all")
