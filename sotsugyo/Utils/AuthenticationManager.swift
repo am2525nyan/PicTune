@@ -6,40 +6,42 @@
 //
 
 import Foundation
+import Observation
 import FirebaseAuth
-import FirebaseFirestore
 
 @Observable class AuthenticationManager {
-    private(set) var isSignIn: Bool = false
-    private var handle: AuthStateDidChangeListenerHandle!
-    
+    private(set) var userID: String?
+    var isSignIn: Bool { userID != nil }
+    private var handle: AuthStateDidChangeListenerHandle?
+
     init() {
-        // ここで認証状態の変化を監視する（リスナー）
-        handle = Auth.auth().addStateDidChangeListener { (auth, user) in
-            if let _ = user {
-                
-                self.isSignIn = true
-                
-            } else {
-                print("Sign-out")
-                self.isSignIn = false
-                
+        userID = Auth.auth().currentUser?.uid
+        handle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            self?.userID = user?.uid
+            // Initialization belongs to the session, not the transient login sheet.
+            // The sheet can be dismissed before its own auth listener runs.
+            guard let user else { return }
+            let uid = user.uid
+            let profile = UserProfile(name: user.displayName, email: user.email)
+            Task {
+                do {
+                    try await UserAccountBootstrap.save(userID: uid, profile: profile)
+                } catch {
+                    print("プロフィールの初期化に失敗しました: \(error.localizedDescription)")
+                }
             }
         }
     }
-    
+
     deinit {
-        // ここで認証状態の変化の監視を解除する
-        Auth.auth().removeStateDidChangeListener(handle)
+        if let handle { Auth.auth().removeStateDidChangeListener(handle) }
     }
-    
+
     func signOut() {
         do {
             try Auth.auth().signOut()
         } catch {
-            print("Error")
+            print("ログアウトに失敗しました: \(error.localizedDescription)")
         }
     }
-    
-    
 }

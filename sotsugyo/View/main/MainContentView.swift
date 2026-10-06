@@ -39,8 +39,9 @@ struct MainContentView: View {
                 }
             }
         }
-        .onChange(of: authenticationManager.isSignIn) { _, isSignedIn in
-            if !isSignedIn {
+        .id(authenticationManager.userID)
+        .onChange(of: authenticationManager.userID, initial: true) { previousUserID, userID in
+            if previousUserID != userID || userID == nil {
                 viewModel.reset()
                 folderViewModel.reset()
             }

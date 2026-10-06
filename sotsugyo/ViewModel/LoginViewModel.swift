@@ -5,8 +5,6 @@
 //  Created by saki on 2023/10/29.
 //
 import SwiftUI
-import Firebase
-import FirebaseAuth
 import FirebaseAuthUI
 import FirebaseGoogleAuthUI
 import FirebaseOAuthUI
@@ -14,123 +12,50 @@ import FirebaseEmailAuthUI
 import FirebaseFirestore
 
 struct LoginView: UIViewControllerRepresentable {
-    @StateObject var viewModel: MainContentModel
-    
+    @ObservedObject var viewModel: MainContentModel
+
     func makeUIViewController(context: Context) -> UIViewController {
-        let authUI = FUIAuth.defaultAuthUI()
-        guard authUI != nil else {
+        guard let authUI = FUIAuth.defaultAuthUI() else {
             return UIViewController()
         }
-        
-        // サポートするログイン方法を構成
-        let providers: [FUIAuthProvider] = [
-            FUIGoogleAuth(authUI: authUI!),
+        authUI.providers = [
+            FUIGoogleAuth(authUI: authUI),
             FUIOAuth.appleAuthProvider(),
             FUIEmailAuth()
         ]
-        authUI!.providers = providers
-        
-        
-        
-        // FirebaseUIを表示する
-        let authViewController = authUI!.authViewController()
-        
-        
-        // デリゲートを設定
-        authUI!.delegate = context.coordinator
-        context.coordinator.startListening()
-        return authViewController
+        return authUI.authViewController()
     }
-    
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-        // 処理なし
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) { }
+}
+
+/// Fill missing account fields without replacing an edited name or the library date.
+enum UserAccountBootstrap {
+    static func missingProfileFields(existing: [String: Any], profile: UserProfile, userID: String) -> [String: Any] {
+        profile.firestoreData(userID: userID).filter { existing[$0.key] == nil }
     }
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(viewModel: viewModel)
-    }
-    
-    class Coordinator: NSObject, FUIAuthDelegate {
-        var viewModel: MainContentModel
-        var handle: AuthStateDidChangeListenerHandle?
-        
-        init(viewModel: MainContentModel) {
-            self.viewModel = viewModel
-        }
-        
-        
-        func startListening() {
-            handle = Auth.auth().addStateDidChangeListener { [weak self] (_, user) in
-                if user != nil {
-                    Task{
-                        do{
-                            try await self?.saveUserData()
-                        }
-                        catch{
-                            print(error)
-                        }
-                    }
-                    
-                    
+
+    static func save(userID: String, profile: UserProfile) async throws {
+        let db = Firestore.firestore()
+        let user = db.collection("users").document(userID)
+        let profileReference = user.collection("personal").document("info")
+        let libraryReference = user.collection("folders").document("all")
+        _ = try await db.runTransaction { transaction, errorPointer in
+            do {
+                let profileDocument = try transaction.getDocument(profileReference)
+                let libraryDocument = try transaction.getDocument(libraryReference)
+                let fields = missingProfileFields(existing: profileDocument.data() ?? [:], profile: profile, userID: userID)
+                if !fields.isEmpty {
+                    transaction.setData(fields, forDocument: profileReference, merge: true)
                 }
+                if !libraryDocument.exists {
+                    transaction.setData(["title": "all", "date": FieldValue.serverTimestamp()], forDocument: libraryReference)
+                }
+                return nil
+            } catch {
+                errorPointer?.pointee = error as NSError
+                return nil
             }
         }
-        func saveUserData()async throws{
-            
-            let db = Firestore.firestore()
-            
-            if let currentUser = Auth.auth().currentUser {
-                let uid = currentUser.uid
-                Task{
-                    do{
-                        try await      db.collection("users").document(uid).collection("folders").document("all").setData(["title": "all","date": FieldValue.serverTimestamp()])
-                    }
-                }
-                try await db.collection("users").document(uid).collection("personal").document("info").setData(
-                    UserProfile(name: currentUser.displayName, email: currentUser.email).firestoreData(userID: uid)
-                )
-                Task{
-                    
-                    
-                }
-            }
-            print("データがFirestoreに保存されましたよ")
-            
-            
-        }
-        
-        func reauthenticateUser(_ user: User) {
-            Auth.auth().addStateDidChangeListener { (auth, user) in
-                if let user = user {
-                    user.getIDToken { (token, error) in
-                        if let error = error {
-                            print("ID Tokenの取得に失敗しました: \(error.localizedDescription)")
-                        } else if let token = token {
-                            
-                            let db = Firestore.firestore()
-                            
-                            if let currentUser = Auth.auth().currentUser {
-                                let uid = currentUser.uid
-                                db.collection("users").document(uid).collection("personal").document("info").updateData([
-                                    "token": token
-                                ]) { error in
-                                    if let error = error {
-                                        print("データの保存に失敗しました: \(error.localizedDescription)")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        func stopListening() {
-            if let handle = handle {
-                Auth.auth().removeStateDidChangeListener(handle)
-            }
-        }
-        
     }
-    
 }

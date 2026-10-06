@@ -71,7 +71,7 @@ struct FolderLibraryView: View {
         } message: {
             Text("フォルダと手紙を削除します。写真タブの写真は削除されません。この操作は取り消せません。")
         }
-        .alert("フォルダを削除できませんでした", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
+        .alert("フォルダの操作に失敗しました", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
             Button("OK", role: .cancel) { errorMessage = nil }
         } message: {
             Text(errorMessage ?? "")
@@ -107,7 +107,11 @@ struct FolderLibraryView: View {
                 folderName = ""
             }
             Button("作成") {
-                viewModel.makeFolder(folderName: folderName.trimmingCharacters(in: .whitespacesAndNewlines))
+                let name = folderName
+                Task {
+                    do { try await viewModel.makeFolder(folderName: name) }
+                    catch { errorMessage = error.localizedDescription }
+                }
                 folderName = ""
             }
             .disabled(folderName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -175,7 +179,7 @@ struct FolderLibraryView: View {
         do {
             try await viewModel.getFolder()
         } catch {
-            print("フォルダの読み込みに失敗しました: \(error)")
+            errorMessage = error.localizedDescription
         }
         isLoading = false
     }

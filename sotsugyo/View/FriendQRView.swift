@@ -43,23 +43,25 @@ struct FriendQRView: View {
             }
             .alert(isPresented: $viewModel.showAlert) {
                 Alert(
-                    title: Text("相手を確認しました"),
+                    title: Text(viewModel.confirmedUserID == nil ? "読み取れませんでした" : "相手を確認しました"),
                     message: Text(viewModel.alertMessage),
                     dismissButton: .default(Text("OK")){
                         
-                        isPresentingQRCode.toggle()
+                        if viewModel.confirmedUserID != nil {
+                            isPresentingQRCode = true
+                        }
                         
                     }
                 )
             }
             .fullScreenCover(isPresented: $isPresentingQRCode) {
                 
-                CameraView(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true),friendUid: $friendUid)
+                CameraView(isPresentingCamera: $isPresentingQRCode, cameraManager: cameraManager, isPresentingSearch: .constant(true),friendUid: $friendUid)
                 
             }
-            .onChange(of: isPresentingQRCode) { newValue,_ in
-                if newValue {
-                    isPresentingQR.toggle()
+            .onChange(of: isPresentingQRCode) { oldValue, newValue in
+                if oldValue && !newValue {
+                    isPresentingQR = false
                 }
             }
             
@@ -86,16 +88,11 @@ struct FriendQRView: View {
                 }
             }
         case .failure(let error):
-            if let scanError = error as? CodeScanner.ScanError {
-                print("Scanning failed with error: \(scanError)")
-            } else {
-                print("Scanning failed with unknown error")
-            }
-            // Handle error as needed
+            isPresentingScanner = false
+            viewModel.reportScanFailure(error)
         }
     }
 }
-
 
 
 

@@ -44,6 +44,9 @@ final class SearchViewModel: ObservableObject {
 
         // Keep the previous results visible while updating, but never apply an obsolete response.
         isSearching = true
+        defer {
+            if self.requestID == requestID { isSearching = false }
+        }
         do {
             if debounce { try await Task.sleep(for: .milliseconds(300)) }
             try Task.checkCancellation()
