@@ -110,4 +110,3 @@ struct GIFImage: UIViewRepresentable {
         }
     }
 }
-

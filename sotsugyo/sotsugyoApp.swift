@@ -169,7 +169,6 @@ private struct MusicLiveCheckScene: View {
 /// Offline UI fixtures: no Apple Music or Firestore requests are made by this scene.
 private struct MusicUITestScene: View {
     @State private var selectedTrack: Track?
-    @StateObject private var model = MainContentModel()
 
     static let track = Track(id: "1613600188", name: "Entropy", artist: "Beach Bunny", albumImages: [],
                              previewURL: nil, albumName: "Emotional Creature",
@@ -181,7 +180,7 @@ private struct MusicUITestScene: View {
                 ImageDetailView(photo: LibraryPhoto(record: PhotoRecord(
                     id: "fixture", fileName: "fixture.jpg", date: Date(timeIntervalSince1970: 1_791_241_200),
                     music: FirebaseMusic(photoID: "fixture", track: Self.track), livePhotoFileName: ""),
-                    image: Self.sampleImage), viewModel: model, resolvePreview: { $0 })
+                    image: Self.sampleImage), resolvePreview: { $0 })
             } else {
                 SearchView(selectedTrack: $selectedTrack, viewModel: SearchViewModel(search: { query in
                     if query == "error" { throw AppleMusicError.permissionDenied }
