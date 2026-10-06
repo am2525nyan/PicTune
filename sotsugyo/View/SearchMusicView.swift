@@ -35,7 +35,7 @@ struct SearchView: View {
         }
         .navigationTitle("音楽を追加")
         .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $viewModel.searchText, prompt: "曲名・アーティスト名")
+        .searchable(text: $viewModel.searchText, prompt: "Apple Musicで曲名・アーティスト名を検索")
         .onSubmit(of: .search) { viewModel.remember(viewModel.query) }
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
@@ -111,26 +111,34 @@ struct SearchView: View {
         if !viewModel.tracks.isEmpty {
             Section {
                 ForEach(viewModel.tracks) { track in
-                    Button {
-                        viewModel.select(track)
-                    } label: {
-                        HStack(spacing: 12) {
-                            MusicArtwork(track: track)
-                            trackInfo(track)
-                            Spacer(minLength: 8)
-                            Image(systemName: viewModel.selection?.id == track.id ? "checkmark.circle.fill" : "circle")
-                                .foregroundStyle(viewModel.selection?.id == track.id ? Color.accentColor : Color.secondary)
-                                .font(.title3)
-                                .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Button {
+                            viewModel.select(track)
+                        } label: {
+                            HStack(spacing: 12) {
+                                MusicArtwork(track: track)
+                                trackInfo(track)
+                                Spacer(minLength: 8)
+                                Image(systemName: viewModel.selection?.selectionID == track.selectionID ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(viewModel.selection?.selectionID == track.selectionID ? Color.accentColor : Color.secondary)
+                                    .font(.title3)
+                                    .accessibilityHidden(true)
+                            }
+                            .frame(minHeight: 56)
+                            .padding(.vertical, 6)
+                            .contentShape(Rectangle())
                         }
-                        .frame(minHeight: 56)
-                        .padding(.vertical, 6)
-                        .contentShape(Rectangle())
+                        .buttonStyle(.plain)
+                        .disabled(viewModel.isSearching || viewModel.resultsQuery != viewModel.query)
+                        .accessibilityAddTraits(viewModel.selection?.selectionID == track.selectionID ? .isSelected : [])
+                        .accessibilityHint("写真に追加する曲として選択します")
+                        if let url = track.serviceURL {
+                            Link("Apple Musicで聴く", destination: url)
+                                .font(.caption)
+                                .padding(.leading, 64)
+                                .frame(minHeight: 32)
+                        }
                     }
-                    .buttonStyle(.plain)
-                    .disabled(viewModel.isSearching || viewModel.resultsQuery != viewModel.query)
-                    .accessibilityAddTraits(viewModel.selection?.id == track.id ? .isSelected : [])
-                    .accessibilityHint("写真に追加する曲として選択します")
                 }
             } header: {
                 Text(viewModel.resultsQuery == viewModel.query ? "曲" : "「\(viewModel.resultsQuery)」の検索結果")
@@ -143,7 +151,7 @@ struct SearchView: View {
     private var emptyState: some View {
         if viewModel.query.isEmpty && viewModel.recentSearches.isEmpty {
             ContentUnavailableView("写真に音楽を添える", systemImage: "music.note",
-                                   description: Text("曲名やアーティスト名で検索してください。"))
+                                   description: Text("Apple Musicの曲名やアーティスト名で検索してください。"))
                 .allowsHitTesting(false)
         } else if !viewModel.query.isEmpty && viewModel.tracks.isEmpty {
             if viewModel.isSearching {

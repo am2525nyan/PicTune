@@ -2,7 +2,6 @@ import Foundation
 import UIKit
 import Combine
 import FirebaseAuth
-import AVFoundation
 import Photos
 
 /// Screen state is published as complete records, never as parallel arrays.
@@ -24,7 +23,6 @@ class MainContentModel: ObservableObject {
     private var photoLoadID = UUID()
     private var folderLoadID = UUID()
     private var sessionID = UUID()
-    private(set) var audioPlayer: AVPlayer?
 
     init(repository: any PhotoLibraryRepository = FirebasePhotoLibraryRepository(),
          currentUserID: @escaping () -> String? = { Auth.auth().currentUser?.uid }) {
@@ -42,7 +40,6 @@ class MainContentModel: ObservableObject {
         photoDataCache = [:]
         folderDocument = PhotoFolder.allID
         userDataList = ""
-        stop()
     }
 
     func firstgetUrl() async throws {
@@ -221,21 +218,6 @@ class MainContentModel: ObservableObject {
         } completionHandler: { _, error in
             if let error { print("写真の保存に失敗しました: \(error)") }
         }
-    }
-
-    func startPlay(music: FirebaseMusic?) {
-        guard let previewURL = music?.playablePreviewURL else { return }
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback)
-            try AVAudioSession.sharedInstance().setActive(true)
-            audioPlayer = AVPlayer(url: previewURL)
-            audioPlayer?.play()
-        } catch { print(error) }
-    }
-
-    func stop() {
-        audioPlayer?.pause()
-        audioPlayer = nil
     }
 
     private func signedInUserID() throws -> String {

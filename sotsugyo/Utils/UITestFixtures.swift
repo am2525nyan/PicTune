@@ -107,7 +107,6 @@ final class UITestContentModel: MainContentModel {
     @MainActor override func deleteFolder(id: String) async throws { }
     override func getNFCData(NFCUid: String, NFCfolderid: String) async throws { }
     override func downloadFile(photo: LibraryPhoto) { }
-    override func startPlay(music: FirebaseMusic?) { }
 }
 
 @MainActor
