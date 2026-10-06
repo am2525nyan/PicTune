@@ -1,6 +1,4 @@
 import SwiftUI
-import FirebaseAuth
-import FirebaseFirestore
 
 struct MainContentView: View {
     @State var authenticationManager = AuthenticationManager()
@@ -41,9 +39,15 @@ struct MainContentView: View {
                 }
             }
         }
+        .onChange(of: authenticationManager.isSignIn) { _, isSignedIn in
+            if !isSignedIn {
+                viewModel.reset()
+                folderViewModel.reset()
+            }
+        }
     }
-    
 }
+
 
 #Preview {
     MainContentView(authenticationManager: AuthenticationManager())
