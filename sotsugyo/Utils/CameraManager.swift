@@ -254,10 +254,10 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         let db = Firestore.firestore()
         let folder = db.collection("users").document(uid).collection("folders").document("all")
         let photo = folder.collection("photos").document()
-        var data: [String: Any] = ["url": imageName, "date": FieldValue.serverTimestamp(), "livephotoUrl": liveurl]
-        if let track {
-            data.merge(track.firestoreData) { _, new in new }
-        }
+        let record = PhotoRecord(id: photo.documentID, fileName: imageName, date: nil,
+                                 music: track.map { FirebaseMusic(photoID: photo.documentID, track: $0) },
+                                 livePhotoFileName: liveurl)
+        let data = record.firestoreData(date: FieldValue.serverTimestamp())
         let batch = db.batch()
         batch.setData(data, forDocument: photo)
         batch.setData(["title": "all", "date": FieldValue.serverTimestamp()], forDocument: folder, merge: true)

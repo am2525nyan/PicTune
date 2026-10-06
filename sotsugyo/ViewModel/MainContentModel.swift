@@ -1,607 +1,233 @@
-//
-//  Main ContentModel.swift
-//  sotsugyo
-//
-//  Created by saki on 2023/11/29.
-//
-
 import Foundation
-import FirebaseFirestore
-import FirebaseAuth
-import FirebaseStorage
+import UIKit
 import Combine
-import AVFoundation
-import SwiftUI
-import Kingfisher
+import FirebaseAuth
 import Photos
-import PhotosUI
 
+/// Screen state is published as complete records, never as parallel arrays.
+@MainActor
 class MainContentModel: ObservableObject {
-    
-    @Published internal var isShowSheet = false
-    @Published internal var images: [UIImage] = []
-    @Published internal var foldersImages: [UIImage] = []
-    @Published internal var isPresentingCamera = false
-    @Published internal var dates: [String] = []
-    @Published internal var folderDates: [String] = []
-    @Published internal var Music: [FirebaseMusic] = []
-    @Published internal var documentIdArray = [String]()
-    @Published internal var folderDocumentIdArray = [String]()
-    @Published internal var folderUrl = []
-    @Published internal var folders = [String]()
-    @Published internal var foldersDocumentId = [String]()
-    @Published internal var folderCoverImages: [String: UIImage] = [:]
-    @Published var folderImages: [String: [UIImage]] = [:]
-    @Published internal var getimage = false
-    @Published internal var folderDocument = String()
-    @Published internal var photoDataCache: [String: Data] = [:]
-    @Published internal var nfc = false
-    @Published internal var mailAddress = ""
-    @Published internal var name = ""
-    @Published var isAnimating: Bool = false
-    @Published internal var livePhoto : PHLivePhoto?
-    
-    
-    
-    @Published var userDataList: String = ""
+    @Published var isShowSheet = false
+    @Published var isPresentingCamera = false
+    @Published var isAnimating = false
+    @Published var photos: [LibraryPhoto] = []
+    @Published var folders: [PhotoFolder] = []
+    @Published var folderCoverImages: [String: UIImage] = [:]
+    @Published var folderDocument = PhotoFolder.allID
+    @Published var userDataList = ""
+    @Published private(set) var nfc = false
+
+    private let repository: any PhotoLibraryRepository
+    private let currentUserID: () -> String?
+    private var photoDataCache: [String: Data] = [:]
+    private var photoLoadID = UUID()
     private var folderLoadID = UUID()
-    private var musicLoadID = UUID()
-    var url = URL.init(string: "https://www.hello.com/sample.wav")
-    
-    
-    // ドキュメントディレクトリの「ファイルURL」（URL型）定義
-    var documentDirectoryFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-    
-    // ドキュメントディレクトリの「パス」（String型）定義
-    let filePath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-    let db = Firestore.firestore()
-    
-    
-    
+    private var sessionID = UUID()
+
+    init(repository: any PhotoLibraryRepository = FirebasePhotoLibraryRepository(),
+         currentUserID: @escaping () -> String? = { Auth.auth().currentUser?.uid }) {
+        self.repository = repository
+        self.currentUserID = currentUserID
+    }
+
+    func reset() {
+        photoLoadID = UUID()
+        folderLoadID = UUID()
+        sessionID = UUID()
+        photos = []
+        folders = []
+        folderCoverImages = [:]
+        photoDataCache = [:]
+        folderDocument = PhotoFolder.allID
+        userDataList = ""
+    }
+
     func firstgetUrl() async throws {
-        do {
-            guard let uid = Auth.auth().currentUser?.uid else {
-                throw NSError(domain: "FirebaseError", code: -1, userInfo: [NSLocalizedDescriptionKey: "uid is nil"])
-            }
-            
-            var urlArray = [String]()
-            DispatchQueue.main.async {
-                self.images = []
-                self.documentIdArray = []
-                self.folderDocument = "all"
-            }
-            
-            let ref = try await db.collection("users").document(uid).collection("folders").document("all").collection("photos").order(by: "date").getDocuments()
-            
-            for document in ref.documents {
-                let data = document.data()
-                let url = data["url"]
-                
-                if url != nil {
-                    urlArray.append(url as! String)
-                }
-                let documentId = document.documentID
-                
-                DispatchQueue.main.async {
-                    self.documentIdArray.append(documentId)
-                    
-                }
-            }
-            let storage = Storage.storage()
-            let storageRef = storage.reference()
-            
-            if urlArray.count >= 3{
-                
-            var picphoto = urlArray.randomElement()
-             
-                
-                var storageRef = storage.reference().child("images/\(picphoto!)")
-                storageRef.downloadURL { url, error in
-                    if (error != nil) {
-                        print("Uh-oh, an error occurred!")
-                    } else {
-                        print("download success!! URL1:", url!)
-                        let userdefaults = UserDefaults(suiteName: "group.PIcTune")
-                        let stringUrl = url!.absoluteString
-                        userdefaults!.set(stringUrl, forKey: "first")
-                        
-                    }
-                }
-                
-              picphoto = urlArray.randomElement()
-             
-            storageRef = storage.reference().child("images/\(picphoto!)")
-                storageRef.downloadURL { url, error in
-                    if (error != nil) {
-                        print("Uh-oh, an error occurred!")
-                    } else {
-                        print("download success!! URL2:", url!)
-                        let userdefaults = UserDefaults(suiteName: "group.PIcTune")
-                        let stringUrl = url!.absoluteString
-                        userdefaults!.set(stringUrl, forKey: "second")
-                        
-                        
-                    }
-                }
-      picphoto = urlArray.randomElement()
-             
-     storageRef = storage.reference().child("images/\(picphoto!)")
-                storageRef.downloadURL { url, error in
-                    if (error != nil) {
-                        print("Uh-oh, an error occurred!")
-                    } else {
-                        print("download success!! URL3:", url!)
-                        let userdefaults = UserDefaults(suiteName: "group.PIcTune")
-                        let stringUrl = url!.absoluteString
-                        userdefaults!.set(stringUrl, forKey: "third")
-                        
-                        
-                    }
-                }
+        try await loadPhotos(folderID: PhotoFolder.allID)
+    }
 
-   
-                
-            }
-            
-            
-            for (index, photo) in urlArray.enumerated() {
-                
-                
-                do {
-                    let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
-                        let imageRef = storageRef.child("images/" + photo)
-                        imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
-                            if let error = error {
-                                continuation.resume(throwing: error)
-                            } else if let data = data {
-                                continuation.resume(returning: data)
-                            }
-                        }
-                    }
-                    DispatchQueue.main.async {
-                        if index <= self.images.count {
-                            let image = UIImage(data: data)
-                            
-                            self.images.insert(image!, at: index)
-                            
-                        } else {
-                            print("Index out of range. Ignoring data insertion.")
-                        }
-                    }
-                } catch {
-                    print("Error occurred! : \(error)")
-                }
-            }
-            
-            
-            
-        }
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            
-            try await db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
-            
-            
-            
-            
-        }
-    }
-    
-    
-    func getUrl() async throws {
-        do {
-            let uid = Auth.auth().currentUser?.uid
-            var urlArray = [String]()
-            
-            let document = try await db.collection("users").document(uid ?? "").getDocument()
-            let data = document.data()
-            let date = data?["date"]
-            
-            if date != nil {
-                let ref = try await db.collection("users").document(uid!).collection("folders").document("all").collection("photos").whereField("date", isGreaterThanOrEqualTo: date as Any).order(by: "date").getDocuments()
-                
-                for document in ref.documents {
-                    let data = document.data()
-                    let url = data["url"]
-                    if url != nil {
-                        urlArray.append(url as! String)
-                    }
-                    let documentId = document.documentID
-                    DispatchQueue.main.async {
-                        self.documentIdArray.append(documentId)
-                        
-                    }
-                }
-                
-                let storage = Storage.storage()
-                let storageRef = storage.reference()
-                for (index, photo) in urlArray.enumerated() {
-                    if let cachedData = photoDataCache[photo] {
-                        let image = UIImage(data: cachedData)
-                        DispatchQueue.main.async {
-                            self.images.insert(image!, at: index)
-                        }
-                    } else {
-                        let imageRef = storageRef.child("images/" + photo)
-                        do {
-                            
-                            let data = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
-                                imageRef.getData(maxSize: 100 * 1024 * 1024) { data, error in
-                                    if let error = error {
-                                        continuation.resume(throwing: error)
-                                    } else if let data = data {
-                                        continuation.resume(returning: data)
-                                    }
-                                }
-                            }
-                            
-                            DispatchQueue.main.async {
-                                self.photoDataCache[photo] = data
-                            }
-                            let image = UIImage(data: data)
-                            DispatchQueue.main.async {
-                                self.images.insert(image!, at: index)
-                            }
-                        } catch {
-                            print("Error occurred during download! : \(error)")
-                            
-                        }
-                    }
-                }
-            }
-            
-            try await db.collection("users").document(uid ?? "").setData(["date": FieldValue.serverTimestamp()])
-        } catch {
-            throw error
-        }
-    }
-    
-    
-    
-    
-    func getDate() async throws {
-        DispatchQueue.main.async {
-            self.dates = []
-        }
-        do {
-            guard let uid = Auth.auth().currentUser?.uid else {
-                throw NSError(domain: "FirebaseError", code: -1, userInfo: [NSLocalizedDescriptionKey: "uid is nil"])
-            }
-            let ref = try await db.collection("users").document(uid).collection("folders").document("all").collection("photos").order(by: "date").getDocuments()
-            
-            for document in ref.documents {
-                let data = document.data()
-                let date = data["date"] as! Timestamp
-                
-                let formatterDate = DateFormatter()
-                formatterDate.dateFormat = "yyyy-MM-dd-HH:mm"
-                let createdDate = formatterDate.string(from: date.dateValue())
-                
-                DispatchQueue.main.async {
-                    self.dates.append(createdDate)
-                }
-            }
-        } catch {
-            throw error
-        }
-    }
-    @MainActor
-    func getMusic(documentId: String, folder: String, friendUid: String) async throws {
+    func loadPhotos(folderID: String) async throws {
+        guard let uid = currentUserID() else { reset(); return }
         let requestID = UUID()
-        musicLoadID = requestID
-        Music = []
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        let ref = try await db.collection("users").document(uid).collection("folders")
-            .document(folder).collection("photos").document(documentId).getDocument()
-        guard !Task.isCancelled, musicLoadID == requestID,
-              Auth.auth().currentUser?.uid == uid,
-              let data = ref.data(), let music = FirebaseMusic.from(documentID: documentId, data: data) else { return }
-        Music = [music]
+        photoLoadID = requestID
+        folderDocument = folderID
+        photos = []
+        userDataList = ""
+
+        let records = try await repository.photos(userID: uid, folderID: folderID)
+        var loaded: [LibraryPhoto] = []
+        for record in records {
+            guard isCurrentPhotoRequest(requestID, userID: uid) else { return }
+            do {
+                let data = try await imageData(fileName: record.fileName)
+                guard let image = UIImage(data: data) else { continue }
+                loaded.append(LibraryPhoto(record: record, image: image))
+                // Keep the library's progressive loading without splitting record fields.
+                if folderID == PhotoFolder.allID, isCurrentPhotoRequest(requestID, userID: uid) {
+                    photos = loaded
+                }
+            } catch is CancellationError {
+                return
+            } catch {
+                // A failed image must never take another photo's ID, date or music.
+                print("写真の読み込みに失敗しました: \(record.id), \(error)")
+            }
+        }
+        guard isCurrentPhotoRequest(requestID, userID: uid) else { return }
+        photos = loaded
+
+        if folderID == PhotoFolder.allID {
+            await updateWidget(records: records, requestID: requestID, userID: uid)
+            guard isCurrentPhotoRequest(requestID, userID: uid) else { return }
+            try await repository.updateLibraryDate(userID: uid)
+        } else {
+            try await repository.updateLastViewedDate(userID: uid)
+        }
     }
 
-    func makeFolder(folderName: String){
-     
-        
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            let folders = UUID().uuidString
-            db.collection("users").document(uid).collection("folders").document(folders).setData([
-                "title": folderName,
-                "date": FieldValue.serverTimestamp()
-            ])
-            DispatchQueue.main.async {
-                let index = min(1, self.folders.count)
-                self.folders.insert(folderName, at: index)
-                self.foldersDocumentId.insert(folders, at: index)
-            }
-            
-            db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
-        }
-        
-        
+    private func isCurrentPhotoRequest(_ id: UUID, userID: String) -> Bool {
+        photoLoadID == id && currentUserID() == userID && !Task.isCancelled
     }
-    
-    @MainActor
+
+    private func imageData(fileName: String) async throws -> Data {
+        if let cached = photoDataCache[fileName] { return cached }
+        let session = sessionID
+        let data = try await repository.imageData(fileName: fileName)
+        if sessionID == session { photoDataCache[fileName] = data }
+        return data
+    }
+
+    private func updateWidget(records: [PhotoRecord], requestID: UUID, userID: String) async {
+        guard records.count >= 3 else { return }
+        for key in ["first", "second", "third"] {
+            guard let record = records.randomElement(),
+                  isCurrentPhotoRequest(requestID, userID: userID) else { return }
+            do {
+                let url = try await repository.downloadURL(fileName: record.fileName)
+                guard isCurrentPhotoRequest(requestID, userID: userID) else { return }
+                UserDefaults(suiteName: "group.PIcTune")?.set(url.absoluteString, forKey: key)
+            } catch {
+                print("ウィジェット画像の取得に失敗しました: \(error)")
+            }
+        }
+    }
+
     func getFolder() async throws {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        let snapshot = try await db.collection("users").document(uid).collection("folders")
-            .order(by: "date", descending: true).getDocuments()
-        folders = snapshot.documents.map { $0.data()["title"] as? String ?? "名称未設定" }
-        foldersDocumentId = snapshot.documents.map(\.documentID)
-        folderCoverImages = folderCoverImages.filter { foldersDocumentId.contains($0.key) }
+        guard let uid = currentUserID() else { reset(); return }
+        let requestID = UUID()
+        folderLoadID = requestID
+        let loaded = try await repository.folders(userID: uid)
+        guard folderLoadID == requestID, currentUserID() == uid, !Task.isCancelled else { return }
+        folders = loaded
+        let ids = Set(loaded.map(\.id))
+        folderCoverImages = folderCoverImages.filter { ids.contains($0.key) }
+    }
+
+    func makeFolder(folderName: String) {
+        Task {
+            do {
+                guard let uid = currentUserID() else { return }
+                let session = sessionID
+                let folder = PhotoFolder(id: UUID().uuidString, title: folderName, date: nil, letter: "")
+                try await repository.createFolder(userID: uid, folder: folder)
+                guard sessionID == session, currentUserID() == uid else { return }
+                folders.insert(folder, at: min(1, folders.count))
+            } catch {
+                print("フォルダの作成に失敗しました: \(error)")
+            }
+        }
     }
 
     func loadFolderCover(folderId: String) async throws {
-        guard folderCoverImages[folderId] == nil,
-              let uid = Auth.auth().currentUser?.uid else { return }
-
-        let photos = try await db.collection("users").document(uid)
-            .collection("folders").document(folderId)
-            .collection("photos").order(by: "date", descending: true)
-            .limit(to: 1).getDocuments()
-        guard let fileName = photos.documents.first?.data()["url"] as? String else { return }
-
-        let data = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
-            Storage.storage().reference().child("images/" + fileName)
-                .getData(maxSize: 20 * 1024 * 1024) { data, error in
-                    if let error {
-                        continuation.resume(throwing: error)
-                    } else if let data {
-                        continuation.resume(returning: data)
-                    } else {
-                        continuation.resume(throwing: NSError(domain: "PhotoError", code: -1))
-                    }
-                }
-        }
-        if let image = UIImage(data: data) {
-            await MainActor.run { self.folderCoverImages[folderId] = image }
-        }
+        guard folderCoverImages[folderId] == nil, let uid = currentUserID() else { return }
+        let session = sessionID
+        guard let record = try await repository.coverPhoto(userID: uid, folderID: folderId) else { return }
+        let data = try await imageData(fileName: record.fileName)
+        guard sessionID == session, currentUserID() == uid,
+              folders.contains(where: { $0.id == folderId }), let image = UIImage(data: data) else { return }
+        folderCoverImages[folderId] = image
     }
 
     func appendFolder(photoDocumentID: String, to destinationFolderID: String) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        let foldersRef = db.collection("users").document(uid).collection("folders")
-        let source = try await foldersRef.document("all").collection("photos")
-            .document(photoDocumentID).getDocument()
-        guard let data = source.data() else { return }
-        try await foldersRef.document(destinationFolderID).collection("photos")
-            .document().setData(data)
+        guard let uid = currentUserID() else { return }
+        let session = sessionID
+        try await repository.copyPhoto(userID: uid, photoID: photoDocumentID, to: destinationFolderID)
+        guard sessionID == session, currentUserID() == uid else { return }
+        folderCoverImages.removeValue(forKey: destinationFolderID)
     }
-    
-    
-    
-    // Publish a complete snapshot only if this folder is still selected.
-    @MainActor
-    func FoldergetUrl(folderId: Int) async throws {
-        guard foldersDocumentId.indices.contains(folderId),
-              let uid = Auth.auth().currentUser?.uid else { return }
-        let folderID = foldersDocumentId[folderId]
-        folderDocument = folderID
-        let requestID = UUID()
-        folderLoadID = requestID
-        images = []
-        documentIdArray = []
-        dates = []
-        userDataList = ""
 
-        let snapshot = try await db.collection("users").document(uid).collection("folders")
-            .document(folderID).collection("photos").order(by: "date").getDocuments()
-        var loadedImages: [UIImage] = []
-        var loadedIDs: [String] = []
-        var loadedDates: [String] = []
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd-HH:mm"
-        for document in snapshot.documents {
-            guard folderDocument == folderID, folderLoadID == requestID else { return }
-            let photo = document.data()
-            guard let path = photo["url"] as? String else { continue }
-            let data: Data
-            if let cached = photoDataCache[path] {
-                data = cached
-            } else {
-                data = try await Storage.storage().reference().child("images/" + path)
-                    .data(maxSize: 100 * 1024 * 1024)
-                photoDataCache[path] = data
-            }
-            guard let image = UIImage(data: data) else { continue }
-            loadedImages.append(image)
-            loadedIDs.append(document.documentID)
-            loadedDates.append((photo["date"] as? Timestamp).map {
-                formatter.string(from: $0.dateValue())
-            } ?? "")
-        }
-        guard folderDocument == folderID, folderLoadID == requestID else { return }
-        images = loadedImages
-        documentIdArray = loadedIDs
-        dates = loadedDates
-        try await db.collection("users").document(uid).setData(["date": FieldValue.serverTimestamp()])
-    }
-    @MainActor
     func saveLetter(_ text: String, folderID: String) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw folderError("ログイン状態を確認して、もう一度お試しください。")
-        }
-        try await db.collection("users").document(uid).collection("folders")
-            .document(folderID).updateData(["letter": text])
+        let uid = try signedInUserID()
+        let session = sessionID
+        try await repository.saveLetter(userID: uid, folderID: folderID, text: text)
+        guard sessionID == session, currentUserID() == uid else { return }
         if folderDocument == folderID { userDataList = text }
+        if let index = folders.firstIndex(where: { $0.id == folderID }) {
+            let folder = folders[index]
+            folders[index] = PhotoFolder(id: folder.id, title: folder.title, date: folder.date, letter: text)
+        }
     }
 
     func loadLetter(folderID: String) async throws -> String {
-        guard let uid = Auth.auth().currentUser?.uid else {
+        try await repository.letter(userID: signedInUserID(), folderID: folderID)
+    }
+
+    func deletePhoto(document: String, folderId: String) async throws {
+        guard let uid = currentUserID() else { return }
+        let session = sessionID
+        try await repository.deletePhoto(userID: uid, photoID: document, folderID: folderId)
+        guard sessionID == session, currentUserID() == uid else { return }
+        if folderDocument == folderId {
+            photoLoadID = UUID()
+            photos.removeAll { $0.id == document }
+        }
+        folderCoverImages.removeValue(forKey: folderId)
+    }
+
+    func deleteFolder(id: String) async throws {
+        guard id != PhotoFolder.allID, !id.isEmpty else { throw folderError("このフォルダは削除できません。") }
+        let uid = try signedInUserID()
+        let session = sessionID
+        try await repository.deleteFolder(userID: uid, folderID: id)
+        guard sessionID == session, currentUserID() == uid else { return }
+        folderLoadID = UUID()
+        folders.removeAll { $0.id == id }
+        folderCoverImages.removeValue(forKey: id)
+        if folderDocument == id {
+            photoLoadID = UUID()
+            folderDocument = PhotoFolder.allID
+            photos = []
+            userDataList = ""
+        }
+    }
+
+    func getNFCData(NFCUid: String, NFCfolderid: String) async throws {
+        guard !nfc else { return }
+        let uid = try signedInUserID()
+        nfc = true
+        defer { nfc = false }
+        try await repository.importFolder(userID: uid, reference: SharedFolderReference(userID: NFCUid, folderID: NFCfolderid))
+        guard currentUserID() == uid else { return }
+        try await getFolder()
+    }
+
+    func downloadFile(photo: LibraryPhoto) {
+        // The selected image and its document metadata are one immutable value.
+        PHPhotoLibrary.shared().performChanges {
+            PHAssetChangeRequest.creationRequestForAsset(from: photo.image)
+        } completionHandler: { _, error in
+            if let error { print("写真の保存に失敗しました: \(error)") }
+        }
+    }
+
+    private func signedInUserID() throws -> String {
+        guard let uid = currentUserID() else {
             throw folderError("ログイン状態を確認して、もう一度お試しください。")
         }
-        let document = try await db.collection("users").document(uid).collection("folders")
-            .document(folderID).getDocument()
-        guard document.exists else { throw folderError("フォルダが見つかりませんでした。") }
-        return document.data()?["letter"] as? String ?? ""
+        return uid
     }
+
     private func folderError(_ message: String) -> NSError {
         NSError(domain: "PicTune.Folder", code: 1, userInfo: [NSLocalizedDescriptionKey: message])
     }
-
-    func getLetter(){
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            db.collection("users").document(uid).collection("folders").document(folderDocument).getDocument { (document, error) in
-                if let document = document, document.exists {
-                    let data = document.data()
-                    let letter = data?["letter"] as? String ?? ""
-                    self.userDataList = letter
-                    
-                } else {
-                    print("Document does not exist")
-                    DispatchQueue.main.async {
-                        self.userDataList = ""
-                    }
-                }
-            }
-        }
-    }
-    
-    func deletePhoto(document: String, folderId: String) async throws {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        try await db.collection("users").document(uid)
-            .collection("folders").document(folderId)
-            .collection("photos").document(document).delete()
-    }
-
-    @MainActor
-    func deleteFolder(id: String) async throws {
-        guard id != "all", !id.isEmpty else { throw folderError("このフォルダは削除できません。") }
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw folderError("ログイン状態を確認して、もう一度お試しください。")
-        }
-        let reference = db.collection("users").document(uid).collection("folders").document(id)
-        // Update the visible list only after the server accepts the deletion.
-        try await reference.delete()
-        if let index = foldersDocumentId.firstIndex(of: id), folders.indices.contains(index) {
-            foldersDocumentId.remove(at: index)
-            folders.remove(at: index)
-        }
-        folderCoverImages.removeValue(forKey: id)
-        if folderDocument == id {
-            folderDocument = "all"
-            images = []
-            documentIdArray = []
-            dates = []
-            userDataList = ""
-            getimage.toggle()
-        }
-    }
-    func getNFCData( NFCUid: String, NFCfolderid: String)async throws{
-        
-        if nfc == false{
-            DispatchQueue.main.async {
-                self.nfc = true
-            }
-            if let currentUser = Auth.auth().currentUser {
-                let uid = currentUser.uid
-                
-                Task{
-                    do{
-                        try await  db.collection("users").document(uid).collection("folders").document("all").updateData(["title": "all","date": FieldValue.serverTimestamp()])
-                    }catch{
-                        print(error)
-                    }
-                }
-                
-                var urlArray = [String]()
-                
-                let document = try await db.collection("users").document(NFCUid).collection("folders").document(NFCfolderid).getDocument()
-                let data = document.data()
-                let title = data?["title"] as? String ?? "デフォルトのタイトル"
-                let letter = data?["letter"] as? String ?? ""
-                let date = data?["date"]  ?? FieldValue.serverTimestamp()
-                
-                DispatchQueue.main.async {
-                    self.folders.append(title)
-                    self.foldersDocumentId.append(NFCfolderid)
-                }
-                
-                try await db.collection("users").document(uid).collection("folders").document(NFCfolderid).setData(["title": title, "date": FieldValue.serverTimestamp(),"letter": letter])
-                let destinationCollectionRef =  db.collection("users").document(uid).collection("folders").document(NFCfolderid).collection("photos")
-                
-                
-                let sourceCollectionRef = try await db.collection("users").document(NFCUid).collection("folders").document(NFCfolderid).collection("photos").order(by: "date").getDocuments()
-                
-                for document in sourceCollectionRef.documents {
-                    let data = document.data()
-                    let copiedDocument = try await destinationCollectionRef.addDocument(data: data)
-                    let url = data["url"]
-                    if url != nil {
-                        urlArray.append(url as! String)
-                    }
-                    if let music = FirebaseMusic.from(documentID: copiedDocument.documentID, data: data) {
-                        await MainActor.run { self.Music.append(music) }
-                    }
-                }
-            }
-            DispatchQueue.main.async {
-                self.nfc = false
-            }
-            
-        }else{
-            print("2回目")
-        }
-        
-        
-        
-    }
-    
-    func downloadFile(documentId: String, folderId: String) {
-        let storage = Storage.storage()
-        if let currentUser = Auth.auth().currentUser {
-            let uid = currentUser.uid
-            let docRef = db.collection("users").document(uid).collection("folders").document(folderId).collection("photos").document(documentId)
-            
-            docRef.getDocument { document, error in
-                if let error = error {
-                    print("Error getting document: \(error.localizedDescription)")
-                    return
-                }
-                
-                if let data = document?.data(), let fileName = data["url"] as? String {
-                    print("File Name: \(fileName)")
-                    let storageRef = Storage.storage().reference().child("images/"+fileName)
-                    
-                    storageRef.getData(maxSize: 5 * 1024 * 1024) { data, error in
-                        if let error = error {
-                            print("Error downloading image: \(error.localizedDescription)")
-                            return
-                        }
-                        
-                        if let imageData = data, let image = UIImage(data: imageData) {
-                            self.saveImageToCameraRoll(image: image)
-                        }
-                    }
-                } else {
-                    print("Document does not exist or does not contain 'url' key.")
-                }
-            }
-        }
-        
-    }
-    private func saveImageToCameraRoll(image: UIImage) {
-        PHPhotoLibrary.shared().performChanges {
-            PHAssetChangeRequest.creationRequestForAsset(from: image)
-        } completionHandler: { success, error in
-            if let error = error {
-                print("Error saving image to camera roll: \(error.localizedDescription)")
-            } else {
-                print("Image saved to camera roll successfully.")
-            }
-        }
-    }
-    func startAnimation() {
-        DispatchQueue.main.async {
-            self.isAnimating = true
-        }
-    }
-    func stopAnimation() {
-        DispatchQueue.main.async {
-            self.isAnimating = false
-        }
-    }
-    
-  
 }

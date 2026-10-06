@@ -51,7 +51,7 @@ PicTuneは現在、静止画の下に楽曲情報を置き、タップで試聴�
 | SearchViewModel / SearchView | Apple Musicへ検索を切り替え。既存の検索履歴・待機・古い応答破棄・選択保持を維持し、公式曲リンクを表示 |
 | Track / FirebaseMusic | サービス種別・曲リンク・Storefront・ISRCの保存と復元。旧SpotifyデータはSpotifyのまま扱う |
 | CameraManager | 本人とQR共有相手に同じ楽曲データを保存 |
-| MainContentModel | 新旧データの読み込み。NFCコピー後に誤った元IDで再取得していた処理を、新しいコピー先IDと保存内容による復元へ修正 |
+| PhotoRecord / FirebaseMusic / PhotoLibraryRepository | 新旧データの読み込み。NFC・フォルダコピーでは保存内容を維持し、新しい写真ドキュメントIDと楽曲IDを区別して復元 |
 | MusicPreviewPlayer / ImageDetailView | 明示的な試聴・停止、試聴なし・取得失敗表示、サービスリンク。画面を閉じたときに停止 |
 | Info.plist | NSAppleMusicUsageDescriptionを追加 |
 | Xcode設定 | ソース登録、UIテスト対象名を実際のPIcTuneへ修正。Bundle ID・署名チームは変更なし |
@@ -130,6 +130,12 @@ xcodebuild -project PIcTune.xcodeproj -scheme PIcTune -configuration Debug \
 Debug限定の `--music-live-check` 起動経路を追加しました。本番と同じAppleMusicAPIとMusicPreviewPlayerを使用し、実検索、取得した曲の試聴、再生位置、停止を確認できます。Firebaseへの写真保存や共有は実行しません。表示する `canPlayCatalogContent` はフル楽曲再生の可否であり、課金・契約状態そのものを証明しません。
 
 自動テストは `sotsugyoUITests/testLiveAppleMusicSearchPlaybackAndStop` です。明示的にテストプロセスの環境変数 `PICTUNE_RUN_LIVE_MUSIC=1` を設定したときだけ実行し、通常のテストではスキップします。システムの権限画面が出た場合もスキップし、新しい権限を自動許可しません。成功条件は検索結果取得、試聴の再生位置が3秒以上進むこと、停止状態への遷移です。再生時間の進行を音の聴取確認とは区別します。
+
+### 採用時のmain統合（2026年10月6日）
+
+ユーザーの採用指示に従って、写真・フォルダのModel統一（PR #37）を取り込みました。写真詳細は `LibraryPhoto.record.music` を使用し、写真と曲の対応を維持します。保存時の `Track → FirebaseMusic → PhotoRecord` と読み込み時の逆経路で、サービス種別・曲リンク・Storefront・ISRC・アルバム名を引き継ぐよう統合しました。コピー先の写真IDを用いてもApple Musicの楽曲情報が失われないことを回帰テストに追加しています。
+
+統合後の `build-for-testing` と `test-without-building` は成功しました。iPhone 18 Proシミュレーター（iOS 27.0）で単体テスト39件、UIテスト8件（実接続1件を含む）、失敗0件でした。実接続では検索25曲、HTTP 200、試聴の再生位置3秒、停止を再確認しました。検索・写真詳細・実接続のスクリーンショットは統合後の実行結果に更新しています。フォルダ・手紙・設定・写真編集も固定データで確認しました。NFCテストの成功はシミュレーターでの利用不可表示の確認であり、実機での送受信成功を意味しません。
 
 ### 未確認・公開前に必要な確認
 

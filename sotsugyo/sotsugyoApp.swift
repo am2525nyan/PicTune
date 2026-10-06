@@ -52,7 +52,17 @@ struct sotsugyoApp: App {
     }
 
     private var mainContent: some View {
-        MainContentView()
+        Group {
+            #if DEBUG
+            if UITestFixtures.isEnabled {
+                UITestRootView()
+            } else {
+                MainContentView()
+            }
+            #else
+            MainContentView()
+            #endif
+        }
             .environmentObject(SelectedImageManager.shared)
             .task {
                 try? Tips.configure([
@@ -159,7 +169,7 @@ private struct MusicLiveCheckScene: View {
 /// Offline UI fixtures: no Apple Music or Firestore requests are made by this scene.
 private struct MusicUITestScene: View {
     @State private var selectedTrack: Track?
-    @StateObject private var model = MusicUITestModel()
+    @StateObject private var model = MainContentModel()
 
     static let track = Track(id: "1613600188", name: "Entropy", artist: "Beach Bunny", albumImages: [],
                              previewURL: nil, albumName: "Emotional Creature",
@@ -168,9 +178,10 @@ private struct MusicUITestScene: View {
     var body: some View {
         NavigationStack {
             if ProcessInfo.processInfo.arguments.contains("--music-detail") {
-                ImageDetailView(image: .constant(Self.sampleImage), documentId: .constant("fixture"),
-                                tapdocumentId: .constant("fixture"), index: .constant(0), viewModel: model,
-                                friendUid: .constant(""), selectedIndex: 0, resolvePreview: { $0 })
+                ImageDetailView(photo: LibraryPhoto(record: PhotoRecord(
+                    id: "fixture", fileName: "fixture.jpg", date: Date(timeIntervalSince1970: 1_791_241_200),
+                    music: FirebaseMusic(photoID: "fixture", track: Self.track), livePhotoFileName: ""),
+                    image: Self.sampleImage), viewModel: model, resolvePreview: { $0 })
             } else {
                 SearchView(selectedTrack: $selectedTrack, viewModel: SearchViewModel(search: { query in
                     if query == "error" { throw AppleMusicError.permissionDenied }
@@ -191,13 +202,4 @@ private struct MusicUITestScene: View {
     }
 }
 
-private final class MusicUITestModel: MainContentModel {
-    override func getDate() async throws { }
-
-    @MainActor
-    override func getMusic(documentId: String, folder: String, friendUid: String) async throws {
-        dates = ["2026-10-06"]
-        Music = [FirebaseMusic.from(documentID: "fixture", data: MusicUITestScene.track.firestoreData)!]
-    }
-}
 #endif

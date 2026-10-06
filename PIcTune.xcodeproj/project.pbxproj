@@ -96,6 +96,14 @@
 		72F985672B17FD8200FEEC05 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 72F985662B17FD8200FEEC05 /* Alamofire */; };
 		72F9856A2B19880800FEEC05 /* URLImage in Frameworks */ = {isa = PBXBuildFile; productRef = 72F985692B19880800FEEC05 /* URLImage */; };
 		72F9856C2B19880800FEEC05 /* URLImageStore in Frameworks */ = {isa = PBXBuildFile; productRef = 72F9856B2B19880800FEEC05 /* URLImageStore */; };
+		C024C6BE948146DF3D4173CA /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6819CC05C4294DB9AF1B0EE3 /* UserProfile.swift */; };
+		1028B1723E0D984DE16F9304 /* PhotoRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF19E620FC45F398D87FCAED /* PhotoRecord.swift */; };
+		98FC5F5706DA2CBC7488B85A /* LibraryPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86C71C18F22ECFE3CEFA5691 /* LibraryPhoto.swift */; };
+		D6D43D292D5CF0B11CCBD0C3 /* PhotoFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D08AC043FA7454A99F68C4 /* PhotoFolder.swift */; };
+		3F644674B51D3C1CA9AAB83A /* SharedFolderReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7489242FA58D7515B4B615AC /* SharedFolderReference.swift */; };
+		9B363B8A011FE55FB63E0BEC /* FriendQRViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE82E22BB1FD6CFB64FCA67D /* FriendQRViewModel.swift */; };
+		9FA980CCF8C4B6CD1818A91F /* UITestFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57501DD2E9A67FDE35E4666B /* UITestFixtures.swift */; };
+		AAA01AA01AA01AA01AA01001 /* PhotoLibraryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA01AA01AA01AA01AA01002 /* PhotoLibraryRepository.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -207,6 +215,14 @@
 		72F9855C2B17540800FEEC05 /* CameraMusicViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraMusicViewModel.swift; sourceTree = "<group>"; };
 		72F985612B17FD2F00FEEC05 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
 		72F985632B17FD4A00FEEC05 /* AppleMusicAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicAPI.swift; sourceTree = "<group>"; };
+		6819CC05C4294DB9AF1B0EE3 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
+		DF19E620FC45F398D87FCAED /* PhotoRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoRecord.swift; sourceTree = "<group>"; };
+		86C71C18F22ECFE3CEFA5691 /* LibraryPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryPhoto.swift; sourceTree = "<group>"; };
+		C9D08AC043FA7454A99F68C4 /* PhotoFolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFolder.swift; sourceTree = "<group>"; };
+		7489242FA58D7515B4B615AC /* SharedFolderReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedFolderReference.swift; sourceTree = "<group>"; };
+		AE82E22BB1FD6CFB64FCA67D /* FriendQRViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendQRViewModel.swift; sourceTree = "<group>"; };
+		57501DD2E9A67FDE35E4666B /* UITestFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestFixtures.swift; sourceTree = "<group>"; };
+		AAA01AA01AA01AA01AA01002 /* PhotoLibraryRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryRepository.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -311,6 +327,11 @@
 		72576F6B2B16E2670064A362 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				7489242FA58D7515B4B615AC /* SharedFolderReference.swift */,
+				C9D08AC043FA7454A99F68C4 /* PhotoFolder.swift */,
+				86C71C18F22ECFE3CEFA5691 /* LibraryPhoto.swift */,
+				DF19E620FC45F398D87FCAED /* PhotoRecord.swift */,
+				6819CC05C4294DB9AF1B0EE3 /* UserProfile.swift */,
 				72F985612B17FD2F00FEEC05 /* Track.swift */,
 				728384542B2055E20098856E /* FirebaseMusic.swift */,
 			);
@@ -320,6 +341,7 @@
 		72576F6D2B16E2E00064A362 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				AE82E22BB1FD6CFB64FCA67D /* FriendQRViewModel.swift */,
 				728EFB4E2AEE303B008C079B /* LoginViewModel.swift */,
 				72576F722B16E5020064A362 /* MainContentModel.swift */,
 				72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */,
@@ -338,6 +360,7 @@
 		72576F6E2B16E2E70064A362 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				57501DD2E9A67FDE35E4666B /* UITestFixtures.swift */,
 				72576F762B16FD740064A362 /* UIView.swift */,
 				728EFB502AEE318C008C079B /* AuthenticationManager.swift */,
 				72F226C82AF8C35D002BA0A6 /* CameraManager.swift */,
@@ -423,6 +446,7 @@
 				728BE2102B5D774600C4D6C2 /* Assets.xcassets */,
 				725DAA672B4398E900033106 /* gif */,
 				72576F6B2B16E2670064A362 /* Model */,
+				AAA01AA01AA01AA01AA01003 /* Repository */,
 				72576F692B16E2560064A362 /* View */,
 				72576F6D2B16E2E00064A362 /* ViewModel */,
 				7223A53B2B256213009D6704 /* ViewController */,
@@ -474,6 +498,7 @@
 			path = main;
 			sourceTree = "<group>";
 		};
+		AAA01AA01AA01AA01AA01003 /* Repository */ = {isa = PBXGroup; children = (AAA01AA01AA01AA01AA01002 /* PhotoLibraryRepository.swift */,); path = Repository; sourceTree = "<group>"; };
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -706,6 +731,14 @@
 				72EC19482B300463002CA76B /* PencilView.swift in Sources */,
 				72EDABCE2B6D3ABA00A28859 /* LetterTip.swift in Sources */,
 				72576F732B16E5020064A362 /* MainContentModel.swift in Sources */,
+				AAA01AA01AA01AA01AA01001 /* PhotoLibraryRepository.swift in Sources */,
+				9FA980CCF8C4B6CD1818A91F /* UITestFixtures.swift in Sources */,
+				9B363B8A011FE55FB63E0BEC /* FriendQRViewModel.swift in Sources */,
+				3F644674B51D3C1CA9AAB83A /* SharedFolderReference.swift in Sources */,
+				D6D43D292D5CF0B11CCBD0C3 /* PhotoFolder.swift in Sources */,
+				98FC5F5706DA2CBC7488B85A /* LibraryPhoto.swift in Sources */,
+				1028B1723E0D984DE16F9304 /* PhotoRecord.swift in Sources */,
+				C024C6BE948146DF3D4173CA /* UserProfile.swift in Sources */,
 				72EDABCC2B6D395000A28859 /* PostNFCTip.swift in Sources */,
 				7266BF332AF374BE000D711B /* ImagePicker.swift in Sources */,
 				72EB017E2B6E8C47007E0AED /* StampView.swift in Sources */,

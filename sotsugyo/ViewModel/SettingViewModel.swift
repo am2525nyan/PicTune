@@ -21,9 +21,16 @@ import CryptoKit
 @MainActor
 class SettingViewModel: ObservableObject {
     @Published internal var showingPasswordAlert = false
-    @Published internal var mailAddress = ""
-    @Published internal var name = ""
+    @Published private(set) var profile = UserProfile()
     @Published var authorizationDelegate = AuthorizationDelegate()
+
+    var mailAddress: String { profile.email ?? "" }
+    var name: String { profile.name ?? "" }
+
+    init(profile: UserProfile = UserProfile()) {
+        self.profile = profile
+    }
+
     func loadProfile() async throws {
         guard let currentUser = Auth.auth().currentUser else {
             throw NSError(domain: "SettingViewModel", code: 1, userInfo: [
@@ -34,9 +41,10 @@ class SettingViewModel: ObservableObject {
         let document = try await Firestore.firestore()
             .collection("users").document(currentUser.uid)
             .collection("personal").document("info").getDocument()
-        let data = document.data()
-        mailAddress = data?["email"] as? String ?? currentUser.email ?? ""
-        name = data?["name"] as? String ?? ""
+        profile = UserProfile(
+            documentData: document.data() ?? [:],
+            fallbackEmail: currentUser.email
+        )
     }
 
     func saveName(name: String) async throws {
@@ -49,7 +57,7 @@ class SettingViewModel: ObservableObject {
         let db = Firestore.firestore()
         try await db.collection("users").document(currentUser.uid)
             .collection("personal").document("info").updateData(["name": name])
-        self.name = name
+        profile.name = name
     }
     
     func logout(){

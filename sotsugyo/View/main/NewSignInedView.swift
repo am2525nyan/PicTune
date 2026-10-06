@@ -20,7 +20,6 @@ struct ContentView: View {
             }
             .refreshable {
                 try? await viewModel.firstgetUrl()
-                try? await viewModel.getDate()
             }
         }
         .navigationTitle("写真")
@@ -44,7 +43,6 @@ struct ContentView: View {
             Task {
                 try? await viewModel.firstgetUrl()
                 try? await viewModel.getFolder()
-                try? await viewModel.getDate()
             }
         }
     }

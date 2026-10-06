@@ -66,6 +66,28 @@ final class AppleMusicMigrationTests: XCTestCase {
         XCTAssertEqual(restored.previewURL, "")
     }
 
+    func testPhotoRecordRoundTripAndCopiedIdentityPreserveAppleMusicMetadata() throws {
+        let track = Track(id: "123", name: "曲名", artist: "歌手", albumImages: ["https://example.com/art.jpg"],
+                          previewURL: nil, albumName: "アルバム", musicURL: "https://music.apple.com/jp/song/123",
+                          storefront: "jp", isrc: "TEST123")
+        let record = PhotoRecord(id: "source-photo", fileName: "photo.jpg", date: nil,
+                                 music: FirebaseMusic(photoID: "source-photo", track: track), livePhotoFileName: "live.mov")
+        let data = record.firestoreData(date: Timestamp(date: Date(timeIntervalSince1970: 1_700_000_000)))
+        let copied = try XCTUnwrap(PhotoRecord(id: "copied-photo", data: data))
+        let music = try XCTUnwrap(copied.music)
+        XCTAssertEqual(copied.id, "copied-photo")
+        XCTAssertEqual(music.id, "copied-photo")
+        XCTAssertEqual(music.trackId, track.id)
+        XCTAssertEqual(music.provider, .appleMusic)
+        XCTAssertEqual(music.track.serviceURL, track.serviceURL)
+        XCTAssertEqual(music.storefront, track.storefront)
+        XCTAssertEqual(music.isrc, track.isrc)
+        XCTAssertEqual(music.albumName, track.albumName)
+        XCTAssertEqual(copied.fileName, "photo.jpg")
+        XCTAssertEqual(copied.livePhotoFileName, "live.mov")
+        XCTAssertNil(music.playablePreviewURL)
+    }
+
     func testLegacyTrackStaysSpotifyAndUnknownProviderIsNotReinterpreted() throws {
         var data: [String: Any] = ["id": "spotifyID", "trackName": "旧曲", "previewUrl": "https://example.com/preview.mp3"]
         let old = try XCTUnwrap(FirebaseMusic.from(documentID: "old-photo", data: data))
@@ -259,5 +281,496 @@ final class MusicSearchTests: XCTestCase {
         XCTAssertEqual(model.tracks.first?.id, "latest")
         XCTAssertEqual(model.resultsQuery, "second")
         XCTAssertFalse(model.isSearching)
+    }
+}
+
+import FirebaseFirestore
+
+final class LibraryModelTests: XCTestCase {
+    func testExistingPhotoRetainsDistinctPhotoAndTrackIDs() throws {
+        let date = Date(timeIntervalSince1970: 1_700_000_000)
+        let data: [String: Any] = [
+            "url": "photo.jpg", "date": Timestamp(date: date), "livephotoUrl": "live.mov",
+            "id": "spotify-track", "artistName": "歌手", "trackName": "曲名",
+            "imageName": "https://example.com/artwork.jpg", "previewUrl": "https://example.com/preview.mp3"
+        ]
+        let record = try XCTUnwrap(PhotoRecord(id: "photo-document", data: data))
+
+        XCTAssertEqual(record.id, "photo-document")
+        XCTAssertEqual(record.fileName, "photo.jpg")
+        XCTAssertEqual(record.date, date)
+        XCTAssertEqual(record.music?.id, "photo-document")
+        XCTAssertEqual(record.music?.trackId, "spotify-track")
+        XCTAssertEqual(record.livePhotoFileName, "live.mov")
+
+        let saved = record.firestoreData(date: Timestamp(date: date))
+        XCTAssertTrue(Set(data.keys).isSubset(of: Set(saved.keys)), "Retain every legacy field")
+        XCTAssertEqual(saved["musicProvider"] as? String, "spotify")
+        XCTAssertNil(saved["musicURL"], "Do not invent a link for an invalid legacy service ID")
+        XCTAssertEqual(saved["id"] as? String, "spotify-track")
+        XCTAssertEqual(saved["url"] as? String, "photo.jpg")
+        XCTAssertEqual(saved["livephotoUrl"] as? String, "live.mov")
+        XCTAssertEqual((saved["date"] as? Timestamp)?.dateValue(), date)
+        XCTAssertEqual(saved["previewUrl"] as? String, "https://example.com/preview.mp3")
+    }
+
+    func testPhotoWithoutMusicOrDateKeepsPhotoIdentity() throws {
+        let record = try XCTUnwrap(PhotoRecord(id: "photo-only", data: ["url": "photo.jpg"]))
+        XCTAssertNil(record.music)
+        XCTAssertNil(record.date)
+        XCTAssertEqual(record.livePhotoFileName, "")
+        let saved = record.firestoreData(date: Timestamp(date: Date()))
+        XCTAssertNil(saved["id"], "A photo ID must never be saved as a music ID")
+        XCTAssertNil(saved["artistName"])
+        XCTAssertNil(saved["previewUrl"])
+        XCTAssertEqual(Set(saved.keys), ["url", "date", "livephotoUrl"])
+    }
+
+    func testPhotoRejectsInvalidStorageFileName() {
+        for invalidData: [String: Any] in [[:], ["url": 42], ["url": ""], ["url": " \n "]] {
+            XCTAssertNil(PhotoRecord(id: "invalid", data: invalidData))
+        }
+    }
+
+    func testMissingPreviewAndArtworkDoNotRemoveSelectedTrack() throws {
+        let track = Track(id: "track", name: "曲名", artist: "歌手", albumImages: [], previewURL: nil)
+        let music = FirebaseMusic(photoID: "photo", track: track)
+        let reloaded = try XCTUnwrap(FirebaseMusic(photoID: "photo", data: music.firestoreData))
+        XCTAssertEqual(reloaded.trackId, "track")
+        XCTAssertEqual(reloaded.trackName, "曲名")
+        XCTAssertEqual(reloaded.artistName, "歌手")
+        XCTAssertEqual(reloaded.imageName, "")
+        XCTAssertEqual(reloaded.previewURL, "")
+        XCTAssertNil(reloaded.playablePreviewURL)
+        XCTAssertNil(FirebaseMusic(photoID: "photo", data: ["id": ""]))
+        XCTAssertNil(FirebaseMusic(photoID: "photo", data: ["trackName": "曲名"]))
+    }
+
+    func testPreviewPlaybackAcceptsOnlyWebURLsWithAHost() {
+        var music = FirebaseMusic(id: "photo", artistName: "", imageName: "", trackName: "",
+                                  trackId: "track", previewURL: "")
+        for value in ["", "preview.mp3", "file:///tmp/preview.mp3", "https://"] {
+            music.previewURL = value
+            XCTAssertNil(music.playablePreviewURL, value)
+        }
+        for value in ["https://example.com/preview.mp3", "http://example.com/preview.mp3"] {
+            music.previewURL = value
+            XCTAssertEqual(music.playablePreviewURL?.absoluteString, value)
+        }
+    }
+
+    func testFolderDecodingPreservesLetterAndDefaultsMissingFields() {
+        let date = Date(timeIntervalSince1970: 1_700_000_000)
+        let folder = PhotoFolder(id: "folder", data: ["title": "思い出", "date": Timestamp(date: date), "letter": "手紙\n本文"])
+        XCTAssertEqual(folder.id, "folder")
+        XCTAssertEqual(folder.title, "思い出")
+        XCTAssertEqual(folder.date, date)
+        XCTAssertEqual(folder.letter, "手紙\n本文")
+        XCTAssertEqual(folder.firestoreData(date: Timestamp(date: date))["letter"] as? String, "手紙\n本文")
+        let missing = PhotoFolder(id: PhotoFolder.allID, data: [:])
+        XCTAssertEqual(missing.id, "all")
+        XCTAssertEqual(missing.title, "名称未設定")
+        XCTAssertNil(missing.date)
+        XCTAssertEqual(missing.letter, "")
+    }
+
+    func testLoadedImageRemainsAttachedToItsOwnMetadataWhenAnotherPhotoIsMissing() throws {
+        let first = try XCTUnwrap(PhotoRecord(id: "first", data: ["url": "first.jpg", "id": "track-1"]))
+        let third = try XCTUnwrap(PhotoRecord(id: "third", data: ["url": "third.jpg", "id": "track-3"]))
+        let photos = [LibraryPhoto(record: first, image: UIImage()), LibraryPhoto(record: third, image: UIImage())]
+        XCTAssertEqual(photos[1].id, "third")
+        XCTAssertEqual(photos[1].record.fileName, "third.jpg")
+        XCTAssertEqual(photos[1].record.music?.trackId, "track-3")
+        XCTAssertEqual(photos[1].dateText, "")
+    }
+
+    func testNFCPayloadKeepsExistingFormatAndRejectsInvalidReferences() {
+        let reference = SharedFolderReference(userID: "user", folderID: "folder")
+        XCTAssertEqual(reference.payload, "user folder")
+        XCTAssertEqual(SharedFolderReference(payload: reference.payload), reference)
+        XCTAssertEqual(SharedFolderReference(payload: "user all")?.folderID, PhotoFolder.allID)
+        for payload in ["", "user", "user ", " ", "user folder extra", "user folder\n", "user folder/child"] {
+            XCTAssertNil(SharedFolderReference(payload: payload), payload)
+        }
+    }
+}
+
+@MainActor
+final class PhotoLibraryViewModelTests: XCTestCase {
+    private func record(_ id: String, day: Int = 1) -> PhotoRecord {
+        PhotoRecord(id: id, fileName: "\(id).jpg", date: Date(timeIntervalSince1970: Double(day * 86_400)),
+                    music: FirebaseMusic(id: id, artistName: "歌手", imageName: "", trackName: id,
+                                         trackId: "track-\(id)", previewURL: ""), livePhotoFileName: "")
+    }
+
+    private func imageData() -> Data {
+        UIGraphicsImageRenderer(size: CGSize(width: 4, height: 4)).image { context in
+            UIColor.red.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 4, height: 4))
+        }.pngData()!
+    }
+
+    func testFailedMiddleImageCannotShiftPhotoDateOrTrack() async throws {
+        let repository = RecordingPhotoLibraryRepository()
+        let records = [record("first", day: 1), record("missing", day: 2), record("third", day: 3)]
+        repository.photoResults = records
+        repository.imageBytes = imageData()
+        repository.failedImageNames = ["missing.jpg"]
+        let model = MainContentModel(repository: repository, currentUserID: { "user" })
+
+        try await model.loadPhotos(folderID: "folder")
+
+        XCTAssertEqual(model.photos.map(\.id), ["first", "third"])
+        XCTAssertEqual(model.photos[1].record.date, records[2].date)
+        XCTAssertEqual(model.photos[1].record.music?.trackId, "track-third")
+        XCTAssertEqual(model.photos[1].record.fileName, "third.jpg")
+        XCTAssertEqual(repository.lastViewedUsers, ["user"])
+    }
+
+    func testOlderFolderResponseCannotOverwriteNewSelection() async throws {
+        let repository = RecordingPhotoLibraryRepository()
+        repository.imageBytes = imageData()
+        let firstStarted = expectation(description: "First folder requested")
+        let secondStarted = expectation(description: "Second folder requested")
+        var completions: [String: CheckedContinuation<[PhotoRecord], Error>] = [:]
+        repository.photoLoader = { _, folderID in
+            try await withCheckedThrowingContinuation { continuation in
+                completions[folderID] = continuation
+                (folderID == "first" ? firstStarted : secondStarted).fulfill()
+            }
+        }
+        let model = MainContentModel(repository: repository, currentUserID: { "user" })
+        let first = Task { try await model.loadPhotos(folderID: "first") }
+        await fulfillment(of: [firstStarted], timeout: 2)
+        let second = Task { try await model.loadPhotos(folderID: "second") }
+        await fulfillment(of: [secondStarted], timeout: 2)
+        completions["second"]?.resume(returning: [record("new")])
+        try await second.value
+        completions["first"]?.resume(returning: [record("old")])
+        try await first.value
+
+        XCTAssertEqual(model.folderDocument, "second")
+        XCTAssertEqual(model.photos.map(\.id), ["new"])
+        XCTAssertEqual(repository.requestedImageNames, ["new.jpg"])
+        XCTAssertEqual(repository.lastViewedUsers, ["user"])
+    }
+
+    func testResetDiscardsImageDownloadThatFinishesAfterReset() async throws {
+        let repository = RecordingPhotoLibraryRepository()
+        repository.photoResults = [record("old")]
+        let imageStarted = expectation(description: "Image download started")
+        var completion: CheckedContinuation<Data, Error>?
+        repository.imageLoader = { _ in
+            try await withCheckedThrowingContinuation { continuation in
+                completion = continuation
+                imageStarted.fulfill()
+            }
+        }
+        let model = MainContentModel(repository: repository, currentUserID: { "user" })
+        let pending = Task { try await model.loadPhotos(folderID: "old-folder") }
+        await fulfillment(of: [imageStarted], timeout: 2)
+        model.reset()
+        completion?.resume(returning: imageData())
+        try await pending.value
+
+        XCTAssertTrue(model.photos.isEmpty)
+        XCTAssertEqual(model.folderDocument, PhotoFolder.allID)
+        XCTAssertTrue(repository.lastViewedUsers.isEmpty)
+
+        // Reset must also prevent the old download from repopulating the cache.
+        repository.imageLoader = nil
+        repository.imageBytes = imageData()
+        try await model.loadPhotos(folderID: "new-folder")
+        XCTAssertEqual(repository.requestedImageNames, ["old.jpg", "old.jpg"])
+    }
+
+    func testLogoutDiscardsPendingPhotoAndFolderResults() async throws {
+        let repository = RecordingPhotoLibraryRepository()
+        let photosStarted = expectation(description: "Photos requested")
+        let foldersStarted = expectation(description: "Folders requested")
+        var photoCompletion: CheckedContinuation<[PhotoRecord], Error>?
+        var folderCompletion: CheckedContinuation<[PhotoFolder], Error>?
+        repository.photoLoader = { _, _ in
+            try await withCheckedThrowingContinuation { continuation in
+                photoCompletion = continuation
+                photosStarted.fulfill()
+            }
+        }
+        repository.folderLoader = { _ in
+            try await withCheckedThrowingContinuation { continuation in
+                folderCompletion = continuation
+                foldersStarted.fulfill()
+            }
+        }
+        var userID: String? = "old-user"
+        let model = MainContentModel(repository: repository, currentUserID: { userID })
+        let photos = Task { try await model.loadPhotos(folderID: "old-folder") }
+        let folders = Task { try await model.getFolder() }
+        await fulfillment(of: [photosStarted, foldersStarted], timeout: 2)
+        userID = nil
+        model.reset()
+        photoCompletion?.resume(returning: [record("old-photo")])
+        folderCompletion?.resume(returning: [PhotoFolder(id: "old-folder", title: "以前", date: nil, letter: "")])
+        try await photos.value
+        try await folders.value
+
+        XCTAssertTrue(model.photos.isEmpty)
+        XCTAssertTrue(model.folders.isEmpty)
+        XCTAssertTrue(repository.requestedImageNames.isEmpty)
+        XCTAssertTrue(repository.lastViewedUsers.isEmpty)
+    }
+
+    func testAllFolderCannotReachRepositoryDeletion() async {
+        let repository = RecordingPhotoLibraryRepository()
+        let model = MainContentModel(repository: repository, currentUserID: { "user" })
+        for id in [PhotoFolder.allID, ""] {
+            do {
+                try await model.deleteFolder(id: id)
+                XCTFail("Protected or empty folder IDs must fail")
+            } catch { }
+        }
+        XCTAssertTrue(repository.deletedFolders.isEmpty)
+    }
+
+    func testNFCFailureClearsBusyFlagAndAllowsRetry() async throws {
+        let repository = RecordingPhotoLibraryRepository()
+        repository.importFailuresRemaining = 1
+        repository.folderResults = [PhotoFolder(id: "shared-folder", title: "共有", date: nil, letter: "手紙")]
+        let model = MainContentModel(repository: repository, currentUserID: { "recipient" })
+        do {
+            try await model.getNFCData(NFCUid: "sender", NFCfolderid: "shared-folder")
+            XCTFail("The first import should fail")
+        } catch { }
+        XCTAssertFalse(model.nfc)
+        XCTAssertTrue(model.folders.isEmpty)
+
+        try await model.getNFCData(NFCUid: "sender", NFCfolderid: "shared-folder")
+
+        XCTAssertFalse(model.nfc)
+        XCTAssertEqual(repository.importedReferences.count, 2)
+        XCTAssertEqual(repository.importedReferences.last?.userID, "recipient")
+        XCTAssertEqual(repository.importedReferences.last?.reference,
+                       SharedFolderReference(userID: "sender", folderID: "shared-folder"))
+        XCTAssertEqual(model.folders.first?.letter, "手紙")
+    }
+
+    func testCopySaveAndDeleteUseDocumentIDsInsteadOfArrayPositionsOrTrackIDs() async throws {
+        let repository = RecordingPhotoLibraryRepository()
+        let model = MainContentModel(repository: repository, currentUserID: { "user" })
+        model.folderDocument = "selected-folder"
+        model.photos = [LibraryPhoto(record: record("keep"), image: UIImage()),
+                        LibraryPhoto(record: record("delete"), image: UIImage())]
+        model.folders = [PhotoFolder(id: "other-folder", title: "同じ名前", date: nil, letter: "元の手紙"),
+                         PhotoFolder(id: "selected-folder", title: "同じ名前", date: nil, letter: "")]
+
+        try await model.appendFolder(photoDocumentID: "keep", to: "other-folder")
+        try await model.saveLetter("更新した手紙", folderID: "selected-folder")
+        try await model.deletePhoto(document: "delete", folderId: "selected-folder")
+
+        XCTAssertEqual(repository.copiedPhotos, [.init(userID: "user", photoID: "keep", folderID: "other-folder")])
+        XCTAssertEqual(repository.savedLetters, [.init(userID: "user", folderID: "selected-folder", text: "更新した手紙")])
+        XCTAssertEqual(repository.deletedPhotos, [.init(userID: "user", photoID: "delete", folderID: "selected-folder")])
+        XCTAssertEqual(model.photos.map(\.id), ["keep"])
+        XCTAssertEqual(model.photos.first?.record.music?.trackId, "track-keep")
+        XCTAssertEqual(model.userDataList, "更新した手紙")
+        XCTAssertEqual(model.folders[0].letter, "元の手紙")
+        XCTAssertEqual(model.folders[1].letter, "更新した手紙")
+
+        try await model.deleteFolder(id: "selected-folder")
+        XCTAssertEqual(repository.deletedFolders, ["selected-folder"])
+        XCTAssertEqual(model.folders.map(\.id), ["other-folder"])
+        XCTAssertEqual(model.folderDocument, PhotoFolder.allID)
+        XCTAssertTrue(model.photos.isEmpty)
+        XCTAssertEqual(model.userDataList, "")
+    }
+
+    func testLibraryPublishesCompleteRecordsWhileRemainingImagesLoad() async throws {
+        let repository = RecordingPhotoLibraryRepository()
+        repository.photoResults = [record("first"), record("second")]
+        let waiting = expectation(description: "Second image requested")
+        let bytes = imageData()
+        var completion: CheckedContinuation<Data, Error>?
+        repository.imageLoader = { name in
+            if name == "first.jpg" { return bytes }
+            return try await withCheckedThrowingContinuation { continuation in
+                completion = continuation
+                waiting.fulfill()
+            }
+        }
+        let model = MainContentModel(repository: repository, currentUserID: { "user" })
+        let loading = Task { try await model.firstgetUrl() }
+        await fulfillment(of: [waiting], timeout: 2)
+        XCTAssertEqual(model.photos.map(\.id), ["first"])
+        XCTAssertEqual(model.photos.first?.record.music?.trackId, "track-first")
+        completion?.resume(returning: bytes)
+        try await loading.value
+        XCTAssertEqual(model.photos.map(\.id), ["first", "second"])
+    }
+
+    func testPendingReloadCannotRestoreADeletedPhoto() async throws {
+        let repository = RecordingPhotoLibraryRepository()
+        let started = expectation(description: "Reload started")
+        var completion: CheckedContinuation<[PhotoRecord], Error>?
+        repository.photoLoader = { _, _ in
+            try await withCheckedThrowingContinuation { continuation in
+                completion = continuation
+                started.fulfill()
+            }
+        }
+        repository.imageBytes = imageData()
+        let model = MainContentModel(repository: repository, currentUserID: { "user" })
+        let pending = Task { try await model.loadPhotos(folderID: "folder") }
+        await fulfillment(of: [started], timeout: 2)
+        try await model.deletePhoto(document: "deleted", folderId: "folder")
+        completion?.resume(returning: [record("deleted")])
+        try await pending.value
+        XCTAssertTrue(model.photos.isEmpty)
+        XCTAssertTrue(repository.requestedImageNames.isEmpty)
+    }
+
+    func testFailedPhotoDeletionLeavesVisiblePhotoIntact() async {
+        let repository = RecordingPhotoLibraryRepository()
+        repository.failPhotoDeletion = true
+        let model = MainContentModel(repository: repository, currentUserID: { "user" })
+        model.folderDocument = "folder"
+        model.photos = [LibraryPhoto(record: record("photo"), image: UIImage())]
+        do {
+            try await model.deletePhoto(document: "photo", folderId: "folder")
+            XCTFail("Deletion should fail")
+        } catch { }
+        XCTAssertEqual(model.photos.map(\.id), ["photo"])
+    }
+}
+
+@MainActor
+private final class RecordingPhotoLibraryRepository: PhotoLibraryRepository {
+    struct PhotoOperation: Equatable {
+        let userID: String
+        let photoID: String
+        let folderID: String
+    }
+    struct LetterOperation: Equatable {
+        let userID: String
+        let folderID: String
+        let text: String
+    }
+    struct ImportOperation {
+        let userID: String
+        let reference: SharedFolderReference
+    }
+    var photoResults: [PhotoRecord] = []
+    var folderResults: [PhotoFolder] = []
+    var imageBytes = Data()
+    var failedImageNames: Set<String> = []
+    var photoLoader: ((String, String) async throws -> [PhotoRecord])?
+    var folderLoader: ((String) async throws -> [PhotoFolder])?
+    var imageLoader: ((String) async throws -> Data)?
+    var requestedImageNames: [String] = []
+    var copiedPhotos: [PhotoOperation] = []
+    var deletedPhotos: [PhotoOperation] = []
+    var deletedFolders: [String] = []
+    var savedLetters: [LetterOperation] = []
+    var importedReferences: [ImportOperation] = []
+    var lastViewedUsers: [String] = []
+    var importFailuresRemaining = 0
+    var failPhotoDeletion = false
+
+    func photos(userID: String, folderID: String) async throws -> [PhotoRecord] {
+        if let photoLoader { return try await photoLoader(userID, folderID) }
+        return photoResults
+    }
+    func coverPhoto(userID: String, folderID: String) async throws -> PhotoRecord? {
+        photoResults.last
+    }
+    func imageData(fileName: String) async throws -> Data {
+        requestedImageNames.append(fileName)
+        if failedImageNames.contains(fileName) { throw failure() }
+        if let imageLoader { return try await imageLoader(fileName) }
+        return imageBytes
+    }
+    func folders(userID: String) async throws -> [PhotoFolder] {
+        if let folderLoader { return try await folderLoader(userID) }
+        return folderResults
+    }
+    func createFolder(userID: String, folder: PhotoFolder) async throws { }
+    func copyPhoto(userID: String, photoID: String, to folderID: String) async throws {
+        copiedPhotos.append(PhotoOperation(userID: userID, photoID: photoID, folderID: folderID))
+    }
+    func deletePhoto(userID: String, photoID: String, folderID: String) async throws {
+        if failPhotoDeletion { throw failure() }
+        deletedPhotos.append(PhotoOperation(userID: userID, photoID: photoID, folderID: folderID))
+    }
+    func deleteFolder(userID: String, folderID: String) async throws {
+        deletedFolders.append(folderID)
+    }
+    func letter(userID: String, folderID: String) async throws -> String { "" }
+    func saveLetter(userID: String, folderID: String, text: String) async throws {
+        savedLetters.append(LetterOperation(userID: userID, folderID: folderID, text: text))
+    }
+    func importFolder(userID: String, reference: SharedFolderReference) async throws {
+        importedReferences.append(ImportOperation(userID: userID, reference: reference))
+        if importFailuresRemaining > 0 {
+            importFailuresRemaining -= 1
+            throw failure()
+        }
+    }
+    func updateLibraryDate(userID: String) async throws { }
+    func updateLastViewedDate(userID: String) async throws { lastViewedUsers.append(userID) }
+    func downloadURL(fileName: String) async throws -> URL { throw failure() }
+    private func failure() -> Error { NSError(domain: "LibraryRepositoryTest", code: 1) }
+}
+
+final class UserProfileModelTests: XCTestCase {
+    func testMissingNameRemainsDifferentFromAnExplicitEmptyName() {
+        XCTAssertNil(UserProfile(documentData: [:]).name)
+        XCTAssertNil(UserProfile(documentData: ["name": 42]).name)
+        XCTAssertEqual(UserProfile(documentData: ["name": ""]).name, "")
+        XCTAssertEqual(UserProfile(documentData: ["name": "名前"]).name, "名前")
+    }
+
+    func testEmailFallbackOnlyAppliesWhenTheStoredValueIsMissingOrInvalid() {
+        XCTAssertEqual(UserProfile(documentData: [:], fallbackEmail: "auth@example.com").email, "auth@example.com")
+        XCTAssertEqual(UserProfile(documentData: ["email": 42], fallbackEmail: "auth@example.com").email, "auth@example.com")
+        XCTAssertEqual(UserProfile(documentData: ["email": ""], fallbackEmail: "auth@example.com").email, "")
+        XCTAssertEqual(UserProfile(documentData: ["email": "saved@example.com"], fallbackEmail: "auth@example.com").email, "saved@example.com")
+        XCTAssertNil(UserProfile(documentData: [:]).email)
+    }
+}
+
+@MainActor
+final class FriendQRViewModelTests: XCTestCase {
+    func testValidProfileKeepsScannedUserIDAndConfirmationName() async {
+        var requestedID: String?
+        let model = FriendQRViewModel { uid in
+            requestedID = uid
+            return UserProfile(name: "友人")
+        }
+        let friend = await model.loadFriendProfile(uid: "friend-id")
+        XCTAssertEqual(requestedID, "friend-id")
+        XCTAssertEqual(friend, "friend-id")
+        XCTAssertEqual(model.alertMessage, " 友人さんと撮ります")
+        XCTAssertTrue(model.showAlert)
+    }
+
+    func testMissingIncompleteAndFailedProfilesDoNotReturnAFriend() async {
+        let missing = FriendQRViewModel { _ in nil }
+        let incomplete = FriendQRViewModel { _ in UserProfile() }
+        let failed = FriendQRViewModel { _ in throw NSError(domain: "ProfileTest", code: 1) }
+        for model in [missing, incomplete, failed] {
+            let friend = await model.loadFriendProfile(uid: "friend-id")
+            XCTAssertNil(friend)
+            XCTAssertTrue(model.showAlert)
+        }
+        XCTAssertEqual(missing.alertMessage, "User info not found")
+        XCTAssertEqual(incomplete.alertMessage, "User info is incomplete")
+        XCTAssertEqual(failed.alertMessage, "Error getting user info")
+    }
+
+    func testProfileWritesRetainLegacyFieldsAndEmptyFallbacks() {
+        let data = UserProfile().firestoreData(userID: "user")
+        XCTAssertEqual(data["uid"] as? String, "user")
+        XCTAssertEqual(data["email"] as? String, "")
+        XCTAssertEqual(data["name"] as? String, "")
+        XCTAssertEqual(Set(data.keys), Set(["uid", "email", "name"]))
     }
 }
