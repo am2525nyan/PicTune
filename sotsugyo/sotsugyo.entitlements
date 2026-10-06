@@ -16,5 +16,9 @@
 	<array>
 		<string>group.PIcTune</string>
 	</array>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:sotugyou-7ea16.web.app</string>
+	</array>
 </dict>
 </plist>

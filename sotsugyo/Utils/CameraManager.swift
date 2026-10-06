@@ -249,9 +249,14 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
 
         let imageName = "\(UUID().uuidString).jpg"
         let imageReference = Storage.storage().reference().child("images/\(imageName)")
-        _ = try await imageReference.putDataAsync(imageData)
-
         let db = Firestore.firestore()
+        let ownership = db.collection("imageOwners").document(imageName)
+        try await ownership.setData(["ownerID": uid])
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
+        metadata.customMetadata = ["ownerIDs": uid]
+        do { _ = try await imageReference.putDataAsync(imageData, metadata: metadata) }
+        catch { throw error }
         let folder = db.collection("users").document(uid).collection("folders").document("all")
         let photo = folder.collection("photos").document()
         let record = PhotoRecord(id: photo.documentID, fileName: imageName, date: nil,
@@ -264,6 +269,8 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         if !friendUid.isEmpty && friendUid != uid {
             let friendPhoto = db.collection("users").document(friendUid).collection("folders").document("all").collection("photos").document(photo.documentID)
             batch.setData(data, forDocument: friendPhoto)
+            let access = db.collection("users").document(friendUid).collection("imageAccess").document(imageName)
+            batch.setData(["ownerID": friendUid, "folderID": "all", "photoID": photo.documentID], forDocument: access)
         }
         do {
             try await batch.commit()
@@ -298,7 +305,10 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
 
          let storageRef = Storage.storage().reference().child("livephotos/\(livePhotoFileName).mov")
 
-         storageRef.putFile(from: URL(fileURLWithPath: livePhotoFilePath), metadata: nil) { (metadata, error) in
+         guard let uid = Auth.auth().currentUser?.uid else { return }
+         let metadata = StorageMetadata()
+         metadata.customMetadata = ["ownerIDs": uid]
+         storageRef.putFile(from: URL(fileURLWithPath: livePhotoFilePath), metadata: metadata) { (metadata, error) in
              if let error = error {
                  print("Error uploading Live Photo to Firebase Storage: \(error.localizedDescription)")
              } else {

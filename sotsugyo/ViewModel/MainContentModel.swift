@@ -3,6 +3,7 @@ import UIKit
 import Combine
 import FirebaseAuth
 import Photos
+import WidgetKit
 
 /// Screen state is published as complete records, never as parallel arrays.
 @MainActor
@@ -36,6 +37,9 @@ class MainContentModel: ObservableObject {
         sessionID = UUID()
         photos = []
         folders = []
+        let widgetDefaults = UserDefaults(suiteName: "group.PIcTune")
+        for key in ["first", "second", "third"] { widgetDefaults?.removeObject(forKey: key) }
+        WidgetCenter.shared.reloadAllTimelines()
         folderCoverImages = [:]
         photoDataCache = [:]
         folderDocument = PhotoFolder.allID
@@ -98,18 +102,21 @@ class MainContentModel: ObservableObject {
     }
 
     private func updateWidget(records: [PhotoRecord], requestID: UUID, userID: String) async {
-        guard records.count >= 3 else { return }
-        for key in ["first", "second", "third"] {
-            guard let record = records.randomElement(),
-                  isCurrentPhotoRequest(requestID, userID: userID) else { return }
+        guard let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.PIcTune") else { return }
+        let defaults = UserDefaults(suiteName: "group.PIcTune")
+        let chosen = Array(records.shuffled().prefix(3))
+        for (index, key) in ["first", "second", "third"].enumerated() {
+            guard isCurrentPhotoRequest(requestID, userID: userID) else { return }
+            guard index < chosen.count else { defaults?.removeObject(forKey: key); continue }
             do {
-                let url = try await repository.downloadURL(fileName: record.fileName)
+                let data = try await imageData(fileName: chosen[index].fileName)
                 guard isCurrentPhotoRequest(requestID, userID: userID) else { return }
-                UserDefaults(suiteName: "group.PIcTune")?.set(url.absoluteString, forKey: key)
-            } catch {
-                print("ウィジェット画像の取得に失敗しました: \(error)")
-            }
+                let destination = directory.appendingPathComponent("widget-\(key).jpg")
+                try data.write(to: destination, options: .atomic)
+                defaults?.set(destination.path, forKey: key)
+            } catch { defaults?.removeObject(forKey: key) }
         }
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     func getFolder() async throws {
