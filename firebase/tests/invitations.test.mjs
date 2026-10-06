@@ -80,6 +80,8 @@ test('users cannot fabricate own photos and storage grants for someone else’s 
 });
 test('QR requires a recent invitation and preserves photo/music ownership',async()=>{
  const a=db('alice'),b=db('bob');
+ // A new recipient may not have an all-folder document until their first own photo.
+ await deleteDoc(doc(b,'users/bob/folders/all'));
  await assertFails(setDoc(doc(a,'users/bob/folders/all/photos/q'),{url:'photo.jpg'}));
  await setDoc(doc(b,'cameraInvites/'+cameraToken),{ownerID:'bob',name:'Bob',createdAt:serverTimestamp(),expiresAt:at(600000)});
  const expiresAt=(await getDoc(doc(a,'cameraInvites/'+cameraToken))).data().expiresAt;
