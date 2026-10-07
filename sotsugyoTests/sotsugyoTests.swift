@@ -5,6 +5,63 @@ import PencilKit
 
 @MainActor
 final class sotsugyoTests: XCTestCase {
+    func testInvitationLinksAcceptOnlyExactTrustedRoutes() {
+        let token = String(repeating: "a", count: 64)
+        let link = FolderInviteLink(token: token)
+        XCTAssertEqual(FolderInviteLink(url: link.url), link)
+        XCTAssertEqual(FolderInviteLink(url: URL(string: "pictune://invite/\(token)")!), link)
+        for value in ["https://evil.example/invite/\(token)", "http://sotugyou-7ea16.web.app/invite/\(token)",
+                      "https://sotugyou-7ea16.web.app/invite/short", "https://sotugyou-7ea16.web.app/invite/\(token)?owner=other",
+                      "https://sotugyou-7ea16.web.app/invite/\(token)/extra", "https://user@sotugyou-7ea16.web.app/invite/\(token)",
+                      "pictune://invite/\(token)#other"] {
+            XCTAssertNil(FolderInviteLink(url: URL(string: value)!), value)
+        }
+        XCTAssertNotEqual(FolderInviteLink.make().token, FolderInviteLink.make().token)
+    }
+
+    func testPendingInvitationSurvivesLoginAndRelaunch() {
+        let defaults = UserDefaults(suiteName: "PicTune.Invitation.UnitTests")!
+        defaults.removePersistentDomain(forName: "PicTune.Invitation.UnitTests")
+        defer { defaults.removePersistentDomain(forName: "PicTune.Invitation.UnitTests") }
+        let router = FolderInviteRouter(defaults: defaults)
+        let link = FolderInviteLink.make()
+        router.open(link.url, signedIn: false)
+        XCTAssertNil(router.presented)
+        let restored = FolderInviteRouter(defaults: defaults)
+        XCTAssertEqual(restored.pending, link)
+        restored.resume(signedIn: true)
+        XCTAssertEqual(restored.presented, link)
+        restored.finish()
+        XCTAssertNil(FolderInviteRouter(defaults: defaults).pending)
+    }
+
+    func testInvitationExpiryAndRevocation() {
+        let date = Date(timeIntervalSince1970: 1000)
+        let reference = LiveSharedFolder(ownerID: "owner", folderID: "folder", title: "title")
+        let invite = FolderInvitation(link: .make(), folder: reference, senderName: "sender", expiresAt: date, isRevoked: false)
+        XCTAssertTrue(invite.isAvailable(at: date.addingTimeInterval(-1)))
+        XCTAssertFalse(invite.isAvailable(at: date))
+        XCTAssertFalse(FolderInvitation(link: .make(), folder: reference, senderName: "sender", expiresAt: date.addingTimeInterval(100), isRevoked: true).isAvailable(at: date))
+        XCTAssertEqual(reference.id, LiveSharedFolder(ownerID: "owner", folderID: "folder", title: "renamed").id)
+        XCTAssertNotEqual(reference.id, LiveSharedFolder(ownerID: "other", folderID: "folder", title: "title").id)
+    }
+
+    func testInvitationReceiveRetriesFailureAndDoesNotCelebrateBeforeCommit() async {
+        let repository = RecordingInvitationRepository()
+        let model = FolderInvitationModel(repository: repository)
+        await model.load(FolderInviteLink.make())
+        await model.receive()
+        XCTAssertNil(model.received)
+        XCTAssertNotNil(model.error)
+        XCTAssertFalse(model.isWorking)
+        repository.fail = false
+        await model.receive()
+        XCTAssertNotNil(model.received)
+        XCTAssertNil(model.error)
+        await model.receive()
+        XCTAssertEqual(repository.joins, 2)
+    }
+
     func testPhotoWithoutMusicReachesSaveAndAllowsRetryAfterFailure() async {
         let camera = RecordingCameraManager()
         let model = PhotoPreviewViewModel()
@@ -773,4 +830,21 @@ final class FriendQRViewModelTests: XCTestCase {
         XCTAssertEqual(data["name"] as? String, "")
         XCTAssertEqual(Set(data.keys), Set(["uid", "email", "name"]))
     }
+}
+
+private final class RecordingInvitationRepository: FolderInvitationRepository {
+    var fail = true
+    var joins = 0
+    func create(folderID: String) async throws -> FolderInvitation { try await resolve(link: .make()) }
+    func resolve(link: FolderInviteLink) async throws -> FolderInvitation {
+        FolderInvitation(link: link, folder: LiveSharedFolder(ownerID: "owner", folderID: "folder", title: "title"), senderName: "sender", expiresAt: Date().addingTimeInterval(600), isRevoked: false)
+    }
+    func join(invitation: FolderInvitation) async throws -> LiveSharedFolder {
+        joins += 1
+        if fail { throw URLError(.notConnectedToInternet) }
+        return invitation.folder
+    }
+    func revoke(link: FolderInviteLink) async throws { }
+    func sharedFolders() async throws -> [LiveSharedFolder] { [] }
+    func observe(_ folder: LiveSharedFolder) -> AsyncThrowingStream<SharedFolderUpdate, Error> { AsyncThrowingStream { $0.finish() } }
 }

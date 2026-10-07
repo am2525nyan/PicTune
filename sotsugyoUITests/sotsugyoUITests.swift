@@ -2,6 +2,61 @@ import XCTest
 
 /// Exercises production views with local fixtures; screenshots are retained in the xcresult.
 final class sotsugyoUITests: XCTestCase {
+    @MainActor
+    func testInvitationOpeningAndLiveLetterUpdate() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-ui-testing-invite", "-ui-testing-invite-update", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        XCTAssertTrue(app.buttons["invite.open"].waitForExistence(timeout: 10))
+        attachScreenshot("招待の封筒")
+        app.buttons["invite.open"].tap()
+        XCTAssertTrue(app.staticTexts["思い出が、\n届きました。"].waitForExistence(timeout: 5))
+        attachScreenshot("思い出の開封")
+        app.buttons["invite.open"].tap()
+        XCTAssertTrue(app.staticTexts["shared.letter"].waitForExistence(timeout: 10))
+        let updated = NSPredicate(format: "label == %@", "送り主が手紙を更新しました。")
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: updated, object: app.staticTexts["shared.letter"])], timeout: 8), .completed)
+        attachScreenshot("共有フォルダの同期")
+    }
+
+    @MainActor
+    func testExpiredInvitationCannotBeOpened() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-ui-testing-invite", "-ui-testing-invite-expired", "-AppleLanguages", "(ja)"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["invite.error"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["invite.open"].exists)
+        attachScreenshot("招待の期限切れ")
+    }
+
+    @MainActor
+    func testInvitationConnectionFailureDoesNotShowSuccess() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-ui-testing-invite", "-ui-testing-invite-offline", "-AppleLanguages", "(ja)"]
+        app.launch()
+        XCTAssertTrue(app.buttons["invite.open"].waitForExistence(timeout: 10))
+        app.buttons["invite.open"].tap()
+        XCTAssertTrue(app.staticTexts["invite.error"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.staticTexts["思い出が、\n届きました。"].exists)
+    }
+
+    @MainActor
+    func testCreateShareAndRevokeInvitation() throws {
+        let app = launch()
+        app.tabBars.buttons["フォルダ"].tap()
+        app.buttons["卒業の思い出"].firstMatch.tap()
+        XCTAssertTrue(app.buttons["folder.invite"].waitForExistence(timeout: 5))
+        app.buttons["folder.invite"].tap()
+        XCTAssertTrue(app.buttons["招待リンクを作る"].waitForExistence(timeout: 5))
+        app.buttons["招待リンクを作る"].tap()
+        XCTAssertTrue(app.buttons["invite.share"].waitForExistence(timeout: 5))
+        attachScreenshot("招待リンクを贈る")
+        app.buttons["このリンクを無効にする"].tap()
+        app.buttons["リンクを無効にする"].tap()
+        XCTAssertTrue(app.staticTexts["リンクを無効にしました。"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["invite.share"].exists)
+    }
+
     override func setUpWithError() throws {
         continueAfterFailure = false
     }

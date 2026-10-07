@@ -16,6 +16,14 @@
 				<string>com.googleusercontent.apps.592210612826-55u94cpajpgku3j3ks6oaj1ilo2e7i2k</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>pictune</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

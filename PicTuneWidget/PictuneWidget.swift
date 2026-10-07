@@ -26,31 +26,17 @@ struct Provider: TimelineProvider {
         }
     
     // UserDefaultsから画像のURLを取得し、UIImageに変換するメソッド
- func loadImage() -> [UIImage] {
-        let userdefaults = UserDefaults(suiteName: "group.PIcTune")
-     var images: [UIImage] = []
-        let imageUrlString = userdefaults!.string(forKey: "first")
-        let imageUrl = URL(string: imageUrlString!)
-        let imageData = try? Data(contentsOf: imageUrl!)
-        let uiImage = UIImage(data: imageData!)
-     images.append(uiImage!)
-     
-     let imageUrlString2 = userdefaults!.string(forKey: "second")
-     let imageUrl2 = URL(string: imageUrlString2!)
-     let imageData2 = try? Data(contentsOf: imageUrl2!)
-     let uiImage2 = UIImage(data: imageData2!)
-     images.append(uiImage2!)
-     let imageUrlString3 = userdefaults!.string(forKey: "third")
-     let imageUrl3 = URL(string: imageUrlString3!)
-     let imageData3 = try? Data(contentsOf: imageUrl3!)
-     let uiImage3 = UIImage(data: imageData3!)
-     images.append(uiImage3!)
-        return  images
-        
-        
-        
+    func loadImage() -> [UIImage] {
+        guard let defaults = UserDefaults(suiteName: "group.PIcTune"),
+              let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.PIcTune") else { return [] }
+        return ["first", "second", "third"].compactMap { key in
+            let file = directory.appendingPathComponent("widget-\(key).jpg")
+            guard defaults.string(forKey: key) == file.path else { return nil }
+            return UIImage(contentsOfFile: file.path)
+        }
     }
 }
+
 struct SimpleEntry: TimelineEntry {
     let date: Date
     

@@ -1,0 +1,23 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() { return request.auth != null; }
+    function owner() { return signedIn() && request.auth.uid in resource.metadata.get('ownerIDs', '').split(','); }
+    function invited(file) {
+      let access = firestore.get(/databases/(default)/documents/users/$(request.auth.uid)/imageAccess/$(file)).data;
+      let folder = firestore.get(/databases/(default)/documents/users/$(access.ownerID)/folders/$(access.folderID)).data;
+      return access.ownerID == request.auth.uid || request.auth.uid in folder.get('sharedWith', []);
+    }
+    match /images/{file} {
+      allow get: if owner() || (signedIn() && invited(file));
+      allow create: if signedIn() && request.resource.metadata.ownerIDs == request.auth.uid
+        && firestore.get(/databases/(default)/documents/imageOwners/$(file)).data.ownerID == request.auth.uid
+        && request.resource.size < 100 * 1024 * 1024 && request.resource.contentType.matches('image/.*');
+      allow delete: if owner();
+    }
+    match /livephotos/{file} {
+      allow get, delete: if owner();
+      allow create: if signedIn() && request.resource.metadata.ownerIDs == request.auth.uid && request.resource.size < 100 * 1024 * 1024;
+    }
+  }
+}

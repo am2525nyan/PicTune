@@ -18,24 +18,17 @@ final class NFCSession: NSObject, ObservableObject {
     var readHandler: ((String?, String?, Error?) -> Void)?
     
     
-    func startWriteSession(UserUid: String, folder: String, writeHandler: ((Error?) -> Void)?) {
+    func startWriteSession(inviteURL: URL, writeHandler: ((Error?) -> Void)?) {
         self.writeHandler = writeHandler
         isWriting = true
-        
-        // UserUid と folder をスペースで区切って1つの文字列に結合
-        let combinedString = SharedFolderReference(userID: UserUid, folderID: folder).payload
-        
-        let textPayload = NFCNDEFPayload(
-            format: NFCTypeNameFormat.nfcWellKnown,
-            type: "T".data(using: .utf8)!,
-            identifier: Data(),
-            payload: combinedString.data(using: .utf8)!  // スペースで区切った文字列をデータとして設定
-        )
-        
-        ndefMessage = NFCNDEFMessage(records: [textPayload])
+        guard let payload = NFCNDEFPayload.wellKnownTypeURIPayload(url: inviteURL) else {
+            finishWriting(error: FolderInviteError.invalidLink)
+            return
+        }
+        ndefMessage = NFCNDEFMessage(records: [payload])
         startSession()
     }
-    
+
     func startReadSession(readHandler: ((String?, String?, Error?) -> Void)?) {
         self.readHandler = readHandler
         isWriting = false

@@ -78,7 +78,7 @@ private struct SaveFolderToNFCView: View {
                         .font(.headline)
                     Text("「保存を開始」をタップして、iPhoneの上部をNFCカードに近づけてください。")
                         .foregroundStyle(.secondary)
-                    Text("カードにはフォルダへの参照を保存します。読み込むにはPicTuneとインターネット接続が必要です。カード内の既存データは上書きされます。")
+                    Text("カードに7日間有効な招待リンクを保存します。ログインして受け取ると、送り主の変更が反映されます。カード内の既存データは上書きされます。")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
@@ -124,20 +124,17 @@ private struct SaveFolderToNFCView: View {
     }
 
     private func startWriting() {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            errorMessage = "ログイン状態を確認して、もう一度お試しください。"
-            return
-        }
         isWriting = true
-        session.startWriteSession(UserUid: uid, folder: folderID) { error in
-            isWriting = false
-            if let error = error {
-                if (error as? NFCReaderError)?.code != .readerSessionInvalidationErrorUserCanceled {
-                    errorMessage = error.localizedDescription
+        Task { @MainActor in
+            do {
+                let invitation = try await FirebaseFolderInvitationRepository().create(folderID: folderID)
+                session.startWriteSession(inviteURL: invitation.link.url) { error in
+                    isWriting = false
+                    if let error {
+                        if (error as? NFCReaderError)?.code != .readerSessionInvalidationErrorUserCanceled { errorMessage = error.localizedDescription }
+                    } else { isSaved = true }
                 }
-            } else {
-                isSaved = true
-            }
+            } catch { isWriting = false; errorMessage = error.localizedDescription }
         }
     }
 }

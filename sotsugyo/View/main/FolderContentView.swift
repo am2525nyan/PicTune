@@ -10,6 +10,7 @@ struct FolderLibraryView: View {
     @State private var isShowingNFCResult = false
     @State private var nfcResultMessage = ""
     @State private var folderName = ""
+    @State private var invitationLink: FolderInviteLink?
     @State private var pendingDeletion: PhotoFolder?
     @State private var isConfirmingDeletion = false
     @State private var isDeleting = false
@@ -26,13 +27,13 @@ struct FolderLibraryView: View {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if folders.isEmpty {
-                ContentUnavailableView(
-                    "フォルダがありません",
-                    systemImage: "folder",
-                    description: Text("作成したフォルダがここに表示されます")
-                )
+                ScrollView {
+                    SharedFolderLibrarySection().padding()
+                    ContentUnavailableView("フォルダがありません", systemImage: "folder", description: Text("作成したフォルダがここに表示されます"))
+                }
             } else {
                 ScrollView {
+                    SharedFolderLibrarySection().padding(.horizontal, 16)
                     LazyVGrid(columns: columns, alignment: .leading, spacing: 24) {
                         ForEach(folders) { folder in
                             NavigationLink {
@@ -119,6 +120,7 @@ struct FolderLibraryView: View {
         } message: {
             Text(nfcResultMessage)
         }
+        .sheet(item: $invitationLink) { FolderInvitationView(link: $0) }
         .onAppear {
             Task { await reloadFolders() }
         }
@@ -149,20 +151,11 @@ struct FolderLibraryView: View {
                 return
             }
 
-            guard let payload, let reference = SharedFolderReference(payload: payload) else {
-                showNFCResult("フォルダの情報を読み取れませんでした。")
+            guard let payload, let url = URL(string: payload), let link = FolderInviteLink(url: url) else {
+                showNFCResult("このカードは旧形式です。送り主の最新アプリで招待リンクを書き直してください。")
                 return
             }
-
-            Task {
-                do {
-                    try await viewModel.getNFCData(NFCUid: reference.userID, NFCfolderid: reference.folderID)
-                    await reloadFolders()
-                    showNFCResult("フォルダを読み込みました。")
-                } catch {
-                    showNFCResult(error.localizedDescription)
-                }
-            }
+            invitationLink = link
         }
     }
 
@@ -241,6 +234,7 @@ struct FolderDetailView: View {
     @State private var showDeleteConfirmation = false
     @State private var errorMessage = ""
     @State private var showError = false
+    @State private var showInvite = false
 
     var body: some View {
         ZStack {
@@ -260,6 +254,12 @@ struct FolderDetailView: View {
                             .foregroundStyle(.secondary)
                     }
 
+                    Button { showInvite = true } label: {
+                        Label("招待リンクで贈る", systemImage: "gift.fill")
+                            .font(.headline).frame(maxWidth: .infinity, minHeight: 48)
+                    }
+                    .buttonStyle(.borderedProminent).tint(.purple).buttonBorderShape(.capsule)
+                    .accessibilityIdentifier("folder.invite")
                     FolderTextView(viewModel: viewModel, folderDocument: .constant(folderId))
 
                     MainImageView(viewModel: viewModel, folderId: folderId)
@@ -298,6 +298,15 @@ struct FolderDetailView: View {
             Button("閉じる", role: .cancel) { }
         } message: {
             Text(errorMessage)
+        }
+        .sheet(isPresented: $showInvite) {
+            #if DEBUG
+            if UITestFixtures.isEnabled {
+                FolderInviteShareView(folderID: folderId, folderName: folderName, repository: UITestInvitationRepository())
+            } else { FolderInviteShareView(folderID: folderId, folderName: folderName) }
+            #else
+            FolderInviteShareView(folderID: folderId, folderName: folderName)
+            #endif
         }
         .task(id: folderId) {
             await reloadPhotos()
