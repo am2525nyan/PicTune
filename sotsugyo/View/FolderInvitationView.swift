@@ -1,8 +1,13 @@
 import SwiftUI
 
-private enum GiftPalette {
+enum GiftPalette {
     static let ink = Color.primary
     static let purple = Color(red: 0.49, green: 0.33, blue: 0.78)
+    static let purpleText = Color(uiColor: UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 0.76, green: 0.63, blue: 0.95, alpha: 1)
+            : UIColor(red: 0.49, green: 0.33, blue: 0.78, alpha: 1)
+    })
 }
 
 struct FolderInvitationView: View {
@@ -28,7 +33,7 @@ struct FolderInvitationView: View {
                             VStack(spacing: 18) {
                                 Text("\(invitation.senderName)さんから")
                                     .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(GiftPalette.purple)
+                                    .foregroundStyle(GiftPalette.purpleText)
                                     .padding(.horizontal, 16).padding(.vertical, 8)
                                     .background(GiftPalette.purple.opacity(0.08), in: Capsule())
                                 Text(invitation.folder.title)
@@ -37,10 +42,10 @@ struct FolderInvitationView: View {
                                     .accessibilityIdentifier("invite.heading")
                             }
                             .padding(.top, 24)
-                            GiftEnvelope(opened: opened, reduceMotion: reduceMotion)
+                            GiftEnvelope(opened: opened, title: invitation.folder.title)
                                 .scaleEffect(0.85).frame(height: 250)
                             Label("受け取りました", systemImage: "checkmark.circle.fill")
-                                .font(.headline).foregroundStyle(GiftPalette.purple)
+                                .font(.headline).foregroundStyle(GiftPalette.purpleText)
                                 .opacity(opened ? 1 : 0)
                                 .accessibilityHidden(!opened)
                                 .accessibilityIdentifier("invite.received")
@@ -58,13 +63,15 @@ struct FolderInvitationView: View {
                             .padding(.top, 2)
                         }
                     }
-                    .padding(.horizontal, 28).padding(.bottom, 32)
+                    .padding(24)
+                    .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 28))
+                    .padding(.horizontal, 20).padding(.vertical, 24)
                     .frame(maxWidth: 540).frame(maxWidth: .infinity)
                 }
                 if opened && !reduceMotion { GiftSparkles().allowsHitTesting(false).accessibilityHidden(true) }
             }
             .foregroundStyle(GiftPalette.ink)
-            .navigationTitle("フォルダへの招待").navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("届いた思い出").navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("閉じる", systemImage: "xmark") { dismiss() }
@@ -73,7 +80,7 @@ struct FolderInvitationView: View {
             }
             .navigationDestination(isPresented: $showFolder) {
                 if let received = model.received {
-                    SharedFolderView(reference: received, repository: model.repository)
+                    SharedFolderView(reference: received, senderName: model.invitation?.senderName, repository: model.repository)
                 }
             }
             .task { await model.load(link) }
@@ -109,7 +116,7 @@ struct FolderInvitationView: View {
             } label: {
                 HStack(spacing: 10) {
                     if model.isWorking { ProgressView().tint(.white) }
-                    Text(model.isWorking ? "受け取り中…" : opened ? "フォルダを見る" : "受け取る")
+                    Text(model.isWorking ? "受け取り中…" : opened ? "思い出を見る" : "受け取って開く")
                 }
                 .font(.headline).frame(maxWidth: .infinity, minHeight: 58)
                 .foregroundStyle(.white)
@@ -124,11 +131,12 @@ struct FolderInvitationView: View {
 struct FolderInviteShareView: View {
     let folderID: String
     let folderName: String
+    let coverImage: UIImage?
     @StateObject private var model: FolderInvitationModel
     @Environment(\.dismiss) private var dismiss
     @State private var confirmRevoke = false
-    init(folderID: String, folderName: String, repository: any FolderInvitationRepository = FirebaseFolderInvitationRepository()) {
-        self.folderID = folderID; self.folderName = folderName
+    init(folderID: String, folderName: String, coverImage: UIImage? = nil, repository: any FolderInvitationRepository = FirebaseFolderInvitationRepository()) {
+        self.folderID = folderID; self.folderName = folderName; self.coverImage = coverImage
         _model = StateObject(wrappedValue: FolderInvitationModel(repository: repository))
     }
     var body: some View {
@@ -140,8 +148,8 @@ struct FolderInviteShareView: View {
                         Text(folderName)
                             .font(.system(size: 28, weight: .heavy, design: .rounded))
                             .multilineTextAlignment(.center).padding(.top, 20)
-                        GiftEnvelope(opened: false, reduceMotion: true).scaleEffect(0.72).frame(height: 210)
-                        Text("リンクを送ると、相手もこのフォルダを見られます。\n写真や手紙の更新も、相手に反映されます。")
+                        GiftEnvelope(opened: true, title: folderName, coverImage: coverImage).scaleEffect(0.85).frame(height: 260)
+                        Text("写真に音楽や手紙を添えて、\nリンクで送れます。")
                             .font(.subheadline).multilineTextAlignment(.center)
                         if model.isWorking { ProgressView("リンクを準備しています…") }
                         else if let invitation = model.invitation, !model.isRevoked {
@@ -152,7 +160,7 @@ struct FolderInviteShareView: View {
                             .buttonStyle(.borderedProminent).buttonBorderShape(.roundedRectangle(radius: 16))
                             .accessibilityIdentifier("invite.share")
                             Text("\(invitation.expiresAt.formatted(date: .abbreviated, time: .omitted))まで参加できます。\nリンクを知っている方は、ログインすると参加できます。")
-                                .font(.caption).multilineTextAlignment(.center)
+                                .font(.caption).foregroundStyle(.secondary).multilineTextAlignment(.center)
                             Button("このリンクを無効にする", role: .destructive) { confirmRevoke = true }
                                 .font(.footnote)
                         } else {
@@ -160,12 +168,18 @@ struct FolderInviteShareView: View {
                             Button(model.isRevoked ? "新しい招待リンクを作る" : "招待リンクを作る") { Task { await model.create(folderID: folderID) } }
                                 .buttonStyle(.borderedProminent).controlSize(.large)
                         }
+                        Text("送ったあとに写真や手紙を更新すると、相手にも反映されます。")
+                            .font(.caption).foregroundStyle(.secondary).multilineTextAlignment(.center)
                         if let error = model.error { Text(error).font(.footnote).foregroundStyle(.red) }
-                    }.padding(28).frame(maxWidth: 540).frame(maxWidth: .infinity)
+                    }
+                    .padding(24)
+                    .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 28))
+                    .padding(.horizontal, 20).padding(.vertical, 24)
+                    .frame(maxWidth: 540).frame(maxWidth: .infinity)
                 }
             }
             .foregroundStyle(GiftPalette.ink).tint(GiftPalette.purple)
-            .navigationTitle("招待リンク").navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("思い出を送る").navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("閉じる") { dismiss() }.disabled(model.isWorking) } }
             .confirmationDialog("招待リンクを無効にしますか？", isPresented: $confirmRevoke, titleVisibility: .visible) {
                 Button("リンクを無効にする", role: .destructive) { Task { await model.revoke() } }
@@ -175,36 +189,60 @@ struct FolderInviteShareView: View {
     }
 }
 
-private struct GiftBackdrop: View {
+struct GiftBackdrop: View {
+    @Environment(\.colorScheme) private var colorScheme
     var body: some View {
-        Color(uiColor: .systemBackground).ignoresSafeArea()
+        LinearGradient(
+            colors: colorScheme == .dark
+                ? [Color(red: 0.13, green: 0.14, blue: 0.22), Color(red: 0.20, green: 0.14, blue: 0.25)]
+                : [Color(red: 0.82, green: 0.86, blue: 0.98), Color(red: 0.89, green: 0.80, blue: 0.97)],
+            startPoint: .topLeading, endPoint: .bottomTrailing
+        ).ignoresSafeArea()
     }
 }
 
 private struct GiftEnvelope: View {
     let opened: Bool
-    let reduceMotion: Bool
+    let title: String
+    var coverImage: UIImage? = nil
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 24).fill(Color(red: 0.82, green: 0.72, blue: 0.9))
                 .frame(width: 246, height: 162).rotationEffect(.degrees(-7)).offset(y: 36)
-            VStack(spacing: 12) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12).fill(LinearGradient(colors: [.pink.opacity(0.35), .purple.opacity(0.5), .cyan.opacity(0.3)], startPoint: .topLeading, endPoint: .bottomTrailing))
-                    Image(systemName: "music.note").font(.system(size: 44, weight: .light)).foregroundStyle(.white)
-                }.frame(height: 108)
-                Color.clear.frame(height: 10)
+            VStack(alignment: .leading, spacing: 12) {
+                Image(systemName: "heart").font(.system(size: 16, weight: .semibold)).foregroundStyle(.pink.opacity(0.6))
+                ForEach(0..<3) { _ in Capsule().fill(GiftPalette.purple.opacity(0.15)).frame(height: 2) }
+                Spacer(minLength: 0)
             }
-            .padding(13).background(.white, in: RoundedRectangle(cornerRadius: 16))
-            .frame(width: 176).rotationEffect(.degrees(opened ? -5 : 5))
+            .padding(18).frame(width: 138, height: 154)
+            .background(Color(red: 1, green: 0.98, blue: 0.97), in: RoundedRectangle(cornerRadius: 4))
+            .rotationEffect(.degrees(12)).offset(x: 52, y: opened ? -38 : 28)
+            .shadow(color: .black.opacity(0.04), radius: 6, y: 3)
+            VStack(spacing: 10) {
+                Group {
+                    if let coverImage {
+                        Image(uiImage: coverImage).resizable().scaledToFit()
+                    } else {
+                        ZStack {
+                            Rectangle().fill(LinearGradient(colors: [Color(red: 0.78, green: 0.86, blue: 0.98), Color(red: 0.87, green: 0.76, blue: 0.95)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                            Image(systemName: "music.note").font(.system(size: 40, weight: .medium)).foregroundStyle(.white)
+                        }
+                    }
+                }.frame(width: 150, height: 120)
+                Text(title).font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundStyle(GiftPalette.purple).lineLimit(1)
+            }
+            .padding(12).padding(.bottom, 8).frame(width: 174)
+            .background(.white, in: RoundedRectangle(cornerRadius: 5))
+            .rotationEffect(.degrees(opened ? -7 : 5))
             .offset(y: opened ? -48 : 12).scaleEffect(opened ? 1.12 : 0.9)
             .shadow(color: .black.opacity(0.07), radius: 8, y: 4)
             RoundedRectangle(cornerRadius: 20)
                 .fill(LinearGradient(colors: [Color(red: 0.94, green: 0.86, blue: 0.96), Color(red: 0.84, green: 0.73, blue: 0.91)], startPoint: .top, endPoint: .bottom))
                 .frame(width: 254, height: 142).overlay {
-                    Image(systemName: opened ? "heart.fill" : "sparkles")
-                        .font(.system(size: 25, weight: .light)).foregroundStyle(.white)
-                        .padding(17).background(.white.opacity(0.22), in: Circle())
+                    Image(systemName: "heart.fill")
+                        .font(.system(size: 23, weight: .medium)).foregroundStyle(.white)
+                        .padding(16).background(Color(red: 0.92, green: 0.68, blue: 0.80), in: Circle())
                 }.rotationEffect(.degrees(-7)).offset(y: opened ? 72 : 68)
                 .opacity(opened ? 0.75 : 1)
         }

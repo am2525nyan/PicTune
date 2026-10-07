@@ -255,7 +255,7 @@ struct FolderDetailView: View {
                     }
 
                     Button { showInvite = true } label: {
-                        Label("リンクで共有", systemImage: "gift.fill")
+                        Label("リンクで送る", systemImage: "gift.fill")
                             .font(.headline).frame(maxWidth: .infinity, minHeight: 48)
                     }
                     .buttonStyle(.borderedProminent).tint(.purple).buttonBorderShape(.capsule)
@@ -302,10 +302,10 @@ struct FolderDetailView: View {
         .sheet(isPresented: $showInvite) {
             #if DEBUG
             if UITestFixtures.isEnabled {
-                FolderInviteShareView(folderID: folderId, folderName: folderName, repository: UITestInvitationRepository())
-            } else { FolderInviteShareView(folderID: folderId, folderName: folderName) }
+                FolderInviteShareView(folderID: folderId, folderName: folderName, coverImage: viewModel.folderCoverImages[folderId], repository: UITestInvitationRepository())
+            } else { FolderInviteShareView(folderID: folderId, folderName: folderName, coverImage: viewModel.folderCoverImages[folderId]) }
             #else
-            FolderInviteShareView(folderID: folderId, folderName: folderName)
+            FolderInviteShareView(folderID: folderId, folderName: folderName, coverImage: viewModel.folderCoverImages[folderId])
             #endif
         }
         .task(id: folderId) {
