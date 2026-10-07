@@ -255,7 +255,7 @@ struct FolderDetailView: View {
                     }
 
                     Button { showInvite = true } label: {
-                        Label("招待リンクで贈る", systemImage: "gift.fill")
+                        Label("リンクで共有", systemImage: "gift.fill")
                             .font(.headline).frame(maxWidth: .infinity, minHeight: 48)
                     }
                     .buttonStyle(.borderedProminent).tint(.purple).buttonBorderShape(.capsule)

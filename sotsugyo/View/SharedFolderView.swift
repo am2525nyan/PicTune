@@ -27,10 +27,10 @@ struct SharedFolderView: View {
                     Text(error).font(.subheadline).multilineTextAlignment(.center)
                     Button("再読み込み") { retryID = UUID() }
                 }
-                if model.isLoading { ProgressView("思い出を読み込んでいます…") }
+                if model.isLoading { ProgressView("フォルダを読み込んでいます…") }
                 if let folder = model.folder, !folder.letter.isEmpty {
                     VStack(alignment: .leading, spacing: 16) {
-                        Label("あなたへの手紙", systemImage: "envelope.open").font(.headline).foregroundStyle(.purple)
+                        Label("手紙", systemImage: "envelope.open").font(.headline).foregroundStyle(.purple)
                         Text(folder.letter).font(.body).lineSpacing(8).frame(maxWidth: .infinity, alignment: .leading)
                             .accessibilityIdentifier("shared.letter")
                     }
@@ -50,7 +50,7 @@ struct SharedFolderView: View {
             }.padding(24).frame(maxWidth: 560).frame(maxWidth: .infinity)
         }
         .background(Color(uiColor: .systemGroupedBackground))
-        .navigationTitle("届いた思い出").navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("共有されたフォルダ").navigationBarTitleDisplayMode(.inline)
         .task(id: "\(retryID)-\(scenePhase == .active)") {
             if scenePhase == .active { await model.observe(reference) }
         }
@@ -64,7 +64,7 @@ struct SharedFolderLibrarySection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             if !folders.isEmpty {
-                Text("届いた思い出").font(.title2.bold())
+                Text("共有されたフォルダ").font(.title2.bold())
                 ForEach(folders) { folder in
                     NavigationLink {
                         SharedFolderView(reference: folder)
@@ -73,7 +73,7 @@ struct SharedFolderLibrarySection: View {
                             Image(systemName: "envelope.open.fill").font(.title2).foregroundStyle(.purple)
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(folder.title).font(.headline)
-                                Text("送り主の更新が届きます").font(.caption).foregroundStyle(.secondary)
+                                Text("相手の更新も反映されます").font(.caption).foregroundStyle(.secondary)
                             }
                             Spacer()
                             Image(systemName: "chevron.right").foregroundStyle(.secondary)
@@ -94,7 +94,7 @@ struct SharedFolderLibrarySection: View {
                     folders = updated; error = nil
                 }
             }
-            catch { if !Task.isCancelled { self.error = "届いた思い出を読み込めませんでした。" } }
+            catch { if !Task.isCancelled { self.error = "共有されたフォルダを読み込めませんでした。" } }
         }
     }
 }

@@ -44,7 +44,7 @@ struct FolderInvitationView: View {
                             }
                         }
                         controls
-                        Text("写真・音楽・手紙を共有します。\n送り主の更新が反映されます。あなたは閲覧のみです。")
+                        Text("相手が写真や手紙を更新すると、ここにも反映されます。\n内容を編集することはできません。")
                             .font(.caption).foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                     }
@@ -123,7 +123,7 @@ struct FolderInviteShareView: View {
                             .font(.system(size: 28, weight: .heavy, design: .rounded))
                             .multilineTextAlignment(.center).padding(.top, 20)
                         GiftEnvelope(opened: false, reduceMotion: true).scaleEffect(0.72).frame(height: 210)
-                        Text("リンクを送った相手と、\nこのフォルダの写真・音楽・手紙を共有します。")
+                        Text("リンクを送ると、相手もこのフォルダを見られます。\n写真や手紙の更新も、相手に反映されます。")
                             .font(.subheadline).multilineTextAlignment(.center)
                         if model.isWorking { ProgressView("リンクを準備しています…") }
                         else if let invitation = model.invitation, !model.isRevoked {
@@ -133,7 +133,7 @@ struct FolderInviteShareView: View {
                             }
                             .buttonStyle(.borderedProminent).buttonBorderShape(.roundedRectangle(radius: 16))
                             .accessibilityIdentifier("invite.share")
-                            Text("\(invitation.expiresAt.formatted(date: .abbreviated, time: .omitted))まで参加できます。\nリンクを知っているログイン済みの方が閲覧できます。")
+                            Text("\(invitation.expiresAt.formatted(date: .abbreviated, time: .omitted))まで参加できます。\nリンクを知っている方は、ログインすると参加できます。")
                                 .font(.caption).multilineTextAlignment(.center)
                             Button("このリンクを無効にする", role: .destructive) { confirmRevoke = true }
                                 .font(.footnote)
@@ -151,7 +151,7 @@ struct FolderInviteShareView: View {
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("閉じる") { dismiss() }.disabled(model.isWorking) } }
             .confirmationDialog("招待リンクを無効にしますか？", isPresented: $confirmRevoke, titleVisibility: .visible) {
                 Button("リンクを無効にする", role: .destructive) { Task { await model.revoke() } }
-            } message: { Text("このリンクからの新しい参加を停止します。参加済みの方との共有は続きます。") }
+            } message: { Text("このリンクからは参加できなくなります。すでに受け取った相手は、引き続きフォルダを見られます。") }
         }
         .interactiveDismissDisabled(model.isWorking)
     }
@@ -191,7 +191,7 @@ private struct GiftEnvelope: View {
                 .opacity(opened ? 0.75 : 1)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(opened ? "開いた思い出の封筒" : "思い出を包んだ封筒")
+        .accessibilityLabel(opened ? "開いた招待の封筒" : "招待の封筒")
     }
 }
 
