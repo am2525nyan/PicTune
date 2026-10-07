@@ -1,0 +1,1042 @@
+{
+  "title": "PicTune 30アプリのオンボーディング調査",
+  "date": "2026-10-07",
+  "apps": [
+    {
+      "name": "Locket",
+      "category": "写真・友人共有",
+      "official_url": "https://locket.com/get",
+      "evidence_url": "https://www.lazyweb.com/flow/locket/onboarding",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "ホーム画面のウィジェットを図解する開始画面",
+        "電話番号入力",
+        "確認コード入力",
+        "姓名入力",
+        "ユーザー名入力"
+      ],
+      "actions_taken": "公開フローをブラウザーで開き、公開されている5画面を目視。スクリーンショット保存。",
+      "visual_observations": "黒に近い背景、最初の画面だけ黄色いCTA。端末の輪郭と1枚の写真で、友人の写真がホーム画面に届くことを示しています。入力画面では装飾を減らしています。",
+      "motion_observations": "静止画記録のため未確認。",
+      "pictune_takeaway": "最初に、写真がどこに残るかという完成後の姿を1枚で見せる。",
+      "avoid": "PicTuneにない電話番号必須登録をそのまま取り入れない。",
+      "limitations": "全10画面中5画面のみ公開。アプリ本体・認証後の操作は未確認。",
+      "date": "2026-10-07",
+      "source_date": "2026-08（資料更新）",
+      "group": "写真・友人共有",
+      "id": "locket",
+      "sequence_verified": false,
+      "source_label": "2026年の資料",
+      "images": [
+        {
+          "path": "assets/locket-1.jpg",
+          "source_url": "https://www.lazyweb.com/flow/locket/onboarding"
+        }
+      ]
+    },
+    {
+      "name": "Retro",
+      "category": "写真・友人共有",
+      "official_url": "https://retro.app",
+      "evidence_url": "https://www.lazyweb.com/company/retro",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "開始画面：Retro／Friends Only／Get started",
+        "週単位の空の写真一覧",
+        "今週の記録を始めるCTA"
+      ],
+      "actions_taken": "公開画面集を開き、スクロールして5枠の画面を目視。",
+      "visual_observations": "黒地に白いセリフ体のRetro、Friends Onlyという短い説明。ホームも黒で、Week表記・曜日の細長い列・中央の小さな開始ボタンが続きます。キャラではなくロゴと写真の置き場所が中心です。",
+      "motion_observations": "静止画記録のため未確認。",
+      "pictune_takeaway": "開始画面と、まだ写真がない一覧画面を同じ世界観でつなげる。",
+      "avoid": "順不同の画面集を、実際のオンボーディング順序として扱わない。",
+      "limitations": "66画面中公開5枠。1枠は画像が表示されず、掲載順もフロー順と確認できません。",
+      "date": "2026-10-07",
+      "source_date": "2026-05（資料更新）",
+      "group": "写真・友人共有",
+      "id": "retro",
+      "sequence_verified": false,
+      "source_label": "2026年の資料",
+      "images": [
+        {
+          "path": "assets/retro-1.jpg",
+          "source_url": "https://www.lazyweb.com/company/retro"
+        }
+      ]
+    },
+    {
+      "name": "Widgetable",
+      "category": "友人・ウィジェット",
+      "official_url": "https://widgetable.net/",
+      "evidence_url": "https://screensdesign.com/apps/widgetable-besties-couples/?vs=183220",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "Apple／Google／Guestの3択",
+        "Googleを使う許可ダイアログ（記録）"
+      ],
+      "actions_taken": "記録ギャラリーを開き、Previous screenでGoogleの許可画面から登録選択へ戻って目視。別途紹介フロー2画面も確認。",
+      "visual_observations": "淡いミント地。上部にペット、ウィジェット、メッセージなどの完成例を斜めに並べ、下に白い認証ボタンを3本配置。キャラはサービス内コンテンツと一体で使われています。",
+      "motion_observations": "ギャラリー内の画面切替のみ操作。アプリ内アニメーションは未確認。",
+      "pictune_takeaway": "マスコットを新設する前に、実際に作れる写真やウィジェット自体を可愛く見せる考え方が参考になります。",
+      "avoid": "本体に存在しない育成キャラや機能を導入だけで見せない。",
+      "limitations": "認証・ゲストを実際に選択したわけではありません。紹介フローはオンラインアンバサダー募集で、友人接続の初回導入とは別でした。",
+      "date": "2026-10-07",
+      "source_date": "不明（開発元一覧は2026-09-24更新表記）",
+      "group": "写真・友人共有",
+      "id": "widgetable",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/widgetable-1.jpg",
+          "source_url": "https://screensdesign.com/apps/widgetable-besties-couples/?vs=183220"
+        }
+      ]
+    },
+    {
+      "name": "noteit",
+      "category": "手描き・友人共有",
+      "official_url": "https://apps.apple.com/us/app/noteit-bff-widget/id1570369625",
+      "evidence_url": "https://apps.apple.com/us/app/noteit-bff-widget/id1570369625",
+      "method": "公式紹介のみ",
+      "observed_steps": [
+        "公式説明上：ウィジェット追加",
+        "相手と接続",
+        "相手のホーム画面へメモを送る"
+      ],
+      "actions_taken": "公式App Storeページの4つの紹介画像と説明をブラウザーで確認。",
+      "visual_observations": "ターコイズ背景、太い白文字、手描きの落書き。実際の写真にメッセージやヘッドホンの絵を重ね、親しい相手から届く内容を主役にしています。",
+      "motion_observations": "公式静止画像のみで未確認。",
+      "pictune_takeaway": "専用キャラを置く代わりに、写真への手描き・スタンプで可愛さを出す比較材料。",
+      "avoid": "ストア広告の説明順を、初回起動時の画面順として扱わない。",
+      "limitations": "アプリ内オンボーディングの画面・接続操作は未確認。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "group": "写真・友人共有",
+      "id": "noteit",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/noteit-1.jpg",
+          "source_url": "https://apps.apple.com/us/app/noteit-bff-widget/id1570369625"
+        }
+      ]
+    },
+    {
+      "name": "BeReal",
+      "category": "写真・友人共有",
+      "official_url": "https://bereal.com/",
+      "evidence_url": "https://www.lazyweb.com/flow/bereal/onboarding",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "黒地のBeRealロゴ",
+        "友人を探すための連絡先説明",
+        "共有する連絡先範囲の選択",
+        "既存の友人を追加",
+        "まだ使っていない相手の招待"
+      ],
+      "actions_taken": "公開フローの5画面を目視、撮影。",
+      "visual_observations": "一貫した黒地と白文字。連絡先説明ではシステム選択画面の例と指差しを使います。友人一覧は写真・名前・追加操作が中心です。",
+      "motion_observations": "静止画記録のため未確認。",
+      "pictune_takeaway": "共有体験を説明するときは、相手とつながる操作まで具体的に示す。",
+      "avoid": "PicTuneのQR共有を連絡先一括同期に置き換えない。",
+      "limitations": "9画面中5画面公開。電話登録や撮影までの全体順序はこの公開部分では確認できません。",
+      "date": "2026-10-07",
+      "source_date": "2026-08（資料更新）",
+      "group": "写真・友人共有",
+      "id": "bereal",
+      "sequence_verified": false,
+      "source_label": "2026年の資料",
+      "images": [
+        {
+          "path": "assets/bereal-1.jpg",
+          "source_url": "https://www.lazyweb.com/flow/bereal/onboarding"
+        }
+      ]
+    },
+    {
+      "name": "Dispo",
+      "category": "写真・カメラ",
+      "official_url": "https://apps.apple.com/us/app/dispo-retro-disposable-camera/id1491684197",
+      "evidence_url": "https://screensdesign.com/showcase/dispo-retro-disposable-camera",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "写真の重なりを背景に、使い捨てカメラと翌朝の現像を説明",
+        "装飾カメラの一覧とMaxの紹介",
+        "スキップ可能なプラン選択"
+      ],
+      "actions_taken": "公開記録ページを開き、導入3画面が読める位置へスクロールして目視。",
+      "visual_observations": "1画面目は日常写真を隙間なく重ね、2画面目は派手なカメラ実物風UI。下部に暗い半透明パネルと鮮やかな緑のnextボタンを固定しています。",
+      "motion_observations": "静止画のみ確認。シャッター等の触感・アニメーションは未確認。",
+      "pictune_takeaway": "写真そのものの楽しさを大きく見せ、説明文は下部の短い領域に収める。",
+      "avoid": "現像待ちやサブスクなど、PicTuneにない制約・料金導線を真似しない。",
+      "limitations": "アプリ本体を操作していません。4枚目以降にはアクセス制限のある記録があります。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "group": "写真・友人共有",
+      "id": "dispo",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/dispo-1.jpg",
+          "source_url": "https://screensdesign.com/showcase/dispo-retro-disposable-camera"
+        }
+      ]
+    },
+    {
+      "name": "Dazz Cam",
+      "category": "写真・カメラ",
+      "official_url": "https://apps.apple.com/us/app/id1422471180",
+      "evidence_url": "https://screensdesign.com/apps/dazz-cam-vintage-camera/?av=897&id=887&ts=0&vt=1&vs=53009",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "カメラ権限（公開記録の章立て）",
+        "カメラ本体",
+        "カメラ・効果の選択と小さなヒント"
+      ],
+      "actions_taken": "公開画面ギャラリーで00:02のカメラ本体を拡大し、Next screenで00:07のカメラ選択へ進めて確認。",
+      "visual_observations": "黒いカメラUIに白いシャッター。選択画面には小さな実物風カメラが並び、日時・光漏れの設定には青い吹き出しヒントが付きます。長い歓迎説明がなくても、触る対象が視覚的に伝わります。",
+      "motion_observations": "記録ギャラリーの切替のみ確認。アプリ内遷移・触感は未確認。",
+      "pictune_takeaway": "全機能を最初に説明せず、操作対象のそばに短いヒントを出す構造。",
+      "avoid": "初手の権限だけで価値が伝わると判断しない。PicTuneは音楽との組み合わせの説明が別途必要です。",
+      "limitations": "カメラ権限自体は資料の章立てで確認し、システム許可は操作していません。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "group": "写真・友人共有",
+      "id": "dazz-cam",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/dazz-cam-1.jpg",
+          "source_url": "https://screensdesign.com/apps/dazz-cam-vintage-camera/?av=897&id=887&ts=0&vt=1&vs=53009"
+        }
+      ]
+    },
+    {
+      "name": "POV",
+      "category": "イベント・写真共有",
+      "official_url": "https://pov.camera/",
+      "evidence_url": "https://pov.camera/",
+      "method": "公式紹介のみ",
+      "observed_steps": [
+        "写真を集める体験の紹介",
+        "GET THE APPメニュー",
+        "Try the App Clip",
+        "スマートフォンで読む体験用QRコードのモーダル"
+      ],
+      "actions_taken": "公式サイトでGET THE APPを開き、Try the App Clipを押して体験用QRコードのモーダルを表示。旧/povの紹介画面も確認。",
+      "visual_observations": "濃い背景と太い文字、イベント写真を全面にしたカメラ画面。スマホのシャッターと撮影可能枚数を大きく見せます。体験入口のイラストは小さな補助要素です。",
+      "motion_observations": "サイトのモーダル表示を確認。アプリの動きは未確認。",
+      "pictune_takeaway": "共有後の抽象的な説明より、QRを読むと何を触れるのかを見せる。",
+      "avoid": "PicTuneにもダウンロード不要の共有があると誤認させない。",
+      "limitations": "公開体験はスマートフォンのApp Clip向けQRで、デスクトップ内では開始できませんでした。アプリ内の実操作には到達していません。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "group": "写真・友人共有",
+      "id": "pov",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/pov-1.jpg",
+          "source_url": "https://pov.camera/"
+        }
+      ]
+    },
+    {
+      "name": "1 Second Everyday",
+      "category": "日記・思い出",
+      "official_url": "https://1se.co/",
+      "evidence_url": "https://screensdesign.com/apps/1-second-everyday-video-diary/",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "何を記録したいかを複数選択",
+        "記録で何を得たいかを複数選択",
+        "SkipとNextで進める構造"
+      ],
+      "actions_taken": "00:07の記録対象選択画面を開き、Next screenで00:12の目的選択画面へ進めて確認。章立ても確認。",
+      "visual_observations": "青緑のグラデーション、白文字、黄色のNext。最初は小さなピル型タグ、次は横長の選択肢で、上部の質問と下部ボタンは同じ位置です。",
+      "motion_observations": "静止画ギャラリーの切替のみ。アプリ内アニメーションは未確認。",
+      "pictune_takeaway": "誰との何を残したいかで体験を分けるなら、軽い選択式は使えます。",
+      "avoid": "回答が体験に反映されない目的アンケートを増やさない。",
+      "limitations": "公開8画面までが閲覧可能で、それ以降にはPro表示があります。章立ての初回写真追加・成功画面は実見していないため詳細断定しません。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "group": "写真・友人共有",
+      "id": "1-second-everyday",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/1-second-everyday-1.jpg",
+          "source_url": "https://screensdesign.com/apps/1-second-everyday-video-diary/"
+        }
+      ]
+    },
+    {
+      "name": "Day One",
+      "category": "日記・思い出",
+      "official_url": "https://dayoneapp.com/",
+      "evidence_url": "https://screensdesign.com/apps/day-one-journal-private-diary/?vs=315145",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "日記をめくる写真を背景にApple登録・既存アカウント・後回し",
+        "Sign in with Appleのシート（記録）"
+      ],
+      "actions_taken": "記録ギャラリーの登録画面を開き、Next screenでApple認証シートの記録へ進めて確認。",
+      "visual_observations": "手元の本と腕の写真が画面全体を占め、白いロゴを中央に配置。説明文をほぼ置かず、下部の白い認証ボタンと細いSkip for nowが入口です。次の記録では背景写真が別場面になっています。",
+      "motion_observations": "背景が別画像の2記録を確認しましたが、動画・クロスフェードの再生自体は未確認。",
+      "pictune_takeaway": "日常の手元や人の気配を実写真で示し、アプリを使う気持ちを短く伝える。",
+      "avoid": "写真背景だけで音楽を添える価値まで伝わると考えない。",
+      "limitations": "Apple認証は録画から切り出された静止画です。本人のアカウント作成や本体操作は行っていません。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "group": "写真・友人共有",
+      "id": "day-one",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/day-one-1.jpg",
+          "source_url": "https://screensdesign.com/apps/day-one-journal-private-diary/?vs=315145"
+        }
+      ]
+    },
+    {
+      "name": "Daylio",
+      "category": "日記・気分記録",
+      "official_url": "https://daylio.net/",
+      "evidence_url": "https://theappfuel.com/examples/daylio_onboarding",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "日記の価値説明",
+        "匿名データ共有の選択",
+        "気分アイコンと色のカスタマイズ",
+        "記録したい活動カテゴリ",
+        "通知時刻とOS許可",
+        "目標作成",
+        "無料体験の案内",
+        "気分・活動の初回入力"
+      ],
+      "actions_taken": "ブラウザーで14枚の公開記録を開き、スクロールして序盤から入力画面まで確認。アプリのボタン自体は操作していません。",
+      "visual_observations": "白い本文領域とパステルの上部イラスト。気分の顔・色の選択が設定にも入力にも継続して現れます。丸い次へボタンとページドット。",
+      "motion_observations": "未確認。静止画記録のみです。",
+      "pictune_takeaway": "見た目を選ぶ行為を導入に含めると、説明を読むだけではなく自分のものにする体験になります。",
+      "avoid": "データ共有・通知・目標・課金をPicTuneにもそのまま連ねないこと。写真を作るまでが遠くなります。",
+      "limitations": "記録の撮影年・アプリ版不明。現行アプリとの一致、スキップ挙動、実際の課金・通知は未確認。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "group": "日記・生活",
+      "id": "daylio",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/daylio-1.jpg",
+          "source_url": "https://theappfuel.com/examples/daylio_onboarding"
+        }
+      ]
+    },
+    {
+      "name": "stoic.",
+      "category": "日記・振り返り",
+      "official_url": "https://help.getstoic.com/getting-started/nMb4jABmc8oatYuUUyT5Q5/download--set-up/6f9eBdDY7muH12dseBvJap",
+      "evidence_url": "https://screensdesign.com/apps/journal-mental-health-stoic/?vs=5065",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "朝と夜の振り返りを示す歓迎画面",
+        "優先したい目的を複数選択",
+        "年齢帯を選択",
+        "使いたいツールを2×2カードから選択"
+      ],
+      "actions_taken": "ScreensDesignの拡大ビューで前の画面ボタンを3回操作し、公開された4画面を実見。",
+      "visual_observations": "白・黒中心。歓迎画面には朝と夜を対にした図。選択済みだけ黒く反転する丸いピル。ツールは文字と小さな抽象イラストを2×2に配置。",
+      "motion_observations": "未確認。記録ビューアーの移動だけ確認しました。",
+      "pictune_takeaway": "写真・音楽のような二つの要素を対として示す構図は、キャラクターなしでもアプリの関係性を伝えられます。",
+      "avoid": "健康目的の多段質問を流用しないこと。PicTuneに必要のない年齢や心理目標を聞かないこと。",
+      "limitations": "アプリ実操作なし。後半は資料側の有料範囲があり、通知・課金フローは実見していません。公開記録の版不明。",
+      "date": "2026-10-07",
+      "source_date": "画面記録は不明。公式セットアップ記事は2025-11-11更新",
+      "group": "日記・生活",
+      "id": "stoic",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/stoic-1.jpg",
+          "source_url": "https://screensdesign.com/apps/journal-mental-health-stoic/?vs=5065"
+        }
+      ]
+    },
+    {
+      "name": "Reflectly",
+      "category": "日記・気分記録",
+      "official_url": "https://reflectly.app/",
+      "evidence_url": "https://theappfuel.com/examples/reflectly_onboarding",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "自分を紹介する歓迎",
+        "ニックネーム",
+        "テーマ色",
+        "リマインダー",
+        "Premium案内",
+        "名前入り歓迎と説明",
+        "気分スライダー",
+        "活動と感情の選択"
+      ],
+      "actions_taken": "公開21枚の記録ページを開き、最初の12枚をスクロールして実見。",
+      "visual_observations": "紫から桃色へ変わる全面グラデーション。小さな顔のアイコンが名前入りメッセージにも気分入力にも継続登場。白い細い文字とピル型CTA。",
+      "motion_observations": "未確認。スライダーも静止した記録として見ています。",
+      "pictune_takeaway": "色選択の結果がその後の画面へ反映される構成、ユーザーの名前をすぐ本文へ返す構成。",
+      "avoid": "最初だけキャラを置く解釈。ここでは気分記録の本体にも顔が続いているので、PicTuneでの整合性は別途必要です。",
+      "limitations": "撮影時期・版不明。アプリ操作、入力結果、課金の閉じ方は未確認。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "group": "日記・生活",
+      "id": "reflectly",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/reflectly-1.jpg",
+          "source_url": "https://theappfuel.com/examples/reflectly_onboarding"
+        }
+      ]
+    },
+    {
+      "name": "DailyBean",
+      "category": "日記・気分記録",
+      "official_url": "https://www.dailybean.app/en",
+      "evidence_url": "https://www.dailybean.app/en",
+      "method": "公式紹介のみ",
+      "observed_steps": [
+        "公式掲載の月間カレンダー",
+        "気分の5段階選択",
+        "感情アイコンの選択",
+        "記録ブロックのカスタマイズ紹介"
+      ],
+      "actions_taken": "公式サイトを開いて入力画面までスクロール。サイトのCookieバナーを拒否して表示を確認。",
+      "visual_observations": "薄い緑・クリーム・黄色、丸い顔の気分アイコン。カレンダーに気分の顔が貯まります。入力の顔と一覧の顔が同じ役割で続きます。",
+      "motion_observations": "アプリの動きは未確認。公式サイトの静止UI紹介を確認。",
+      "pictune_takeaway": "小さな記録が一覧で蓄積する見せ方。可愛い要素が記録そのものになっている点。",
+      "avoid": "公式サイトの紹介画像を初回オンボーディングだと扱わないこと。キャラが可愛いだけでは流用理由になりません。",
+      "limitations": "初回オンボーディングは未確認。アプリをインストールしておらず、公式紹介から入力と一覧の見た目だけ確認。",
+      "date": "2026-10-07",
+      "source_date": "不明。掲載カレンダーは2026年1月",
+      "group": "日記・生活",
+      "id": "dailybean",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/dailybean-1.jpg",
+          "source_url": "https://www.dailybean.app/en"
+        }
+      ]
+    },
+    {
+      "name": "How We Feel",
+      "category": "感情記録",
+      "official_url": "https://apps.apple.com/gb/app/how-we-feel/id1562706384",
+      "evidence_url": "https://www.lazyweb.com/flow/how-we-feel/start-onboarding",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "4色の形のキャラクターと歓迎",
+        "今の感情を4色から選ぶ",
+        "より具体的な感情語が並ぶ画面",
+        "人物映像のフレーム",
+        "対処方法を伝える映像画面と続けるボタン"
+      ],
+      "actions_taken": "2026年8月更新の公開フローを開いて、公開されている5枚を実見。",
+      "visual_observations": "黒地に赤・黄・青・緑。装飾の色が次画面で感情選択の分類に変わります。文字は白、CTAも白で一貫。",
+      "motion_observations": "未確認。人物映像はスクリーンショットのフレームのみ。",
+      "pictune_takeaway": "最初に見せた形・色に次の画面で役割を与える。ブランドの絵を操作に結びつける例です。",
+      "avoid": "色が選択の意味を担う設計と、単なる可愛い飾りを混同しないこと。",
+      "limitations": "公開は全10枚中5枚。残りは資料サイトの登録が必要で未確認。アプリ実操作なし。",
+      "date": "2026-10-07",
+      "source_date": "2026-08更新",
+      "group": "日記・生活",
+      "id": "how-we-feel",
+      "sequence_verified": false,
+      "source_label": "2026年の資料",
+      "images": [
+        {
+          "path": "assets/how-we-feel-1.jpg",
+          "source_url": "https://www.lazyweb.com/flow/how-we-feel/start-onboarding"
+        }
+      ]
+    },
+    {
+      "name": "Moodistory",
+      "category": "日記・気分記録",
+      "official_url": "https://moodistory.com/",
+      "evidence_url": "https://moodistory.com/press-room/",
+      "method": "公式紹介のみ",
+      "observed_steps": [
+        "気分を選ぶ入力画面",
+        "活動を選ぶ入力画面",
+        "写真やメモを追加する画面",
+        "記録の分析・月年カレンダー"
+      ],
+      "actions_taken": "公式Press Roomを開き、Screenshots欄の6枚を実見して保存。",
+      "visual_observations": "入力は青緑→黄緑→サーモンと全面色が切り替わる3段階。大きい線画の顔、活動の線画アイコン、写真付きメモ。一覧は色の四角が貯まる構成。",
+      "motion_observations": "未確認。公式の静止画のみ。",
+      "pictune_takeaway": "一つの記録を作る操作を3段階に分け、各段階を色で区別する構成。写真と文章を最後に任意追加する見せ方。",
+      "avoid": "通常の記録作成画面を初回オンボーディングと表記しないこと。",
+      "limitations": "初回導入は未確認。公式掲載画像のパスに2023とあり、現行UIを保証しません。",
+      "date": "2026-10-07",
+      "source_date": "2023年掲載画像",
+      "group": "日記・生活",
+      "id": "moodistory",
+      "sequence_verified": false,
+      "source_label": "2023年の資料",
+      "images": [
+        {
+          "path": "assets/moodistory-1.jpg",
+          "source_url": "https://moodistory.com/press-room/"
+        }
+      ]
+    },
+    {
+      "name": "Structured",
+      "category": "生活・予定管理",
+      "official_url": "https://structured.app/",
+      "evidence_url": "https://www.botsi.com/resources/flows/apps/structured",
+      "additional_evidence_url": "https://web.structured.app/",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "用途と短時間・登録不要の説明（2024 iOS記録）",
+        "サンプルの予定タイムライン",
+        "予定完了の状態",
+        "起床時刻",
+        "通知案内とスキップ",
+        "実画面への移行",
+        "現行Web版の入口はメール入力が必須"
+      ],
+      "actions_taken": "2024年6月の公開画面記録を開き、最初の10枚を実見。さらに公式Webアプリを開き、メール登録画面で停止。",
+      "visual_observations": "記録は暗い背景にサーモン色CTA、薄い線のタイムライン。説明図と本体の予定UIが連続します。現行Web入口は白地＋桃色、左に手描き風の机と予定表。",
+      "motion_observations": "iOSの動きは未確認。サンプル予定の前後状態を静止画で比較。",
+      "pictune_takeaway": "実際に使うUIのサンプルを導入の中心に置き、完成状態を見せる。キャラよりも利用イメージが主役です。",
+      "avoid": "2024 iOSの『登録不要』を現行Webにも当てはめないこと。",
+      "limitations": "iOSの記録は2024年6月。残り70枚は資料サイトのメール登録が必要。現行Webもメール登録必須のため内部操作なし。",
+      "date": "2026-10-07",
+      "source_date": "iOS記録2024-06／Web入口2026-10-07実見",
+      "group": "日記・生活",
+      "id": "structured",
+      "sequence_verified": false,
+      "source_label": "2024年の記録 / Web入口は現行",
+      "images": [
+        {
+          "path": "assets/structured-1.jpg",
+          "source_url": "https://www.botsi.com/resources/flows/apps/structured"
+        },
+        {
+          "path": "assets/structured-2.jpg",
+          "source_url": "https://web.structured.app/"
+        }
+      ]
+    },
+    {
+      "name": "Tiimo",
+      "category": "生活・予定管理",
+      "official_url": "https://www.tiimoapp.com/",
+      "evidence_url": "https://www.botsi.com/resources/flows/apps/tiimo",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "利用者数と歓迎",
+        "自分に当てはまる特性",
+        "利用場面を複数選択",
+        "手伝ってほしいことを選ぶ"
+      ],
+      "actions_taken": "公開10枚の記録を開き、読める状態まで画面を確認してスクロール。",
+      "visual_observations": "アイボリー地に黒いセリフ体見出し。手描き風の人や手、小さなグラデーション。質問ページは余白が広く、上部に1 of 3、選択の線だけ濃くなります。",
+      "motion_observations": "未確認。静止画記録のみです。",
+      "pictune_takeaway": "賑やかな歓迎画面と静かな入力画面に強弱をつける。短い進捗表示で終わりを明示する。",
+      "avoid": "精神・発達特性の質問をPicTuneに持ち込まないこと。2024デザインを最新事例として扱わないこと。",
+      "limitations": "2024年6月記録。登録以降の86枚は資料側のメール登録壁のため未確認。ネイティブ操作なし。",
+      "date": "2026-10-07",
+      "source_date": "2024-06",
+      "group": "日記・生活",
+      "id": "tiimo",
+      "sequence_verified": false,
+      "source_label": "2024年の資料",
+      "images": [
+        {
+          "path": "assets/tiimo-1.jpg",
+          "source_url": "https://www.botsi.com/resources/flows/apps/tiimo"
+        }
+      ]
+    },
+    {
+      "name": "Amie",
+      "category": "予定・タスク管理",
+      "official_url": "https://amie.so/documentation/getting-started/installation",
+      "evidence_url": "https://nicelydone.club/examples/flows/337bbf2e-08df-4f0f-9165-2078b017c56a",
+      "additional_evidence_url": "https://calendar.amie.so/login",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "カレンダー本体を見せる紹介",
+        "タスクカードに囲まれたログイン",
+        "Googleアカウント選択（公開記録）",
+        "現行Web入口にはGoogleとOutlookの選択"
+      ],
+      "actions_taken": "公開記録を拡大してスクロールし、冒頭3画面を実見。公式Webも開き、認証ボタン手前で停止。",
+      "visual_observations": "キャラクターなし。白いタスクカードを画面の縁へ散らし、中央をコピーとCTAのために空けています。本体のパステル予定ブロックと共通する言語です。現行ログインもカードの囲み構成。",
+      "motion_observations": "動作の細部は未確認。現行ログイン画面は開きましたがカードや認証は操作していません。",
+      "pictune_takeaway": "アプリで扱う本物の要素そのものを、入口の親しみや楽しさに使う構成。PicTuneでは写真や曲名を素材にする考え方に対応します。",
+      "avoid": "デスクトップ向けの大量カード配置をそのままiPhoneへ縮小しないこと。",
+      "limitations": "記録は15画面中冒頭3画面のみ公開。記録内カレンダーは2022年3月。現行Webは外部認証必須のため内部操作なし。",
+      "date": "2026-10-07",
+      "source_date": "記録撮影日不明（画面内2022-03）／Web入口2026-10-07実見",
+      "group": "日記・生活",
+      "id": "amie",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/amie-1.jpg",
+          "source_url": "https://calendar.amie.so/login"
+        },
+        {
+          "path": "assets/amie-2.jpg",
+          "source_url": "https://nicelydone.club/examples/flows/337bbf2e-08df-4f0f-9165-2078b017c56a"
+        }
+      ]
+    },
+    {
+      "name": "Gentler Streak",
+      "category": "生活・運動記録",
+      "official_url": "https://apps.apple.com/us/app/gentler-streak-workout-tracker/id1576857102",
+      "evidence_url": "https://screensdesign.com/showcase/workout-tracker-gentler-streak",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "オレンジのキャラクターの歓迎",
+        "Activity Pathの図と用途説明",
+        "Healthデータ許可",
+        "運動負荷を感覚で評価する画面（導入後）"
+      ],
+      "actions_taken": "公開ギャラリーを開き、Next slideを押して前後の公開画面を確認。ロックされた4枚目は閲覧していません。",
+      "visual_observations": "薄い空色の背景、オレンジのCTAとキャラクター。次画面では緑の帯と線グラフが主役。運動負荷の評価画面にも同じキャラの表情が使われます。",
+      "motion_observations": "未確認。記録ビューアーのスライドのみ操作。",
+      "pictune_takeaway": "キャラの整合性を見る比較用。歓迎だけでなく、記録の状態を表情で伝える役割まで続いています。",
+      "avoid": "歓迎の可愛さだけを借りること。PicTuneでキャラが継続的に何を伝えるか決まらなければ採用理由が弱いです。",
+      "limitations": "公開記録の撮影日・版不明。4枚目と動画は資料側のロックあり。Health許可もアプリ実操作もしていません。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "group": "日記・生活",
+      "id": "gentler-streak",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/gentler-streak-1.jpg",
+          "source_url": "https://screensdesign.com/showcase/workout-tracker-gentler-streak"
+        }
+      ]
+    },
+    {
+      "name": "VSCO",
+      "category": "写真・クリエイティブ",
+      "official_url": "https://vsco.co/",
+      "evidence_url": "https://theappfuel.com/examples/vsco_onboarding",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "白地に細い円形ロゴ",
+        "写真を全面に置いた開始・サインイン",
+        "写真＋登録方法のボトムシート",
+        "ユーザー名入力",
+        "メンバーシップ案内",
+        "権限一覧と写真インポート"
+      ],
+      "actions_taken": "App Fuelのオンボーディングページを開き、スクロールして8画面の公開記録を確認。アプリのボタンは操作していません。",
+      "visual_observations": "写真が入口を占め、登録後は白地と黒文字へ切り替わります。開始画面は複数の顔写真を重ねた編集例です。",
+      "motion_observations": "未確認（静止画記録）。",
+      "pictune_takeaway": "完成した写真の魅力を最初に見せ、設定画面では情報を絞るという切替を比較できます。",
+      "avoid": "本体験前に権限をまとめて要求する構成を、そのまま採用しない。",
+      "limitations": "記録の撮影日は不明。現行版や日本語版と一致する保証はありません。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "strength": "複数画面の記録",
+      "group": "写真編集・音楽",
+      "id": "vsco",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/vsco-1.jpg",
+          "source_url": "https://theappfuel.com/examples/vsco_onboarding"
+        }
+      ]
+    },
+    {
+      "name": "Tezza",
+      "category": "写真・クリエイティブ",
+      "official_url": "https://linktr.ee/tezzaapp",
+      "evidence_url": "https://screensdesign.com/showcase/tezza-aesthetic-photo-editor",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "人物写真の上に大きなTEZZAロゴ・黄色い登録ボタン",
+        "Google・Apple・Instagramとゲスト継続の入口",
+        "写真背景のPROプラン選択",
+        "ベージュの写真編集画面",
+        "フィルム枠と粒子の編集画面"
+      ],
+      "actions_taken": "公開ショーケースをスクロールし、Next slideで次の画像へ移動。",
+      "visual_observations": "全面の人物写真、太い白ロゴ、黄色の丸いCTA。編集画面は生成り色で、フィルターの写真見本が横に並びます。",
+      "motion_observations": "未確認（操作したのは資料サイトのカルーセル）。",
+      "pictune_takeaway": "キャラクターなしでも、タイポグラフィと写真の切り取り方で強い個性が出る実例です。",
+      "avoid": "有料化の前置きを中心にしない。写真の作風がPicTuneの利用場面に合うかは別途検討。",
+      "limitations": "一部画像・フル動画は会員向け。紹介文は登録必須と記述しますが、見えた実画面にはCONTINUE AS GUESTがあり、画面を優先しました。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "strength": "複数画面の記録",
+      "group": "写真編集・音楽",
+      "id": "tezza",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/tezza-1.jpg",
+          "source_url": "https://screensdesign.com/showcase/tezza-aesthetic-photo-editor"
+        }
+      ]
+    },
+    {
+      "name": "SCRL",
+      "category": "写真・クリエイティブ",
+      "official_url": "https://scrl.com/",
+      "evidence_url": "https://screensdesign.com/showcase/scrl-photo-collage-maker",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "写真背景にトラッキング許可のシステム表示",
+        "流入元を尋ねる選択肢",
+        "プレミアム案内・閉じるボタン",
+        "後続のレイヤー管理画面"
+      ],
+      "actions_taken": "公開ショーケースをスクロールし、Next slideで続きの公開画像を確認。",
+      "visual_observations": "暗くした人物写真を上に置き、下の濃茶部分に質問と横長の選択肢。淡い黄色がCTAと小見出しに使われています。",
+      "motion_observations": "未確認（静止画記録）。",
+      "pictune_takeaway": "写真の下半分を暗くして文字と操作を重ねる構成は、写真と説明を1画面に収める比較材料になります。",
+      "avoid": "『どこで知ったか』を主要体験より前に聞く必然性はPicTuneには確認できません。",
+      "limitations": "公開7画像の一部がぼかされています。画像一覧は初回フローの全順序を表すとは限りません。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "strength": "複数画面の記録",
+      "group": "写真編集・音楽",
+      "id": "scrl",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/scrl-1.jpg",
+          "source_url": "https://screensdesign.com/showcase/scrl-photo-collage-maker"
+        }
+      ]
+    },
+    {
+      "name": "Unfold",
+      "category": "写真・クリエイティブ",
+      "official_url": "https://unfold.com/",
+      "evidence_url": "https://screensdesign.com/apps/unfold-story-reels-maker/?vs=123140",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "紫の光とロゴを置いた登録・ログイン案内",
+        "Squarespaceを使用したログインのシステム確認",
+        "Google・Apple・Emailによるアカウント作成"
+      ],
+      "actions_taken": "画面6をクリックして拡大し、Next screenを2回操作して画面7・8を順に確認。",
+      "visual_observations": "黒い背景に紫のロゴ、細かな星。次画面ではコラージュ背景が見えます。外部認証の画面は余白の多い白地です。",
+      "motion_observations": "未確認（画面記録を順送り）。背景の変化は確認しましたが、そのアニメーション自体は未確認です。",
+      "pictune_takeaway": "ブランドの雰囲気を保った入口から、認証の実務へ切り替える際の断絶を考える材料です。",
+      "avoid": "PicTuneで未実装の外部アカウント連携や、有料購読前提を流用しない。",
+      "limitations": "画面9以降は会員向け。初回フローの完走や動画再生の連続観察はしていません。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "strength": "連続3画面の記録",
+      "group": "写真編集・音楽",
+      "id": "unfold",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/unfold-1.jpg",
+          "source_url": "https://screensdesign.com/apps/unfold-story-reels-maker/?vs=123140"
+        }
+      ]
+    },
+    {
+      "name": "PicsArt",
+      "category": "写真・クリエイティブ",
+      "official_url": "https://picsart.com/",
+      "evidence_url": "https://theappfuel.com/examples/picsart_onboarding",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "白地ロゴ",
+        "加工した人物写真と登録・スキップ",
+        "メール入力",
+        "パスワード入力",
+        "ユーザー名入力",
+        "Gold案内",
+        "写真へのアクセス許可・写真一覧・作例フィード"
+      ],
+      "actions_taken": "App Fuelの公開ページをスクロールして9枚の画面記録を確認。",
+      "visual_observations": "モノクロ写真の口元だけ色つきの切り抜きを重ねています。紫〜ピンクのCTAが写真から登録フォームまで継続します。",
+      "motion_observations": "未確認（静止画記録）。",
+      "pictune_takeaway": "使う前に加工結果を1例見せる方法。装飾を増やすだけでなく、何ができるかが写真で伝わります。",
+      "avoid": "登録の3入力と有料案内を、そのまま長いPicTune導入にしない。",
+      "limitations": "撮影日不明で、記録のUIは古い可能性があります。現行アプリの実操作ではありません。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "strength": "複数画面の記録",
+      "group": "写真編集・音楽",
+      "id": "picsart",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/picsart-1.jpg",
+          "source_url": "https://theappfuel.com/examples/picsart_onboarding"
+        }
+      ]
+    },
+    {
+      "name": "Prequel",
+      "category": "写真・クリエイティブ",
+      "official_url": "https://prequel.app/",
+      "evidence_url": "https://screensdesign.com/showcase/prequel-photo-video-editor",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "複数写真によるカスタマイズ案内",
+        "人物写真を使ったAI Retake紹介",
+        "何を作るかの選択肢",
+        "Goldプラン案内"
+      ],
+      "actions_taken": "ショーケースの公開画像を確認し、Next slideで続きへ移動。",
+      "visual_observations": "黒背景に淡いオレンジのCTA。写真のコラージュ、1枚の大きな人物写真、選択肢の画面を使い分けています。",
+      "motion_observations": "未確認。紹介文に動的デモの説明がありますが、今回は静止画で確認した範囲のみです。",
+      "pictune_takeaway": "質問を置く場合も、途中に写真の結果例があると利用目的へ戻せる構成です。",
+      "avoid": "長い診断・属性質問・プラン生成をPicTuneに足す根拠にはしない。",
+      "limitations": "一部画像とフル動画は会員向け。公開カルーセルは抜粋で、全画面を連続操作していません。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "strength": "複数画面の記録",
+      "group": "写真編集・音楽",
+      "id": "prequel",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/prequel-1.jpg",
+          "source_url": "https://screensdesign.com/showcase/prequel-photo-video-editor"
+        }
+      ]
+    },
+    {
+      "name": "CapCut",
+      "category": "写真・クリエイティブ",
+      "official_url": "https://www.capcut.com/",
+      "evidence_url": "https://www.lazyweb.com/flow/capcut/onboarding",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "認証方法選択",
+        "テンプレート見本とUse template",
+        "どこで知ったかの選択",
+        "TikTok連携案内",
+        "生年月日選択"
+      ],
+      "actions_taken": "公開オンボーディング資料を開いてスクロールし、表示された5枚を確認。",
+      "visual_observations": "白地の設定画面と、全面動画のテンプレート見本が対照的です。水色のCTAが両方に使われています。",
+      "motion_observations": "未確認（静止画記録）。",
+      "pictune_takeaway": "出来上がりの見本から『この形で始める』へつなぐ導線を比較できます。",
+      "avoid": "流入元調査や外部SNSの連携を、価値を体験する前の必須作業にしない。",
+      "limitations": "全12画面のうち5枚のみ公開。資料サイトの掲載順であり、アプリでこの順番を進めたわけではありません。",
+      "date": "2026-10-07",
+      "source_date": "2026-02（資料サイトの更新表記）",
+      "strength": "公開5画面の記録",
+      "group": "写真編集・音楽",
+      "id": "capcut",
+      "sequence_verified": false,
+      "source_label": "2026年の資料",
+      "images": [
+        {
+          "path": "assets/capcut-1.jpg",
+          "source_url": "https://www.lazyweb.com/flow/capcut/onboarding"
+        }
+      ]
+    },
+    {
+      "name": "Airbuds",
+      "category": "音楽・共有",
+      "official_url": "https://www.airbuds.com/",
+      "evidence_url": "https://pablooo.club/screen/c9e4d3a1239c2f7b139790bbbff717f2c1225560d9f9c5c2d31c44a0f40d6f3a/Airbuds/Onboarding/Music%20streaming%20service%20connection%20screen",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "音楽ウィジェットの見本",
+        "友人の音楽がホーム画面に来る旨の説明",
+        "Spotify・Apple Musicの連携選択"
+      ],
+      "actions_taken": "2025-09-19撮影の公開画面を実見。User flowを確認しようとした時点で資料サイトの登録ダイアログが表示され、先へ進んでいません。",
+      "visual_observations": "黒地の紫・緑の光、重なる白いウィジェット見本、下部の白い連携ボタン。小さなプロフィール画像により友人との関係を示しています。",
+      "motion_observations": "未確認（1枚の画面記録）。",
+      "pictune_takeaway": "音楽連携の要求より先に、その結果が届く場所と友人との関係を見せる実例です。",
+      "avoid": "PicTuneの楽曲検索に不要な音楽サービスのアカウント連携を要求しない。",
+      "limitations": "公開1画面のみで全体の手順・現行版は未確認。",
+      "date": "2026-10-07",
+      "source_date": "2025-09-19",
+      "strength": "公開1画面の記録",
+      "group": "写真編集・音楽",
+      "id": "airbuds",
+      "sequence_verified": false,
+      "source_label": "2025年の資料",
+      "images": [
+        {
+          "path": "assets/airbuds-1.jpg",
+          "source_url": "https://pablooo.club/screen/c9e4d3a1239c2f7b139790bbbff717f2c1225560d9f9c5c2d31c44a0f40d6f3a/Airbuds/Onboarding/Music%20streaming%20service%20connection%20screen"
+        }
+      ]
+    },
+    {
+      "name": "Polarr",
+      "category": "写真編集・音楽",
+      "official_url": "https://www.polarr.com/web/",
+      "evidence_url": "https://photoeditor.polarr.com/",
+      "method": "アプリ実操作",
+      "platform": "公式Web版・デスクトップ",
+      "observed_steps": [
+        "写真をえらぶ／サンプル写真を開く",
+        "サンプル写真と『Polarrへようこそ！』の操作ガイド",
+        "強調されたフィルターアイコンを押す",
+        "M2を選択し、写真への効果と強度スライダーを確認",
+        "チェックマークで適用後、調整への案内を確認"
+      ],
+      "actions_taken": "サンプル写真を開く→フィルターパネル→M2選択→チェックで適用。ユーザーの写真は使っていません。",
+      "visual_observations": "黒い編集画面の中央に大きなサンプル写真。最初のガイドが実際に押すフィルターアイコンを青い円で示す。フィルターは同じ写真のサムネイルで比較する。",
+      "motion_observations": "アイコン操作でフィルターパネルが現れ、M2選択でメイン写真の色が変わることを確認。適用後はガイドの対象が調整へ移る。遷移時間やiOS版の動きは未確認。",
+      "pictune_takeaway": "機能説明の前にサンプル写真を一度変えて、結果をその場で見せる構造。PicTuneでは写真に曲を添える前後の違いを体験にできる。これは設計への解釈で、効果検証済みではない。",
+      "avoid": "デスクトップ編集用の多数のツール、暗い作業画面をそのまま移すこと。可愛さの見本ではなく体験の順序の参考。",
+      "limitations": "Web版のみ。サンプル写真のフィルター適用まで。iOS初回起動、保存・共有・認証・有料機能は未確認。起動時に読み込み待ちがあった。",
+      "date": "2026-10-07",
+      "source_date": "2026-10-07 実操作",
+      "sequence_verified": true,
+      "group": "写真編集・音楽",
+      "id": "polarr",
+      "source_label": "今回の実操作",
+      "images": [
+        {
+          "path": "assets/polarr-1.jpg",
+          "source_url": "https://photoeditor.polarr.com/"
+        },
+        {
+          "path": "assets/polarr-2.jpg",
+          "source_url": "https://photoeditor.polarr.com/"
+        },
+        {
+          "path": "assets/polarr-3.jpg",
+          "source_url": "https://photoeditor.polarr.com/"
+        }
+      ]
+    },
+    {
+      "name": "Pixlr Editor",
+      "category": "写真編集・音楽",
+      "official_url": "https://pixlr.com/jp/editor/",
+      "evidence_url": "https://pixlr.com/jp/editor/",
+      "method": "アプリ実操作",
+      "platform": "公式Web版・デスクトップ",
+      "observed_steps": [
+        "画像を開く／新規作成を入口として提示",
+        "新着情報のモーダルを閉じる",
+        "新規作成で用途別サイズ・名前・背景を選べる",
+        "初期値のまま作成し、編集キャンバスへ到達"
+      ],
+      "actions_taken": "Cookie拒否→新着情報を閉じる→新規作成→作成する。ログインせず空の1920×1080キャンバスを作成。",
+      "visual_observations": "暗い作業画面で画像を開く青いボタンが主役。新規作成のダイアログは写真・ソーシャル等の用途で選択を整理。作成後はツール、レイヤー、履歴が同時に並ぶ。",
+      "motion_observations": "新規作成モーダルが開き、作成ボタンで編集画面へ変わることを確認。初期の新着モーダルが背面操作を遮る点も確認。細かなアニメーションの仕様は未確認。",
+      "pictune_takeaway": "登録前に最初の作成へ入れる順序が参考になる。一方、初回に新着情報を出すと、目的の操作が一度遮られる。",
+      "avoid": "用途やサイズの大量選択をオンボーディングに持ち込むこと。可愛いiPhone画面の参考としての関連性は低い。",
+      "limitations": "公式Webの空キャンバス作成まで。iOS版、写真編集、保存・共有は未確認。段階型のオンボーディングではなく最初の利用導線の記録。",
+      "date": "2026-10-07",
+      "source_date": "2026-10-07 実操作",
+      "sequence_verified": true,
+      "group": "写真編集・音楽",
+      "id": "pixlr-editor",
+      "source_label": "今回の実操作",
+      "images": [
+        {
+          "path": "assets/pixlr-editor-1.jpg",
+          "source_url": "https://pixlr.com/jp/editor/"
+        },
+        {
+          "path": "assets/pixlr-editor-2.jpg",
+          "source_url": "https://pixlr.com/jp/editor/"
+        }
+      ]
+    }
+  ],
+  "supplements": [
+    {
+      "name": "Canva",
+      "category": "写真・クリエイティブ",
+      "official_url": "https://www.canva.com/ja_jp/",
+      "evidence_url": "https://www.canva.com/ja_jp/",
+      "method": "公式紹介のみ",
+      "observed_steps": [
+        "『伝えたい想いのそばに』の公式トップ",
+        "今すぐ始めるを押下",
+        "ログインまたは簡単登録モーダル"
+      ],
+      "actions_taken": "公式サイトの『今すぐ始める』を実際に押し、Google・Yahoo! JAPAN・Facebook・メールの選択肢まで到達。任意Cookieを拒否して表示を整理。登録・認証はしていません。",
+      "visual_observations": "背景は紫〜青緑グラデーション。認証モーダルは左が選択肢、右がカフェで制作する人物写真です。",
+      "motion_observations": "サイトでモーダルへの切替は確認。モバイルアプリの動きは未確認。",
+      "pictune_takeaway": "登録画面にも『利用している場面』の写真を添える考え方を比較できます。",
+      "avoid": "多数の認証方法を実装なしに並べない。デスクトップLPをiPhoneオンボーディング実例と同一視しない。",
+      "limitations": "Web入口のみの実操作。エディタ、登録後、iOSアプリの初回フローは未確認。補足扱いを推奨。",
+      "date": "2026-10-07",
+      "source_date": "2026-10-07に現行Webを確認",
+      "strength": "補足：公式Web入口のみ",
+      "group": "写真編集・音楽",
+      "id": "canva",
+      "sequence_verified": false,
+      "source_label": "2026年の資料",
+      "images": [
+        {
+          "path": "assets/canva-1.jpg",
+          "source_url": "https://www.canva.com/ja_jp/"
+        }
+      ]
+    },
+    {
+      "name": "Shuffles",
+      "category": "写真・クリエイティブ",
+      "official_url": "https://shffls.com/",
+      "evidence_url": "https://uiland.design/screens/shuffles/screens/310a5618-86aa-4e8a-aab8-8e4fc480a775/flows/onboarding?flow=Onboarding",
+      "method": "画面記録確認",
+      "observed_steps": [
+        "植物・花瓶・蝶・渓谷を組み合わせたコラージュのスプラッシュのみ"
+      ],
+      "actions_taken": "60fpsの操作案内動画を開こうとしましたがPRO画面になったため中止。UilandのOnboardingを開き、公開1画面と以降38画面のサインイン壁を確認。",
+      "visual_observations": "異なる写真の切り抜きが画面を埋め、黄緑のロゴが中央に置かれています。キャラクターではなく作れる作品が入口の表現です。",
+      "motion_observations": "未確認。60fpsにアニメーション記録の存在はありましたが、閲覧は有料壁で止まりました。",
+      "pictune_takeaway": "写真の切り抜きや重なりによって遊び心を出す表現の参考。流れの根拠には不足しています。",
+      "avoid": "見られていない後続画面・スワイプ挙動を推測で採用しない。",
+      "limitations": "公開スプラッシュ1枚のみ。フロー比較の主材料には弱いため補足扱いを推奨。",
+      "date": "2026-10-07",
+      "source_date": "不明",
+      "strength": "補足：公開1画面のみ",
+      "group": "写真編集・音楽",
+      "id": "shuffles",
+      "sequence_verified": false,
+      "source_label": "記録時期不明",
+      "images": [
+        {
+          "path": "assets/shuffles-1.jpg",
+          "source_url": "https://uiland.design/screens/shuffles/screens/310a5618-86aa-4e8a-aab8-8e4fc480a775/flows/onboarding?flow=Onboarding"
+        }
+      ]
+    }
+  ],
+  "supplement_note": "補足としてCanvaの公式Web認証入口とShufflesの公開スプラッシュも確認しました。確認範囲が狭いため主30件から外し、observations.jsonに記録を残しています。"
+}
