@@ -10,9 +10,11 @@ final class sotsugyoUITests: XCTestCase {
         XCTAssertTrue(app.buttons["invite.open"].waitForExistence(timeout: 10))
         XCTAssertEqual(app.staticTexts["invite.heading"].label, "夏の旅行")
         XCTAssertTrue(app.staticTexts["さきさんから"].exists)
+        XCTAssertFalse(app.otherElements["invite.cover"].exists)
         attachScreenshot("招待の封筒")
         app.buttons["invite.open"].tap()
         XCTAssertTrue(app.staticTexts["invite.received"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.otherElements["invite.cover"].waitForExistence(timeout: 5))
         attachScreenshot("思い出の開封")
         app.buttons["invite.open"].tap()
         XCTAssertTrue(app.staticTexts["shared.letter"].waitForExistence(timeout: 10))
@@ -40,6 +42,23 @@ final class sotsugyoUITests: XCTestCase {
         app.buttons["invite.open"].tap()
         XCTAssertTrue(app.staticTexts["invite.error"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.staticTexts["invite.received"].exists)
+        XCTAssertFalse(app.otherElements["invite.cover"].exists)
+    }
+
+    @MainActor
+    func testInvitationStillOpensWithoutCoverPhoto() throws {
+        for condition in ["-ui-testing-invite-empty", "-ui-testing-invite-image-failure"] {
+            let app = XCUIApplication()
+            app.launchArguments = ["-ui-testing", "-ui-testing-invite", condition, "-AppleLanguages", "(ja)"]
+            app.launch()
+            XCTAssertTrue(app.buttons["invite.open"].waitForExistence(timeout: 10))
+            app.buttons["invite.open"].tap()
+            XCTAssertTrue(app.staticTexts["invite.received"].waitForExistence(timeout: 5))
+            XCTAssertFalse(app.otherElements["invite.cover"].exists)
+            app.buttons["invite.open"].tap()
+            XCTAssertTrue(app.staticTexts["shared.letter"].waitForExistence(timeout: 10))
+            app.terminate()
+        }
     }
 
     @MainActor

@@ -13,7 +13,9 @@ enum GiftPalette {
 struct FolderInvitationView: View {
     let link: FolderInviteLink
     @StateObject private var model: FolderInvitationModel
+    @StateObject private var preview: SharedFolderModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var opened = false
     @State private var showFolder = false
@@ -21,6 +23,18 @@ struct FolderInvitationView: View {
     init(link: FolderInviteLink, repository: any FolderInvitationRepository = FirebaseFolderInvitationRepository()) {
         self.link = link
         _model = StateObject(wrappedValue: FolderInvitationModel(repository: repository))
+        #if DEBUG
+        if UITestFixtures.isEnabled {
+            _preview = StateObject(wrappedValue: SharedFolderModel(repository: repository, photoLimit: 1, imageLoader: { _, _ in
+                if ProcessInfo.processInfo.arguments.contains("-ui-testing-invite-image-failure") { throw URLError(.notConnectedToInternet) }
+                return UITestFixtures.image().pngData()!
+            }))
+        } else {
+            _preview = StateObject(wrappedValue: SharedFolderModel(repository: repository, photoLimit: 1))
+        }
+        #else
+        _preview = StateObject(wrappedValue: SharedFolderModel(repository: repository, photoLimit: 1))
+        #endif
     }
 
     var body: some View {
@@ -42,8 +56,9 @@ struct FolderInvitationView: View {
                                     .accessibilityIdentifier("invite.heading")
                             }
                             .padding(.top, 24)
-                            GiftEnvelope(opened: opened, title: invitation.folder.title)
+                            GiftEnvelope(opened: opened, title: invitation.folder.title, coverImage: preview.photos.first?.image)
                                 .scaleEffect(0.85).frame(height: 250)
+                                .accessibilityIdentifier(preview.photos.isEmpty ? "invite.envelope" : "invite.cover")
                             Label("受け取りました", systemImage: "checkmark.circle.fill")
                                 .font(.headline).foregroundStyle(GiftPalette.purpleText)
                                 .opacity(opened ? 1 : 0)
@@ -84,6 +99,10 @@ struct FolderInvitationView: View {
                 }
             }
             .task { await model.load(link) }
+            .task(id: "\(model.received?.id ?? "")-\(scenePhase == .active)-\(showFolder)") {
+                guard let received = model.received, scenePhase == .active, !showFolder else { return }
+                await preview.observe(received)
+            }
             .onChange(of: model.received) { _, received in
                 guard received != nil else { return }
                 withAnimation(reduceMotion ? .easeOut(duration: 0.2) : .spring(response: 0.85, dampingFraction: 0.7)) { opened = true }
@@ -247,7 +266,7 @@ private struct GiftEnvelope: View {
                 .opacity(opened ? 0.75 : 1)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(opened ? "開いた招待の封筒" : "招待の封筒")
+        .accessibilityLabel(coverImage != nil ? "\(title)のチェキを添えた封筒" : opened ? "開いた招待の封筒" : "招待の封筒")
     }
 }
 

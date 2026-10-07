@@ -74,12 +74,14 @@ final class SharedFolderModel: ObservableObject {
     private var imageTask: Task<Void, Never>?
     private var generation = UUID()
     private let repository: any FolderInvitationRepository
+    private let photoLimit: Int?
     private let imageLoader: (LiveSharedFolder, PhotoRecord) async throws -> Data
     init(repository: any FolderInvitationRepository = FirebaseFolderInvitationRepository(),
+         photoLimit: Int? = nil,
          imageLoader: @escaping (LiveSharedFolder, PhotoRecord) async throws -> Data = { folder, record in
              try await SharedImageAccess.load(folder: folder, photo: record)
          }) {
-        self.repository = repository; self.imageLoader = imageLoader
+        self.repository = repository; self.photoLimit = photoLimit; self.imageLoader = imageLoader
     }
     func observe(_ reference: LiveSharedFolder) async {
         error = nil; isLoading = true
@@ -90,6 +92,7 @@ final class SharedFolderModel: ObservableObject {
                 switch update {
                 case .folder(let folder): self.folder = folder; isLoading = false
                 case .photos(let records):
+                    let records = Array(records.prefix(photoLimit ?? records.count))
                     imageTask?.cancel()
                     let current = UUID(); generation = current
                     photos = photos.filter { photo in records.contains { $0.id == photo.id } }

@@ -141,7 +141,8 @@ struct UITestInvitationRepository: FolderInvitationRepository {
         AsyncThrowingStream { continuation in
             continuation.yield(.folder(PhotoFolder(id: folder.folderID, title: folder.title, date: nil,
                 letter: "旅行の写真をまとめたよ。\nまたみんなで行こうね！")))
-            continuation.yield(.photos([PhotoRecord(id: "fixture", fileName: "fixture.jpg", date: Date(), music: nil, livePhotoFileName: "")]))
+            let photos = ProcessInfo.processInfo.arguments.contains("-ui-testing-invite-empty") ? [] : [PhotoRecord(id: "fixture", fileName: "fixture.jpg", date: Date(), music: nil, livePhotoFileName: "")]
+            continuation.yield(.photos(photos))
             let update = Task {
                 if ProcessInfo.processInfo.arguments.contains("-ui-testing-invite-update") {
                     try? await Task.sleep(for: .seconds(2))

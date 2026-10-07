@@ -1,6 +1,7 @@
 import XCTest
 import UIKit
 import PencilKit
+import Combine
 @testable import PIcTune
 
 @MainActor
@@ -60,6 +61,40 @@ final class sotsugyoTests: XCTestCase {
         XCTAssertNil(model.error)
         await model.receive()
         XCTAssertEqual(repository.joins, 2)
+    }
+
+    func testInvitationCoverLoadsOnlyFirstPhotoAndClearsWhenRemoved() async {
+        let repository = RecordingInvitationRepository()
+        let (updates, continuation) = AsyncThrowingStream<SharedFolderUpdate, Error>.makeStream()
+        repository.updates = updates
+        let bytes = UIGraphicsImageRenderer(size: CGSize(width: 10, height: 20)).image { context in
+            UIColor.red.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 10, height: 20))
+        }.pngData()!
+        var requested: [String] = []
+        let model = SharedFolderModel(repository: repository, photoLimit: 1, imageLoader: { _, record in
+            requested.append(record.id)
+            return bytes
+        })
+        let displayed = expectation(description: "First photo displayed")
+        let displayObserver = model.$photos.sink { photos in
+            if photos.map(\.id) == ["first"] { displayed.fulfill() }
+        }
+        let task = Task { await model.observe(LiveSharedFolder(ownerID: "owner", folderID: "folder", title: "title")) }
+        defer { task.cancel(); continuation.finish() }
+        continuation.yield(.photos([
+            PhotoRecord(id: "first", fileName: "first.jpg", date: nil, music: nil, livePhotoFileName: ""),
+            PhotoRecord(id: "second", fileName: "second.jpg", date: nil, music: nil, livePhotoFileName: "")
+        ]))
+        await fulfillment(of: [displayed], timeout: 2)
+        displayObserver.cancel()
+        XCTAssertEqual(requested, ["first"])
+        let cleared = expectation(description: "Removed cover cleared")
+        let clearObserver = model.$photos.first(where: { $0.isEmpty }).sink { _ in cleared.fulfill() }
+        continuation.yield(.photos([]))
+        await fulfillment(of: [cleared], timeout: 2)
+        clearObserver.cancel()
+        XCTAssertTrue(model.photos.isEmpty)
     }
 
     func testPhotoWithoutMusicReachesSaveAndAllowsRetryAfterFailure() async {
@@ -833,6 +868,7 @@ final class FriendQRViewModelTests: XCTestCase {
 }
 
 private final class RecordingInvitationRepository: FolderInvitationRepository {
+    var updates: AsyncThrowingStream<SharedFolderUpdate, Error>?
     var fail = true
     var joins = 0
     func create(folderID: String) async throws -> FolderInvitation { try await resolve(link: .make()) }
@@ -846,5 +882,5 @@ private final class RecordingInvitationRepository: FolderInvitationRepository {
     }
     func revoke(link: FolderInviteLink) async throws { }
     func sharedFolders() async throws -> [LiveSharedFolder] { [] }
-    func observe(_ folder: LiveSharedFolder) -> AsyncThrowingStream<SharedFolderUpdate, Error> { AsyncThrowingStream { $0.finish() } }
+    func observe(_ folder: LiveSharedFolder) -> AsyncThrowingStream<SharedFolderUpdate, Error> { updates ?? AsyncThrowingStream { $0.finish() } }
 }
