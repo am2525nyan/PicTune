@@ -30,28 +30,27 @@ struct SearchView: View {
         .scrollDismissesKeyboard(.interactively)
         .overlay { emptyState }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            HStack(spacing: 12) {
-                if let track = viewModel.selection {
-                    selectedTrackSummary(track)
-                }
+            HStack {
+                Text(viewModel.selection == nil ? "曲を選択してください" : "1曲選択中")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Spacer()
                 Button {
                     guard let selection = viewModel.selection else { return }
                     selectedTrack = selection
                     dismiss()
                 } label: {
                     Text("追加")
-                        .frame(minWidth: 64, minHeight: 44)
-                        .frame(maxWidth: viewModel.selection == nil ? .infinity : nil)
+                        .fontWeight(.semibold)
+                        .frame(minWidth: 44, minHeight: 44)
                 }
-                .fontWeight(.semibold)
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.borderless)
                 .disabled(viewModel.selection == nil)
                 .accessibilityIdentifier("music.add")
                 .accessibilityHint("選択した曲を写真に追加して、写真編集に戻ります")
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .frame(maxWidth: .infinity)
+            .padding(.vertical, 4)
             .background(.regularMaterial)
         }
         .tint(musicAccent)
@@ -177,20 +176,6 @@ struct SearchView: View {
                     .allowsHitTesting(false)
             }
         }
-    }
-
-    private func selectedTrackSummary(_ track: Track) -> some View {
-        HStack(spacing: 10) {
-            MusicArtwork(track: track, size: 44)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("選択中").font(.caption2).foregroundStyle(.secondary)
-                Text(track.name).font(.subheadline.weight(.semibold)).lineLimit(1)
-                Text(track.artist).font(.caption).foregroundStyle(.secondary).lineLimit(1)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .accessibilityElement(children: .combine)
     }
 
     private func trackInfo(_ track: Track) -> some View {
