@@ -6,6 +6,7 @@ struct SearchView: View {
     @StateObject private var viewModel: SearchViewModel
     @State private var retryCount = 0
     @State private var isConfirmingClearHistory = false
+    private let musicAccent = Color(uiColor: .systemPurple)
 
     init(selectedTrack: Binding<Track?>, viewModel: SearchViewModel? = nil) {
         _selectedTrack = selectedTrack
@@ -29,7 +30,7 @@ struct SearchView: View {
         .scrollDismissesKeyboard(.interactively)
         .overlay { emptyState }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            VStack(spacing: 12) {
+            HStack(spacing: 12) {
                 if let track = viewModel.selection {
                     selectedTrackSummary(track)
                 }
@@ -39,7 +40,8 @@ struct SearchView: View {
                     dismiss()
                 } label: {
                     Text("追加")
-                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .frame(minWidth: 64, minHeight: 44)
+                        .frame(maxWidth: viewModel.selection == nil ? .infinity : nil)
                 }
                 .fontWeight(.semibold)
                 .buttonStyle(.borderedProminent)
@@ -47,10 +49,12 @@ struct SearchView: View {
                 .accessibilityIdentifier("music.add")
                 .accessibilityHint("選択した曲を写真に追加して、写真編集に戻ります")
             }
-            .padding()
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
             .frame(maxWidth: .infinity)
             .background(.regularMaterial)
         }
+        .tint(musicAccent)
         .navigationTitle("音楽を追加")
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $viewModel.searchText, prompt: "Apple Musicで曲名・アーティスト名を検索")
@@ -116,21 +120,24 @@ struct SearchView: View {
         if !viewModel.tracks.isEmpty {
             Section {
                 ForEach(viewModel.tracks) { track in
-                    VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 0) {
                         Button {
                             viewModel.select(track)
                         } label: {
                             HStack(spacing: 12) {
                                 MusicArtwork(track: track)
+                                    .overlay(alignment: .bottomTrailing) {
+                                        if viewModel.selection?.selectionID == track.selectionID {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .foregroundStyle(musicAccent)
+                                                .background(Color(uiColor: .systemBackground), in: Circle())
+                                                .offset(x: 4, y: 4)
+                                                .accessibilityHidden(true)
+                                        }
+                                    }
                                 trackInfo(track)
-                                Spacer(minLength: 8)
-                                Image(systemName: viewModel.selection?.selectionID == track.selectionID ? "checkmark.circle.fill" : "circle")
-                                    .foregroundStyle(viewModel.selection?.selectionID == track.selectionID ? Color.accentColor : Color.secondary)
-                                    .font(.title3)
-                                    .accessibilityHidden(true)
                             }
-                            .frame(minHeight: 56)
-                            .padding(.vertical, 6)
+                            .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
                             .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
@@ -138,12 +145,15 @@ struct SearchView: View {
                         .accessibilityAddTraits(viewModel.selection?.selectionID == track.selectionID ? .isSelected : [])
                         .accessibilityHint("写真に追加する曲として選択します")
                         if let url = track.serviceURL {
-                            Link("Apple Musicで聴く", destination: url)
-                                .font(.caption)
-                                .padding(.leading, 64)
-                                .frame(minHeight: 32)
+                            Link(destination: url) {
+                                Image(systemName: "arrow.up.right")
+                                    .font(.subheadline.weight(.semibold))
+                                    .frame(width: 44, height: 44)
+                            }
+                            .accessibilityLabel("Apple Musicで聴く")
                         }
                     }
+                    .padding(.vertical, 4)
                 }
             } header: {
                 Text(viewModel.resultsQuery == viewModel.query ? "曲" : "「\(viewModel.resultsQuery)」の検索結果")
@@ -170,16 +180,14 @@ struct SearchView: View {
     }
 
     private func selectedTrackSummary(_ track: Track) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("選択中").font(.caption).foregroundStyle(.secondary)
-            HStack(spacing: 12) {
-                MusicArtwork(track: track)
-                trackInfo(track)
-                Spacer(minLength: 0)
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(Color.accentColor)
-                    .accessibilityHidden(true)
+        HStack(spacing: 10) {
+            MusicArtwork(track: track, size: 44)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("選択中").font(.caption2).foregroundStyle(.secondary)
+                Text(track.name).font(.subheadline.weight(.semibold)).lineLimit(1)
+                Text(track.artist).font(.caption).foregroundStyle(.secondary).lineLimit(1)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)
@@ -187,8 +195,8 @@ struct SearchView: View {
 
     private func trackInfo(_ track: Track) -> some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text(track.name).font(.body).foregroundStyle(.primary).lineLimit(2)
-            Text(track.artist).font(.subheadline).foregroundStyle(.secondary).lineLimit(2)
+            Text(track.name).font(.body.weight(.semibold)).foregroundStyle(.primary).lineLimit(1)
+            Text(track.artist).font(.subheadline).foregroundStyle(.secondary).lineLimit(1)
             if let album = track.albumName, !album.isEmpty {
                 Text(album).font(.caption).foregroundStyle(.secondary).lineLimit(1)
             }
@@ -199,17 +207,19 @@ struct SearchView: View {
 
 private struct MusicArtwork: View {
     let track: Track
+    var size: CGFloat = 56
 
     var body: some View {
         AsyncImage(url: track.albumImages.first.flatMap(URL.init(string:))) { image in
             image.resizable().scaledToFill()
         } placeholder: {
             Image(systemName: "music.note")
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.white)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(uiColor: .tertiarySystemFill))
+                .background(LinearGradient(colors: [Color("mainColor"), Color(uiColor: .systemPurple)],
+                                           startPoint: .topLeading, endPoint: .bottomTrailing))
         }
-        .frame(width: 52, height: 52)
+        .frame(width: size, height: size)
         .clipShape(RoundedRectangle(cornerRadius: 6))
         .accessibilityHidden(true)
     }

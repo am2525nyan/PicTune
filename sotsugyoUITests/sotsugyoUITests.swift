@@ -25,6 +25,7 @@ final class sotsugyoUITests: XCTestCase {
         search.tap()
         search.typeText("sample")
         XCTAssertTrue(app.staticTexts["Entropy"].firstMatch.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.links["Apple Musicで聴く"].isHittable)
         app.staticTexts["Entropy"].firstMatch.tap()
         XCTAssertTrue(app.staticTexts["選択中"].waitForExistence(timeout: 3))
         attachScreenshot("Apple Music検索と選択")
