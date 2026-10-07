@@ -8,9 +8,11 @@ final class sotsugyoUITests: XCTestCase {
         app.launchArguments = ["-ui-testing", "-ui-testing-invite", "-ui-testing-invite-update", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
         app.launch()
         XCTAssertTrue(app.buttons["invite.open"].waitForExistence(timeout: 10))
+        XCTAssertEqual(app.staticTexts["invite.heading"].label, "きみと過ごした、夏の記録")
+        XCTAssertTrue(app.staticTexts["さきさんから"].exists)
         attachScreenshot("招待の封筒")
         app.buttons["invite.open"].tap()
-        XCTAssertTrue(app.staticTexts["思い出が、\n届きました。"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["invite.received"].waitForExistence(timeout: 5))
         attachScreenshot("思い出の開封")
         app.buttons["invite.open"].tap()
         XCTAssertTrue(app.staticTexts["shared.letter"].waitForExistence(timeout: 10))
@@ -37,7 +39,7 @@ final class sotsugyoUITests: XCTestCase {
         XCTAssertTrue(app.buttons["invite.open"].waitForExistence(timeout: 10))
         app.buttons["invite.open"].tap()
         XCTAssertTrue(app.staticTexts["invite.error"].waitForExistence(timeout: 10))
-        XCTAssertFalse(app.staticTexts["思い出が、\n届きました。"].exists)
+        XCTAssertFalse(app.staticTexts["invite.received"].exists)
     }
 
     @MainActor
