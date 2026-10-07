@@ -15,14 +15,14 @@ import FirebaseFirestore
     
     init() {
         // ここで認証状態の変化を監視する（リスナー）
-        handle = Auth.auth().addStateDidChangeListener { (auth, user) in
+        handle = Auth.auth().addStateDidChangeListener { [weak self] (auth, user) in
             if let _ = user {
                 
-                self.isSignIn = true
+                self?.isSignIn = true
                 
             } else {
                 print("Sign-out")
-                self.isSignIn = false
+                self?.isSignIn = false
                 
             }
         }

@@ -4,6 +4,9 @@ import FirebaseAuthUI
 struct MainContentView: View {
     @StateObject private var inviteRouter = FolderInviteRouter()
     @State var authenticationManager = AuthenticationManager()
+    @State private var loginError: String?
+    @State private var pendingLoginError: String?
+    @State private var isLoginSheetVisible = false
     
     @StateObject private var cameraManager = CameraManager()
     @StateObject private var viewModel = MainContentModel()
@@ -48,11 +51,30 @@ struct MainContentView: View {
             }
         }
         .onOpenURL { url in
-            if url.scheme == "pictune" || url.host == FolderInviteLink.host { inviteRouter.open(url, signedIn: authenticationManager.isSignIn) }
+            if url.scheme == "pictune" || url.host == FolderInviteLink.host { inviteRouter.open(url, signedIn: authenticationManager.isSignIn && !viewModel.isShowSheet && !isLoginSheetVisible) }
             else { _ = FUIAuth.defaultAuthUI()?.handleOpen(url, sourceApplication: nil) }
         }
         .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
-            if let url = activity.webpageURL { inviteRouter.open(url, signedIn: authenticationManager.isSignIn) }
+            if let url = activity.webpageURL { inviteRouter.open(url, signedIn: authenticationManager.isSignIn && !viewModel.isShowSheet && !isLoginSheetVisible) }
+        }
+        .sheet(isPresented: $viewModel.isShowSheet, onDismiss: {
+            isLoginSheetVisible = false
+            if let message = pendingLoginError {
+                pendingLoginError = nil
+                loginError = message
+            } else {
+                inviteRouter.resume(signedIn: authenticationManager.isSignIn)
+            }
+        }) {
+            LoginView(viewModel: viewModel, onError: { message in
+                if viewModel.isShowSheet || isLoginSheetVisible {
+                    pendingLoginError = message
+                    viewModel.isShowSheet = false
+                } else {
+                    loginError = message
+                }
+            })
+            .onAppear { isLoginSheetVisible = true }
         }
         .sheet(item: $inviteRouter.presented, onDismiss: { if authenticationManager.isSignIn { inviteRouter.finish() } }) { link in
             FolderInvitationView(link: link)
@@ -60,9 +82,16 @@ struct MainContentView: View {
         .alert("招待リンク", isPresented: Binding(get: { inviteRouter.error != nil }, set: { if !$0 { inviteRouter.error = nil } })) {
             Button("閉じる", role: .cancel) { }
         } message: { Text(inviteRouter.error ?? "") }
+        .alert("ログインできませんでした", isPresented: Binding(get: { loginError != nil }, set: { if !$0 { loginError = nil } })) {
+            Button("閉じる", role: .cancel) { }
+        } message: { Text(loginError ?? "") }
         .onAppear { inviteRouter.resume(signedIn: authenticationManager.isSignIn) }
         .onChange(of: authenticationManager.isSignIn) { _, isSignedIn in
-            inviteRouter.resume(signedIn: isSignedIn)
+            if isSignedIn && (viewModel.isShowSheet || isLoginSheetVisible) {
+                viewModel.isShowSheet = false
+            } else {
+                inviteRouter.resume(signedIn: isSignedIn)
+            }
             if !isSignedIn {
                 viewModel.reset()
                 folderViewModel.reset()

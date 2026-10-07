@@ -15,6 +15,7 @@ import FirebaseFirestore
 
 struct LoginView: UIViewControllerRepresentable {
     @StateObject var viewModel: MainContentModel
+    var onError: (String) -> Void = { _ in }
     
     func makeUIViewController(context: Context) -> UIViewController {
         let authUI = FUIAuth.defaultAuthUI()
@@ -47,24 +48,51 @@ struct LoginView: UIViewControllerRepresentable {
     }
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(viewModel: viewModel)
+        Coordinator(viewModel: viewModel, onError: onError)
+    }
+
+    static func dismantleUIViewController(_ uiViewController: UIViewController, coordinator: Coordinator) {
+        coordinator.stopListening()
     }
     
-    class Coordinator: NSObject, FUIAuthDelegate {
+    @MainActor class Coordinator: NSObject, FUIAuthDelegate {
         var viewModel: MainContentModel
         var handle: AuthStateDidChangeListenerHandle?
+        private let onError: (String) -> Void
         
-        init(viewModel: MainContentModel) {
+        init(viewModel: MainContentModel, onError: @escaping (String) -> Void = { _ in }) {
             self.viewModel = viewModel
+            self.onError = onError
+        }
+
+        @objc nonisolated func authUI(_ authUI: FUIAuth, didSignInWith authDataResult: AuthDataResult?, error: Error?) {
+            let signedIn = authDataResult != nil
+            Task { @MainActor in
+                self.completeSignIn(signedIn: signedIn, error: error)
+            }
+        }
+
+        func completeSignIn(signedIn: Bool, error: Error?) {
+            if let error = error as NSError? {
+                if !(error.domain == FUIAuthErrorDomain && error.code == FUIAuthErrorCode.userCancelledSignIn.rawValue) {
+                    // FirebaseUI wraps provider failures without a useful description.
+                    let underlying = error.userInfo[NSUnderlyingErrorKey] as? NSError
+                    onError((underlying ?? error).localizedDescription)
+                }
+                viewModel.isShowSheet = false
+            } else if signedIn {
+                viewModel.isShowSheet = false
+            }
         }
         
         
         func startListening() {
             handle = Auth.auth().addStateDidChangeListener { [weak self] (_, user) in
-                if user != nil {
-                    Task{
+                if user != nil, let self {
+                    Task { @MainActor in
+                        self.viewModel.isShowSheet = false
                         do{
-                            try await self?.saveUserData()
+                            try await self.saveUserData()
                         }
                         catch{
                             print(error)
@@ -128,6 +156,7 @@ struct LoginView: UIViewControllerRepresentable {
         func stopListening() {
             if let handle = handle {
                 Auth.auth().removeStateDidChangeListener(handle)
+                self.handle = nil
             }
         }
         

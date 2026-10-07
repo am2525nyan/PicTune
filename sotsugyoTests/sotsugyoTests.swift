@@ -2,10 +2,88 @@ import XCTest
 import UIKit
 import PencilKit
 import Combine
+import FirebaseAuthUI
+import Security
 @testable import PIcTune
 
 @MainActor
 final class sotsugyoTests: XCTestCase {
+    func testSignedAppCanStoreAndReadLoginKeychainData() {
+        let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+                                    kSecAttrService as String: "PicTune.LoginRegression",
+                                    kSecAttrAccount as String: UUID().uuidString]
+        let data = Data("test-only".utf8)
+        var saveQuery = query
+        saveQuery[kSecValueData as String] = data
+        XCTAssertEqual(SecItemAdd(saveQuery as CFDictionary, nil), errSecSuccess)
+        defer { SecItemDelete(query as CFDictionary) }
+        var readQuery = query
+        readQuery[kSecReturnData as String] = true
+        var result: CFTypeRef?
+        XCTAssertEqual(SecItemCopyMatching(readQuery as CFDictionary, &result), errSecSuccess)
+        XCTAssertEqual(result as? Data, data)
+    }
+
+    func testSuccessfulLoginDismissesAuthSheet() {
+        let model = MainContentModel()
+        model.isShowSheet = true
+        var errors: [String] = []
+        let coordinator = LoginView.Coordinator(viewModel: model) { errors.append($0) }
+        XCTAssertTrue(coordinator.responds(to: NSSelectorFromString("authUI:didSignInWith:error:")))
+        coordinator.completeSignIn(signedIn: true, error: nil)
+        XCTAssertFalse(model.isShowSheet)
+        XCTAssertTrue(errors.isEmpty)
+    }
+
+    func testFailedLoginReportsErrorAndCanReopenAuthSheet() {
+        let model = MainContentModel()
+        model.isShowSheet = true
+        var errors: [String] = []
+        let coordinator = LoginView.Coordinator(viewModel: model) { errors.append($0) }
+        coordinator.completeSignIn(signedIn: false, error: NSError(
+            domain: "LoginTest", code: 1, userInfo: [NSLocalizedDescriptionKey: "接続できませんでした"]
+        ))
+        XCTAssertFalse(model.isShowSheet)
+        XCTAssertEqual(errors, ["接続できませんでした"])
+        model.isShowSheet = true
+        coordinator.completeSignIn(signedIn: true, error: nil)
+        XCTAssertFalse(model.isShowSheet)
+        XCTAssertEqual(errors.count, 1)
+    }
+
+    func testCancelledLoginDismissesWithoutReportingFailure() {
+        let model = MainContentModel()
+        model.isShowSheet = true
+        let coordinator = LoginView.Coordinator(viewModel: model) { _ in XCTFail("Cancellation is not an error") }
+        coordinator.completeSignIn(signedIn: false, error: NSError(
+            domain: FUIAuthErrorDomain, code: Int(FUIAuthErrorCode.userCancelledSignIn.rawValue)
+        ))
+        XCTAssertFalse(model.isShowSheet)
+    }
+
+    func testGoogleProviderFailureShowsUnderlyingReason() {
+        let model = MainContentModel()
+        model.isShowSheet = true
+        var message: String?
+        let coordinator = LoginView.Coordinator(viewModel: model) { message = $0 }
+        let underlying = NSError(domain: "com.google.GIDSignIn", code: -2,
+                                 userInfo: [NSLocalizedDescriptionKey: "keychain error"])
+        coordinator.completeSignIn(signedIn: false, error: NSError(
+            domain: FUIAuthErrorDomain, code: Int(FUIAuthErrorCode.providerError.rawValue),
+            userInfo: [NSUnderlyingErrorKey: underlying]
+        ))
+        XCTAssertEqual(message, "keychain error")
+        XCTAssertFalse(model.isShowSheet)
+    }
+
+    func testIncompleteLoginDoesNotDismissAuthSheet() {
+        let model = MainContentModel()
+        model.isShowSheet = true
+        let coordinator = LoginView.Coordinator(viewModel: model)
+        coordinator.completeSignIn(signedIn: false, error: nil)
+        XCTAssertTrue(model.isShowSheet)
+    }
+
     func testInvitationLinksAcceptOnlyExactTrustedRoutes() {
         let token = String(repeating: "a", count: 64)
         let link = FolderInviteLink(token: token)
