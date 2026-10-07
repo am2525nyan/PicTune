@@ -28,17 +28,15 @@ final class sotsugyoUITests: XCTestCase {
         app.staticTexts["Entropy"].firstMatch.tap()
         XCTAssertTrue(app.staticTexts["選択中"].waitForExistence(timeout: 3))
         attachScreenshot("Apple Music検索と選択")
-        app.buttons["閉じる"].tap()
-        XCTAssertTrue(app.buttons["追加"].isEnabled)
+        XCTAssertTrue(app.buttons["music.add"].isHittable, "追加ボタンは検索欄の編集中も表示される")
         search.tap()
-        search.typeText("none")
+        search.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 10) + "none")
         XCTAssertTrue(app.staticTexts["曲が見つかりません"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["選択中"].exists, "Selection should survive an empty result")
-        search.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 4) + "error")
+        search.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 10) + "error")
         XCTAssertTrue(app.staticTexts["設定アプリでPicTuneの「メディアとApple Music」へのアクセスを許可してください。"].waitForExistence(timeout: 5))
         attachScreenshot("Apple Music認可エラー")
-        app.buttons["閉じる"].tap()
-        XCTAssertTrue(app.buttons["追加"].isEnabled, "Selection should survive a failed search")
+        XCTAssertTrue(app.buttons["music.add"].isHittable, "Selection should survive a failed search")
     }
 
     @MainActor
@@ -232,7 +230,7 @@ final class sotsugyoUITests: XCTestCase {
         app.buttons["スタンプ"].tap()
         app.buttons["音楽を追加"].tap()
         XCTAssertTrue(app.searchFields.firstMatch.waitForExistence(timeout: 5))
-        XCTAssertFalse(app.navigationBars.buttons["追加"].isEnabled)
+        XCTAssertFalse(app.buttons["music.add"].isEnabled)
         capture("15-music-search-empty", app: app)
     }
 
@@ -246,7 +244,10 @@ final class sotsugyoUITests: XCTestCase {
         capture("16-music-search-results", app: app)
         app.buttons.containing(.staticText, identifier: "思い出の曲").firstMatch.tap()
         XCTAssertTrue(app.staticTexts["選択中"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.navigationBars.buttons["追加"].isEnabled)
+        XCTAssertTrue(app.buttons["music.add"].isHittable)
+        app.searchFields.firstMatch.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["music.add"].isHittable, "追加ボタンはキーボード表示中も操作できる")
         capture("17-music-search-selected", app: app)
         app.terminate()
 

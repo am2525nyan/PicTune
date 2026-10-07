@@ -29,27 +29,32 @@ struct SearchView: View {
         .scrollDismissesKeyboard(.interactively)
         .overlay { emptyState }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if let track = viewModel.selection {
-                selectedTrackSummary(track)
+            VStack(spacing: 12) {
+                if let track = viewModel.selection {
+                    selectedTrackSummary(track)
+                }
+                Button {
+                    guard let selection = viewModel.selection else { return }
+                    selectedTrack = selection
+                    dismiss()
+                } label: {
+                    Text("追加")
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                }
+                .fontWeight(.semibold)
+                .buttonStyle(.borderedProminent)
+                .disabled(viewModel.selection == nil)
+                .accessibilityIdentifier("music.add")
+                .accessibilityHint("選択した曲を写真に追加して、写真編集に戻ります")
             }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(.regularMaterial)
         }
         .navigationTitle("音楽を追加")
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $viewModel.searchText, prompt: "Apple Musicで曲名・アーティスト名を検索")
         .onSubmit(of: .search) { viewModel.remember(viewModel.query) }
-        .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                Button("追加") {
-                    guard let selection = viewModel.selection else { return }
-                    selectedTrack = selection
-                    dismiss()
-                }
-                .fontWeight(.semibold)
-                .buttonStyle(.borderedProminent)
-                .disabled(viewModel.selection == nil)
-                .accessibilityHint("選択した曲を写真に追加して、写真編集に戻ります")
-            }
-        }
         .confirmationDialog("検索履歴を消去しますか？", isPresented: $isConfirmingClearHistory, titleVisibility: .visible) {
             Button("履歴を消去", role: .destructive) { viewModel.clearHistory() }
             Button("キャンセル", role: .cancel) { }
@@ -176,9 +181,7 @@ struct SearchView: View {
                     .accessibilityHidden(true)
             }
         }
-        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.regularMaterial)
         .accessibilityElement(children: .combine)
     }
 
