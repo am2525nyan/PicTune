@@ -29,94 +29,102 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     private var compressedData: Data?
     var livePhotoCompanionMovieURL: URL?
     var liveurl = ""
-    //カメラの準備
-    func setupCaptureSession() {
-        captureSession.beginConfiguration()
-        captureSession.sessionPreset = AVCaptureSession.Preset.photo
-        
-        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: .video, position: .front)
-        
-        guard let camera = deviceDiscoverySession.devices.first else {
-            print("Front camera not found.")
-            return
-        }
-        
-        do {
-            let input = try AVCaptureDeviceInput(device: camera)
-            if captureSession.canAddInput(input) {
-                captureSession.addInput(input)
-            }
-            if captureSession.canAddOutput(photoOutput) {
-                captureSession.addOutput(photoOutput)
-            }
-        } catch {
-            print(error.localizedDescription)
-            return
-        }
-        if self.photoOutput.isLivePhotoCaptureSupported {
-          self.photoOutput.isLivePhotoCaptureEnabled = true
-        }
-        captureSession.commitConfiguration()
-        
-        previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        
-        previewLayer?.videoGravity = .resizeAspectFill
-        print("セットアップ終わり")
-        
-        startSession()
-    }
-    
-    
-    //スタート！
-    func startSession() {
-        
-        DispatchQueue.global().async {
-            self.captureSession.startRunning()
-            print("いいよ")
-            
-            
-        }
-    }
-    //終わり
-    func stopSession() {
-        if captureSession.isRunning {
-            DispatchQueue.global().async {
-                self.captureSession.stopRunning()
-                print("終わり")
-            }
-        }
-    }
-    
-    
-    
-    
-    func captureImage() {
-        
-      
-       var settingsForMonitoring = AVCapturePhotoSettings()
-        let previewWidth = UIScreen.main.bounds.width * 0.864
-        let previewHeight = UIScreen.main.bounds.height * 0.536
-        
-        settingsForMonitoring.previewPhotoFormat = [
-            kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
-            kCVPixelBufferWidthKey as String: previewWidth,
-            kCVPixelBufferHeightKey as String: previewHeight
-        ]
-        
-       
-        settingsForMonitoring.embeddedThumbnailPhotoFormat = [AVVideoCodecKey : AVVideoCodecType.jpeg]
-        settingsForMonitoring.isHighResolutionPhotoEnabled = false
+    private let sessionQueue = DispatchQueue(label: "PicTune.CameraSession")
+    private var isSessionConfigured = false
+    private var isCapturing = false
+    private var wantsRunning = false
+    private var previewGeneration = UUID()
+    private var capturePreviewGeneration = UUID()
 
-        if self.photoOutput.isLivePhotoCaptureSupported {
-            // 動画の保存先URLの作成
-            let livePhotoMovieFileName = NSUUID().uuidString
-            let livePhotoMovieFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((livePhotoMovieFileName as NSString).appendingPathExtension("mov")!)
-            settingsForMonitoring.livePhotoMovieFileURL = URL(fileURLWithPath: livePhotoMovieFilePath)
+    // Session configuration, capture and start/stop must use the same serial queue.
+    @MainActor
+    func setupCaptureSession() {
+        previewGeneration = UUID()
+        newImage = nil
+        isImageUploadCompleted = false
+        if previewLayer == nil {
+            previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+            previewLayer?.videoGravity = .resizeAspectFill
         }
-        AudioServicesPlaySystemSound(1108)
-        self.photoOutput.capturePhoto(with: settingsForMonitoring, delegate: self)
-     
-        
+        sessionQueue.async {
+            self.wantsRunning = true
+            switch AVCaptureDevice.authorizationStatus(for: .video) {
+            case .authorized:
+                self.configureAndStartSession()
+            case .notDetermined:
+                AVCaptureDevice.requestAccess(for: .video) { granted in
+                    self.sessionQueue.async {
+                        if granted && self.wantsRunning { self.configureAndStartSession() }
+                    }
+                }
+            default:
+                break
+            }
+        }
+    }
+
+    private func configureAndStartSession() {
+        guard wantsRunning else { return }
+        if !isSessionConfigured {
+            captureSession.beginConfiguration()
+            // Always close configuration, including devices without a camera.
+            defer { captureSession.commitConfiguration() }
+            captureSession.sessionPreset = .photo
+            guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
+                return
+            }
+            do {
+                let input = try AVCaptureDeviceInput(device: camera)
+                guard captureSession.canAddInput(input), captureSession.canAddOutput(photoOutput) else { return }
+                captureSession.addInput(input)
+                captureSession.addOutput(photoOutput)
+                if photoOutput.isLivePhotoCaptureSupported {
+                    photoOutput.isLivePhotoCaptureEnabled = true
+                }
+                isSessionConfigured = true
+            } catch {
+                print(error.localizedDescription)
+                return
+            }
+        }
+        guard !captureSession.isRunning else { return }
+        captureSession.startRunning()
+    }
+
+    func startSession() {
+        sessionQueue.async {
+            self.wantsRunning = true
+            self.configureAndStartSession()
+        }
+    }
+
+    @MainActor
+    func stopSession() {
+        previewGeneration = UUID()
+        sessionQueue.async {
+            self.wantsRunning = false
+            if self.captureSession.isRunning { self.captureSession.stopRunning() }
+        }
+    }
+
+    @MainActor
+    func captureImage() {
+        let generation = previewGeneration
+        sessionQueue.async {
+            guard self.captureSession.isRunning, !self.isCapturing,
+                  let connection = self.photoOutput.connection(with: .video), connection.isActive else { return }
+            self.isCapturing = true
+            self.capturePreviewGeneration = generation
+            self.compressedData = nil
+            self.livePhotoCompanionMovieURL = nil
+            self.liveurl = ""
+            let settings = AVCapturePhotoSettings()
+            if self.photoOutput.isLivePhotoCaptureEnabled {
+                settings.livePhotoMovieFileURL = FileManager.default.temporaryDirectory
+                    .appendingPathComponent(UUID().uuidString).appendingPathExtension("mov")
+            }
+            self.photoOutput.capturePhoto(with: settings, delegate: self)
+        }
     }
     func photoOutput(_ output: AVCapturePhotoOutput, willBeginCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
        print("撮影開始")
@@ -124,46 +132,38 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        guard let imageData = photo.fileDataRepresentation(),
-              var image = UIImage(data: imageData) else {
+        guard error == nil, let imageData = photo.fileDataRepresentation(),
+              let image = UIImage(data: imageData) else {
             print(error as Any)
-            return }
-        
-        var originalSize: CGSize
-        if image.imageOrientation == .left || image.imageOrientation == .right {
-            originalSize = CGSize(width: image.size.height, height: image.size.width)
-        } else {
-            originalSize = image.size
+            return
         }
-        
-        let previewSize = CGSize(width: UIScreen.main.bounds.width * 0.864, height: UIScreen.main.bounds.height * 0.536)
-        let metaRect = CGRect(x: 0, y: 0, width: previewSize.width, height: previewSize.height)
-        let metaRectConverted = previewLayer?.metadataOutputRectConverted(fromLayerRect: metaRect) ?? CGRect.zero
-        let cropRect: CGRect = CGRect(x: metaRectConverted.origin.x * originalSize.width,
-                                      y: metaRectConverted.origin.y * originalSize.height,
-                                      width: metaRectConverted.size.width * originalSize.width,
-                                      height: metaRectConverted.size.height * originalSize.height).integral
-        
-        guard let cgImage = image.cgImage?.cropping(to: cropRect) else { return }
-        let croppedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
-        
-        
-        
-        
-        image = croppedImage.rotateLeft90Degrees()
-        
-        if let filteredImage = applySepiaFilter(to: image) {
-            DispatchQueue.main.async {
-                self.newImage = filteredImage
-                self.isImageUploadCompleted = true
-            }
+        compressedData = imageData
+        let generation = capturePreviewGeneration
+        DispatchQueue.main.async {
+            guard generation == self.previewGeneration else { return }
+            guard let previewLayer = self.previewLayer, !previewLayer.bounds.isEmpty else { return }
+            let rect = previewLayer.metadataOutputRectConverted(fromLayerRect: previewLayer.bounds)
+            guard let croppedImage = Self.croppedPhoto(image, normalizedRect: rect),
+                  let filteredImage = self.applySepiaFilter(to: croppedImage) else { return }
+            self.newImage = filteredImage
+            self.isImageUploadCompleted = true
         }
-    
-    guard let photoData = photo.fileDataRepresentation() else {
-        print("No photo data to write.")
-        return
     }
-    self.compressedData = photoData // 保持
+
+    static func croppedPhoto(_ image: UIImage, normalizedRect: CGRect) -> UIImage? {
+        guard let source = image.cgImage else { return nil }
+        let bounds = CGRect(x: 0, y: 0, width: source.width, height: source.height)
+        let crop = CGRect(x: normalizedRect.minX * bounds.width,
+                          y: normalizedRect.minY * bounds.height,
+                          width: normalizedRect.width * bounds.width,
+                          height: normalizedRect.height * bounds.height).integral.intersection(bounds)
+        guard !crop.isNull, !crop.isEmpty, let result = source.cropping(to: crop) else { return nil }
+        let orientedImage = UIImage(cgImage: result, scale: image.scale, orientation: image.imageOrientation)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = image.scale
+        return UIGraphicsImageRenderer(size: orientedImage.size, format: format).image { _ in
+            orientedImage.draw(in: CGRect(origin: .zero, size: orientedImage.size))
+        }
     }
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishRecordingLivePhotoMovieForEventualFileAt outputFileURL: URL, resolvedSettings: AVCaptureResolvedPhotoSettings) {
        print("撮影終わり")
@@ -171,6 +171,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingLivePhotoToMovieFileAt outputFileURL: URL, duration: CMTime, photoDisplayTime: CMTime, resolvedSettings: AVCaptureResolvedPhotoSettings, error: Error?) {
       if error != nil {
+        try? FileManager.default.removeItem(at: outputFileURL)
         print("Error processing Live Photo companion movie: \(String(describing: error))")
         return
       }
@@ -183,25 +184,31 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
                      didFinishCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings,
                      error: Error?) {
         
+        let movieURL = livePhotoCompanionMovieURL
+        let photoData = compressedData
+        sessionQueue.async { self.isCapturing = false }
         guard error == nil else {
-
+            if let movieURL { try? FileManager.default.removeItem(at: movieURL) }
             print("Error capture photo: \(error!)")
             return
         }
         
-        guard let compressedData = self.compressedData else {
-         
+        guard let compressedData = photoData else {
+            if let movieURL { try? FileManager.default.removeItem(at: movieURL) }
             print("The expected photo data isn't available.")
             return
         }
         
   
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
-            guard status == .authorized else { return }
+            guard status == .authorized || status == .limited else {
+                if let movieURL { try? FileManager.default.removeItem(at: movieURL) }
+                return
+            }
             PHPhotoLibrary.shared().performChanges {
                 let creationRequest = PHAssetCreationRequest.forAsset()
                 creationRequest.addResource(with: .photo, data: compressedData, options: nil)
-                if let livePhotoCompanionMovieURL = self.livePhotoCompanionMovieURL {
+                if let livePhotoCompanionMovieURL = movieURL {
                     let livePhotoCompanionMovieFileOptions = PHAssetResourceCreationOptions()
                     livePhotoCompanionMovieFileOptions.shouldMoveFile = true
                     creationRequest.addResource(with: .pairedVideo,
@@ -211,9 +218,10 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
             } completionHandler: { success, error in
               
                 
-                if let _ = error {
-                    print("Error save photo: \(error!)")
+                if let error {
+                    print("Error save photo: \(error)")
                 }
+                if let movieURL { try? FileManager.default.removeItem(at: movieURL) }
             }
         }
     }
@@ -240,6 +248,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     
     @MainActor
     func uploadPhoto(_ image: UIImage, friendUid: String, track: Track? = nil) async throws {
+        try Self.validateFriendUID(friendUid)
         guard let uid = Auth.auth().currentUser?.uid else {
             throw NSError(domain: "PhotoSave", code: 1, userInfo: [NSLocalizedDescriptionKey: "ログイン状態を確認してください。"])
         }
@@ -247,30 +256,43 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
             throw NSError(domain: "PhotoSave", code: 2, userInfo: [NSLocalizedDescriptionKey: "写真を作成できませんでした。"])
         }
 
+        let livePhotoFileName = liveurl
         let imageName = "\(UUID().uuidString).jpg"
         let imageReference = Storage.storage().reference().child("images/\(imageName)")
-        _ = try await imageReference.putDataAsync(imageData)
-
-        let db = Firestore.firestore()
-        let folder = db.collection("users").document(uid).collection("folders").document("all")
-        let photo = folder.collection("photos").document()
-        let record = PhotoRecord(id: photo.documentID, fileName: imageName, date: nil,
-                                 music: track.map { FirebaseMusic(photoID: photo.documentID, track: $0) },
-                                 livePhotoFileName: liveurl)
-        let data = record.firestoreData(date: FieldValue.serverTimestamp())
-        let batch = db.batch()
-        batch.setData(data, forDocument: photo)
-        batch.setData(["title": "all", "date": FieldValue.serverTimestamp()], forDocument: folder, merge: true)
-        if !friendUid.isEmpty && friendUid != uid {
-            let friendPhoto = db.collection("users").document(friendUid).collection("folders").document("all").collection("photos").document(photo.documentID)
-            batch.setData(data, forDocument: friendPhoto)
-        }
         do {
+            _ = try await imageReference.putDataAsync(imageData)
+            guard Auth.auth().currentUser?.uid == uid else {
+                throw NSError(domain: "PhotoSave", code: 1,
+                    userInfo: [NSLocalizedDescriptionKey: "ログイン状態が変わりました。もう一度ログインしてください。"])
+            }
+            let db = Firestore.firestore()
+            let folder = db.collection("users").document(uid).collection("folders").document("all")
+            let photo = folder.collection("photos").document()
+            let record = PhotoRecord(id: photo.documentID, fileName: imageName, date: nil,
+                                     music: track.map { FirebaseMusic(photoID: photo.documentID, track: $0) },
+                                     livePhotoFileName: livePhotoFileName)
+            let data = record.firestoreData(date: FieldValue.serverTimestamp())
+            let batch = db.batch()
+            batch.setData(data, forDocument: photo)
+            batch.setData(["title": "all", "date": FieldValue.serverTimestamp()], forDocument: folder, merge: true)
+            if !friendUid.isEmpty && friendUid != uid {
+                let friendPhoto = db.collection("users").document(friendUid).collection("folders").document("all").collection("photos").document(photo.documentID)
+                batch.setData(data, forDocument: friendPhoto)
+            }
             try await batch.commit()
-            documentId = photo.documentID
+            if Auth.auth().currentUser?.uid == uid { documentId = photo.documentID }
         } catch {
             try? await imageReference.delete()
             throw error
+        }
+    }
+
+    static func validateFriendUID(_ uid: String) throws {
+        // An empty UID is the supported solo-photo path.
+        guard uid.count <= 128, !uid.contains("/"),
+              uid.rangeOfCharacter(from: .whitespacesAndNewlines.union(.controlCharacters)) == nil else {
+            throw NSError(domain: "PhotoSave", code: 3,
+                userInfo: [NSLocalizedDescriptionKey: "撮影相手の情報を確認してください。"])
         }
     }
 
@@ -281,24 +303,16 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         }
     }
     func uploadLivePhotoToFirebase() {
-         guard let livePhotoData = self.compressedData else {
-             print("No Live Photo data to upload.")
+         guard let movieURL = livePhotoCompanionMovieURL,
+               FileManager.default.fileExists(atPath: movieURL.path) else {
+             print("No Live Photo movie to upload.")
              return
          }
-
          let livePhotoFileName = UUID().uuidString
-         let livePhotoFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((livePhotoFileName as NSString).appendingPathExtension("mov")!)
-
-         do {
-             try livePhotoData.write(to: URL(fileURLWithPath: livePhotoFilePath), options: [.atomic])
-         } catch {
-             print("Failed to write Live Photo data to file: \(error.localizedDescription)")
-             return
-         }
 
          let storageRef = Storage.storage().reference().child("livephotos/\(livePhotoFileName).mov")
 
-         storageRef.putFile(from: URL(fileURLWithPath: livePhotoFilePath), metadata: nil) { (metadata, error) in
+         storageRef.putFile(from: movieURL, metadata: nil) { (metadata, error) in
              if let error = error {
                  print("Error uploading Live Photo to Firebase Storage: \(error.localizedDescription)")
              } else {
@@ -318,25 +332,3 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
      }
 
 }
-extension UIImage {
-    func rotateLeft90Degrees() -> UIImage {
-        let radians =  CGFloat.pi/1500
-        let rotatedSize = CGRect(origin: .zero, size: size)
-            .applying(CGAffineTransform(rotationAngle: CGFloat(radians)))
-            .integral.size
-        
-        UIGraphicsBeginImageContext(rotatedSize)
-        if let context = UIGraphicsGetCurrentContext() {
-            context.translateBy(x: rotatedSize.width / 2, y: rotatedSize.height / 2)
-            context.rotate(by: radians)
-            draw(in: CGRect(x: -size.width / 2, y: -size.height / 2, width: size.width, height: size.height))
-            let rotatedImage = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
-            return rotatedImage ?? self
-        }
-        return self
-    }
-    
- 
-    }
-

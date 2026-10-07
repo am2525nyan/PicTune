@@ -116,6 +116,35 @@ final class sotsugyoUITests: XCTestCase {
     }
 
     @MainActor
+    func testMutationFailuresAreVisible() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-ui-testing-failures", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        XCTAssertTrue(app.buttons["チェキ 1"].waitForExistence(timeout: 15))
+        app.buttons["チェキ 1"].press(forDuration: 1)
+        app.buttons["削除"].tap()
+        XCTAssertTrue(app.alerts["写真の操作に失敗しました"].waitForExistence(timeout: 5))
+        capture("20-photo-operation-error", app: app)
+        app.alerts.buttons["閉じる"].tap()
+        XCTAssertTrue(app.buttons["チェキ 1"].exists)
+
+        app.tabBars.buttons["フォルダ"].tap()
+        XCTAssertTrue(app.buttons["卒業の思い出"].waitForExistence(timeout: 5))
+        app.buttons["フォルダを作成"].tap()
+        app.alerts.textFields.firstMatch.typeText("test")
+        app.alerts.buttons["作成"].tap()
+        XCTAssertTrue(app.alerts["フォルダの操作に失敗しました"].waitForExistence(timeout: 5))
+        capture("21-folder-operation-error", app: app)
+        app.alerts.buttons["OK"].tap()
+
+        app.tabBars.buttons["設定"].tap()
+        app.buttons["ログアウト"].tap()
+        app.alerts.buttons["ログアウト"].tap()
+        XCTAssertTrue(app.alerts["操作を完了できませんでした"].waitForExistence(timeout: 5))
+        capture("22-account-operation-error", app: app)
+    }
+
+    @MainActor
     func testLibraryAndPhotoDetails() {
         let app = launch()
         XCTAssertTrue(app.buttons["チェキ 1"].waitForExistence(timeout: 15))

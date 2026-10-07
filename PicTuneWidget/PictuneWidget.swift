@@ -14,41 +14,20 @@ struct Provider: TimelineProvider {
     }
     
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), images: loadImage())
-        completion(entry)
+        Task {
+            let images = await WidgetPhotoLoader.loadImages()
+            completion(SimpleEntry(date: Date(), images: images))
+        }
     }
     
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-            // タイムラインの更新間隔を指定
-            let refreshTime = Calendar.current.date(byAdding: .minute, value: 15, to: Date())!
-            let timeline = Timeline(entries: [SimpleEntry(date: refreshTime, images: loadImage())], policy: .after(refreshTime))
+        Task {
+            let images = await WidgetPhotoLoader.loadImages()
+            let now = Date()
+            let refreshTime = now.addingTimeInterval(15 * 60)
+            let timeline = Timeline(entries: [SimpleEntry(date: now, images: images)], policy: .after(refreshTime))
             completion(timeline)
         }
-    
-    // UserDefaultsから画像のURLを取得し、UIImageに変換するメソッド
- func loadImage() -> [UIImage] {
-        let userdefaults = UserDefaults(suiteName: "group.PIcTune")
-     var images: [UIImage] = []
-        let imageUrlString = userdefaults!.string(forKey: "first")
-        let imageUrl = URL(string: imageUrlString!)
-        let imageData = try? Data(contentsOf: imageUrl!)
-        let uiImage = UIImage(data: imageData!)
-     images.append(uiImage!)
-     
-     let imageUrlString2 = userdefaults!.string(forKey: "second")
-     let imageUrl2 = URL(string: imageUrlString2!)
-     let imageData2 = try? Data(contentsOf: imageUrl2!)
-     let uiImage2 = UIImage(data: imageData2!)
-     images.append(uiImage2!)
-     let imageUrlString3 = userdefaults!.string(forKey: "third")
-     let imageUrl3 = URL(string: imageUrlString3!)
-     let imageData3 = try? Data(contentsOf: imageUrl3!)
-     let uiImage3 = UIImage(data: imageData3!)
-     images.append(uiImage3!)
-        return  images
-        
-        
-        
     }
 }
 struct SimpleEntry: TimelineEntry {
@@ -62,8 +41,8 @@ struct PictuneWidgetEntryView : View {
     
     var body: some View {
         HStack(spacing: 10) {
-            ForEach(entry.images, id: \.self) { image in
-                Image(uiImage: image)
+            ForEach(entry.images.indices, id: \.self) { index in
+                Image(uiImage: entry.images[index])
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100, height: 100)
@@ -98,7 +77,6 @@ extension View {
         }
     }
 }
-
 
 
 

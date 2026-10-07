@@ -6,6 +6,10 @@ enum UITestFixtures {
     static var isEnabled: Bool { ProcessInfo.processInfo.arguments.contains("-ui-testing") }
     static var isSearch: Bool { ProcessInfo.processInfo.arguments.contains("-ui-testing-search") }
     static var isEditor: Bool { ProcessInfo.processInfo.arguments.contains("-ui-testing-editor") }
+    static var failsOperations: Bool { ProcessInfo.processInfo.arguments.contains("-ui-testing-failures") }
+    static func failIfRequested() throws {
+        if failsOperations { throw URLError(.notConnectedToInternet) }
+    }
     static let letter = "楽しい思い出をありがとう。\nまた一緒に写真を撮りましょう。"
 
     static func image(_ alternate: Bool = false) -> UIImage {
@@ -101,9 +105,9 @@ final class UITestContentModel: MainContentModel {
 
     override func loadLetter(folderID: String) async throws -> String { fixtureLetter }
     @MainActor override func saveLetter(_ text: String, folderID: String) async throws { fixtureLetter = text }
-    override func makeFolder(folderName: String) { }
-    override func appendFolder(photoDocumentID: String, to destinationFolderID: String) async throws { }
-    override func deletePhoto(document: String, folderId: String) async throws { }
+    override func makeFolder(folderName: String) async throws { try UITestFixtures.failIfRequested() }
+    override func appendFolder(photoDocumentID: String, to destinationFolderID: String) async throws { try UITestFixtures.failIfRequested() }
+    override func deletePhoto(document: String, folderId: String) async throws { try UITestFixtures.failIfRequested() }
     @MainActor override func deleteFolder(id: String) async throws { }
     override func getNFCData(NFCUid: String, NFCfolderid: String) async throws { }
     override func downloadFile(photo: LibraryPhoto) { }
@@ -113,7 +117,9 @@ final class UITestContentModel: MainContentModel {
 final class UITestSettingViewModel: SettingViewModel {
     override func loadProfile() async throws { }
     override func saveName(name: String) async throws { }
-    override func logout() { }
+    override func logout() {
+        if UITestFixtures.failsOperations { operationError = "ログアウトできませんでした。" }
+    }
     override func deleteUser() { }
     override func reauthenticateWithPassword(password: String) { }
 }

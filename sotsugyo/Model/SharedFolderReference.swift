@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 
 /// The existing NFC payload: a user ID and a folder ID separated by one space.
 struct SharedFolderReference: Equatable {
@@ -6,6 +7,11 @@ struct SharedFolderReference: Equatable {
     let folderID: String
 
     var payload: String { "\(userID) \(folderID)" }
+
+    /// Include the owner to avoid overwriting a local folder or another owner's import.
+    var importedFolderID: String {
+        "shared-" + SHA256.hash(data: Data(payload.utf8)).map { String(format: "%02x", $0) }.joined()
+    }
 }
 
 extension SharedFolderReference {
