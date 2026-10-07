@@ -30,11 +30,18 @@ struct SearchView: View {
         .scrollDismissesKeyboard(.interactively)
         .overlay { emptyState }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            HStack {
-                Text(viewModel.selection == nil ? "曲を選択してください" : "1曲選択中")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                Spacer()
+            HStack(spacing: 12) {
+                if let track = viewModel.selection {
+                    Text("選択中: \(track.name)")
+                        .font(.subheadline.weight(.medium))
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                } else {
+                    Text("曲を選択してください")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
                 Button {
                     guard let selection = viewModel.selection else { return }
                     selectedTrack = selection
