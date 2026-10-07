@@ -1,0 +1,50 @@
+diff --git a/sotsugyo/Utils/UITestFixtures.swift b/sotsugyo/Utils/UITestFixtures.swift
+index b100339..8d98a84 100644
+--- a/sotsugyo/Utils/UITestFixtures.swift
++++ b/sotsugyo/Utils/UITestFixtures.swift
+@@ -29,7 +29,9 @@ struct UITestRootView: View {
+     @StateObject private var camera = CameraManager()
+ 
+     var body: some View {
+-        if UITestFixtures.isSearch {
++        if ProcessInfo.processInfo.arguments.contains("-cheki-reference-capture") {
++            ChekiReferenceCaptureView()
++        } else if UITestFixtures.isSearch {
+             UITestSearchView()
+         } else if UITestFixtures.isEditor {
+             PhotoPreviewView(images: UITestFixtures.image(), isPresentingCamera: .constant(true), cameraManager: camera, friendUid: .constant(""))
+@@ -50,6 +52,34 @@ struct UITestRootView: View {
+     }
+ }
+ 
++// Temporary capture harness: uses the production renderer and never uploads.
++private struct ChekiReferenceCaptureView: View {
++    @StateObject private var camera = CameraManager()
++    private let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
++
++    var body: some View {
++        if let input = UIImage(contentsOfFile: documents.appendingPathComponent("cheki-reference-input.jpg").path) {
++            PhotoPreviewView(images: input, isPresentingCamera: .constant(true), cameraManager: camera, friendUid: .constant(""))
++                .task { @MainActor in
++                    let styles: [(String, String?)] = [("plain", nil), ("ribbon", "4"), ("lace", "2")]
++                    for (name, stamp) in styles {
++                        let renderer = ImageRenderer(content: PhotoArtwork(image: input, stamp: stamp))
++                        renderer.scale = 3
++                        if let image = renderer.uiImage {
++                            do {
++                                try image.pngData()?.write(to: documents.appendingPathComponent("cheki-\(name).png"), options: .atomic)
++                                try image.jpegData(compressionQuality: 0.75)?.write(to: documents.appendingPathComponent("cheki-\(name).jpg"), options: .atomic)
++                                print("CHEKI_REFERENCE_EXPORTED \(name)")
++                            } catch { print("CHEKI_REFERENCE_FAILED \(error)") }
++                        }
++                    }
++                }
++        } else {
++            Text("チェキの入力画像がありません")
++        }
++    }
++}
++
+ 
+ private struct UITestSearchView: View {
+     @State private var selectedTrack: Track?
