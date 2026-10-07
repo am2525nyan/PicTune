@@ -8,7 +8,7 @@ final class sotsugyoUITests: XCTestCase {
         app.launchArguments = ["-ui-testing", "-ui-testing-invite", "-ui-testing-invite-update", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
         app.launch()
         XCTAssertTrue(app.buttons["invite.open"].waitForExistence(timeout: 10))
-        XCTAssertEqual(app.staticTexts["invite.heading"].label, "きみと過ごした、夏の記録")
+        XCTAssertEqual(app.staticTexts["invite.heading"].label, "夏の旅行")
         XCTAssertTrue(app.staticTexts["さきさんから"].exists)
         attachScreenshot("招待の封筒")
         app.buttons["invite.open"].tap()
@@ -16,7 +16,7 @@ final class sotsugyoUITests: XCTestCase {
         attachScreenshot("思い出の開封")
         app.buttons["invite.open"].tap()
         XCTAssertTrue(app.staticTexts["shared.letter"].waitForExistence(timeout: 10))
-        let updated = NSPredicate(format: "label == %@", "送り主が手紙を更新しました。")
+        let updated = NSPredicate(format: "label == %@", "旅行の写真を追加したよ。\nまたみんなで行こうね！")
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: updated, object: app.staticTexts["shared.letter"])], timeout: 8), .completed)
         attachScreenshot("共有フォルダの同期")
     }

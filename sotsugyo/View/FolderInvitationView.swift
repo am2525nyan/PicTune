@@ -23,30 +23,40 @@ struct FolderInvitationView: View {
             ZStack {
                 GiftBackdrop()
                 ScrollView {
-                    VStack(spacing: 28) {
+                    VStack(spacing: 24) {
                         if let invitation = model.invitation {
-                            VStack(spacing: 10) {
+                            VStack(spacing: 18) {
                                 Text("\(invitation.senderName)さんから")
                                     .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(GiftPalette.purple)
+                                    .padding(.horizontal, 16).padding(.vertical, 8)
+                                    .background(GiftPalette.purple.opacity(0.08), in: Capsule())
                                 Text(invitation.folder.title)
                                     .font(.system(size: 28, weight: .heavy, design: .rounded))
                                     .multilineTextAlignment(.center)
                                     .accessibilityIdentifier("invite.heading")
                             }
-                            .padding(.top, 28)
+                            .padding(.top, 24)
                             GiftEnvelope(opened: opened, reduceMotion: reduceMotion)
                                 .scaleEffect(0.85).frame(height: 250)
-                            if opened {
-                                Label("受け取りました", systemImage: "checkmark.circle.fill")
-                                    .font(.headline).foregroundStyle(GiftPalette.purple)
-                                    .accessibilityIdentifier("invite.received")
-                            }
+                            Label("受け取りました", systemImage: "checkmark.circle.fill")
+                                .font(.headline).foregroundStyle(GiftPalette.purple)
+                                .opacity(opened ? 1 : 0)
+                                .accessibilityHidden(!opened)
+                                .accessibilityIdentifier("invite.received")
                         }
                         controls
-                        Text("相手が写真や手紙を更新すると、ここにも反映されます。\n内容を編集することはできません。")
-                            .font(.caption).foregroundStyle(.secondary)
+                        if model.invitation != nil {
+                            VStack(spacing: 8) {
+                                Label("相手の更新もここに反映されます", systemImage: "arrow.triangle.2.circlepath")
+                                    .font(.footnote.weight(.medium))
+                                Text("写真や手紙を見ることができます。編集はできません。")
+                                    .font(.caption)
+                            }
+                            .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
+                            .padding(.top, 2)
+                        }
                     }
                     .padding(.horizontal, 28).padding(.bottom, 32)
                     .frame(maxWidth: 540).frame(maxWidth: .infinity)
@@ -79,12 +89,20 @@ struct FolderInvitationView: View {
 
     @ViewBuilder private var controls: some View {
         if let error = model.error {
-            VStack(spacing: 12) {
+            VStack(spacing: 20) {
+                if model.invitation == nil {
+                    Image(systemName: "envelope.badge")
+                        .font(.system(size: 44, weight: .light))
+                        .foregroundStyle(GiftPalette.purple)
+                        .padding(.top, 64)
+                }
                 Text(error).font(.subheadline).multilineTextAlignment(.center).accessibilityIdentifier("invite.error")
                 Button("もう一度試す") { Task { if model.invitation == nil { await model.load(link) } else { await model.receive() } } }
+                    .buttonStyle(.bordered).controlSize(.large)
             }
         } else if model.invitation == nil {
             ProgressView("招待を確認しています…")
+                .padding(.top, 80)
         } else {
             Button {
                 if opened { showFolder = true } else { Task { await model.receive() } }

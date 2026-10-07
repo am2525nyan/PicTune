@@ -124,7 +124,7 @@ final class UITestSettingViewModel: SettingViewModel {
 #if DEBUG
 struct UITestInvitationRepository: FolderInvitationRepository {
     static let link = FolderInviteLink(token: String(repeating: "a", count: 64))
-    static let shared = LiveSharedFolder(ownerID: "fixture-owner", folderID: "fixture-shared", title: "きみと過ごした、夏の記録")
+    static let shared = LiveSharedFolder(ownerID: "fixture-owner", folderID: "fixture-shared", title: "夏の旅行")
     func create(folderID: String) async throws -> FolderInvitation { try await resolve(link: Self.link) }
     func resolve(link: FolderInviteLink) async throws -> FolderInvitation {
         if ProcessInfo.processInfo.arguments.contains("-ui-testing-invite-expired") { throw FolderInviteError.unavailable }
@@ -140,13 +140,13 @@ struct UITestInvitationRepository: FolderInvitationRepository {
     func observe(_ folder: LiveSharedFolder) -> AsyncThrowingStream<SharedFolderUpdate, Error> {
         AsyncThrowingStream { continuation in
             continuation.yield(.folder(PhotoFolder(id: folder.folderID, title: folder.title, date: nil,
-                letter: "あの日の空も、帰り道に聴いた曲も。\n何気ない時間が、いちばんの宝物です。\nまた一緒に、思い出を増やそうね。")))
+                letter: "旅行の写真をまとめたよ。\nまたみんなで行こうね！")))
             continuation.yield(.photos([PhotoRecord(id: "fixture", fileName: "fixture.jpg", date: Date(), music: nil, livePhotoFileName: "")]))
             let update = Task {
                 if ProcessInfo.processInfo.arguments.contains("-ui-testing-invite-update") {
                     try? await Task.sleep(for: .seconds(2))
                     guard !Task.isCancelled else { return }
-                    continuation.yield(.folder(PhotoFolder(id: folder.folderID, title: folder.title, date: nil, letter: "送り主が手紙を更新しました。")))
+                    continuation.yield(.folder(PhotoFolder(id: folder.folderID, title: folder.title, date: nil, letter: "旅行の写真を追加したよ。\nまたみんなで行こうね！")))
                 }
             }
             continuation.onTermination = { _ in update.cancel() }

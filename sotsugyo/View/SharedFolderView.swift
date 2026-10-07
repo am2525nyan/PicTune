@@ -19,22 +19,34 @@ struct SharedFolderView: View {
     }
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                Label("共有中・閲覧のみ", systemImage: "person.2.fill")
-                    .font(.caption.bold()).foregroundStyle(.purple)
-                Text(model.folder?.title ?? reference.title).font(.largeTitle.bold()).multilineTextAlignment(.center)
+            VStack(alignment: .leading, spacing: 28) {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(model.folder?.title ?? reference.title)
+                        .font(.system(size: 28, weight: .heavy, design: .rounded))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Label("閲覧のみ・相手の更新も反映されます", systemImage: "person.2")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                .padding(.top, 12)
                 if let error = model.error {
                     Text(error).font(.subheadline).multilineTextAlignment(.center)
                     Button("再読み込み") { retryID = UUID() }
                 }
                 if model.isLoading { ProgressView("フォルダを読み込んでいます…") }
                 if let folder = model.folder, !folder.letter.isEmpty {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Label("手紙", systemImage: "envelope.open").font(.headline).foregroundStyle(.purple)
+                    VStack(alignment: .leading, spacing: 20) {
+                        Label("手紙", systemImage: "envelope.open")
+                            .font(.system(.headline, design: .rounded, weight: .bold))
+                            .foregroundStyle(Color(red: 0.49, green: 0.33, blue: 0.78))
+                        Rectangle().fill(.purple.opacity(0.12)).frame(height: 1)
                         Text(folder.letter).font(.body).lineSpacing(8).frame(maxWidth: .infinity, alignment: .leading)
                             .accessibilityIdentifier("shared.letter")
                     }
                     .padding(24).background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 24))
+                    .overlay { RoundedRectangle(cornerRadius: 24).strokeBorder(.purple.opacity(0.10), lineWidth: 1) }
+                }
+                if !model.photos.isEmpty {
+                    Text("写真").font(.system(.title3, design: .rounded, weight: .bold))
                 }
                 ForEach(model.photos) { photo in
                     VStack(spacing: 0) {
