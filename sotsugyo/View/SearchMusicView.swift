@@ -66,7 +66,7 @@ struct SearchView: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
+            .modifier(MusicSelectionBarBackground())
             .padding(.horizontal, 12)
             .padding(.bottom, 8)
         }
@@ -204,6 +204,17 @@ struct SearchView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct MusicSelectionBarBackground: ViewModifier {
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.glassEffect(.regular, in: RoundedRectangle(cornerRadius: 14))
+        } else {
+            content.background(.thinMaterial, in: RoundedRectangle(cornerRadius: 14))
+        }
     }
 }
 
