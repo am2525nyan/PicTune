@@ -57,7 +57,7 @@ struct FolderInvitationView: View {
                             }
                             .padding(.top, 24)
                             GiftEnvelope(opened: opened, title: invitation.folder.title, coverImage: preview.photos.first?.image)
-                                .scaleEffect(0.85).frame(height: 250)
+                                .scaleEffect(0.85).frame(height: 310)
                                 .accessibilityIdentifier(preview.photos.isEmpty ? "invite.envelope" : "invite.cover")
                             Label("受け取りました", systemImage: "checkmark.circle.fill")
                                 .font(.headline).foregroundStyle(GiftPalette.purpleText)
@@ -167,7 +167,7 @@ struct FolderInviteShareView: View {
                         Text(folderName)
                             .font(.system(size: 28, weight: .heavy, design: .rounded))
                             .multilineTextAlignment(.center).padding(.top, 20)
-                        GiftEnvelope(opened: true, title: folderName, coverImage: coverImage).scaleEffect(0.85).frame(height: 260)
+                        GiftEnvelope(opened: true, title: folderName, coverImage: coverImage).scaleEffect(0.85).frame(height: 310)
                         Text("写真に音楽や手紙を添えて、\nリンクで送れます。")
                             .font(.subheadline).multilineTextAlignment(.center)
                         if model.isWorking { ProgressView("リンクを準備しています…") }
@@ -237,32 +237,38 @@ private struct GiftEnvelope: View {
             .background(Color(red: 1, green: 0.98, blue: 0.97), in: RoundedRectangle(cornerRadius: 4))
             .rotationEffect(.degrees(12)).offset(x: 52, y: opened ? -38 : 28)
             .shadow(color: .black.opacity(0.04), radius: 6, y: 3)
-            VStack(spacing: 10) {
-                Group {
-                    if let coverImage {
-                        Image(uiImage: coverImage).resizable().scaledToFit()
-                    } else {
+            Group {
+                if let coverImage {
+                    // Saved images already include the cheki border and handwritten decoration.
+                    Image(uiImage: coverImage).resizable().scaledToFit()
+                } else {
+                    VStack(spacing: 12) {
                         ZStack {
                             Rectangle().fill(LinearGradient(colors: [Color(red: 0.78, green: 0.86, blue: 0.98), Color(red: 0.87, green: 0.76, blue: 0.95)], startPoint: .topLeading, endPoint: .bottomTrailing))
                             Image(systemName: "music.note").font(.system(size: 40, weight: .medium)).foregroundStyle(.white)
                         }
+                        Text(title).font(.system(size: 11, weight: .bold, design: .rounded))
+                            .foregroundStyle(GiftPalette.purple).lineLimit(1)
+                            .frame(height: 26)
                     }
-                }.frame(width: 150, height: 120)
-                Text(title).font(.system(size: 11, weight: .bold, design: .rounded))
-                    .foregroundStyle(GiftPalette.purple).lineLimit(1)
+                    .padding(.horizontal, 12).padding(.top, 18).padding(.bottom, 16)
+                }
             }
-            .padding(12).padding(.bottom, 8).frame(width: 174)
-            .background(.white, in: RoundedRectangle(cornerRadius: 5))
+            .frame(width: 170, height: 270)
+            .background(.white)
+            .overlay { Rectangle().strokeBorder(.black.opacity(0.08), lineWidth: 0.7) }
             .rotationEffect(.degrees(opened ? -7 : 5))
-            .offset(y: opened ? -48 : 12).scaleEffect(opened ? 1.12 : 0.9)
-            .shadow(color: .black.opacity(0.07), radius: 8, y: 4)
+            .offset(x: opened ? -12 : 0, y: opened ? -40 : 32).scaleEffect(opened ? 1.04 : 0.72)
+            .shadow(color: .black.opacity(0.16), radius: 10, y: 6)
+            .zIndex(opened ? 1 : 0)
             RoundedRectangle(cornerRadius: 20)
                 .fill(LinearGradient(colors: [Color(red: 0.94, green: 0.86, blue: 0.96), Color(red: 0.84, green: 0.73, blue: 0.91)], startPoint: .top, endPoint: .bottom))
                 .frame(width: 254, height: 142).overlay {
                     Image(systemName: "heart.fill")
                         .font(.system(size: 23, weight: .medium)).foregroundStyle(.white)
                         .padding(16).background(Color(red: 0.92, green: 0.68, blue: 0.80), in: Circle())
-                }.rotationEffect(.degrees(-7)).offset(y: opened ? 72 : 68)
+                        .offset(y: opened ? 28 : 0)
+                }.rotationEffect(.degrees(-7)).offset(y: opened ? 102 : 68)
                 .opacity(opened ? 0.75 : 1)
         }
         .accessibilityElement(children: .ignore)
