@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PicTune | 共通デザインプレビュー</title>
+  <link rel="stylesheet" href="design-system.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="page-header">
+      <span class="page-kicker">PICTUNE DESIGN SYSTEM</span>
+      <div class="page-title-row">
+        <div>
+          <h1>PicTune の色と文字</h1>
+          <p>共通デザインの配色を確認し、現在の iOS 画面で使われている部品と見比べるための資料です。</p>
+        </div>
+        <div class="brand-lockup"><img src="../sotsugyo/Assets.xcassets/icon.imageset/pictune%202%20%281%29.jpg" alt="PicTune の現行アプリアイコン"><span>PicTune</span></div>
+      </div>
+    </header>
+
+    <main>
+      <section class="section" aria-labelledby="background-title">
+        <div class="section-heading">
+          <div><span class="section-number">01</span><h2 id="background-title">背景の使い分け</h2></div>
+          <p>写真や操作が主役の画面は標準背景。ラベンダーはログインと空状態の装飾に使います。</p>
+        </div>
+        <div class="background-grid">
+          <article class="background-card">
+            <h3>写真一覧・写真詳細</h3>
+            <div class="background-pair"><span class="sample-normal-light">Light</span><span class="sample-normal-dark">Dark</span></div>
+            <code>systemBackground</code>
+          </article>
+          <article class="background-card">
+            <h3>設定・フォーム</h3>
+            <div class="background-pair"><span class="sample-grouped-light">Light</span><span class="sample-grouped-dark">Dark</span></div>
+            <code>systemGroupedBackground</code>
+          </article>
+          <article class="background-card">
+            <h3>ログイン・空状態の一部</h3>
+            <div class="background-pair"><span class="sample-brand-light">Light</span><span class="sample-brand-dark">Dark</span></div>
+            <code>PicTune brand background</code>
+          </article>
+        </div>
+        <p class="palette-note">システム背景の色見本はブラウザ上での近似です。アプリでは固定のカラーコードではなく、iOS の意味色を使います。</p>
+      </section>
+
+      <section class="section" aria-labelledby="palette-title">
+        <div class="section-heading">
+          <div><span class="section-number">02</span><h2 id="palette-title">色の役割</h2></div>
+          <p>Markdown に記載した設計案です。現在のアプリには未適用です。</p>
+        </div>
+        <div class="palette-head" aria-hidden="true"><span>用途</span><span>Light</span><span>Dark</span></div>
+        <div class="palette-list">
+          <div class="palette-row token-system-background"><div><strong>通常画面の背景</strong><small><code>systemBackground</code> · 写真一覧・詳細</small></div><div class="swatch"><span class="swatch-color light" aria-hidden="true">&nbsp;</span><code>自動</code></div><div class="swatch"><span class="swatch-color dark" aria-hidden="true">&nbsp;</span><code>自動</code></div></div>
+          <div class="palette-row token-grouped-background"><div><strong>設定・フォームの背景</strong><small><code>systemGroupedBackground</code></small></div><div class="swatch"><span class="swatch-color light" aria-hidden="true">&nbsp;</span><code>自動</code></div><div class="swatch"><span class="swatch-color dark" aria-hidden="true">&nbsp;</span><code>自動</code></div></div>
+          <div class="palette-row token-grouped-surface"><div><strong>フォーム内の面</strong><small><code>secondarySystemGroupedBackground</code></small></div><div class="swatch"><span class="swatch-color light" aria-hidden="true">&nbsp;</span><code>自動</code></div><div class="swatch"><span class="swatch-color dark" aria-hidden="true">&nbsp;</span><code>自動</code></div></div>
+          <div class="palette-row token-background"><div><strong>ブランド背景</strong><small>ログイン・空状態の一部</small></div><div class="swatch"><span class="swatch-color light" aria-hidden="true">&nbsp;</span><code>#F7F2FF</code></div><div class="swatch"><span class="swatch-color dark" aria-hidden="true">&nbsp;</span><code>#201A2B</code></div></div>
+          <div class="palette-row token-gradient-start"><div><strong>グラデーション開始</strong><small>ログインなどの装飾領域</small></div><div class="swatch"><span class="swatch-color light" aria-hidden="true">&nbsp;</span><code>#C7D4FA</code></div><div class="swatch"><span class="swatch-color dark" aria-hidden="true">&nbsp;</span><code>#302446</code></div></div>
+          <div class="palette-row token-gradient-end"><div><strong>グラデーション終了</strong><small>ログインなどの装飾領域</small></div><div class="swatch"><span class="swatch-color light" aria-hidden="true">&nbsp;</span><code>#E3BFFA</code></div><div class="swatch"><span class="swatch-color dark" aria-hidden="true">&nbsp;</span><code>#3F2B55</code></div></div>
+          <div class="palette-row token-surface"><div><strong>ブランドカード</strong><small>ログイン・手紙の台紙</small></div><div class="swatch"><span class="swatch-color light" aria-hidden="true">&nbsp;</span><code>#FFFDFB</code></div><div class="swatch"><span class="swatch-color dark" aria-hidden="true">&nbsp;</span><code>#30273D</code></div></div>
+          <div class="palette-row token-ink"><div><strong>ブランド領域の主な文字</strong><small>通常画面はシステムの主な文字色</small></div><div class="swatch"><span class="swatch-color light" aria-hidden="true">&nbsp;</span><code>#25213B</code></div><div class="swatch"><span class="swatch-color dark" aria-hidden="true">&nbsp;</span><code>#F8F3FF</code></div></div>
+          <div class="palette-row token-muted"><div><strong>ブランド領域の補助文字</strong><small>通常画面はシステムの補助文字色</small></div><div class="swatch"><span class="swatch-color light" aria-hidden="true">&nbsp;</span><code>#5B526B</code></div><div class="swatch"><span class="swatch-color dark" aria-hidden="true">&nbsp;</span><code>#D4C9E2</code></div></div>
+          <div class="palette-row token-primary"><div><strong>主な操作</strong><small>ボタン・選択状態</small></div><div class="swatch"><span class="swatch-color light" aria-hidden="true">&nbsp;</span><code>#59459F</code></div><div class="swatch"><span class="swatch-color dark" aria-hidden="true">&nbsp;</span><code>#BCA8F2</code></div></div>
+          <div class="palette-row token-on-primary"><div><strong>操作上の文字</strong><small>主要ボタンのラベル</small></div><div class="swatch"><span class="swatch-color light" aria-hidden="true">&nbsp;</span><code>#FFFFFF</code></div><div class="swatch"><span class="swatch-color dark" aria-hidden="true">&nbsp;</span><code>#201A2B</code></div></div>
+          <div class="palette-row token-border"><div><strong>ブランド領域の境界線</strong><small>装飾カードの薄い輪郭</small></div><div class="swatch"><span class="swatch-color light" aria-hidden="true">&nbsp;</span><code>#DED2EE</code></div><div class="swatch"><span class="swatch-color dark" aria-hidden="true">&nbsp;</span><code>#56496A</code></div></div>
+          <div class="palette-row token-rose"><div><strong>ローズ</strong><small>小さな装飾</small></div><div class="swatch"><span class="swatch-color light" aria-hidden="true">&nbsp;</span><code>#B95E7A</code></div><div class="swatch"><span class="swatch-color dark" aria-hidden="true">&nbsp;</span><code>#E8A5BA</code></div></div>
+          <div class="palette-row token-cream"><div><strong>クリーム</strong><small>手紙の背景</small></div><div class="swatch"><span class="swatch-color light" aria-hidden="true">&nbsp;</span><code>#FFF6E8</code></div><div class="swatch"><span class="swatch-color dark" aria-hidden="true">&nbsp;</span><code>#4A3C42</code></div></div>
+        </div>
+        <p class="palette-note">固定のカラーコードはブランド表現の検討用です。通常画面の文字・区切り線・タブ・フォーム・確認操作は iOS の意味色と標準の外観を基準にします。</p>
+      </section>
+
+      <section class="section details-grid" aria-label="文字と部品の基準">
+        <div class="detail-panel" aria-labelledby="type-title">
+          <div class="section-heading compact"><div><span class="section-number">03</span><h2 id="type-title">文字</h2></div></div>
+          <p class="detail-intro">見出しと PicTune の文字を丸みのあるシステム書体で表示しています。操作文と本文は iOS の標準書体・Dynamic Type を基準にします。</p>
+          <div class="type-row"><span>アプリ名</span><strong class="type-logo">PicTune</strong></div>
+          <div class="type-row"><span>画面タイトル</span><strong class="type-title">写真</strong><code>.largeTitle</code></div>
+          <div class="type-row"><span>セクション</span><strong class="type-heading">プロフィール</strong><code>.headline</code></div>
+          <div class="type-row"><span>本文・操作</span><strong class="type-body">写真を保存する</strong><code>.body</code></div>
+          <div class="type-row"><span>補足</span><strong class="type-caption">メールアドレスは変更できません。</strong><code>.subheadline</code></div>
+        </div>
+        <div class="detail-panel" aria-labelledby="parts-title">
+          <div class="section-heading compact"><div><span class="section-number">04</span><h2 id="parts-title">実際に使っている部品</h2></div></div>
+          <p class="detail-intro">現在の SwiftUI 実装にある画面構成です。独自のボタン・入力欄の見本は置いていません。</p>
+          <ul class="component-list">
+            <li><strong>タブと画面遷移</strong><span><code>TabView</code> / <code>NavigationStack</code><small>MainContentView.swift</small></span></li>
+            <li><strong>設定</strong><span><code>Form</code> / <code>Section</code> / <code>LabeledContent</code><small>SettingView.swift</small></span></li>
+            <li><strong>フォルダの表紙</strong><span><code>FolderLibraryCard</code> / <code>FolderCover</code><small>FolderContentView.swift</small></span></li>
+            <li><strong>曲の情報</strong><span><code>MusicAttachmentView</code> / <code>.bordered</code><small>ImageDetailView.swift</small></span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="screens-title">
+        <div class="section-heading">
+          <div><span class="section-number">05</span><h2 id="screens-title">保存済みのアプリ画面</h2></div>
+          <p>以前のシミュレーター確認時に保存した画像です。新しい配色を適用した画面ではありません。</p>
+        </div>
+        <div class="screen-grid">
+          <figure><a href="verification/model-refactor/after/01-photo-library.png"><img src="verification/model-refactor/after/01-photo-library.png" alt="保存済みの写真一覧画面" loading="lazy"></a><figcaption>写真一覧 <small>TabView・写真のグリッド</small></figcaption></figure>
+          <figure><a href="verification/model-refactor/after/04-folder-library.png"><img src="verification/model-refactor/after/04-folder-library.png" alt="保存済みのフォルダ一覧画面" loading="lazy"></a><figcaption>フォルダ一覧 <small>フォルダ表紙</small></figcaption></figure>
+          <figure><a href="verification/model-refactor/after/09-settings.png"><img src="verification/model-refactor/after/09-settings.png" alt="保存済みの設定画面" loading="lazy"></a><figcaption>設定 <small>Form・Section</small></figcaption></figure>
+        </div>
+      </section>
+
+      <aside class="hig-note" aria-label="iOS の基準">
+        <strong>iOS の基準</strong>
+        <p>操作部品は標準の SwiftUI コントロールを基準にし、文字サイズの変更、明暗の切り替え、44 pt 以上のタップ領域を実画面で確認します。</p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/typography">文字</a>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/color">色</a>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/buttons">ボタン</a>
+      </aside>
+    </main>
+
+    <footer class="page-footer">
+      <span>PicTune 共通デザインプレビュー</span>
+      <a href="design-system.md">設計書（Markdown）を読む</a>
+      <span>配色と文字は検討中です。</span>
+    </footer>
+  </div>
+</body>
+</html>
