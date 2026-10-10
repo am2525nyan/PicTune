@@ -57,7 +57,7 @@ struct FolderInvitationView: View {
                             }
                             .padding(.top, 24)
                             GiftEnvelope(opened: opened, title: invitation.folder.title, coverImage: preview.photos.first?.image)
-                                .scaleEffect(0.85).frame(height: 310)
+                                .scaleEffect(0.85).frame(height: 340)
                                 .accessibilityIdentifier(preview.photos.isEmpty ? "invite.envelope" : "invite.cover")
                             Label("受け取りました", systemImage: "checkmark.circle.fill")
                                 .font(.headline).foregroundStyle(GiftPalette.purpleText)
@@ -167,7 +167,7 @@ struct FolderInviteShareView: View {
                         Text(folderName)
                             .font(.system(size: 28, weight: .heavy, design: .rounded))
                             .multilineTextAlignment(.center).padding(.top, 20)
-                        GiftEnvelope(opened: true, title: folderName, coverImage: coverImage).scaleEffect(0.85).frame(height: 310)
+                        GiftEnvelope(opened: true, title: folderName, coverImage: coverImage).scaleEffect(0.85).frame(height: 340)
                         Text("写真に音楽や手紙を添えて、\nリンクで送れます。")
                             .font(.subheadline).multilineTextAlignment(.center)
                         if model.isWorking { ProgressView("リンクを準備しています…") }
@@ -227,7 +227,7 @@ private struct GiftEnvelope: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 24).fill(Color(red: 0.82, green: 0.72, blue: 0.9))
-                .frame(width: 246, height: 162).rotationEffect(.degrees(-7)).offset(y: 36)
+                .frame(width: 246, height: 162).rotationEffect(.degrees(-7)).offset(y: opened ? 89 : 36)
             VStack(alignment: .leading, spacing: 12) {
                 Image(systemName: "heart").font(.system(size: 16, weight: .semibold)).foregroundStyle(.pink.opacity(0.6))
                 ForEach(0..<3) { _ in Capsule().fill(GiftPalette.purple.opacity(0.15)).frame(height: 2) }
@@ -257,19 +257,30 @@ private struct GiftEnvelope: View {
             .frame(width: 170, height: 270)
             .background(.white)
             .overlay { Rectangle().strokeBorder(.black.opacity(0.08), lineWidth: 0.7) }
-            .rotationEffect(.degrees(opened ? -7 : 5))
-            .offset(x: opened ? -12 : 0, y: opened ? -40 : 32).scaleEffect(opened ? 1.04 : 0.72)
+            .rotationEffect(.degrees(-7))
+            .offset(x: -12, y: opened ? -74 : 74)
             .shadow(color: .black.opacity(0.16), radius: 10, y: 6)
-            .zIndex(opened ? 1 : 0)
+            .mask {
+                // The inserted portion stays inside the pocket instead of showing below it.
+                Rectangle().frame(width: 360, height: 500).offset(y: -140)
+            }
+            // Keep the pocket in front throughout the animation, so the cheki slides out of it.
             RoundedRectangle(cornerRadius: 20)
                 .fill(LinearGradient(colors: [Color(red: 0.94, green: 0.86, blue: 0.96), Color(red: 0.84, green: 0.73, blue: 0.91)], startPoint: .top, endPoint: .bottom))
-                .frame(width: 254, height: 142).overlay {
+                .frame(width: 254, height: 126).overlay {
+                    GeometryReader { geometry in
+                        Path { path in
+                            path.move(to: CGPoint(x: 10, y: 10))
+                            path.addLine(to: CGPoint(x: geometry.size.width / 2, y: geometry.size.height * 0.55))
+                            path.addLine(to: CGPoint(x: geometry.size.width - 10, y: 10))
+                        }
+                        .stroke(GiftPalette.purple.opacity(0.16), lineWidth: 1)
+                    }
                     Image(systemName: "heart.fill")
                         .font(.system(size: 23, weight: .medium)).foregroundStyle(.white)
                         .padding(16).background(Color(red: 0.92, green: 0.68, blue: 0.80), in: Circle())
-                        .offset(y: opened ? 28 : 0)
-                }.rotationEffect(.degrees(-7)).offset(y: opened ? 102 : 68)
-                .opacity(opened ? 0.75 : 1)
+                        .offset(y: 22)
+                }.rotationEffect(.degrees(-7)).offset(y: opened ? 119 : 68)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(coverImage != nil ? "\(title)のチェキを添えた封筒" : opened ? "開いた招待の封筒" : "招待の封筒")
