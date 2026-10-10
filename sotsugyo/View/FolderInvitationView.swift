@@ -223,11 +223,77 @@ struct GiftBackdrop: View {
 private struct GiftEnvelope: View {
     let opened: Bool
     let title: String
-    var coverImage: UIImage? = nil
+    var coverImage: UIImage?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var flapAngle: Double
+    @State private var flapBehind: Bool
+    @State private var contentsRaised: Bool
+    @State private var sealReleased: Bool
+
+    init(opened: Bool, title: String, coverImage: UIImage? = nil) {
+        self.opened = opened
+        self.title = title
+        self.coverImage = coverImage
+        // The sender shows the finished arrangement immediately.
+        _flapAngle = State(initialValue: opened ? -180 : 0)
+        _flapBehind = State(initialValue: opened)
+        _contentsRaised = State(initialValue: opened)
+        _sealReleased = State(initialValue: opened)
+    }
+
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 24).fill(Color(red: 0.82, green: 0.72, blue: 0.9))
-                .frame(width: 246, height: 162).rotationEffect(.degrees(-7)).offset(y: opened ? 89 : 36)
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(red: 0.80, green: 0.69, blue: 0.88))
+                .frame(width: 254, height: 142).offset(y: 71)
+                .zIndex(1)
+
+            contents
+                .mask {
+                    // Hide anything below the pocket; its top edge is the opening.
+                    Rectangle().frame(width: contentsRaised ? 360 : 250, height: 500).offset(y: -108)
+                }
+                .zIndex(2)
+
+            RoundedRectangle(cornerRadius: 12)
+                .fill(LinearGradient(colors: [Color(red: 0.94, green: 0.86, blue: 0.96), Color(red: 0.84, green: 0.73, blue: 0.91)], startPoint: .top, endPoint: .bottom))
+                .frame(width: 254, height: 142)
+                .overlay {
+                    // These are the lower pocket seams, separate from the top flap.
+                    Path { path in
+                        path.move(to: CGPoint(x: 7, y: 136))
+                        path.addLine(to: CGPoint(x: 127, y: 55))
+                        path.addLine(to: CGPoint(x: 247, y: 136))
+                    }
+                    .stroke(GiftPalette.purple.opacity(0.14), lineWidth: 1)
+                }
+                .offset(y: 71)
+                .zIndex(3)
+
+            EnvelopeFlap()
+                .fill(Color(red: 0.88, green: 0.78, blue: 0.94))
+                .overlay {
+                    EnvelopeFlap().stroke(GiftPalette.purple.opacity(0.16), lineWidth: 1)
+                    Image(systemName: "heart.fill")
+                        .font(.system(size: 23, weight: .medium)).foregroundStyle(.white)
+                        .padding(16).background(Color(red: 0.92, green: 0.68, blue: 0.80), in: Circle())
+                        .offset(y: 30)
+                        .opacity(sealReleased ? 0 : 1)
+                }
+                .frame(width: 254, height: 96)
+                .rotation3DEffect(.degrees(flapAngle), axis: (x: 1, y: 0, z: 0), anchor: .top, perspective: 0.25)
+                .offset(y: 48)
+                .zIndex(flapBehind ? 0 : 4)
+        }
+        .rotationEffect(.degrees(-7))
+        .offset(y: contentsRaised ? 58 : -30)
+        .task(id: opened) { await animateOpening() }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(coverImage != nil ? "\(title)のチェキを添えた封筒" : opened ? "開いた招待の封筒" : "招待の封筒")
+    }
+
+    private var contents: some View {
+        ZStack {
             VStack(alignment: .leading, spacing: 12) {
                 Image(systemName: "heart").font(.system(size: 16, weight: .semibold)).foregroundStyle(.pink.opacity(0.6))
                 ForEach(0..<3) { _ in Capsule().fill(GiftPalette.purple.opacity(0.15)).frame(height: 2) }
@@ -235,7 +301,7 @@ private struct GiftEnvelope: View {
             }
             .padding(18).frame(width: 138, height: 154)
             .background(Color(red: 1, green: 0.98, blue: 0.97), in: RoundedRectangle(cornerRadius: 4))
-            .rotationEffect(.degrees(12)).offset(x: 52, y: opened ? -38 : 28)
+            .rotationEffect(.degrees(16)).offset(x: 52, y: contentsRaised ? -76 : 100)
             .shadow(color: .black.opacity(0.04), radius: 6, y: 3)
             Group {
                 if let coverImage {
@@ -257,33 +323,42 @@ private struct GiftEnvelope: View {
             .frame(width: 170, height: 270)
             .background(.white)
             .overlay { Rectangle().strokeBorder(.black.opacity(0.08), lineWidth: 0.7) }
-            .rotationEffect(.degrees(-7))
-            .offset(x: -12, y: opened ? -74 : 74)
+            .rotationEffect(.degrees(-3))
+            .offset(x: -12, y: contentsRaised ? -130 : 142)
             .shadow(color: .black.opacity(0.16), radius: 10, y: 6)
-            .mask {
-                // The inserted portion stays inside the pocket instead of showing below it.
-                Rectangle().frame(width: 360, height: 500).offset(y: -140)
-            }
-            // Keep the pocket in front throughout the animation, so the cheki slides out of it.
-            RoundedRectangle(cornerRadius: 20)
-                .fill(LinearGradient(colors: [Color(red: 0.94, green: 0.86, blue: 0.96), Color(red: 0.84, green: 0.73, blue: 0.91)], startPoint: .top, endPoint: .bottom))
-                .frame(width: 254, height: 126).overlay {
-                    GeometryReader { geometry in
-                        Path { path in
-                            path.move(to: CGPoint(x: 10, y: 10))
-                            path.addLine(to: CGPoint(x: geometry.size.width / 2, y: geometry.size.height * 0.55))
-                            path.addLine(to: CGPoint(x: geometry.size.width - 10, y: 10))
-                        }
-                        .stroke(GiftPalette.purple.opacity(0.16), lineWidth: 1)
-                    }
-                    Image(systemName: "heart.fill")
-                        .font(.system(size: 23, weight: .medium)).foregroundStyle(.white)
-                        .padding(16).background(Color(red: 0.92, green: 0.68, blue: 0.80), in: Circle())
-                        .offset(y: 22)
-                }.rotationEffect(.degrees(-7)).offset(y: opened ? 119 : 68)
         }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(coverImage != nil ? "\(title)のチェキを添えた封筒" : opened ? "開いた招待の封筒" : "招待の封筒")
+    }
+
+    @MainActor private func animateOpening() async {
+        guard opened, !contentsRaised else { return }
+        if reduceMotion {
+            sealReleased = true
+            flapAngle = -180
+            flapBehind = true
+            contentsRaised = true
+            return
+        }
+        do {
+            withAnimation(.easeOut(duration: 0.15)) { sealReleased = true }
+            withAnimation(.easeIn(duration: 0.28)) { flapAngle = -90 }
+            try await Task.sleep(for: .milliseconds(280))
+            // Change layers only while the flap is edge-on, before lifting the contents.
+            flapBehind = true
+            withAnimation(.easeOut(duration: 0.28)) { flapAngle = -180 }
+            try await Task.sleep(for: .milliseconds(300))
+            withAnimation(.spring(response: 0.85, dampingFraction: 0.82)) { contentsRaised = true }
+        } catch { return }
+    }
+}
+
+private struct EnvelopeFlap: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path { path in
+            path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+            path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+            path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
+            path.closeSubpath()
+        }
     }
 }
 
