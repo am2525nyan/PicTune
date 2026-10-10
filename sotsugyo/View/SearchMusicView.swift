@@ -31,25 +31,8 @@ struct SearchView: View {
         .overlay { emptyState }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             HStack(spacing: 12) {
-                if let track = viewModel.selection {
-                    HStack(spacing: 8) {
-                        MusicArtwork(track: track, size: 36)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(track.name).font(.subheadline.weight(.semibold)).lineLimit(1)
-                            Text(track.artist).font(.caption).foregroundStyle(.secondary).lineLimit(1)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
+                selectionSummary
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("選択中の曲: \(track.name)、\(track.artist)")
-                    .accessibilityIdentifier("music.selection")
-                } else {
-                    Text("曲を選択してください")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
                 Button {
                     guard let selection = viewModel.selection else { return }
                     selectedTrack = selection
@@ -64,11 +47,9 @@ struct SearchView: View {
                 .accessibilityIdentifier("music.add")
                 .accessibilityHint("選択した曲を写真に追加して、写真編集に戻ります")
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .modifier(MusicSelectionBarBackground())
-            .padding(.horizontal, 12)
-            .padding(.bottom, 8)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 4)
+            .background(.bar)
         }
         .tint(musicAccent)
         .navigationTitle("音楽を追加")
@@ -81,6 +62,26 @@ struct SearchView: View {
         }
         .task(id: SearchRequest(query: viewModel.query, retryCount: retryCount)) {
             await viewModel.search()
+        }
+    }
+
+    @ViewBuilder
+    private var selectionSummary: some View {
+        if let track = viewModel.selection {
+            HStack(spacing: 8) {
+                MusicArtwork(track: track, size: 36)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(track.name).font(.subheadline.weight(.semibold)).lineLimit(1)
+                    Text(track.artist).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                }
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("選択中の曲: \(track.name)、\(track.artist)")
+            .accessibilityIdentifier("music.selection")
+        } else {
+            Text("曲を選択してください")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
         }
     }
 
@@ -204,17 +205,6 @@ struct SearchView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
-private struct MusicSelectionBarBackground: ViewModifier {
-    @ViewBuilder
-    func body(content: Content) -> some View {
-        if #available(iOS 26.0, *) {
-            content.glassEffect(.regular, in: RoundedRectangle(cornerRadius: 14))
-        } else {
-            content.background(.thinMaterial, in: RoundedRectangle(cornerRadius: 14))
-        }
     }
 }
 
