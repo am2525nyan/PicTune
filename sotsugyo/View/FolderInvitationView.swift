@@ -229,6 +229,8 @@ private struct GiftEnvelope: View {
     @State private var flapBehind: Bool
     @State private var contentsRaised: Bool
     @State private var sealReleased: Bool
+    @State private var preparedCover: UIImage?
+    @Environment(\.displayScale) private var displayScale
 
     init(opened: Bool, title: String, coverImage: UIImage? = nil) {
         self.opened = opened
@@ -239,6 +241,7 @@ private struct GiftEnvelope: View {
         _flapBehind = State(initialValue: opened)
         _contentsRaised = State(initialValue: opened)
         _sealReleased = State(initialValue: opened)
+        _preparedCover = State(initialValue: coverImage)
     }
 
     var body: some View {
@@ -250,8 +253,13 @@ private struct GiftEnvelope: View {
 
             contents
                 .mask {
-                    // Hide anything below the pocket; its top edge is the opening.
-                    Rectangle().frame(width: contentsRaised ? 360 : 250, height: 500).offset(y: -108)
+                    // Keep the opening fixed while the contents move through it.
+                    // Below the opening, the pocket also conceals both side edges.
+                    Path { path in
+                        path.addRect(CGRect(x: 0, y: 0, width: 360, height: 358))
+                        path.addRect(CGRect(x: 55, y: 358, width: 250, height: 142))
+                    }
+                    .frame(width: 360, height: 500).offset(y: -108)
                 }
                 .zIndex(2)
 
@@ -288,6 +296,15 @@ private struct GiftEnvelope: View {
         .rotationEffect(.degrees(-7))
         .offset(y: contentsRaised ? 58 : -30)
         .task(id: opened) { await animateOpening() }
+        .task(id: coverImage) {
+            guard let coverImage else { preparedCover = nil; return }
+            // Decode and downsample off the display path before the photo is exposed.
+            let image = await coverImage.byPreparingThumbnail(ofSize: CGSize(width: 170 * displayScale, height: 270 * displayScale))
+            guard !Task.isCancelled else { return }
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.2)) {
+                preparedCover = image ?? coverImage
+            }
+        }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(coverImage != nil ? "\(title)のチェキを添えた封筒" : opened ? "開いた招待の封筒" : "招待の封筒")
     }
@@ -304,9 +321,10 @@ private struct GiftEnvelope: View {
             .rotationEffect(.degrees(16)).offset(x: 52, y: contentsRaised ? -76 : 100)
             .shadow(color: .black.opacity(0.04), radius: 6, y: 3)
             Group {
-                if let coverImage {
+                if let preparedCover {
                     // Saved images already include the cheki border and handwritten decoration.
-                    Image(uiImage: coverImage).resizable().scaledToFit()
+                    Image(uiImage: preparedCover).resizable().scaledToFit()
+                        .transition(.opacity)
                 } else {
                     VStack(spacing: 12) {
                         ZStack {
@@ -346,7 +364,7 @@ private struct GiftEnvelope: View {
             flapBehind = true
             withAnimation(.easeOut(duration: 0.28)) { flapAngle = -180 }
             try await Task.sleep(for: .milliseconds(300))
-            withAnimation(.spring(response: 0.85, dampingFraction: 0.82)) { contentsRaised = true }
+            withAnimation(.easeInOut(duration: 1.1)) { contentsRaised = true }
         } catch { return }
     }
 }

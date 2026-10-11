@@ -13,6 +13,9 @@ final class sotsugyoUITests: XCTestCase {
         XCTAssertFalse(app.otherElements["invite.cover"].exists)
         attachScreenshot("招待の封筒")
         app.buttons["invite.open"].tap()
+        // Keep accessibility snapshots off the animation path while recording.
+        // Leave the app untouched through the reveal, then verify the result.
+        Thread.sleep(forTimeInterval: 2.5)
         XCTAssertTrue(app.staticTexts["invite.received"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.otherElements["invite.cover"].waitForExistence(timeout: 5))
         attachScreenshot("思い出の開封")
