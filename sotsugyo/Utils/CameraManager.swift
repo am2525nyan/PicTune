@@ -35,6 +35,17 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     private var wantsRunning = false
     private var previewGeneration = UUID()
     private var capturePreviewGeneration = UUID()
+    private let injectedDatabase: Firestore?
+    private let injectedStorage: Storage?
+    private let currentUserID: () -> String?
+
+    init(database: Firestore? = nil, storage: Storage? = nil,
+         currentUserID: @escaping () -> String? = { Auth.auth().currentUser?.uid }) {
+        injectedDatabase = database
+        injectedStorage = storage
+        self.currentUserID = currentUserID
+        super.init()
+    }
 
     // Session configuration, capture and start/stop must use the same serial queue.
     @MainActor
@@ -249,7 +260,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
     @MainActor
     func uploadPhoto(_ image: UIImage, friendUid: String, track: Track? = nil) async throws {
         try Self.validateFriendUID(friendUid)
-        guard let uid = Auth.auth().currentUser?.uid else {
+        guard let uid = currentUserID() else {
             throw NSError(domain: "PhotoSave", code: 1, userInfo: [NSLocalizedDescriptionKey: "ログイン状態を確認してください。"])
         }
         guard let imageData = image.jpegData(compressionQuality: 0.9) else {
@@ -258,19 +269,19 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
 
         let livePhotoFileName = liveurl
         let imageName = "\(UUID().uuidString).jpg"
-        let imageReference = Storage.storage().reference().child("images/\(imageName)")
-        let db = Firestore.firestore()
+        let imageReference = (injectedStorage ?? Storage.storage()).reference().child("images/\(imageName)")
+        let db = injectedDatabase ?? Firestore.firestore()
+        // Storage checks this immutable ownership record before allowing creation.
         try await db.collection("imageOwners").document(imageName).setData(["ownerID": uid])
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
         metadata.customMetadata = ["ownerIDs": uid]
         do {
             _ = try await imageReference.putDataAsync(imageData, metadata: metadata)
-            guard Auth.auth().currentUser?.uid == uid else {
+            guard currentUserID() == uid else {
                 throw NSError(domain: "PhotoSave", code: 1,
                     userInfo: [NSLocalizedDescriptionKey: "ログイン状態が変わりました。もう一度ログインしてください。"])
             }
-            let db = Firestore.firestore()
             let folder = db.collection("users").document(uid).collection("folders").document("all")
             let photo = folder.collection("photos").document()
             let record = PhotoRecord(id: photo.documentID, fileName: imageName, date: nil,
@@ -287,7 +298,7 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
                 batch.setData(["ownerID": friendUid, "folderID": "all", "photoID": photo.documentID], forDocument: access)
             }
             try await batch.commit()
-            if Auth.auth().currentUser?.uid == uid { documentId = photo.documentID }
+            if currentUserID() == uid { documentId = photo.documentID }
         } catch {
             try? await imageReference.delete()
             throw error
