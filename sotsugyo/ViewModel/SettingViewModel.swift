@@ -6,41 +6,39 @@
 //
 
 import Foundation
+import Combine
 import FirebaseAuth
-import AuthenticationServices
-import FirebaseAuth
-import GoogleSignIn
+import FirebaseCore
 import FirebaseFirestore
-import Firebase
-import FirebaseAuthUI
-import FirebaseGoogleAuthUI
-import FirebaseOAuthUI
-import FirebaseEmailAuthUI
-import CryptoKit
+import GoogleSignIn
+import UIKit
 
 @MainActor
 class SettingViewModel: ObservableObject {
     @Published internal var showingPasswordAlert = false
     @Published private(set) var profile = UserProfile()
-    @Published var authorizationDelegate = AuthorizationDelegate()
+    @Published private(set) var isDeleting = false
+    @Published var operationError: String?
+    let authorizationDelegate = AuthorizationDelegate()
+    private var pendingDeletionUserID: String?
 
     var mailAddress: String { profile.email ?? "" }
     var name: String { profile.name ?? "" }
 
     init(profile: UserProfile = UserProfile()) {
         self.profile = profile
+        authorizationDelegate.onCompletion = { [weak self] error in
+            self?.isDeleting = false
+            if let error { self?.operationError = error.localizedDescription }
+        }
     }
 
     func loadProfile() async throws {
-        guard let currentUser = Auth.auth().currentUser else {
-            throw NSError(domain: "SettingViewModel", code: 1, userInfo: [
-                NSLocalizedDescriptionKey: "ログインし直してください。"
-            ])
-        }
-
+        guard let currentUser = Auth.auth().currentUser else { throw AccountOperationError.signedOut }
         let document = try await Firestore.firestore()
             .collection("users").document(currentUser.uid)
             .collection("personal").document("info").getDocument()
+        guard Auth.auth().currentUser?.uid == currentUser.uid else { throw AccountOperationError.signedOut }
         profile = UserProfile(
             documentData: document.data() ?? [:],
             fallbackEmail: currentUser.email
@@ -48,129 +46,131 @@ class SettingViewModel: ObservableObject {
     }
 
     func saveName(name: String) async throws {
-        guard let currentUser = Auth.auth().currentUser else {
-            throw NSError(domain: "SettingViewModel", code: 1, userInfo: [
-                NSLocalizedDescriptionKey: "ログインし直してください。"
-            ])
-        }
-
-        let db = Firestore.firestore()
-        try await db.collection("users").document(currentUser.uid)
-            .collection("personal").document("info").updateData(["name": name])
+        guard let currentUser = Auth.auth().currentUser else { throw AccountOperationError.signedOut }
+        // The profile may not exist yet if initial registration failed offline.
+        try await Firestore.firestore().collection("users").document(currentUser.uid)
+            .collection("personal").document("info").setData(["name": name], merge: true)
+        guard Auth.auth().currentUser?.uid == currentUser.uid else { throw AccountOperationError.signedOut }
         profile.name = name
     }
-    
-    func logout(){
+
+    func logout() {
+        guard !isDeleting else { return }
         do {
             try Auth.auth().signOut()
-        } catch let signOutError as NSError {
-            print("Error signing out: \(signOutError)")
+            GIDSignIn.sharedInstance.signOut()
+            profile = UserProfile()
+        } catch {
+            operationError = error.localizedDescription
         }
     }
+
     func deleteUser() {
+        guard !isDeleting else { return }
         guard let user = Auth.auth().currentUser else {
-            // ユーザーがログインしていない場合の処理を追加
+            operationError = AccountOperationError.signedOut.localizedDescription
             return
         }
-        
-        // Appleログインの場合
-        if user.providerData.first(where: { $0.providerID == "apple.com" }) != nil {
-            authorizationDelegate.onAppear()
-            
-        }
-        
-        // Googleログインの場合
-        if user.providerData.first(where: { $0.providerID == "google.com" }) != nil {
-            guard let googleUser = GIDSignIn.sharedInstance.currentUser,
-                  let idToken = googleUser.idToken?.tokenString else {
-                return
-            }
-
-            // 認証情報を作成する
-            let credential = GoogleAuthProvider.credential(
-                withIDToken: idToken,
-                accessToken: googleUser.accessToken.tokenString
-            )
-            
-            // 再認証を実行する
-            user.reauthenticate(with: credential, completion: { (authResult, error) in
-                if let error = error {
-                    // 再認証に失敗した場合
-                    print(error)
-                } else {
-                    // 再認証に成功した場合
-                    // ユーザーを削除する
-                    user.delete(completion: { (error) in
-                        if let error = error {
-                            // 削除に失敗した場合
-                            print(error)
-                        } else {
-                            // 削除成功の場合の処理を追加
-                        }
-                    })
-                }
-            })
-            
-        }
-        if user.providerData.first(where: { $0.providerID == "password" }) != nil {
-            // パスワード再認証のアラートを表示
+        operationError = nil
+        pendingDeletionUserID = user.uid
+        let providers = user.providerData.map(\.providerID)
+        // A linked account must start only one reauthentication flow.
+        if providers.contains("apple.com") {
+            isDeleting = true
+            authorizationDelegate.deleteCurrentUser(user)
+        } else if providers.contains("password") {
             showingPasswordAlert = true
+        } else if providers.contains("google.com") {
+            isDeleting = true
+            Task {
+                defer { isDeleting = false }
+                do {
+                    guard let clientID = FirebaseApp.app()?.options.clientID,
+                          let presenter = Self.presentationController else {
+                        throw AccountOperationError.unavailable
+                    }
+                    GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
+                    // Request a fresh sign-in even after an app restart. A cached token may
+                    // be missing or may not satisfy Firebase's recent-login requirement.
+                    let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: presenter)
+                    guard Auth.auth().currentUser?.uid == user.uid else { throw AccountOperationError.signedOut }
+                    guard let idToken = result.user.idToken?.tokenString else { throw AccountOperationError.unavailable }
+                    let credential = GoogleAuthProvider.credential(withIDToken: idToken,
+                                                                  accessToken: result.user.accessToken.tokenString)
+                    try await AccountDeletion.perform(reauthenticate: {
+                        _ = try await user.reauthenticate(with: credential)
+                    }, delete: {
+                        guard Auth.auth().currentUser?.uid == user.uid else { throw AccountOperationError.signedOut }
+                        try await user.delete()
+                    })
+                    GIDSignIn.sharedInstance.signOut()
+                } catch {
+                    operationError = error.localizedDescription
+                }
+            }
+        } else {
+            operationError = AccountOperationError.unavailable.localizedDescription
         }
     }
-    
+
     func reauthenticateWithPassword(password: String) {
-        guard let user = Auth.auth().currentUser else {
-            // ユーザーがログインしていない場合の処理を追加
+        guard !isDeleting else { return }
+        guard let user = Auth.auth().currentUser,
+              user.uid == pendingDeletionUserID, let email = user.email else {
+            operationError = AccountOperationError.signedOut.localizedDescription
             return
         }
-        
-        let credential = EmailAuthProvider.credential(withEmail: user.email!, password: password)
-        user.reauthenticate(with: credential) { (_, error) in
-            if let error = error {
-                print("Reauthentication with password failed: \(error.localizedDescription)")
-                // 再認証エラーの処理を行う（例: エラーメッセージを表示）
-            } else {
-                // 再認証成功の場合、アカウント削除処理を実行
-                user.delete { error in
-                    if let error = error {
-                        print("Delete user failed: \(error.localizedDescription)")
-                        // 削除エラーの処理を行う（例: エラーメッセージを表示）
-                    } else {
-                        // 削除成功の場合の処理を追加
-                        print("User deleted successfully")
-                    }
-                }
+        isDeleting = true
+        Task {
+            defer { isDeleting = false }
+            do {
+                let credential = EmailAuthProvider.credential(withEmail: email, password: password)
+                try await AccountDeletion.perform(reauthenticate: {
+                    _ = try await user.reauthenticate(with: credential)
+                }, delete: {
+                    guard Auth.auth().currentUser?.uid == user.uid else { throw AccountOperationError.signedOut }
+                    try await user.delete()
+                })
+            } catch {
+                operationError = error.localizedDescription
             }
         }
     }
-  
-    func reauthenticateAndDeleteUser(_ user: User) {
-            // nonceの生成
-            let nonce = UUID().uuidString
 
-            // Apple IDプロバイダーを取得
-            let appleIDProvider = ASAuthorizationAppleIDProvider()
+    static var presentationWindow: UIWindow? {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .filter { $0.activationState == .foregroundActive }
+            .flatMap(\.windows).first(where: \.isKeyWindow)
+    }
 
-            // 認証リクエストの作成
-            let request = appleIDProvider.createRequest()
-            request.requestedScopes = [.fullName, .email]
-            request.nonce = authorizationDelegate.sha256(nonce)
+    private static var presentationController: UIViewController? {
+        var controller = presentationWindow?.rootViewController
+        while let presented = controller?.presentedViewController { controller = presented }
+        return controller
+    }
+}
 
-            // 認証コントローラーの作成
-            let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-            authorizationController.delegate = authorizationDelegate
-            authorizationController.presentationContextProvider = authorizationDelegate
+enum AccountOperationError: LocalizedError {
+    case signedOut
+    case unavailable
 
-            // 認証リクエストの実行
-            authorizationController.performRequests()
+    var errorDescription: String? {
+        switch self {
+        case .signedOut: return "ログインし直してください。"
+        case .unavailable: return "再認証を開始できませんでした。もう一度お試しください。"
         }
-    func sha256(_ input: String) -> String {
-           let inputData = Data(input.utf8)
-           let hashedData = SHA256.hash(data: inputData)
-           let hashString = hashedData.compactMap {
-               String(format: "%02x", $0)
-           }.joined()
+    }
+}
 
-           return hashString
-       }
+/// Never revoke tokens or delete an account after failed reauthentication.
+@MainActor
+enum AccountDeletion {
+    static func perform(reauthenticate: () async throws -> Void,
+                        revoke: () async throws -> Void = {},
+                        delete: () async throws -> Void) async throws {
+        try await reauthenticate()
+        try await revoke()
+        try await delete()
+    }
 }

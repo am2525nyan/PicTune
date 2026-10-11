@@ -25,7 +25,10 @@ struct FriendQRView: View {
                 if isLoading { ProgressView() }
                 if let error { Text(error).font(.footnote).foregroundStyle(.red) }
                 Button("コードを更新") { Task { await createCode() } }.disabled(isLoading)
-                Button("相手のQRコードを読み取る") { isPresentingScanner = true }
+                Button("相手のQRコードを読み取る") {
+                    friendUid = ""; friendName = nil; error = nil
+                    isPresentingScanner = true
+                }
                     .buttonStyle(.borderedProminent).disabled(isLoading)
             }.padding(24)
             .sheet(isPresented: $isPresentingScanner) {
@@ -51,6 +54,9 @@ struct FriendQRView: View {
             } message: { Text("\(friendName ?? "")さんと撮ります。") }
             .fullScreenCover(isPresented: $isPresentingQRCode) {
                 CameraView(isPresentingCamera: $isPresentingQRCode, cameraManager: cameraManager, isPresentingSearch: .constant(true), friendUid: $friendUid)
+            }
+            .onChange(of: isPresentingQRCode) { wasPresented, isPresented in
+                if wasPresented && !isPresented { isPresentingQR = false }
             }
             .task { await createCode() }
         }

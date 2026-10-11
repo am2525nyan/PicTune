@@ -20,30 +20,42 @@ class MainContentModel: ObservableObject {
 
     private let repository: any PhotoLibraryRepository
     private let currentUserID: () -> String?
+    private let widgetDirectory: URL?
+    private let widgetDefaults: UserDefaults?
+    private let reloadWidgets: () -> Void
     private var photoDataCache: [String: Data] = [:]
     private var photoLoadID = UUID()
     private var folderLoadID = UUID()
+    private var coverLoadIDs: [String: UUID] = [:]
     private var sessionID = UUID()
 
     init(repository: any PhotoLibraryRepository = FirebasePhotoLibraryRepository(),
-         currentUserID: @escaping () -> String? = { Auth.auth().currentUser?.uid }) {
+         currentUserID: @escaping () -> String? = { Auth.auth().currentUser?.uid },
+         widgetDefaults: UserDefaults? = UserDefaults(suiteName: "group.PIcTune"),
+         widgetDirectory: URL? = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.PIcTune"),
+         reloadWidgets: @escaping () -> Void = { WidgetCenter.shared.reloadAllTimelines() }) {
         self.repository = repository
         self.currentUserID = currentUserID
+        self.widgetDirectory = widgetDirectory
+        self.widgetDefaults = widgetDefaults
+        self.reloadWidgets = reloadWidgets
     }
 
     func reset() {
         photoLoadID = UUID()
         folderLoadID = UUID()
         sessionID = UUID()
+        nfc = false
         photos = []
         folders = []
-        let widgetDefaults = UserDefaults(suiteName: "group.PIcTune")
-        for key in ["first", "second", "third"] { widgetDefaults?.removeObject(forKey: key) }
-        WidgetCenter.shared.reloadAllTimelines()
         folderCoverImages = [:]
+        coverLoadIDs = [:]
         photoDataCache = [:]
         folderDocument = PhotoFolder.allID
         userDataList = ""
+        isShowSheet = false
+        isPresentingCamera = false
+        clearWidget()
     }
 
     func firstgetUrl() async throws {
@@ -102,21 +114,25 @@ class MainContentModel: ObservableObject {
     }
 
     private func updateWidget(records: [PhotoRecord], requestID: UUID, userID: String) async {
-        guard let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.PIcTune") else { return }
-        let defaults = UserDefaults(suiteName: "group.PIcTune")
+        guard let directory = widgetDirectory, let defaults = widgetDefaults else { return }
         let chosen = Array(records.shuffled().prefix(3))
-        for (index, key) in ["first", "second", "third"].enumerated() {
+        for (index, key) in WidgetPhotoLoader.keys.enumerated() {
             guard isCurrentPhotoRequest(requestID, userID: userID) else { return }
-            guard index < chosen.count else { defaults?.removeObject(forKey: key); continue }
+            guard index < chosen.count else { defaults.removeObject(forKey: key); continue }
             do {
                 let data = try await imageData(fileName: chosen[index].fileName)
                 guard isCurrentPhotoRequest(requestID, userID: userID) else { return }
                 let destination = directory.appendingPathComponent("widget-\(key).jpg")
                 try data.write(to: destination, options: .atomic)
-                defaults?.set(destination.path, forKey: key)
-            } catch { defaults?.removeObject(forKey: key) }
+                defaults.set(destination.path, forKey: key)
+            } catch { defaults.removeObject(forKey: key) }
         }
-        WidgetCenter.shared.reloadAllTimelines()
+        reloadWidgets()
+    }
+
+    private func clearWidget() {
+        WidgetPhotoLoader.keys.forEach { widgetDefaults?.removeObject(forKey: $0) }
+        reloadWidgets()
     }
 
     func getFolder() async throws {
@@ -130,44 +146,44 @@ class MainContentModel: ObservableObject {
         folderCoverImages = folderCoverImages.filter { ids.contains($0.key) }
     }
 
-    func makeFolder(folderName: String) {
-        Task {
-            do {
-                guard let uid = currentUserID() else { return }
-                let session = sessionID
-                let folder = PhotoFolder(id: UUID().uuidString, title: folderName, date: nil, letter: "")
-                try await repository.createFolder(userID: uid, folder: folder)
-                guard sessionID == session, currentUserID() == uid else { return }
-                folders.insert(folder, at: min(1, folders.count))
-            } catch {
-                print("フォルダの作成に失敗しました: \(error)")
-            }
-        }
+    func makeFolder(folderName: String) async throws {
+        let uid = try signedInUserID()
+        let name = folderName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else { throw folderError("フォルダ名を入力してください。") }
+        let session = sessionID
+        let folder = PhotoFolder(id: UUID().uuidString, title: name, date: nil, letter: "")
+        try await repository.createFolder(userID: uid, folder: folder)
+        guard sessionID == session, currentUserID() == uid else { throw CancellationError() }
+        folderLoadID = UUID()
+        folders.removeAll { $0.id == folder.id }
+        folders.insert(folder, at: min(1, folders.count))
     }
 
     func loadFolderCover(folderId: String) async throws {
         guard folderCoverImages[folderId] == nil, let uid = currentUserID() else { return }
         let session = sessionID
+        let request = UUID()
+        coverLoadIDs[folderId] = request
         guard let record = try await repository.coverPhoto(userID: uid, folderID: folderId) else { return }
         let data = try await imageData(fileName: record.fileName)
-        guard sessionID == session, currentUserID() == uid,
+        guard sessionID == session, currentUserID() == uid, coverLoadIDs[folderId] == request,
               folders.contains(where: { $0.id == folderId }), let image = UIImage(data: data) else { return }
         folderCoverImages[folderId] = image
     }
 
     func appendFolder(photoDocumentID: String, to destinationFolderID: String) async throws {
-        guard let uid = currentUserID() else { return }
+        let uid = try signedInUserID()
         let session = sessionID
         try await repository.copyPhoto(userID: uid, photoID: photoDocumentID, to: destinationFolderID)
-        guard sessionID == session, currentUserID() == uid else { return }
-        folderCoverImages.removeValue(forKey: destinationFolderID)
+        guard sessionID == session, currentUserID() == uid else { throw CancellationError() }
+        invalidateCover(folderID: destinationFolderID)
     }
 
     func saveLetter(_ text: String, folderID: String) async throws {
         let uid = try signedInUserID()
         let session = sessionID
         try await repository.saveLetter(userID: uid, folderID: folderID, text: text)
-        guard sessionID == session, currentUserID() == uid else { return }
+        guard sessionID == session, currentUserID() == uid else { throw CancellationError() }
         if folderDocument == folderID { userDataList = text }
         if let index = folders.firstIndex(where: { $0.id == folderID }) {
             let folder = folders[index]
@@ -176,19 +192,27 @@ class MainContentModel: ObservableObject {
     }
 
     func loadLetter(folderID: String) async throws -> String {
-        try await repository.letter(userID: signedInUserID(), folderID: folderID)
+        let uid = try signedInUserID()
+        let session = sessionID
+        let letter = try await repository.letter(userID: uid, folderID: folderID)
+        guard sessionID == session, currentUserID() == uid, !Task.isCancelled else { throw CancellationError() }
+        return letter
     }
 
     func deletePhoto(document: String, folderId: String) async throws {
-        guard let uid = currentUserID() else { return }
+        let uid = try signedInUserID()
         let session = sessionID
         try await repository.deletePhoto(userID: uid, photoID: document, folderID: folderId)
-        guard sessionID == session, currentUserID() == uid else { return }
+        guard sessionID == session, currentUserID() == uid else { throw CancellationError() }
         if folderDocument == folderId {
             photoLoadID = UUID()
             photos.removeAll { $0.id == document }
         }
-        folderCoverImages.removeValue(forKey: folderId)
+        invalidateCover(folderID: folderId)
+        if folderId == PhotoFolder.allID {
+            // Invalidate URLs immediately, even if a subsequent network reload fails.
+            clearWidget()
+        }
     }
 
     func deleteFolder(id: String) async throws {
@@ -196,10 +220,10 @@ class MainContentModel: ObservableObject {
         let uid = try signedInUserID()
         let session = sessionID
         try await repository.deleteFolder(userID: uid, folderID: id)
-        guard sessionID == session, currentUserID() == uid else { return }
+        guard sessionID == session, currentUserID() == uid else { throw CancellationError() }
         folderLoadID = UUID()
         folders.removeAll { $0.id == id }
-        folderCoverImages.removeValue(forKey: id)
+        invalidateCover(folderID: id)
         if folderDocument == id {
             photoLoadID = UUID()
             folderDocument = PhotoFolder.allID
@@ -209,13 +233,23 @@ class MainContentModel: ObservableObject {
     }
 
     func getNFCData(NFCUid: String, NFCfolderid: String) async throws {
-        guard !nfc else { return }
+        guard !nfc else { throw folderError("フォルダを読み込み中です。完了してからもう一度お試しください。") }
         let uid = try signedInUserID()
+        let session = sessionID
         nfc = true
-        defer { nfc = false }
-        try await repository.importFolder(userID: uid, reference: SharedFolderReference(userID: NFCUid, folderID: NFCfolderid))
-        guard currentUserID() == uid else { return }
+        defer { if sessionID == session { nfc = false } }
+        let reference = SharedFolderReference(userID: NFCUid, folderID: NFCfolderid)
+        try await repository.importFolder(userID: uid, reference: reference)
+        guard sessionID == session, currentUserID() == uid else { throw CancellationError() }
         try await getFolder()
+        guard sessionID == session, currentUserID() == uid else { throw CancellationError() }
+        invalidateCover(folderID: reference.importedFolderID)
+        try? await loadFolderCover(folderId: reference.importedFolderID)
+    }
+
+    private func invalidateCover(folderID: String) {
+        coverLoadIDs[folderID] = UUID()
+        folderCoverImages.removeValue(forKey: folderID)
     }
 
     func downloadFile(photo: LibraryPhoto) {

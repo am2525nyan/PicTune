@@ -195,6 +195,35 @@ final class sotsugyoUITests: XCTestCase {
     }
 
     @MainActor
+    func testMutationFailuresAreVisible() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-ui-testing-failures", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        XCTAssertTrue(app.buttons["チェキ 1"].waitForExistence(timeout: 15))
+        app.buttons["チェキ 1"].press(forDuration: 1)
+        app.buttons["削除"].tap()
+        XCTAssertTrue(app.alerts["写真の操作に失敗しました"].waitForExistence(timeout: 5))
+        capture("20-photo-operation-error", app: app)
+        app.alerts.buttons["閉じる"].tap()
+        XCTAssertTrue(app.buttons["チェキ 1"].exists)
+
+        app.tabBars.buttons["フォルダ"].tap()
+        XCTAssertTrue(app.buttons["卒業の思い出"].waitForExistence(timeout: 5))
+        app.buttons["フォルダを作成"].tap()
+        app.alerts.textFields.firstMatch.typeText("test")
+        app.alerts.buttons["作成"].tap()
+        XCTAssertTrue(app.alerts["フォルダの操作に失敗しました"].waitForExistence(timeout: 5))
+        capture("21-folder-operation-error", app: app)
+        app.alerts.buttons["OK"].tap()
+
+        app.tabBars.buttons["設定"].tap()
+        app.buttons["ログアウト"].tap()
+        app.alerts.buttons["ログアウト"].tap()
+        XCTAssertTrue(app.alerts["操作を完了できませんでした"].waitForExistence(timeout: 5))
+        capture("22-account-operation-error", app: app)
+    }
+
+    @MainActor
     func testLibraryAndPhotoDetails() {
         let app = launch()
         XCTAssertTrue(app.buttons["チェキ 1"].waitForExistence(timeout: 15))
@@ -273,13 +302,27 @@ final class sotsugyoUITests: XCTestCase {
     func testPhotoEditorAndMusicSearch() {
         let app = launch(editor: true)
         XCTAssertTrue(app.navigationBars["写真を編集"].waitForExistence(timeout: 10))
+        let editor = app.scrollViews["photo.editor.canvas"]
+        XCTAssertTrue(editor.exists)
+        XCTAssertGreaterThan(editor.frame.width, app.frame.width * 0.9)
         capture("12-photo-editor", app: app)
         app.buttons["スタンプ1"].tap()
         capture("13-photo-editor-stamp", app: app)
         app.buttons["ペン"].tap()
-        XCTAssertTrue(app.staticTexts["写真に指やApple Pencilで描けます。"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["指やApple Pencilで描けます。2本の指で拡大・縮小できます。"].waitForExistence(timeout: 5))
+        let start = editor.coordinate(withNormalizedOffset: CGVector(dx: 0.35, dy: 0.4))
+        let end = editor.coordinate(withNormalizedOffset: CGVector(dx: 0.65, dy: 0.5))
+        start.press(forDuration: 0.05, thenDragTo: end)
         capture("14-photo-editor-pencil", app: app)
-        app.buttons["スタンプ"].tap()
+        editor.pinch(withScale: 2, velocity: 1)
+        capture("14-photo-editor-zoomed", app: app)
+        app.buttons["次へ"].tap()
+        XCTAssertTrue(app.navigationBars["音楽を追加"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars.buttons["保存"].exists)
+        capture("14-music-step", app: app)
+        app.navigationBars.buttons["保存"].tap()
+        XCTAssertTrue(app.alerts["保存できませんでした"].waitForExistence(timeout: 5))
+        app.alerts.buttons["OK"].tap()
         app.buttons["音楽を追加"].tap()
         XCTAssertTrue(app.searchFields.firstMatch.waitForExistence(timeout: 5))
         XCTAssertFalse(app.navigationBars.buttons["追加"].isEnabled)

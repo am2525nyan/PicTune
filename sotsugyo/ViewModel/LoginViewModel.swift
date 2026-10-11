@@ -14,15 +14,15 @@ import FirebaseEmailAuthUI
 import FirebaseFirestore
 
 struct LoginView: UIViewControllerRepresentable {
-    @StateObject var viewModel: MainContentModel
+    @ObservedObject var viewModel: MainContentModel
     var onError: (String) -> Void = { _ in }
-    
+
     func makeUIViewController(context: Context) -> UIViewController {
         let authUI = FUIAuth.defaultAuthUI()
         guard authUI != nil else {
             return UIViewController()
         }
-        
+
         // サポートするログイン方法を構成
         let providers: [FUIAuthProvider] = [
             FUIGoogleAuth(authUI: authUI!),
@@ -30,23 +30,23 @@ struct LoginView: UIViewControllerRepresentable {
             FUIEmailAuth()
         ]
         authUI!.providers = providers
-        
-        
-        
+
+
+
         // FirebaseUIを表示する
         let authViewController = authUI!.authViewController()
-        
-        
+
+
         // デリゲートを設定
         authUI!.delegate = context.coordinator
         context.coordinator.startListening()
         return authViewController
     }
-    
+
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
         // 処理なし
     }
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(viewModel: viewModel, onError: onError)
     }
@@ -54,12 +54,12 @@ struct LoginView: UIViewControllerRepresentable {
     static func dismantleUIViewController(_ uiViewController: UIViewController, coordinator: Coordinator) {
         coordinator.stopListening()
     }
-    
+
     @MainActor class Coordinator: NSObject, FUIAuthDelegate {
         var viewModel: MainContentModel
         var handle: AuthStateDidChangeListenerHandle?
         private let onError: (String) -> Void
-        
+
         init(viewModel: MainContentModel, onError: @escaping (String) -> Void = { _ in }) {
             self.viewModel = viewModel
             self.onError = onError
@@ -84,82 +84,56 @@ struct LoginView: UIViewControllerRepresentable {
                 viewModel.isShowSheet = false
             }
         }
-        
-        
+
+
         func startListening() {
             handle = Auth.auth().addStateDidChangeListener { [weak self] (_, user) in
                 if user != nil, let self {
                     Task { @MainActor in
                         self.viewModel.isShowSheet = false
-                        do{
-                            try await self.saveUserData()
-                        }
-                        catch{
-                            print(error)
-                        }
                     }
-                    
-                    
+
+
                 }
             }
         }
-        func saveUserData()async throws{
-            
-            let db = Firestore.firestore()
-            
-            if let currentUser = Auth.auth().currentUser {
-                let uid = currentUser.uid
-                Task{
-                    do{
-                        try await      db.collection("users").document(uid).collection("folders").document("all").setData(["title": "all","date": FieldValue.serverTimestamp()])
-                    }
-                }
-                try await db.collection("users").document(uid).collection("personal").document("info").setData(
-                    UserProfile(name: currentUser.displayName, email: currentUser.email).firestoreData(userID: uid)
-                )
-                Task{
-                    
-                    
-                }
-            }
-            print("データがFirestoreに保存されましたよ")
-            
-            
-        }
-        
-        func reauthenticateUser(_ user: User) {
-            Auth.auth().addStateDidChangeListener { (auth, user) in
-                if let user = user {
-                    user.getIDToken { (token, error) in
-                        if let error = error {
-                            print("ID Tokenの取得に失敗しました: \(error.localizedDescription)")
-                        } else if let token = token {
-                            
-                            let db = Firestore.firestore()
-                            
-                            if let currentUser = Auth.auth().currentUser {
-                                let uid = currentUser.uid
-                                db.collection("users").document(uid).collection("personal").document("info").updateData([
-                                    "token": token
-                                ]) { error in
-                                    if let error = error {
-                                        print("データの保存に失敗しました: \(error.localizedDescription)")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
         func stopListening() {
             if let handle = handle {
                 Auth.auth().removeStateDidChangeListener(handle)
                 self.handle = nil
             }
         }
-        
+
     }
-    
+
+}
+/// Fill missing account fields without replacing an edited name or the library date.
+enum UserAccountBootstrap {
+    static func missingProfileFields(existing: [String: Any], profile: UserProfile, userID: String) -> [String: Any] {
+        profile.firestoreData(userID: userID).filter { existing[$0.key] == nil }
+    }
+
+    static func save(userID: String, profile: UserProfile, database: Firestore? = nil) async throws {
+        let db = database ?? Firestore.firestore()
+        let user = db.collection("users").document(userID)
+        let profileReference = user.collection("personal").document("info")
+        let libraryReference = user.collection("folders").document("all")
+        _ = try await db.runTransaction { transaction, errorPointer in
+            do {
+                let profileDocument = try transaction.getDocument(profileReference)
+                let libraryDocument = try transaction.getDocument(libraryReference)
+                let fields = missingProfileFields(existing: profileDocument.data() ?? [:], profile: profile, userID: userID)
+                if !fields.isEmpty {
+                    transaction.setData(fields, forDocument: profileReference, merge: true)
+                }
+                if !libraryDocument.exists {
+                    transaction.setData(["title": "all", "date": FieldValue.serverTimestamp()], forDocument: libraryReference)
+                }
+                return nil
+            } catch {
+                errorPointer?.pointee = error as NSError
+                return nil
+            }
+        }
+    }
 }

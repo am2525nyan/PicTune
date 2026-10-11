@@ -3,6 +3,7 @@ import SwiftUI
 struct MainImageView: View {
     @ObservedObject var viewModel: MainContentModel
     let folderId: String
+    @State private var errorMessage: String?
 
     private let columns = [GridItem(.adaptive(minimum: 160, maximum: 260), spacing: 12)]
 
@@ -13,6 +14,11 @@ struct MainImageView: View {
             }
         }
         .padding(.vertical, 8)
+        .alert("写真の操作に失敗しました", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
+            Button("閉じる", role: .cancel) { errorMessage = nil }
+        } message: {
+            Text(errorMessage ?? "")
+        }
     }
 
     private func photoCell(_ photo: LibraryPhoto, position: Int) -> some View {
@@ -32,7 +38,8 @@ struct MainImageView: View {
                     ForEach(viewModel.folders.filter { $0.id != PhotoFolder.allID }) { folder in
                         Button(folder.title) {
                             Task {
-                                try? await viewModel.appendFolder(photoDocumentID: photo.id, to: folder.id)
+                                do { try await viewModel.appendFolder(photoDocumentID: photo.id, to: folder.id) }
+                                catch { errorMessage = error.localizedDescription }
                             }
                         }
                     }
@@ -45,7 +52,7 @@ struct MainImageView: View {
                         try await viewModel.deletePhoto(document: photo.id, folderId: folderId)
                         await reloadPhotos()
                     } catch {
-                        print("写真の削除に失敗しました: \(error)")
+                        errorMessage = error.localizedDescription
                     }
                 }
             }

@@ -81,12 +81,14 @@ struct SettingView: View {
                 Button("ログアウト") {
                     isShowingLogout = true
                 }
+                .disabled(viewModel.isDeleting)
             }
 
             Section {
                 Button("アカウントを削除", role: .destructive) {
                     isShowingDelete = true
                 }
+                .disabled(viewModel.isDeleting)
             } footer: {
                 Text("アカウントを削除すると、元に戻すことはできません。")
             }
@@ -129,6 +131,14 @@ struct SettingView: View {
             .disabled(password.isEmpty)
         } message: {
             Text("アカウントを削除するには、パスワードを入力してください。")
+        }
+        .alert("操作を完了できませんでした", isPresented: Binding(
+            get: { viewModel.operationError != nil },
+            set: { if !$0 { viewModel.operationError = nil } }
+        )) {
+            Button("閉じる", role: .cancel) { viewModel.operationError = nil }
+        } message: {
+            Text(viewModel.operationError ?? "")
         }
     }
 
@@ -260,147 +270,86 @@ private struct NameEditView: View {
     }
 }
 
+@MainActor
 class AuthorizationDelegate: NSObject, ObservableObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    var onCompletion: ((Error?) -> Void)?
+    private var currentNonce: String?
+    private var deletingUser: User?
+    private var authorizationController: ASAuthorizationController?
+    private var window: UIWindow?
+
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        
-        return ASPresentationAnchor()
+        window ?? ASPresentationAnchor()
     }
-    
-    var currentNonce: String?
-    
-    func onAppear() {
-        let nonce = randomNonceString()
+
+    func deleteCurrentUser(_ user: User) {
+        guard authorizationController == nil else { return }
+        guard let window = SettingViewModel.presentationWindow else {
+            onCompletion?(AccountOperationError.unavailable)
+            return
+        }
+        self.window = window
+        deletingUser = user
+        let nonce = UUID().uuidString + UUID().uuidString
         currentNonce = nonce
-        let appleIDProvider = ASAuthorizationAppleIDProvider()
-        let request = appleIDProvider.createRequest()
+        let request = ASAuthorizationAppleIDProvider().createRequest()
         request.requestedScopes = [.fullName, .email]
-        request.nonce = sha256(nonce)
-        
-        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-        authorizationController.delegate = self
-        authorizationController.presentationContextProvider = self
-        authorizationController.performRequests()
+        request.nonce = SHA256.hash(data: Data(nonce.utf8)).map { String(format: "%02x", $0) }.joined()
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        authorizationController = controller
+        controller.delegate = self
+        controller.presentationContextProvider = self
+        controller.performRequests()
     }
-    
-    func deleteCurrentUser() {
-        do {
-            let nonce = randomNonceString()
-            currentNonce = nonce
-            let appleIDProvider = ASAuthorizationAppleIDProvider()
-            let request = appleIDProvider.createRequest()
-            request.requestedScopes = [.fullName, .email]
-            request.nonce = sha256(nonce)
-            
-            let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-            authorizationController.delegate = self
-            authorizationController.presentationContextProvider = self
-            authorizationController.performRequests()
-        } catch {
-            print(error)
-            
-        }
-    }
-    func reauthenticateUser(_ user: User, appleIdToken: String, rawNonce: String) {
-        let credential = OAuthProvider.appleCredential(
-            withIDToken: appleIdToken,
-            rawNonce: rawNonce,
-            fullName: nil
-        )
-        
-        // Reauthenticate current Apple user with fresh Apple credential.
-        user.reauthenticate(with: credential) { (authResult, error) in
-            if let error = error {
-                // 再認証に失敗した場合
-                print("Reauthentication failed: \(error.localizedDescription)")
-            } else {
-                print("Apple user successfully re-authenticated.")
-            }
-        }
-    }
-    
-    func randomNonceString(length: Int = 32) -> String {
-        precondition(length > 0)
-        var randomBytes = [UInt8](repeating: 0, count: length)
-        let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
-        if errorCode != errSecSuccess {
-            fatalError(
-                "Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)"
-            )
-        }
-        
-        let charset: [Character] =
-        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
-        
-        let nonce = randomBytes.map { byte in
-            // Pick a random character from the set, wrapping around if needed.
-            charset[Int(byte) % charset.count]
-        }
-        
-        return String(nonce)
-    }
-    
-    func sha256(_ input: String) -> String {
-        let inputData = Data(input.utf8)
-        let hashedData = SHA256.hash(data: inputData)
-        let hashString = hashedData.compactMap {
-            String(format: "%02x", $0)
-        }.joined()
-        
-        return hashString
-    }
-    
-    
-    
-    
-    
+
     func authorizationController(controller: ASAuthorizationController,
                                  didCompleteWithAuthorization authorization: ASAuthorization) {
-        guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential
-        else {
-            print("Unable to retrieve AppleIDCredential")
+        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+              let nonce = currentNonce,
+              let tokenData = credential.identityToken,
+              let token = String(data: tokenData, encoding: .utf8),
+              let codeData = credential.authorizationCode,
+              let code = String(data: codeData, encoding: .utf8),
+              let user = deletingUser,
+              Auth.auth().currentUser?.uid == user.uid else {
+            finish(AccountOperationError.unavailable)
             return
         }
-        
-        guard currentNonce != nil else {
-            // currentNonceがnilの場合の処理
-            return
-        }
-        
-        
-        
-        guard let appleAuthCode = appleIDCredential.authorizationCode else {
-            print("Unable to fetch authorization code")
-            return
-        }
-        
-        guard let authCodeString = String(data: appleAuthCode, encoding: .utf8) else {
-            print("Unable to serialize auth code string from data: \(appleAuthCode.debugDescription)")
-            return
-        }
-        
-        guard let user = Auth.auth().currentUser else {
-            // ユーザーがログインしていない場合の処理を追加
-            return
-        }
-        if let appleIdToken = String(data: appleIDCredential.identityToken!, encoding: .utf8) {
-            // appleIdToken を使用して再認証などの処理を行う
-            reauthenticateUser(user, appleIdToken: appleIdToken, rawNonce: currentNonce!)
-        } else {
-            print("Unable to fetch Apple ID Token")
-        }
+        currentNonce = nil
         Task {
             do {
-                // ここにAuth.auth().revokeTokenとuser?.delete()を実行する処理を追加する
-                try await Auth.auth().revokeToken(withAuthorizationCode: authCodeString)
-                
-                try await user.delete()
+                let firebaseCredential = OAuthProvider.appleCredential(withIDToken: token, rawNonce: nonce, fullName: nil)
+                try await AccountDeletion.perform(reauthenticate: {
+                    _ = try await user.reauthenticate(with: firebaseCredential)
+                }, revoke: {
+                    guard Auth.auth().currentUser?.uid == user.uid else { throw AccountOperationError.signedOut }
+                    try await Auth.auth().revokeToken(withAuthorizationCode: code)
+                }, delete: {
+                    guard Auth.auth().currentUser?.uid == user.uid else { throw AccountOperationError.signedOut }
+                    try await user.delete()
+                })
+                finish(nil)
             } catch {
-                // エラーの処理を追加
-                print("Error deleting user: \(error.localizedDescription)")
+                finish(error)
             }
         }
     }
-    
+
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        if let error = error as? ASAuthorizationError, error.code == .canceled {
+            finish(nil)
+        } else {
+            finish(error)
+        }
+    }
+
+    private func finish(_ error: Error?) {
+        currentNonce = nil
+        deletingUser = nil
+        authorizationController = nil
+        window = nil
+        onCompletion?(error)
+    }
 }
 #Preview {
     NavigationStack {

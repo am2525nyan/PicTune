@@ -12,6 +12,7 @@ struct PhotoPreviewView: View {
     @State private var selectedStamp: String?
     @State private var selectedTrack: Track?
     @State private var tool: EditingTool = .stamp
+    @State private var isPresentingMusicStep = false
     @State private var isPresentingSearch = false
     @State private var isConfirmingDiscard = false
     @State private var isShowingSaveResult = false
@@ -23,34 +24,19 @@ struct PhotoPreviewView: View {
 
     var body: some View {
         NavigationStack {
-            GeometryReader { geometry in
-                ScrollView {
-                    VStack(spacing: 16) {
-                        if let image = images {
-                            photoEditor(image)
-                                .frame(maxWidth: min(333, geometry.size.height * 0.42 * PhotoArtwork.size.width / PhotoArtwork.size.height))
-                            Picker("編集ツール", selection: $tool) {
-                                ForEach(EditingTool.allCases, id: \.self) { tool in
-                                    Text(tool.rawValue).tag(tool)
-                                }
-                            }
-                            .pickerStyle(.segmented)
-
-                            if tool == .stamp {
-                                stampPicker
-                            } else {
-                                Text("写真に指やApple Pencilで描けます。")
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
-                            }
-                            musicSelection
-                        } else {
-                            ContentUnavailableView("写真がありません", systemImage: "photo")
-                        }
+            Group {
+                if let image = images {
+                    GeometryReader { geometry in
+                        ZoomablePhotoEditor(image: image, stamp: selectedStamp, canvas: canvas,
+                                            isDrawing: tool == .pencil, viewportSize: geometry.size)
+                            .frame(width: geometry.size.width, height: geometry.size.height)
                     }
-                    .padding()
-                    .frame(maxWidth: 560)
-                    .frame(maxWidth: .infinity)
+                    .safeAreaInset(edge: .top, spacing: 0) { toolSelection }
+                    .safeAreaInset(edge: .bottom, spacing: 0) {
+                        if tool == .stamp { stampSelection }
+                    }
+                } else {
+                    ContentUnavailableView("写真がありません", systemImage: "photo")
                 }
             }
             .background(Color(uiColor: .systemGroupedBackground))
@@ -64,22 +50,13 @@ struct PhotoPreviewView: View {
                     .disabled(viewModel.isSaving)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") { save() }
+                    Button("次へ") { isPresentingMusicStep = true }
                         .fontWeight(.semibold)
-                        .buttonStyle(.borderedProminent)
-                        .disabled(images == nil || viewModel.isSaving)
+                        .disabled(images == nil)
                 }
             }
-            .disabled(viewModel.isSaving)
-            .overlay {
-                if viewModel.isSaving {
-                    ProgressView("保存中…")
-                        .padding(24)
-                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
-                }
-            }
-            .navigationDestination(isPresented: $isPresentingSearch) {
-                SearchView(selectedTrack: $selectedTrack)
+            .navigationDestination(isPresented: $isPresentingMusicStep) {
+                musicStep
             }
             .confirmationDialog("編集を終了しますか？", isPresented: $isConfirmingDiscard, titleVisibility: .visible) {
                 Button("編集を破棄", role: .destructive) { dismiss() }
@@ -87,37 +64,94 @@ struct PhotoPreviewView: View {
             } message: {
                 Text("この画面での編集内容は保存されません。")
             }
-            .alert("保存できませんでした", isPresented: $viewModel.isShowingError) {
-                Button("OK", role: .cancel) { }
-            } message: {
-                Text(viewModel.errorMessage)
+        }
+        .disabled(viewModel.isSaving)
+        .overlay {
+            if viewModel.isSaving {
+                ProgressView("保存中…")
+                    .padding(24)
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
             }
-            .alert("保存しました", isPresented: $isShowingSaveResult) {
-                Button("完了") {
-                    dismiss()
-                    isPresentingCamera = false
-                }
-            } message: {
-                Text(viewModel.saveMessage)
+        }
+        .alert("保存できませんでした", isPresented: $viewModel.isShowingError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(viewModel.errorMessage)
+        }
+        .alert("保存しました", isPresented: $isShowingSaveResult) {
+            Button("完了") {
+                dismiss()
+                isPresentingCamera = false
             }
+        } message: {
+            Text(viewModel.saveMessage)
         }
         .interactiveDismissDisabled()
     }
 
-    private func photoEditor(_ image: UIImage) -> some View {
-        GeometryReader { geometry in
-            let scale = geometry.size.width / PhotoArtwork.size.width
-            ZStack {
-                PhotoArtwork(image: image, stamp: selectedStamp)
-                PhotoDrawingCanvas(canvas: canvas, isEnabled: tool == .pencil && !viewModel.isSaving && !isPresentingSearch)
+    private var toolSelection: some View {
+        VStack(spacing: 8) {
+            Picker("編集ツール", selection: $tool) {
+                ForEach(EditingTool.allCases, id: \.self) { tool in
+                    Text(tool.rawValue).tag(tool)
+                }
             }
-            .frame(width: PhotoArtwork.size.width, height: PhotoArtwork.size.height)
-            .clipped()
-            .scaleEffect(scale, anchor: .topLeading)
+            .pickerStyle(.segmented)
+
+            if tool == .pencil {
+                Text("指やApple Pencilで描けます。2本の指で拡大・縮小できます。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
-        .aspectRatio(PhotoArtwork.size, contentMode: .fit)
-        .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
-        .accessibilityLabel("撮影した写真の編集プレビュー")
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+        .background(.regularMaterial)
+    }
+
+    private var stampSelection: some View {
+        stampPicker
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+            .background(.regularMaterial)
+    }
+
+    private var musicStep: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                if let image = images {
+                    PhotoArtwork(image: image, stamp: selectedStamp)
+                        .overlay {
+                            Image(uiImage: canvas.drawing.image(from: CGRect(origin: .zero, size: PhotoArtwork.size), scale: 3))
+                                .resizable()
+                        }
+                        .frame(width: PhotoArtwork.size.width, height: PhotoArtwork.size.height)
+                        .scaleEffect(200 / PhotoArtwork.size.width, anchor: .topLeading)
+                        .frame(width: 200, height: 200 * PhotoArtwork.size.height / PhotoArtwork.size.width,
+                               alignment: .topLeading)
+                        .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
+                        .accessibilityLabel("編集した写真のプレビュー")
+                }
+                musicSelection
+            }
+            .padding()
+            .frame(maxWidth: 560)
+            .frame(maxWidth: .infinity)
+        }
+        .background(Color(uiColor: .systemGroupedBackground))
+        .navigationTitle("音楽を追加")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("保存") { save() }
+                    .fontWeight(.semibold)
+                    .disabled(viewModel.isSaving)
+            }
+        }
+        .navigationDestination(isPresented: $isPresentingSearch) {
+            SearchView(selectedTrack: $selectedTrack)
+        }
     }
 
     private var stampPicker: some View {
@@ -235,38 +269,93 @@ struct PhotoArtwork: View {
     }
 }
 
-private struct PhotoDrawingCanvas: UIViewRepresentable {
+private struct ZoomablePhotoEditor: UIViewRepresentable {
+    let image: UIImage
+    let stamp: String?
     let canvas: PKCanvasView
-    let isEnabled: Bool
+    let isDrawing: Bool
+    let viewportSize: CGSize
 
-    class Coordinator {
+    class Coordinator: NSObject, UIScrollViewDelegate {
         let picker = PKToolPicker()
+        var artwork: UIHostingController<PhotoArtwork>?
+        var content = UIView(frame: CGRect(origin: .zero, size: PhotoArtwork.size))
+        var fittedScale: CGFloat = 0
+
+        func viewForZooming(in scrollView: UIScrollView) -> UIView? { content }
+
+        func scrollViewDidZoom(_ scrollView: UIScrollView) {
+            centerContent(in: scrollView, size: scrollView.bounds.size)
+        }
+
+        func centerContent(in scrollView: UIScrollView, size: CGSize) {
+            scrollView.contentInset = UIEdgeInsets(
+                top: max(0, (size.height - content.frame.height) / 2),
+                left: max(0, (size.width - content.frame.width) / 2),
+                bottom: 0, right: 0)
+        }
     }
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
-    func makeUIView(context: Context) -> PKCanvasView {
+    func makeUIView(context: Context) -> UIScrollView {
+        let scrollView = UIScrollView()
+        scrollView.accessibilityIdentifier = "photo.editor.canvas"
+        scrollView.delegate = context.coordinator
+        scrollView.backgroundColor = .systemGroupedBackground
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.panGestureRecognizer.minimumNumberOfTouches = 2
+
+        let artwork = UIHostingController(rootView: PhotoArtwork(image: image, stamp: stamp))
+        artwork.view.frame = context.coordinator.content.bounds
+        artwork.view.backgroundColor = .clear
+        artwork.view.isUserInteractionEnabled = false
+        context.coordinator.artwork = artwork
+        context.coordinator.content.addSubview(artwork.view)
+
         canvas.backgroundColor = .clear
         canvas.isOpaque = false
         canvas.drawingPolicy = .anyInput
         canvas.isScrollEnabled = false
+        canvas.frame = context.coordinator.content.bounds
+        context.coordinator.content.addSubview(canvas)
+        scrollView.addSubview(context.coordinator.content)
+        scrollView.contentSize = PhotoArtwork.size
         context.coordinator.picker.addObserver(canvas)
-        return canvas
+        return scrollView
     }
 
-    func updateUIView(_ uiView: PKCanvasView, context: Context) {
-        uiView.isUserInteractionEnabled = isEnabled
-        context.coordinator.picker.setVisible(isEnabled, forFirstResponder: uiView)
-        if isEnabled {
-            uiView.becomeFirstResponder()
+    func updateUIView(_ scrollView: UIScrollView, context: Context) {
+        context.coordinator.artwork?.rootView = PhotoArtwork(image: image, stamp: stamp)
+        if viewportSize.width > 0 && viewportSize.height > 0 {
+            let fittedScale = min(viewportSize.width / PhotoArtwork.size.width,
+                                  viewportSize.height / PhotoArtwork.size.height)
+            if abs(context.coordinator.fittedScale - fittedScale) > 0.001 {
+                let wasAtFit = context.coordinator.fittedScale == 0 ||
+                    scrollView.zoomScale <= context.coordinator.fittedScale + 0.001
+                context.coordinator.fittedScale = fittedScale
+                scrollView.minimumZoomScale = fittedScale
+                scrollView.maximumZoomScale = fittedScale * 4
+                if wasAtFit { scrollView.zoomScale = fittedScale }
+            }
+            context.coordinator.centerContent(in: scrollView, size: viewportSize)
+        }
+        canvas.isUserInteractionEnabled = isDrawing
+        context.coordinator.picker.setVisible(isDrawing, forFirstResponder: canvas)
+        if isDrawing {
+            canvas.becomeFirstResponder()
         } else {
-            uiView.resignFirstResponder()
+            canvas.resignFirstResponder()
         }
     }
 
-    static func dismantleUIView(_ uiView: PKCanvasView, coordinator: Coordinator) {
-        coordinator.picker.setVisible(false, forFirstResponder: uiView)
-        coordinator.picker.removeObserver(uiView)
-        uiView.resignFirstResponder()
+    static func dismantleUIView(_ scrollView: UIScrollView, coordinator: Coordinator) {
+        if let canvas = coordinator.content.subviews.compactMap({ $0 as? PKCanvasView }).first {
+            coordinator.picker.setVisible(false, forFirstResponder: canvas)
+            coordinator.picker.removeObserver(canvas)
+            canvas.resignFirstResponder()
+            canvas.removeFromSuperview()
+        }
     }
 }

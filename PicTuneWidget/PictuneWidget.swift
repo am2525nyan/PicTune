@@ -14,29 +14,22 @@ struct Provider: TimelineProvider {
     }
     
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), images: loadImage())
-        completion(entry)
+        Task {
+            let images = await WidgetPhotoLoader.loadImages()
+            completion(SimpleEntry(date: Date(), images: images))
+        }
     }
     
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-            // タイムラインの更新間隔を指定
-            let refreshTime = Calendar.current.date(byAdding: .minute, value: 15, to: Date())!
-            let timeline = Timeline(entries: [SimpleEntry(date: refreshTime, images: loadImage())], policy: .after(refreshTime))
+        Task {
+            let images = await WidgetPhotoLoader.loadImages()
+            let now = Date()
+            let refreshTime = now.addingTimeInterval(15 * 60)
+            let timeline = Timeline(entries: [SimpleEntry(date: now, images: images)], policy: .after(refreshTime))
             completion(timeline)
-        }
-    
-    // UserDefaultsから画像のURLを取得し、UIImageに変換するメソッド
-    func loadImage() -> [UIImage] {
-        guard let defaults = UserDefaults(suiteName: "group.PIcTune"),
-              let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.PIcTune") else { return [] }
-        return ["first", "second", "third"].compactMap { key in
-            let file = directory.appendingPathComponent("widget-\(key).jpg")
-            guard defaults.string(forKey: key) == file.path else { return nil }
-            return UIImage(contentsOfFile: file.path)
         }
     }
 }
-
 struct SimpleEntry: TimelineEntry {
     let date: Date
     
@@ -48,8 +41,8 @@ struct PictuneWidgetEntryView : View {
     
     var body: some View {
         HStack(spacing: 10) {
-            ForEach(entry.images, id: \.self) { image in
-                Image(uiImage: image)
+            ForEach(entry.images.indices, id: \.self) { index in
+                Image(uiImage: entry.images[index])
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100, height: 100)
@@ -84,7 +77,6 @@ extension View {
         }
     }
 }
-
 
 
 

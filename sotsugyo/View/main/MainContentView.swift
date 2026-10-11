@@ -42,6 +42,7 @@ struct MainContentView: View {
                         Label("設定", systemImage: "gearshape")
                     }
                 }
+                .id(authenticationManager.userID)
             }
         }
         .safeAreaInset(edge: .top) {
@@ -78,6 +79,7 @@ struct MainContentView: View {
         }
         .sheet(item: $inviteRouter.presented, onDismiss: { if authenticationManager.isSignIn { inviteRouter.finish() } }) { link in
             FolderInvitationView(link: link)
+                .id(authenticationManager.userID)
         }
         .alert("招待リンク", isPresented: Binding(get: { inviteRouter.error != nil }, set: { if !$0 { inviteRouter.error = nil } })) {
             Button("閉じる", role: .cancel) { }
@@ -86,15 +88,16 @@ struct MainContentView: View {
             Button("閉じる", role: .cancel) { }
         } message: { Text(loginError ?? "") }
         .onAppear { inviteRouter.resume(signedIn: authenticationManager.isSignIn) }
-        .onChange(of: authenticationManager.isSignIn) { _, isSignedIn in
+        .onChange(of: authenticationManager.userID, initial: true) { previousUserID, userID in
+            let isSignedIn = userID != nil
+            if previousUserID != userID || !isSignedIn {
+                viewModel.reset()
+                folderViewModel.reset()
+            }
             if isSignedIn && (viewModel.isShowSheet || isLoginSheetVisible) {
                 viewModel.isShowSheet = false
             } else {
                 inviteRouter.resume(signedIn: isSignedIn)
-            }
-            if !isSignedIn {
-                viewModel.reset()
-                folderViewModel.reset()
             }
         }
     }
