@@ -8,7 +8,6 @@ struct AccountLinkView: View {
     @StateObject private var model = AccountLinkingModel()
     @State private var email = ""
     @State private var password = ""
-    @State private var passwordConfirmation = ""
 
     var body: some View {
         NavigationStack {
@@ -27,9 +26,6 @@ struct AccountLinkView: View {
                         SecureField("パスワード", text: $password)
                             .textContentType(.newPassword)
                             .accessibilityIdentifier("auth.password")
-                        SecureField("パスワード（確認）", text: $passwordConfirmation)
-                            .textContentType(.newPassword)
-                            .accessibilityIdentifier("auth.passwordConfirmation")
                     }
                     .disabled(model.isWorking)
                     Section {
@@ -38,7 +34,7 @@ struct AccountLinkView: View {
                         }
                         .accessibilityIdentifier("auth.linkEmail")
                         .disabled(model.isWorking || email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                                  || password.isEmpty || password != passwordConfirmation)
+                                  || password.count < 6)
                     } footer: {
                         Text("パスワードは6文字以上で入力してください。")
                     }
@@ -84,7 +80,6 @@ struct AccountLinkView: View {
     private func finish(_ success: Bool) {
         guard success else { return }
         password = ""
-        passwordConfirmation = ""
         onLinked()
         dismiss()
     }

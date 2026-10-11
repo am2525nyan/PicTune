@@ -32,11 +32,7 @@ final class sotsugyoUITests: XCTestCase {
         XCTAssertFalse(app.buttons["auth.linkEmail"].isEnabled)
         app.secureTextFields["auth.password"].tap()
         app.secureTextFields["auth.password"].typeText("Linked123!")
-        // Password AutoFill may populate the confirmation field as well.
-        if !app.buttons["auth.linkEmail"].isEnabled {
-            app.secureTextFields["auth.passwordConfirmation"].tap()
-            app.secureTextFields["auth.passwordConfirmation"].typeText("Linked123!")
-        }
+        XCTAssertTrue(app.buttons["auth.linkEmail"].isEnabled)
         capture("auth-04-email-link", app: app)
         app.buttons["auth.linkEmail"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 15))
