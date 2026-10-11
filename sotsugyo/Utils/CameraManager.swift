@@ -259,8 +259,10 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
         let livePhotoFileName = liveurl
         let imageName = "\(UUID().uuidString).jpg"
         let imageReference = Storage.storage().reference().child("images/\(imageName)")
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
         do {
-            _ = try await imageReference.putDataAsync(imageData)
+            _ = try await imageReference.putDataAsync(imageData, metadata: metadata)
             guard Auth.auth().currentUser?.uid == uid else {
                 throw NSError(domain: "PhotoSave", code: 1,
                     userInfo: [NSLocalizedDescriptionKey: "ログイン状態が変わりました。もう一度ログインしてください。"])

@@ -1,10 +1,48 @@
 import XCTest
 import UIKit
 import PencilKit
+import FirebaseStorage
 @testable import PIcTune
 
 @MainActor
 final class sotsugyoTests: XCTestCase {
+    func testStorageErrorFiveShowsPermissionFailureAndAllowsRetry() async {
+        let camera = RecordingCameraManager()
+        camera.failure = StorageError.unauthorized("test-bucket", "images/test.jpg")
+        // Reproduce the SDK's otherwise unhelpful localizedDescription.
+        XCTAssertEqual((camera.failure as NSError).code, 5)
+        let model = PhotoPreviewViewModel()
+        let image = UIGraphicsImageRenderer(size: CGSize(width: 20, height: 20)).image { _ in }
+
+        let saved = await model.save(image: image, stamp: nil, drawing: PKDrawing(), track: nil,
+                                     cameraManager: camera, friendUid: "")
+
+        XCTAssertFalse(saved)
+        XCTAssertTrue(model.isShowingError)
+        XCTAssertFalse(model.isSaving)
+        XCTAssertTrue(model.errorMessage.contains("権限"))
+        XCTAssertTrue(model.errorMessage.contains("storage/unauthorized"))
+        XCTAssertFalse(model.errorMessage.contains("通信状況"))
+        XCTAssertTrue(model.saveMessage.isEmpty)
+        _ = await model.save(image: image, stamp: nil, drawing: PKDrawing(), track: nil,
+                             cameraManager: camera, friendUid: "")
+        XCTAssertEqual(camera.attempts, 2)
+    }
+
+    func testStorageAuthenticationFailureRequestsSignInInsteadOfNetworkRetry() {
+        let message = PhotoPreviewViewModel.saveErrorMessage(for: StorageError.unauthenticated)
+        XCTAssertTrue(message.contains("もう一度ログイン"))
+        XCTAssertTrue(message.contains("storage/unauthenticated"))
+        XCTAssertFalse(message.contains("通信状況"))
+    }
+
+    func testNonStorageSaveFailurePreservesItsExplanation() {
+        let error = NSError(domain: "PhotoSave", code: 3,
+                            userInfo: [NSLocalizedDescriptionKey: "撮影相手の情報を確認してください。"])
+        XCTAssertTrue(PhotoPreviewViewModel.saveErrorMessage(for: error)
+            .contains("撮影相手の情報を確認してください。"))
+    }
+
     func testPhotoWithoutMusicReachesSaveAndAllowsRetryAfterFailure() async {
         let camera = RecordingCameraManager()
         let model = PhotoPreviewViewModel()
@@ -183,6 +221,7 @@ private final class RecordingCameraManager: CameraManager {
     var savedTrack: Track?
     var savedFriendUID: String?
     var attempts = 0
+    var failure: Error = NSError(domain: "PhotoSaveTest", code: 1)
 
     @MainActor
     override func uploadPhoto(_ image: UIImage, friendUid: String, track: Track? = nil) async throws {
@@ -191,7 +230,7 @@ private final class RecordingCameraManager: CameraManager {
         savedTrack = track
         savedFriendUID = friendUid
         // Stop before Photos/network writes and exercise the retryable failure state.
-        throw NSError(domain: "PhotoSaveTest", code: 1)
+        throw failure
     }
 }
 
