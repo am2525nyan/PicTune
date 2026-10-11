@@ -1,6 +1,7 @@
 import SwiftUI
 import PencilKit
 import Photos
+import FirebaseStorage
 
 @MainActor
 class PhotoPreviewViewModel: ObservableObject {
@@ -32,7 +33,7 @@ class PhotoPreviewViewModel: ObservableObject {
         do {
             try await cameraManager.uploadPhoto(renderedImage, friendUid: friendUid, track: track)
         } catch {
-            errorMessage = "通信状況を確認して、もう一度保存してください。\n\(error.localizedDescription)"
+            errorMessage = Self.saveErrorMessage(for: error)
             isShowingError = true
             return false
         }
@@ -52,5 +53,29 @@ class PhotoPreviewViewModel: ObservableObject {
             saveMessage = "アプリに保存しました。写真ライブラリへの保存は許可されていません。"
         }
         return true
+    }
+
+    static func saveErrorMessage(for error: Error) -> String {
+        // StorageError does not conform to LocalizedError. Its NSError code is
+        // an enum index (e.g. unauthorized = 5), not a StorageErrorCode value.
+        guard let storageError = error as? StorageError else {
+            return "写真を保存できませんでした。\n\(error.localizedDescription)"
+        }
+        switch storageError {
+        case .unauthorized:
+            return "写真を保存する権限がありません。アプリの管理者にお問い合わせください。\nエラー: storage/unauthorized"
+        case .unauthenticated:
+            return "ログイン状態を確認できませんでした。もう一度ログインして保存してください。\nエラー: storage/unauthenticated"
+        case .bucketNotFound, .projectNotFound, .bucketMismatch:
+            return "写真の保存先に接続できません。アプリの管理者にお問い合わせください。\nエラー: storage/configuration"
+        case .quotaExceeded:
+            return "写真の保存サービスが利用上限に達しています。アプリの管理者にお問い合わせください。\nエラー: storage/quota-exceeded"
+        case .retryLimitExceeded:
+            return "写真の保存がタイムアウトしました。通信状況を確認して、もう一度保存してください。\nエラー: storage/retry-limit-exceeded"
+        case .cancelled:
+            return "写真の保存が中断されました。もう一度保存してください。\nエラー: storage/cancelled"
+        default:
+            return "写真を保存できませんでした。通信状況を確認して、もう一度保存してください。\nエラー: storage/upload-failed"
+        }
     }
 }
