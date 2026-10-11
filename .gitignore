@@ -86,3 +86,11 @@ PIcTune.xcodeproj/project.xcworkspace/xcshareddata/*
 !PIcTune.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
 PIcTune.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/*
 !PIcTune.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+
+# Firebase local tooling
+firebase/node_modules/
+.firebase/
+*-debug.log
+firepit-log.txt
+
+__pycache__/

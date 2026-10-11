@@ -1,10 +1,180 @@
 import XCTest
 import UIKit
 import PencilKit
+import Combine
+import FirebaseAuthUI
+import Security
 @testable import PIcTune
 
 @MainActor
 final class sotsugyoTests: XCTestCase {
+    func testSignedAppCanStoreAndReadLoginKeychainData() {
+        let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+                                    kSecAttrService as String: "PicTune.LoginRegression",
+                                    kSecAttrAccount as String: UUID().uuidString]
+        let data = Data("test-only".utf8)
+        var saveQuery = query
+        saveQuery[kSecValueData as String] = data
+        XCTAssertEqual(SecItemAdd(saveQuery as CFDictionary, nil), errSecSuccess)
+        defer { SecItemDelete(query as CFDictionary) }
+        var readQuery = query
+        readQuery[kSecReturnData as String] = true
+        var result: CFTypeRef?
+        XCTAssertEqual(SecItemCopyMatching(readQuery as CFDictionary, &result), errSecSuccess)
+        XCTAssertEqual(result as? Data, data)
+    }
+
+    func testSuccessfulLoginDismissesAuthSheet() {
+        let model = MainContentModel()
+        model.isShowSheet = true
+        var errors: [String] = []
+        let coordinator = LoginView.Coordinator(viewModel: model) { errors.append($0) }
+        XCTAssertTrue(coordinator.responds(to: NSSelectorFromString("authUI:didSignInWith:error:")))
+        coordinator.completeSignIn(signedIn: true, error: nil)
+        XCTAssertFalse(model.isShowSheet)
+        XCTAssertTrue(errors.isEmpty)
+    }
+
+    func testFailedLoginReportsErrorAndCanReopenAuthSheet() {
+        let model = MainContentModel()
+        model.isShowSheet = true
+        var errors: [String] = []
+        let coordinator = LoginView.Coordinator(viewModel: model) { errors.append($0) }
+        coordinator.completeSignIn(signedIn: false, error: NSError(
+            domain: "LoginTest", code: 1, userInfo: [NSLocalizedDescriptionKey: "接続できませんでした"]
+        ))
+        XCTAssertFalse(model.isShowSheet)
+        XCTAssertEqual(errors, ["接続できませんでした"])
+        model.isShowSheet = true
+        coordinator.completeSignIn(signedIn: true, error: nil)
+        XCTAssertFalse(model.isShowSheet)
+        XCTAssertEqual(errors.count, 1)
+    }
+
+    func testCancelledLoginDismissesWithoutReportingFailure() {
+        let model = MainContentModel()
+        model.isShowSheet = true
+        let coordinator = LoginView.Coordinator(viewModel: model) { _ in XCTFail("Cancellation is not an error") }
+        coordinator.completeSignIn(signedIn: false, error: NSError(
+            domain: FUIAuthErrorDomain, code: Int(FUIAuthErrorCode.userCancelledSignIn.rawValue)
+        ))
+        XCTAssertFalse(model.isShowSheet)
+    }
+
+    func testGoogleProviderFailureShowsUnderlyingReason() {
+        let model = MainContentModel()
+        model.isShowSheet = true
+        var message: String?
+        let coordinator = LoginView.Coordinator(viewModel: model) { message = $0 }
+        let underlying = NSError(domain: "com.google.GIDSignIn", code: -2,
+                                 userInfo: [NSLocalizedDescriptionKey: "keychain error"])
+        coordinator.completeSignIn(signedIn: false, error: NSError(
+            domain: FUIAuthErrorDomain, code: Int(FUIAuthErrorCode.providerError.rawValue),
+            userInfo: [NSUnderlyingErrorKey: underlying]
+        ))
+        XCTAssertEqual(message, "keychain error")
+        XCTAssertFalse(model.isShowSheet)
+    }
+
+    func testIncompleteLoginDoesNotDismissAuthSheet() {
+        let model = MainContentModel()
+        model.isShowSheet = true
+        let coordinator = LoginView.Coordinator(viewModel: model)
+        coordinator.completeSignIn(signedIn: false, error: nil)
+        XCTAssertTrue(model.isShowSheet)
+    }
+
+    func testInvitationLinksAcceptOnlyExactTrustedRoutes() {
+        let token = String(repeating: "a", count: 64)
+        let link = FolderInviteLink(token: token)
+        XCTAssertEqual(FolderInviteLink(url: link.url), link)
+        XCTAssertEqual(FolderInviteLink(url: URL(string: "pictune://invite/\(token)")!), link)
+        for value in ["https://evil.example/invite/\(token)", "http://sotugyou-7ea16.web.app/invite/\(token)",
+                      "https://sotugyou-7ea16.web.app/invite/short", "https://sotugyou-7ea16.web.app/invite/\(token)?owner=other",
+                      "https://sotugyou-7ea16.web.app/invite/\(token)/extra", "https://user@sotugyou-7ea16.web.app/invite/\(token)",
+                      "pictune://invite/\(token)#other"] {
+            XCTAssertNil(FolderInviteLink(url: URL(string: value)!), value)
+        }
+        XCTAssertNotEqual(FolderInviteLink.make().token, FolderInviteLink.make().token)
+    }
+
+    func testPendingInvitationSurvivesLoginAndRelaunch() {
+        let defaults = UserDefaults(suiteName: "PicTune.Invitation.UnitTests")!
+        defaults.removePersistentDomain(forName: "PicTune.Invitation.UnitTests")
+        defer { defaults.removePersistentDomain(forName: "PicTune.Invitation.UnitTests") }
+        let router = FolderInviteRouter(defaults: defaults)
+        let link = FolderInviteLink.make()
+        router.open(link.url, signedIn: false)
+        XCTAssertNil(router.presented)
+        let restored = FolderInviteRouter(defaults: defaults)
+        XCTAssertEqual(restored.pending, link)
+        restored.resume(signedIn: true)
+        XCTAssertEqual(restored.presented, link)
+        restored.finish()
+        XCTAssertNil(FolderInviteRouter(defaults: defaults).pending)
+    }
+
+    func testInvitationExpiryAndRevocation() {
+        let date = Date(timeIntervalSince1970: 1000)
+        let reference = LiveSharedFolder(ownerID: "owner", folderID: "folder", title: "title")
+        let invite = FolderInvitation(link: .make(), folder: reference, senderName: "sender", expiresAt: date, isRevoked: false)
+        XCTAssertTrue(invite.isAvailable(at: date.addingTimeInterval(-1)))
+        XCTAssertFalse(invite.isAvailable(at: date))
+        XCTAssertFalse(FolderInvitation(link: .make(), folder: reference, senderName: "sender", expiresAt: date.addingTimeInterval(100), isRevoked: true).isAvailable(at: date))
+        XCTAssertEqual(reference.id, LiveSharedFolder(ownerID: "owner", folderID: "folder", title: "renamed").id)
+        XCTAssertNotEqual(reference.id, LiveSharedFolder(ownerID: "other", folderID: "folder", title: "title").id)
+    }
+
+    func testInvitationReceiveRetriesFailureAndDoesNotCelebrateBeforeCommit() async {
+        let repository = RecordingInvitationRepository()
+        let model = FolderInvitationModel(repository: repository)
+        await model.load(FolderInviteLink.make())
+        await model.receive()
+        XCTAssertNil(model.received)
+        XCTAssertNotNil(model.error)
+        XCTAssertFalse(model.isWorking)
+        repository.fail = false
+        await model.receive()
+        XCTAssertNotNil(model.received)
+        XCTAssertNil(model.error)
+        await model.receive()
+        XCTAssertEqual(repository.joins, 2)
+    }
+
+    func testInvitationCoverLoadsOnlyFirstPhotoAndClearsWhenRemoved() async {
+        let repository = RecordingInvitationRepository()
+        let (updates, continuation) = AsyncThrowingStream<SharedFolderUpdate, Error>.makeStream()
+        repository.updates = updates
+        let bytes = UIGraphicsImageRenderer(size: CGSize(width: 10, height: 20)).image { context in
+            UIColor.red.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 10, height: 20))
+        }.pngData()!
+        var requested: [String] = []
+        let model = SharedFolderModel(repository: repository, photoLimit: 1, imageLoader: { _, record in
+            requested.append(record.id)
+            return bytes
+        })
+        let displayed = expectation(description: "First photo displayed")
+        let displayObserver = model.$photos.sink { photos in
+            if photos.map(\.id) == ["first"] { displayed.fulfill() }
+        }
+        let task = Task { await model.observe(LiveSharedFolder(ownerID: "owner", folderID: "folder", title: "title")) }
+        defer { task.cancel(); continuation.finish() }
+        continuation.yield(.photos([
+            PhotoRecord(id: "first", fileName: "first.jpg", date: nil, music: nil, livePhotoFileName: ""),
+            PhotoRecord(id: "second", fileName: "second.jpg", date: nil, music: nil, livePhotoFileName: "")
+        ]))
+        await fulfillment(of: [displayed], timeout: 2)
+        displayObserver.cancel()
+        XCTAssertEqual(requested, ["first"])
+        let cleared = expectation(description: "Removed cover cleared")
+        let clearObserver = model.$photos.first(where: { $0.isEmpty }).sink { _ in cleared.fulfill() }
+        continuation.yield(.photos([]))
+        await fulfillment(of: [cleared], timeout: 2)
+        clearObserver.cancel()
+        XCTAssertTrue(model.photos.isEmpty)
+    }
+
     func testPhotoWithoutMusicReachesSaveAndAllowsRetryAfterFailure() async {
         let camera = RecordingCameraManager()
         let model = PhotoPreviewViewModel()
@@ -773,4 +943,22 @@ final class FriendQRViewModelTests: XCTestCase {
         XCTAssertEqual(data["name"] as? String, "")
         XCTAssertEqual(Set(data.keys), Set(["uid", "email", "name"]))
     }
+}
+
+private final class RecordingInvitationRepository: FolderInvitationRepository {
+    var updates: AsyncThrowingStream<SharedFolderUpdate, Error>?
+    var fail = true
+    var joins = 0
+    func create(folderID: String) async throws -> FolderInvitation { try await resolve(link: .make()) }
+    func resolve(link: FolderInviteLink) async throws -> FolderInvitation {
+        FolderInvitation(link: link, folder: LiveSharedFolder(ownerID: "owner", folderID: "folder", title: "title"), senderName: "sender", expiresAt: Date().addingTimeInterval(600), isRevoked: false)
+    }
+    func join(invitation: FolderInvitation) async throws -> LiveSharedFolder {
+        joins += 1
+        if fail { throw URLError(.notConnectedToInternet) }
+        return invitation.folder
+    }
+    func revoke(link: FolderInviteLink) async throws { }
+    func sharedFolders() async throws -> [LiveSharedFolder] { [] }
+    func observe(_ folder: LiveSharedFolder) -> AsyncThrowingStream<SharedFolderUpdate, Error> { updates ?? AsyncThrowingStream { $0.finish() } }
 }

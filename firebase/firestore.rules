@@ -1,0 +1,105 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function owns(uid) { return signedIn() && request.auth.uid == uid; }
+    function folderPath(uid, fid) { return /databases/$(database)/documents/users/$(uid)/folders/$(fid); }
+    function canReadFolder(uid, fid) {
+      return signedIn() && (owns(uid) || (exists(folderPath(uid, fid)) && request.auth.uid in get(folderPath(uid, fid)).data.get('sharedWith', [])));
+    }
+    function validInvite(token, uid, fid) {
+      let invitation = get(/databases/$(database)/documents/folderInvites/$(token)).data;
+      return signedIn() && invitation.ownerID == uid && invitation.folderID == fid
+        && invitation.revoked == false && invitation.expiresAt > request.time
+        && exists(folderPath(uid, fid));
+    }
+    function canSend(uid) {
+      let grant = get(/databases/$(database)/documents/users/$(uid)/photoSenders/$(request.auth.uid)).data;
+      return signedIn() && grant.expiresAt > request.time;
+    }
+    function ownsImage(file) {
+      let image = get(/databases/$(database)/documents/imageOwners/$(file)).data;
+      return signedIn() && (image.ownerID == request.auth.uid || request.auth.uid in image.get('legacyReaders', []));
+    }
+    function usableImageGrant(file) {
+      let access = get(/databases/$(database)/documents/users/$(request.auth.uid)/imageAccess/$(file)).data;
+      return canReadFolder(access.ownerID, access.folderID);
+    }
+    function canUseImage(file) { return ownsImage(file) || usableImageGrant(file); }
+    match /folderInvites/{token} {
+      allow get: if signedIn() && (resource.data.ownerID == request.auth.uid ||
+        (resource.data.revoked == false && resource.data.expiresAt > request.time && exists(folderPath(resource.data.ownerID, resource.data.folderID))));
+      allow create: if signedIn() && token.matches('[a-f0-9]{64}')
+        && request.resource.data.keys().hasOnly(['ownerID','folderID','title','senderName','createdAt','expiresAt','revoked'])
+        && request.resource.data.ownerID == request.auth.uid && request.resource.data.folderID != 'all'
+        && exists(folderPath(request.auth.uid, request.resource.data.folderID))
+        && request.resource.data.createdAt == request.time && request.resource.data.revoked == false
+        && request.resource.data.expiresAt > request.time && request.resource.data.expiresAt <= request.time + duration.value(8, 'd')
+        && request.resource.data.title is string && request.resource.data.senderName is string;
+      allow update: if owns(resource.data.ownerID) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['revoked']) && request.resource.data.revoked == true;
+      allow delete: if owns(resource.data.ownerID);
+    }
+    match /cameraInvites/{token} {
+      allow get: if signedIn() && resource.data.expiresAt > request.time;
+      allow create: if signedIn() && token.matches('[a-f0-9]{64}')
+        && request.resource.data.keys().hasOnly(['ownerID','name','expiresAt','createdAt'])
+        && owns(request.resource.data.ownerID) && request.resource.data.name is string
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.expiresAt > request.time && request.resource.data.expiresAt <= request.time + duration.value(16, 'm');
+      allow delete: if owns(resource.data.ownerID);
+    }
+    match /imageOwners/{file} {
+      allow get: if owns(resource.data.ownerID);
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['ownerID']) && owns(request.resource.data.ownerID);
+      // Ownership records are immutable, including after an upload failure, to prevent reclaiming a filename.
+    }
+    match /users/{uid} {
+      allow read, write: if owns(uid);
+      match /personal/{id} { allow read, write: if owns(uid); }
+      match /folderInviteLinks/{id} { allow read, write: if owns(uid); }
+      match /photoSenders/{sender} {
+        allow get: if owns(uid) || owns(sender);
+        allow create, update: if owns(sender)
+          && request.resource.data.keys().hasOnly(['inviteToken','expiresAt'])
+          && get(/databases/$(database)/documents/cameraInvites/$(request.resource.data.inviteToken)).data.ownerID == uid
+          && request.resource.data.expiresAt == get(/databases/$(database)/documents/cameraInvites/$(request.resource.data.inviteToken)).data.expiresAt
+          && request.resource.data.expiresAt > request.time;
+        allow delete: if owns(uid) || owns(sender);
+      }
+      match /sharedFolders/{id} {
+        allow read, delete: if owns(uid);
+        allow create, update: if owns(uid)
+          && request.resource.data.keys().hasOnly(['ownerID','folderID','title','joinedAt'])
+          && uid in getAfter(folderPath(request.resource.data.ownerID, request.resource.data.folderID)).data.get('sharedWith', []);
+      }
+      match /imageAccess/{file} {
+        allow read, delete: if owns(uid);
+        allow create, update: if signedIn()
+          && request.resource.data.keys().hasOnly(['ownerID','folderID','photoID'])
+          && (
+            (owns(uid) && canReadFolder(request.resource.data.ownerID, request.resource.data.folderID)
+              && get(/databases/$(database)/documents/users/$(request.resource.data.ownerID)/folders/$(request.resource.data.folderID)/photos/$(request.resource.data.photoID)).data.url == file)
+            ||
+            (canSend(uid) && ownsImage(file) && request.resource.data.ownerID == uid && request.resource.data.folderID == 'all'
+              && getAfter(/databases/$(database)/documents/users/$(uid)/folders/all/photos/$(request.resource.data.photoID)).data.url == file)
+          );
+      }
+      match /folders/{fid} {
+        allow get: if canReadFolder(uid, fid);
+        allow list, create, delete: if owns(uid);
+        allow update: if owns(uid) || (signedIn() && fid != 'all'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['sharedWith','inviteToken'])
+          && validInvite(request.resource.data.inviteToken, uid, fid)
+          && (request.resource.data.sharedWith == resource.data.get('sharedWith', []).concat([request.auth.uid])
+              || (request.auth.uid in resource.data.get('sharedWith', []) && request.resource.data.sharedWith == resource.data.sharedWith)));
+        match /photos/{pid} {
+          allow read: if canReadFolder(uid, fid);
+          allow create: if signedIn() && ((owns(uid) && canUseImage(request.resource.data.url))
+            || (fid == 'all' && canSend(uid) && ownsImage(request.resource.data.url)));
+          allow update: if owns(uid) && request.resource.data.url == resource.data.url;
+          allow delete: if owns(uid);
+        }
+      }
+    }
+  }
+}

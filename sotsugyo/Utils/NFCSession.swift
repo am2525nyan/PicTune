@@ -18,23 +18,23 @@ final class NFCSession: NSObject, ObservableObject {
     var readHandler: ((String?, String?, Error?) -> Void)?
     
     
-    func startWriteSession(UserUid: String, folder: String, writeHandler: ((Error?) -> Void)?) {
+    func startWriteSession(inviteURL: URL, writeHandler: ((Error?) -> Void)?) {
         self.writeHandler = writeHandler
         isWriting = true
-        
-        ndefMessage = Self.folderMessage(for: SharedFolderReference(userID: UserUid, folderID: folder))
-        startSession()
+        do {
+            ndefMessage = try Self.invitationMessage(for: inviteURL)
+            startSession()
+        } catch { finishWriting(error: error) }
     }
 
-    static func folderMessage(for reference: SharedFolderReference) -> NFCNDEFMessage {
-        // Older PicTune versions decode the entire payload as UTF-8, including any
-        // standard Text header. Keep their single raw record on write until those
-        // readers are retired; multiple records also break their joined payload.
-        let record = NFCNDEFPayload(format: .nfcWellKnown, type: Data("T".utf8),
-                                   identifier: Data(), payload: Data(reference.payload.utf8))
-        return NFCNDEFMessage(records: [record])
+    static func invitationMessage(for url: URL) throws -> NFCNDEFMessage {
+        guard FolderInviteLink(url: url) != nil,
+              let payload = NFCNDEFPayload.wellKnownTypeURIPayload(url: url) else {
+            throw FolderInviteError.invalidLink
+        }
+        return NFCNDEFMessage(records: [payload])
     }
-    
+
     func startReadSession(readHandler: ((String?, String?, Error?) -> Void)?) {
         self.readHandler = readHandler
         isWriting = false
@@ -151,9 +151,13 @@ extension NFCSession: NFCNDEFReaderSessionDelegate {
         DispatchQueue.main.async { handler?(text, text, error) }
     }
 
-    /// Accept standard NDEF Text records and the raw UTF-8 records written by older versions.
+    /// Read invitation URLs and recognize legacy Text records for the card update flow.
     static func folderPayload(from record: NFCNDEFPayload) -> String? {
-        guard record.typeNameFormat == .nfcWellKnown, record.type == Data("T".utf8) else { return nil }
+        guard record.typeNameFormat == .nfcWellKnown else { return nil }
+        if let url = record.wellKnownTypeURIPayload(), FolderInviteLink(url: url) != nil {
+            return url.absoluteString
+        }
+        guard record.type == Data("T".utf8) else { return nil }
         if let text = String(data: record.payload, encoding: .utf8),
            text.rangeOfCharacter(from: .controlCharacters) == nil,
            SharedFolderReference(payload: text) != nil {
