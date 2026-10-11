@@ -2,7 +2,91 @@ import XCTest
 import UIKit
 import PencilKit
 import FirebaseStorage
+import FirebaseCore
+import FirebaseAuth
 @testable import PIcTune
+
+/// Opt-in tests against isolated Auth (9198), Firestore (8199) and Storage (9308) emulators.
+@MainActor
+final class PhotoUploadIntegrationTests: XCTestCase {
+    private var database: Firestore!
+    private var storage: Storage!
+    private var authentication: Auth!
+
+    override func setUp() async throws {
+        var request = URLRequest(url: URL(string: "http://127.0.0.1:8199/")!)
+        request.timeoutInterval = 1
+        do { _ = try await URLSession.shared.data(for: request) }
+        catch { throw XCTSkip("Photo upload emulators are not running") }
+        let name = "PicTunePhotoUploadIntegration"
+        if FirebaseApp.app(name: name) == nil {
+            let options = FirebaseOptions(googleAppID: "1:123456789:ios:abcdef", gcmSenderID: "123456789")
+            options.projectID = "demo-pictune-storage-save"
+            options.apiKey = "emulator-only"
+            options.storageBucket = "demo-pictune-storage-save.appspot.com"
+            FirebaseApp.configure(name: name, options: options)
+            let app = FirebaseApp.app(name: name)!
+            Auth.auth(app: app).useEmulator(withHost: "127.0.0.1", port: 9198)
+            let db = Firestore.firestore(app: app)
+            let settings = db.settings
+            settings.host = "127.0.0.1:8199"
+            settings.isSSLEnabled = false
+            settings.cacheSettings = MemoryCacheSettings()
+            db.settings = settings
+            Storage.storage(app: app).useEmulator(withHost: "127.0.0.1", port: 9308)
+        }
+        let app = FirebaseApp.app(name: name)!
+        authentication = Auth.auth(app: app)
+        database = Firestore.firestore(app: app)
+        storage = Storage.storage(app: app)
+        try authentication.signOut()
+        _ = try await authentication.signInAnonymously()
+    }
+
+    func testCameraSaveRegistersOwnershipAndPreservesPhotoMusic() async throws {
+        let auth = try XCTUnwrap(authentication)
+        let uid = try XCTUnwrap(auth.currentUser?.uid)
+        let camera = CameraManager(database: database, storage: storage, currentUserID: { auth.currentUser?.uid })
+        let image = UIGraphicsImageRenderer(size: CGSize(width: 20, height: 20)).image { context in
+            UIColor.red.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 20, height: 20))
+        }
+        let track = Track(id: "track", name: "曲名", artist: "アーティスト", albumImages: [], previewURL: nil)
+        try await camera.uploadPhoto(image, friendUid: "", track: track)
+
+        let photo = try await database.collection("users").document(uid).collection("folders")
+            .document("all").collection("photos").document(camera.documentId).getDocument()
+        let record = try XCTUnwrap(PhotoRecord(id: photo.documentID, data: try XCTUnwrap(photo.data())))
+        XCTAssertEqual(record.music?.trackId, track.id)
+        XCTAssertEqual(record.music?.id, camera.documentId)
+        XCTAssertNotNil(record.date)
+        let owner = try await database.collection("imageOwners").document(record.fileName).getDocument()
+        XCTAssertEqual(owner.data()?["ownerID"] as? String, uid)
+        let reference = storage.reference().child("images/\(record.fileName)")
+        let metadata = try await reference.getMetadata()
+        XCTAssertEqual(metadata.contentType, "image/jpeg")
+        XCTAssertEqual(metadata.customMetadata?["ownerIDs"], uid)
+        let data = try await reference.data(maxSize: 1024 * 1024)
+        XCTAssertNotNil(UIImage(data: data))
+    }
+
+    func testRulesRejectThePreviousUploadWithoutOwnershipMetadata() async throws {
+        let uid = try XCTUnwrap(authentication.currentUser?.uid)
+        let file = "\(UUID().uuidString).jpg"
+        try await database.collection("imageOwners").document(file).setData(["ownerID": uid])
+        let reference = storage.reference().child("images/\(file)")
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
+        do {
+            _ = try await reference.putDataAsync(Data([1, 2, 3]), metadata: metadata)
+            XCTFail("Upload must require the ownership metadata")
+        } catch let error as StorageError {
+            guard case .unauthorized = error else { return XCTFail("Unexpected error: \(error)") }
+        }
+        metadata.customMetadata = ["ownerIDs": uid]
+        _ = try await reference.putDataAsync(Data([1, 2, 3]), metadata: metadata)
+    }
+}
 
 @MainActor
 final class sotsugyoTests: XCTestCase {
