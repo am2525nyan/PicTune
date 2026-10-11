@@ -35,17 +35,22 @@ final class LibraryRegressionTests: XCTestCase {
         XCTAssertNil(model.folderCoverImages["folder"])
     }
 
-    func testWidgetSupportsOnePhotoAndClearsStaleURLsAfterEmptyReloadAndLogout() async throws {
+    func testWidgetSupportsOnePhotoAndClearsStalePathsAfterEmptyReloadAndLogout() async throws {
         let domain = "LibraryRegression.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: domain)!
         defer { defaults.removePersistentDomain(forName: domain) }
         let repository = LibraryRegressionRepository()
         repository.records = [PhotoRecord(id: "photo", fileName: "photo.jpg", date: nil, music: nil, livePhotoFileName: "")]
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
         var reloads = 0
-        let model = MainContentModel(repository: repository, currentUserID: { "user" }, widgetDefaults: defaults, reloadWidgets: { reloads += 1 })
+        let model = MainContentModel(repository: repository, currentUserID: { "user" }, widgetDefaults: defaults, widgetDirectory: directory, reloadWidgets: { reloads += 1 })
         WidgetPhotoLoader.keys.forEach { defaults.set("https://old.example.com/photo.jpg", forKey: $0) }
         try await model.firstgetUrl()
-        XCTAssertEqual(defaults.string(forKey: "first"), "https://example.com/photo.jpg")
+        XCTAssertEqual(defaults.string(forKey: "first"), directory.appendingPathComponent("widget-first.jpg").path)
+        let images = await WidgetPhotoLoader.loadImages(defaults: defaults, directory: directory)
+        XCTAssertEqual(images.count, 1)
         XCTAssertNil(defaults.string(forKey: "second"))
         repository.records = []
         try await model.firstgetUrl()

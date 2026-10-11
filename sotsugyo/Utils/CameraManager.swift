@@ -294,6 +294,8 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
             if !friendUid.isEmpty && friendUid != uid {
                 let friendPhoto = db.collection("users").document(friendUid).collection("folders").document("all").collection("photos").document(photo.documentID)
                 batch.setData(data, forDocument: friendPhoto)
+                let access = db.collection("users").document(friendUid).collection("imageAccess").document(imageName)
+                batch.setData(["ownerID": friendUid, "folderID": "all", "photoID": photo.documentID], forDocument: access)
             }
             try await batch.commit()
             if currentUserID() == uid { documentId = photo.documentID }
@@ -328,7 +330,10 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, ObservableObject {
 
          let storageRef = Storage.storage().reference().child("livephotos/\(livePhotoFileName).mov")
 
-         storageRef.putFile(from: movieURL, metadata: nil) { (metadata, error) in
+         guard let uid = Auth.auth().currentUser?.uid else { return }
+         let metadata = StorageMetadata()
+         metadata.customMetadata = ["ownerIDs": uid]
+         storageRef.putFile(from: movieURL, metadata: metadata) { (metadata, error) in
              if let error = error {
                  print("Error uploading Live Photo to Firebase Storage: \(error.localizedDescription)")
              } else {

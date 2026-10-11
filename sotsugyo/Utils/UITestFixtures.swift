@@ -33,7 +33,9 @@ struct UITestRootView: View {
     @StateObject private var camera = CameraManager()
 
     var body: some View {
-        if UITestFixtures.isSearch {
+        if ProcessInfo.processInfo.arguments.contains("-ui-testing-invite") {
+            FolderInvitationView(link: UITestInvitationRepository.link, repository: UITestInvitationRepository())
+        } else if UITestFixtures.isSearch {
             UITestSearchView()
         } else if UITestFixtures.isEditor {
             PhotoPreviewView(images: UITestFixtures.image(), isPresentingCamera: .constant(true), cameraManager: camera, friendUid: .constant(""))
@@ -122,5 +124,40 @@ final class UITestSettingViewModel: SettingViewModel {
     }
     override func deleteUser() { }
     override func reauthenticateWithPassword(password: String) { }
+}
+#endif
+
+#if DEBUG
+struct UITestInvitationRepository: FolderInvitationRepository {
+    static let link = FolderInviteLink(token: String(repeating: "a", count: 64))
+    static let shared = LiveSharedFolder(ownerID: "fixture-owner", folderID: "fixture-shared", title: "夏の旅行")
+    func create(folderID: String) async throws -> FolderInvitation { try await resolve(link: Self.link) }
+    func resolve(link: FolderInviteLink) async throws -> FolderInvitation {
+        if ProcessInfo.processInfo.arguments.contains("-ui-testing-invite-expired") { throw FolderInviteError.unavailable }
+        return FolderInvitation(link: link, folder: Self.shared, senderName: "さき", expiresAt: Date().addingTimeInterval(604800), isRevoked: false)
+    }
+    func join(invitation: FolderInvitation) async throws -> LiveSharedFolder {
+        if ProcessInfo.processInfo.arguments.contains("-ui-testing-invite-offline") { throw URLError(.notConnectedToInternet) }
+        try await Task.sleep(for: .milliseconds(350))
+        return Self.shared
+    }
+    func revoke(link: FolderInviteLink) async throws { }
+    func sharedFolders() async throws -> [LiveSharedFolder] { [Self.shared] }
+    func observe(_ folder: LiveSharedFolder) -> AsyncThrowingStream<SharedFolderUpdate, Error> {
+        AsyncThrowingStream { continuation in
+            continuation.yield(.folder(PhotoFolder(id: folder.folderID, title: folder.title, date: nil,
+                letter: "旅行の写真をまとめたよ。\nまたみんなで行こうね！")))
+            let photos = ProcessInfo.processInfo.arguments.contains("-ui-testing-invite-empty") ? [] : [PhotoRecord(id: "fixture", fileName: "fixture.jpg", date: Date(), music: nil, livePhotoFileName: "")]
+            continuation.yield(.photos(photos))
+            let update = Task {
+                if ProcessInfo.processInfo.arguments.contains("-ui-testing-invite-update") {
+                    try? await Task.sleep(for: .seconds(2))
+                    guard !Task.isCancelled else { return }
+                    continuation.yield(.folder(PhotoFolder(id: folder.folderID, title: folder.title, date: nil, letter: "旅行の写真を追加したよ。\nまたみんなで行こうね！")))
+                }
+            }
+            continuation.onTermination = { _ in update.cancel() }
+        }
+    }
 }
 #endif

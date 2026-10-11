@@ -1,10 +1,3 @@
-//
-//  FriendQRView.swift
-//  sotsugyo
-//
-//  Created by saki on 2023/12/18.
-//
-
 import SwiftUI
 import FirebaseAuth
 import CodeScanner
@@ -12,87 +5,66 @@ import CodeScanner
 struct FriendQRView: View {
     @Binding var isPresentingCamera: Bool
     @StateObject var cameraManager: CameraManager
-    @StateObject private var viewModel = FriendQRViewModel()
-    @Environment(\.dismiss) private var dismiss
     @Binding var isPresentingQR: Bool
-    @State var isPresentingQRCode =  false
-    
-    @State private var isPresentingScanner = false
-    @State private var qrCodeImage: UIImage?
     @State var friendUid: String
+    @State private var isPresentingScanner = false
+    @State private var isPresentingQRCode = false
+    @State private var qrCodeImage: UIImage?
+    @State private var error: String?
+    @State private var friendName: String?
+    @State private var isLoading = false
     private let qrCodeGenerator = QRCodeGenerator()
-    
-    var body: some View {
-        
-        
-        VStack {
-            if let qrCodeImage {
-                Image(uiImage: qrCodeImage)
-                    .resizable()
-                    .frame(width: 200, height: 200)
-            }
-            Button("QRコードを読み取る") {
-                
-                isPresentingScanner.toggle()
-                
-            }
-            .sheet(isPresented: $isPresentingScanner) {
-                CodeScannerView(codeTypes: [.qr], simulatedData: "Simulated QR Code") { result in
-                    handleScanResult(result)
-                }
-            }
-            .alert(isPresented: $viewModel.showAlert) {
-                Alert(
-                    title: Text(viewModel.confirmedUserID == nil ? "読み取れませんでした" : "相手を確認しました"),
-                    message: Text(viewModel.alertMessage),
-                    dismissButton: .default(Text("OK")){
-                        
-                        if viewModel.confirmedUserID != nil {
-                            isPresentingQRCode = true
-                        }
-                        
-                    }
-                )
-            }
-            .fullScreenCover(isPresented: $isPresentingQRCode) {
-                
-                CameraView(isPresentingCamera: $isPresentingQRCode, cameraManager: cameraManager, isPresentingSearch: .constant(true),friendUid: $friendUid)
-                
-            }
-            .onChange(of: isPresentingQRCode) { oldValue, newValue in
-                if oldValue && !newValue {
-                    isPresentingQR = false
-                }
-            }
-            
-            
-            
-        }
-        .onAppear{
-            if let currentUser = Auth.auth().currentUser {
-                let uid = currentUser.uid
-                qrCodeImage = qrCodeGenerator.generate(with: uid)
-            }
-        }
-        
-    }
-    
-    private func handleScanResult(_ result: Result<CodeScanner.ScanResult, CodeScanner.ScanError>) {
-        switch result {
-        case .success(let scanResult):
-            isPresentingScanner = false
 
-            Task {
-                if let uid = await viewModel.loadFriendProfile(uid: scanResult.string) {
-                    friendUid = uid
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                Text("一緒に撮る招待").font(.title2.bold())
+                Text("このコードを見せた相手から、写真を受け取れます。\nコードは15分間有効です。")
+                    .font(.subheadline).multilineTextAlignment(.center)
+                if let qrCodeImage { Image(uiImage: qrCodeImage).interpolation(.none).resizable().frame(width: 220, height: 220) }
+                if isLoading { ProgressView() }
+                if let error { Text(error).font(.footnote).foregroundStyle(.red) }
+                Button("コードを更新") { Task { await createCode() } }.disabled(isLoading)
+                Button("相手のQRコードを読み取る") {
+                    friendUid = ""; friendName = nil; error = nil
+                    isPresentingScanner = true
+                }
+                    .buttonStyle(.borderedProminent).disabled(isLoading)
+            }.padding(24)
+            .sheet(isPresented: $isPresentingScanner) {
+                CodeScannerView(codeTypes: [.qr]) { result in
+                    isPresentingScanner = false
+                    switch result {
+                    case .success(let scan):
+                        Task { @MainActor in
+                            isLoading = true
+                            defer { isLoading = false }
+                            do {
+                                let invitation = try await CameraInvitationService.accept(payload: scan.string)
+                                friendUid = invitation.ownerID; friendName = invitation.name
+                            } catch { self.error = "招待を確認できませんでした。最新のQRコードを読み取ってください。\n\(error.localizedDescription)" }
+                        }
+                    case .failure(let error): self.error = error.localizedDescription
+                    }
                 }
             }
-        case .failure(let error):
-            isPresentingScanner = false
-            viewModel.reportScanFailure(error)
+            .alert("相手を確認しました", isPresented: Binding(get: { friendName != nil }, set: { if !$0 { friendName = nil } })) {
+                Button("撮影する") { isPresentingQRCode = true }
+                Button("キャンセル", role: .cancel) { friendUid = "" }
+            } message: { Text("\(friendName ?? "")さんと撮ります。") }
+            .fullScreenCover(isPresented: $isPresentingQRCode) {
+                CameraView(isPresentingCamera: $isPresentingQRCode, cameraManager: cameraManager, isPresentingSearch: .constant(true), friendUid: $friendUid)
+            }
+            .onChange(of: isPresentingQRCode) { wasPresented, isPresented in
+                if wasPresented && !isPresented { isPresentingQR = false }
+            }
+            .task { await createCode() }
         }
+    }
+    @MainActor private func createCode() async {
+        isLoading = true; error = nil
+        defer { isLoading = false }
+        do { qrCodeImage = qrCodeGenerator.generate(with: try await CameraInvitationService.create().payload) }
+        catch { self.error = error.localizedDescription }
     }
 }
-
-
-

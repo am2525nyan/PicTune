@@ -20,6 +20,7 @@ class MainContentModel: ObservableObject {
 
     private let repository: any PhotoLibraryRepository
     private let currentUserID: () -> String?
+    private let widgetDirectory: URL?
     private let widgetDefaults: UserDefaults?
     private let reloadWidgets: () -> Void
     private var photoDataCache: [String: Data] = [:]
@@ -31,9 +32,11 @@ class MainContentModel: ObservableObject {
     init(repository: any PhotoLibraryRepository = FirebasePhotoLibraryRepository(),
          currentUserID: @escaping () -> String? = { Auth.auth().currentUser?.uid },
          widgetDefaults: UserDefaults? = UserDefaults(suiteName: "group.PIcTune"),
+         widgetDirectory: URL? = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.PIcTune"),
          reloadWidgets: @escaping () -> Void = { WidgetCenter.shared.reloadAllTimelines() }) {
         self.repository = repository
         self.currentUserID = currentUserID
+        self.widgetDirectory = widgetDirectory
         self.widgetDefaults = widgetDefaults
         self.reloadWidgets = reloadWidgets
     }
@@ -111,22 +114,18 @@ class MainContentModel: ObservableObject {
     }
 
     private func updateWidget(records: [PhotoRecord], requestID: UUID, userID: String) async {
-        let selected = Array(records.shuffled().prefix(3))
-        var urls: [String] = []
-        for record in selected {
-            guard isCurrentPhotoRequest(requestID, userID: userID) else { return }
-            do {
-                let url = try await repository.downloadURL(fileName: record.fileName)
-                guard isCurrentPhotoRequest(requestID, userID: userID) else { return }
-                urls.append(url.absoluteString)
-            } catch {
-                print("ウィジェット画像の取得に失敗しました: \(error)")
-            }
-        }
-        guard isCurrentPhotoRequest(requestID, userID: userID) else { return }
+        guard let directory = widgetDirectory, let defaults = widgetDefaults else { return }
+        let chosen = Array(records.shuffled().prefix(3))
         for (index, key) in WidgetPhotoLoader.keys.enumerated() {
-            if index < urls.count { widgetDefaults?.set(urls[index], forKey: key) }
-            else { widgetDefaults?.removeObject(forKey: key) }
+            guard isCurrentPhotoRequest(requestID, userID: userID) else { return }
+            guard index < chosen.count else { defaults.removeObject(forKey: key); continue }
+            do {
+                let data = try await imageData(fileName: chosen[index].fileName)
+                guard isCurrentPhotoRequest(requestID, userID: userID) else { return }
+                let destination = directory.appendingPathComponent("widget-\(key).jpg")
+                try data.write(to: destination, options: .atomic)
+                defaults.set(destination.path, forKey: key)
+            } catch { defaults.removeObject(forKey: key) }
         }
         reloadWidgets()
     }

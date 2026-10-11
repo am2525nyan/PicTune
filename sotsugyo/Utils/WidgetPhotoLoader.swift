@@ -1,34 +1,27 @@
 import Foundation
 import UIKit
 
-/// Shared by the app tests and the widget extension.
+/// Shared by the app tests and the widget extension. The app supplies authenticated image copies.
 enum WidgetPhotoLoader {
     static let keys = ["first", "second", "third"]
-    typealias Fetch = @Sendable (URLRequest) async throws -> (Data, URLResponse)
+    typealias Read = @Sendable (URL) async throws -> Data
 
     static func loadImages(defaults: UserDefaults? = UserDefaults(suiteName: "group.PIcTune"),
-                           fetch: @escaping Fetch = { try await URLSession.shared.data(for: $0) }) async -> [UIImage] {
+                           directory: URL? = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.PIcTune"),
+                           read: @escaping Read = { try Data(contentsOf: $0) }) async -> [UIImage] {
+        guard let directory else { return [] }
         let initialValues = keys.map { defaults?.string(forKey: $0) }
-        let urls = initialValues.compactMap { value -> URL? in
-            guard let value,
-                  let url = URL(string: value), url.scheme == "https",
-                  let host = url.host, !host.isEmpty else { return nil }
-            return url
+        let urls = zip(keys, initialValues).compactMap { key, value -> URL? in
+            let expected = directory.appendingPathComponent("widget-\(key).jpg")
+            guard value == expected.path else { return nil }
+            return expected
         }
 
-        // Fetch concurrently with a bounded timeout so a missing image cannot block the timeline.
         let data = await withTaskGroup(of: (Int, Data?).self) { group in
             for (index, url) in urls.enumerated() {
                 group.addTask {
-                    do {
-                        let request = URLRequest(url: url, timeoutInterval: 10)
-                        let (data, response) = try await fetch(request)
-                        guard let response = response as? HTTPURLResponse,
-                              (200..<300).contains(response.statusCode) else { return (index, nil) }
-                        return (index, data)
-                    } catch {
-                        return (index, nil)
-                    }
+                    do { return (index, try await read(url)) }
+                    catch { return (index, nil) }
                 }
             }
             var results: [(Int, Data)] = []
@@ -37,7 +30,7 @@ enum WidgetPhotoLoader {
             }
             return results.sorted { $0.0 < $1.0 }.map(\.1)
         }
-        // Logout and newer library updates invalidate downloads already in progress.
+        // Logout and newer library updates invalidate reads already in progress.
         guard initialValues == keys.map({ defaults?.string(forKey: $0) }) else { return [] }
         return data.compactMap { UIImage(data: $0) }
     }

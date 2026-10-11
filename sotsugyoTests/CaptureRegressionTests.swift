@@ -73,22 +73,13 @@ final class CaptureRegressionTests: XCTestCase {
         XCTAssertEqual(NFCSession.folderPayload(from: record), payload)
     }
 
-    func testNewNFCMessageCanBeReadByBothLegacyAndCurrentReaders() throws {
-        for uid in ["Alice", "friend", "0123456789"] {
-            let reference = SharedFolderReference(userID: uid, folderID: "existing-folder")
-            let message = NFCSession.folderMessage(for: reference)
-            XCTAssertEqual(message.records.count, 1)
-            // Reproduce the old reader, which joins all well-known raw UTF-8 payloads.
-            let legacyText = message.records.compactMap { record -> String? in
-                guard record.typeNameFormat == .nfcWellKnown else { return nil }
-                return record.wellKnownTypeURIPayload()?.absoluteString
-                    ?? String(data: record.payload, encoding: .utf8)
-            }.joined(separator: "\n\n")
-            XCTAssertEqual(legacyText, reference.payload)
-            XCTAssertEqual(SharedFolderReference(payload: legacyText), reference)
-            let record = try XCTUnwrap(message.records.first)
-            XCTAssertEqual(NFCSession.folderPayload(from: record), reference.payload)
-        }
+    func testInvitationNFCMessageRoundTripsAndRejectsUnrelatedURL() throws {
+        let link = FolderInviteLink(token: String(repeating: "a", count: 64))
+        let message = try NFCSession.invitationMessage(for: link.url)
+        XCTAssertEqual(message.records.count, 1)
+        let record = try XCTUnwrap(message.records.first)
+        XCTAssertEqual(NFCSession.folderPayload(from: record), link.url.absoluteString)
+        XCTAssertThrowsError(try NFCSession.invitationMessage(for: URL(string: "https://example.com")!))
     }
 
     func testStandardNFCHeaderWouldCorruptTheLegacyReadersUserID() throws {

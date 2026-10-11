@@ -56,10 +56,6 @@ struct SignInView: View {
             }
             
             .padding()
-            .sheet(isPresented: $viewModel.isShowSheet) {
-                LoginView(viewModel: viewModel)
-            }
         }
     }
 }
-
