@@ -30,31 +30,22 @@ struct SearchView: View {
         .scrollDismissesKeyboard(.interactively)
         .overlay { emptyState }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            HStack(spacing: 12) {
+            if viewModel.selection != nil {
                 selectionSummary
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Button {
-                    guard let selection = viewModel.selection else { return }
-                    selectedTrack = selection
-                    dismiss()
-                } label: {
-                    Text("追加")
-                        .fontWeight(.semibold)
-                        .frame(minWidth: 44, minHeight: 44)
-                }
-                .buttonStyle(.borderless)
-                .disabled(viewModel.selection == nil)
-                .accessibilityIdentifier("music.add")
-                .accessibilityHint("選択した曲を写真に追加して、写真編集に戻ります")
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color(uiColor: .systemBackground))
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 4)
-            .background(Color(uiColor: .systemBackground))
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) { addButton }
         }
         .tint(musicAccent)
         .navigationTitle("音楽を追加")
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $viewModel.searchText, prompt: "Apple Musicで曲名・アーティスト名を検索")
+        .modifier(KeepToolbarDuringSearch())
         .onSubmit(of: .search) { viewModel.remember(viewModel.query) }
         .confirmationDialog("検索履歴を消去しますか？", isPresented: $isConfirmingClearHistory, titleVisibility: .visible) {
             Button("履歴を消去", role: .destructive) { viewModel.clearHistory() }
@@ -65,23 +56,39 @@ struct SearchView: View {
         }
     }
 
+    private var addButton: some View {
+        Button {
+            guard let selection = viewModel.selection else { return }
+            selectedTrack = selection
+            dismiss()
+        } label: {
+            Text("追加")
+                .fontWeight(.semibold)
+                .frame(minWidth: 44, minHeight: 44)
+        }
+        .disabled(viewModel.selection == nil)
+        .accessibilityIdentifier("music.add")
+        .accessibilityHint("選択した曲を写真に追加して、写真編集に戻ります")
+    }
+
     @ViewBuilder
     private var selectionSummary: some View {
         if let track = viewModel.selection {
-            HStack(spacing: 8) {
-                MusicArtwork(track: track, size: 36)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(track.name).font(.subheadline.weight(.semibold)).lineLimit(1)
-                    Text(track.artist).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("選択した曲")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(musicAccent)
+                HStack(spacing: 8) {
+                    MusicArtwork(track: track, size: 36)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(track.name).font(.subheadline.weight(.semibold)).lineLimit(1)
+                        Text(track.artist).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                    }
                 }
             }
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("選択中の曲: \(track.name)、\(track.artist)")
             .accessibilityIdentifier("music.selection")
-        } else {
-            Text("曲を選択してください")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
         }
     }
 
@@ -143,16 +150,13 @@ struct SearchView: View {
                         } label: {
                             HStack(spacing: 12) {
                                 MusicArtwork(track: track)
-                                    .overlay(alignment: .bottomTrailing) {
-                                        if viewModel.selection?.selectionID == track.selectionID {
-                                            Image(systemName: "checkmark.circle.fill")
-                                                .foregroundStyle(musicAccent)
-                                                .background(Color(uiColor: .systemBackground), in: Circle())
-                                                .offset(x: 4, y: 4)
-                                                .accessibilityHidden(true)
-                                        }
-                                    }
                                 trackInfo(track)
+                                if viewModel.selection?.selectionID == track.selectionID {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.title3)
+                                        .foregroundStyle(musicAccent)
+                                        .accessibilityHidden(true)
+                                }
                             }
                             .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
                             .contentShape(Rectangle())
@@ -205,6 +209,17 @@ struct SearchView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct KeepToolbarDuringSearch: ViewModifier {
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.searchPresentationToolbarBehavior(.avoidHidingContent)
+        } else {
+            content
+        }
     }
 }
 
