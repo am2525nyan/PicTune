@@ -9,39 +9,75 @@ import Foundation
 import Observation
 import FirebaseAuth
 
-@Observable class AuthenticationManager {
+@MainActor @Observable class AuthenticationManager {
     private(set) var userID: String?
     var isSignIn: Bool { userID != nil }
-    private var handle: AuthStateDidChangeListenerHandle?
+    private(set) var isStartingSession = true
+    private(set) var startupError: String?
+    private var hasRestoredSession = false
+    private var isCreatingAnonymousUser = false
+    private let auth: Auth
+    private let saveProfile: (String, UserProfile) async throws -> Void
+    private var listener: AuthSessionListener?
 
-    init() {
-        userID = Auth.auth().currentUser?.uid
-        handle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
-            self?.userID = user?.uid
-            // Initialization belongs to the session, not the transient login sheet.
-            // The sheet can be dismissed before its own auth listener runs.
-            guard let user else { return }
-            let uid = user.uid
-            let profile = UserProfile(name: user.displayName, email: user.email)
-            Task {
-                do {
-                    try await UserAccountBootstrap.save(userID: uid, profile: profile)
-                } catch {
-                    print("プロフィールの初期化に失敗しました: \(error.localizedDescription)")
+    init(auth: Auth = Auth.auth(),
+         saveProfile: @escaping (String, UserProfile) async throws -> Void = {
+             try await UserAccountBootstrap.save(userID: $0, profile: $1)
+         }) {
+        self.auth = auth
+        self.saveProfile = saveProfile
+        userID = auth.currentUser?.uid
+        listener = AuthSessionListener(auth: auth) { [weak self] _, user in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.userID = user?.uid
+                let isInitialSession = !self.hasRestoredSession
+                self.hasRestoredSession = true
+                if let user {
+                    self.isStartingSession = false
+                    self.startupError = nil
+                    do {
+                        try await self.saveProfile(user.uid, UserProfile(name: user.displayName, email: user.email))
+                    } catch {
+                        print("プロフィールの初期化に失敗しました: \(error.localizedDescription)")
+                    }
+                } else if isInitialSession {
+                    // Wait for Firebase's first restoration callback before creating an account.
+                    await self.startAnonymously()
+                } else {
+                    // Explicit logout/deletion must leave the login screen available.
+                    self.isStartingSession = false
                 }
             }
         }
     }
 
-    deinit {
-        if let handle { Auth.auth().removeStateDidChangeListener(handle) }
-    }
-
-    func signOut() {
+    func startAnonymously() async {
+        guard auth.currentUser == nil, !isCreatingAnonymousUser else { return }
+        isCreatingAnonymousUser = true
+        isStartingSession = true
+        startupError = nil
+        defer {
+            isCreatingAnonymousUser = false
+            isStartingSession = false
+        }
         do {
-            try Auth.auth().signOut()
+            let result = try await auth.signInAnonymously()
+            userID = result.user.uid
         } catch {
-            print("ログアウトに失敗しました: \(error.localizedDescription)")
+            startupError = "利用を開始できませんでした。通信環境を確認して、もう一度お試しください。"
         }
     }
+}
+
+private final class AuthSessionListener {
+    private let auth: Auth
+    private let handle: AuthStateDidChangeListenerHandle
+
+    init(auth: Auth, listener: @escaping (Auth, User?) -> Void) {
+        self.auth = auth
+        handle = auth.addStateDidChangeListener(listener)
+    }
+
+    deinit { auth.removeStateDidChangeListener(handle) }
 }

@@ -117,6 +117,8 @@
 		3C11691477D27B0C212F5CC9 /* RepositoryIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90464E83B1C4F43E36E1F1BB /* RepositoryIntegrationTests.swift */; };
 		F029C4359D7BFEE149BBE9BE /* WidgetPhotoLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F93C54FD2CC8107AA34C14 /* WidgetPhotoLoader.swift */; };
 		33B0F7E8185B033B330DFAAD /* WidgetPhotoLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F93C54FD2CC8107AA34C14 /* WidgetPhotoLoader.swift */; };
+		A11000000000000000000102 /* AccountLinkingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11000000000000000000101 /* AccountLinkingModel.swift */; };
+		A11000000000000000000202 /* AccountLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11000000000000000000201 /* AccountLinkView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -248,6 +250,8 @@
 		0DFD148560E19A6673C03A0B /* LibraryRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryRegressionTests.swift; sourceTree = "<group>"; };
 		90464E83B1C4F43E36E1F1BB /* RepositoryIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryIntegrationTests.swift; sourceTree = "<group>"; };
 		52F93C54FD2CC8107AA34C14 /* WidgetPhotoLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPhotoLoader.swift; sourceTree = "<group>"; };
+		A11000000000000000000101 /* AccountLinkingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLinkingModel.swift; sourceTree = "<group>"; };
+		A11000000000000000000201 /* AccountLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLinkView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -339,6 +343,7 @@
 				723B0C162B6D216500239E95 /* TipKit */,
 				72D0C01E2B2CA35700456F96 /* main */,
 				72F226CC2AF8C496002BA0A6 /* CameraView.swift */,
+				A11000000000000000000201 /* AccountLinkView.swift */,
 				72CEE0E42B4D8BB900255428 /* SettingView.swift */,
 				72012FA32B0DACB600B5BD71 /* PhotoPreviewView.swift */,
 				72EC19472B300463002CA76B /* PencilView.swift */,
@@ -371,6 +376,7 @@
 			children = (
 				B7D5F131C4194313BA1BA6FE /* FolderInvitationModel.swift */,
 				AE82E22BB1FD6CFB64FCA67D /* FriendQRViewModel.swift */,
+				A11000000000000000000101 /* AccountLinkingModel.swift */,
 				728EFB4E2AEE303B008C079B /* LoginViewModel.swift */,
 				72576F722B16E5020064A362 /* MainContentModel.swift */,
 				72F226CA2AF8C3B4002BA0A6 /*  CameraPreviewModel.swift */,
@@ -789,6 +795,8 @@
 				72EB017E2B6E8C47007E0AED /* StampView.swift in Sources */,
 				725A56072B7BE6C000369FBD /* cameranowView.swift in Sources */,
 				725678D52B4C5C8D00D30460 /* ButtonView.swift in Sources */,
+				A11000000000000000000102 /* AccountLinkingModel.swift in Sources */,
+				A11000000000000000000202 /* AccountLinkView.swift in Sources */,
 				728EFB4F2AEE303C008C079B /* LoginViewModel.swift in Sources */,
 				728EFB092AEE1C10008C079B /* sotsugyoApp.swift in Sources */,
 				72BB5A4E2B4EF92700486FF3 /* ColorModel.swift in Sources */,

@@ -26,14 +26,41 @@ struct SettingView: View {
     @State private var isLoading = false
     @State private var hasLoadedProfile = false
     @State private var profileError: String?
+    @State private var linkingProvider: AccountProvider?
+    @State private var isShowingExistingLogin = false
+    private let onExistingLogin: () -> Void
 
-    init(viewModel: SettingViewModel? = nil) {
+    init(viewModel: SettingViewModel? = nil, onExistingLogin: @escaping () -> Void = {}) {
         _viewModel = StateObject(wrappedValue: viewModel ?? SettingViewModel())
         _hasLoadedProfile = State(initialValue: viewModel != nil)
+        self.onExistingLogin = onExistingLogin
     }
 
     var body: some View {
         Form {
+            Section {
+                LabeledContent("利用状態", value: viewModel.isAnonymous ? "匿名で利用中" : "連携済み")
+                    .accessibilityIdentifier("auth.accountStatus")
+                ForEach(AccountProvider.allCases) { provider in
+                    if viewModel.linkedProviderIDs.contains(provider.rawValue) {
+                        LabeledContent(provider.title, value: "連携済み")
+                            .accessibilityIdentifier("auth.linked.\(provider.rawValue)")
+                    } else {
+                        Button("\(provider.title)を連携") { linkingProvider = provider }
+                            .disabled(viewModel.isDeleting)
+                            .accessibilityIdentifier("auth.connect.\(provider.rawValue)")
+                    }
+                }
+            } header: {
+                Text("アカウント連携")
+            } footer: {
+                if viewModel.isAnonymous {
+                    Text("登録なしでご利用いただけます。機種変更後も思い出を引き継ぐには、いずれかの方法を連携してください。")
+                } else {
+                    Text("連携した方法で、同じアカウントにログインできます。")
+                }
+            }
+
             Section("プロフィール") {
                 if hasLoadedProfile {
                     Button {
@@ -78,10 +105,16 @@ struct SettingView: View {
             }
 
             Section {
-                Button("ログアウト") {
-                    isShowingLogout = true
+                Button("既存のアカウントでログイン") {
+                    isShowingExistingLogin = true
                 }
                 .disabled(viewModel.isDeleting)
+                if !viewModel.isAnonymous {
+                    Button("ログアウト") {
+                        isShowingLogout = true
+                    }
+                    .disabled(viewModel.isDeleting)
+                }
             }
 
             Section {
@@ -104,6 +137,28 @@ struct SettingView: View {
             NameEditView(name: viewModel.name) { name in
                 try await viewModel.saveName(name: name)
             }
+        }
+        .sheet(item: $linkingProvider) { provider in
+            AccountLinkView(provider: provider) {
+                viewModel.refreshAccount()
+                Task {
+                    do {
+                        try await viewModel.didLinkAccount()
+                        hasLoadedProfile = true
+                        profileError = nil
+                    } catch {
+                        profileError = "アカウントは連携されました。プロフィールを読み込むには再読み込みしてください。"
+                    }
+                }
+            }
+        }
+        .alert("既存のアカウントに切り替えますか？", isPresented: $isShowingExistingLogin) {
+            Button("キャンセル", role: .cancel) {}
+            Button("ログイン画面へ") { onExistingLogin() }
+        } message: {
+            Text(viewModel.isAnonymous
+                 ? "現在の匿名アカウントの写真や手紙は、既存のアカウントには移りません。切り替えると現在の匿名アカウントには戻れなくなります。現在のデータを引き継ぐ場合は、アカウント連携をご利用ください。"
+                 : "ログインに成功すると、選択したアカウントに切り替わります。データは統合されません。")
         }
         .alert("ログアウトしますか？", isPresented: $isShowingLogout) {
             Button("キャンセル", role: .cancel) {}

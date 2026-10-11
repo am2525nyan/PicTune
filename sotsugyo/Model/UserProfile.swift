@@ -16,7 +16,8 @@ struct UserProfile: Equatable {
 
     init(documentData: [String: Any], fallbackEmail: String? = nil) {
         name = documentData["name"] as? String
-        email = documentData["email"] as? String ?? fallbackEmail
+        let savedEmail = documentData["email"] as? String
+        email = savedEmail?.isEmpty == false ? savedEmail : fallbackEmail
     }
 
     func firestoreData(userID: String) -> [String: Any] {

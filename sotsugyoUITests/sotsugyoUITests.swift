@@ -3,6 +3,113 @@ import XCTest
 /// Exercises production views with local fixtures; screenshots are retained in the xcresult.
 final class sotsugyoUITests: XCTestCase {
     @MainActor
+    func testAnonymousLinkingAndSessionRestoration() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-auth-emulator", "-auth-reset-session", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 20))
+        app.tabBars.buttons["設定"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("匿名で利用中"))
+        XCTAssertFalse(app.buttons["ログアウト"].exists)
+        capture("auth-01-anonymous-settings", app: app)
+
+        app.buttons["auth.connect.apple.com"].tap()
+        XCTAssertTrue(app.buttons["auth.linkApple"].waitForExistence(timeout: 5))
+        capture("auth-02-apple-link", app: app)
+        app.buttons["キャンセル"].tap()
+        app.buttons["auth.connect.google.com"].tap()
+        XCTAssertTrue(app.buttons["auth.linkGoogle"].waitForExistence(timeout: 5))
+        capture("auth-03-google-link", app: app)
+        app.buttons["キャンセル"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("匿名で利用中"))
+
+        app.buttons["auth.connect.password"].tap()
+        XCTAssertTrue(app.textFields["auth.email"].waitForExistence(timeout: 5))
+        let email = "ui-\(UUID().uuidString.lowercased())@example.invalid"
+        app.textFields["auth.email"].tap()
+        app.textFields["auth.email"].typeText(email)
+        XCTAssertFalse(app.buttons["auth.linkEmail"].isEnabled)
+        app.secureTextFields["auth.password"].tap()
+        app.secureTextFields["auth.password"].typeText("Linked123!")
+        // Password AutoFill may populate the confirmation field as well.
+        if !app.buttons["auth.linkEmail"].isEnabled {
+            app.secureTextFields["auth.passwordConfirmation"].tap()
+            app.secureTextFields["auth.passwordConfirmation"].typeText("Linked123!")
+        }
+        capture("auth-04-email-link", app: app)
+        app.buttons["auth.linkEmail"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 15))
+        XCTAssertFalse(app.descendants(matching: .any)["auth.accountStatus"].label.contains("匿名で利用中"))
+        capture("auth-05-linked-settings", app: app)
+
+        app.terminate()
+        app.launchArguments.removeAll { $0 == "-auth-reset-session" }
+        app.launch()
+        XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 15))
+        app.tabBars.buttons["設定"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 10))
+        app.swipeUp()
+        XCTAssertTrue(app.staticTexts[email].exists)
+        app.buttons["ログアウト"].tap()
+        app.alerts.buttons["ログアウト"].tap()
+        XCTAssertTrue(app.buttons["既存のアカウントでログイン"].waitForExistence(timeout: 10))
+        capture("auth-06-signed-out", app: app)
+        app.buttons["既存のアカウントでログイン"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.existingLogin"].waitForExistence(timeout: 10))
+        capture("auth-07-existing-login", app: app)
+        app.buttons["メールアドレスでログイン"].tap()
+        XCTAssertTrue(app.textFields.firstMatch.waitForExistence(timeout: 5))
+        app.textFields.firstMatch.tap()
+        app.textFields.firstMatch.typeText(email)
+        app.buttons["次へ"].tap()
+        XCTAssertTrue(app.secureTextFields.firstMatch.waitForExistence(timeout: 5))
+        app.secureTextFields.firstMatch.tap()
+        app.secureTextFields.firstMatch.typeText("Linked123!")
+        app.buttons["ログイン"].tap()
+        XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 15))
+        app.tabBars.buttons["設定"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 10))
+    }
+
+    @MainActor
+    func testAnonymousExistingLoginRequiresConfirmationAndKeepsSheetOpen() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-auth-emulator", "-auth-reset-session", "-AppleLanguages", "(ja)"]
+        app.launch()
+        XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 20))
+        app.tabBars.buttons["設定"].tap()
+        app.swipeUp()
+        app.buttons["既存のアカウントでログイン"].tap()
+        XCTAssertTrue(app.alerts["既存のアカウントに切り替えますか？"].waitForExistence(timeout: 5))
+        app.alerts.buttons["キャンセル"].tap()
+        app.swipeDown()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("匿名で利用中"))
+        app.swipeUp()
+        app.buttons["既存のアカウントでログイン"].tap()
+        app.alerts.buttons["ログイン画面へ"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.existingLogin"].waitForExistence(timeout: 10))
+        capture("auth-08-existing-login-from-anonymous", app: app)
+    }
+
+    @MainActor
+    func testAnonymousAccountCanBeDeletedAndStartedAgain() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-auth-emulator", "-auth-reset-session", "-AppleLanguages", "(ja)"]
+        app.launch()
+        XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 20))
+        app.tabBars.buttons["設定"].tap()
+        app.swipeUp()
+        app.buttons["アカウントを削除"].tap()
+        app.alerts.buttons["削除"].tap()
+        XCTAssertTrue(app.buttons["auth.startAnonymous"].waitForExistence(timeout: 10))
+        app.buttons["auth.startAnonymous"].tap()
+        XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 15))
+        app.tabBars.buttons["設定"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("匿名で利用中"))
+    }
+
+    @MainActor
     func testInvitationOpeningAndLiveLetterUpdate() throws {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing", "-ui-testing-invite", "-ui-testing-invite-update", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]

@@ -1,5 +1,6 @@
 import SwiftUI
 import FirebaseAuthUI
+import GoogleSignIn
 
 struct MainContentView: View {
     @StateObject private var inviteRouter = FolderInviteRouter()
@@ -15,9 +16,13 @@ struct MainContentView: View {
     
     var body: some View {
         Group {
-            if authenticationManager.isSignIn == false {
+            if authenticationManager.isStartingSession && !authenticationManager.isSignIn {
+                ProgressView("準備しています…")
+            } else if authenticationManager.isSignIn == false {
                 NavigationStack {
-                    SignInView(viewModel: viewModel, Color: Color)
+                    SignInView(viewModel: viewModel, Color: Color,
+                               startupError: authenticationManager.startupError,
+                               startAnonymously: { await authenticationManager.startAnonymously() })
                 }
             } else {
                 TabView {
@@ -36,7 +41,7 @@ struct MainContentView: View {
                     }
 
                     NavigationStack {
-                        SettingView()
+                        SettingView(onExistingLogin: { viewModel.isShowSheet = true })
                     }
                     .tabItem {
                         Label("設定", systemImage: "gearshape")
@@ -53,7 +58,7 @@ struct MainContentView: View {
         }
         .onOpenURL { url in
             if url.scheme == "pictune" || url.host == FolderInviteLink.host { inviteRouter.open(url, signedIn: authenticationManager.isSignIn && !viewModel.isShowSheet && !isLoginSheetVisible) }
-            else { _ = FUIAuth.defaultAuthUI()?.handleOpen(url, sourceApplication: nil) }
+            else if !GIDSignIn.sharedInstance.handle(url) { _ = FUIAuth.defaultAuthUI()?.handleOpen(url, sourceApplication: nil) }
         }
         .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
             if let url = activity.webpageURL { inviteRouter.open(url, signedIn: authenticationManager.isSignIn && !viewModel.isShowSheet && !isLoginSheetVisible) }

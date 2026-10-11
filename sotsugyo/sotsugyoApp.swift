@@ -8,6 +8,9 @@
 import SwiftUI
 import FirebaseCore
 import FirebaseAuthUI
+import FirebaseAuth
+import FirebaseFirestore
+import GoogleSignIn
 import TipKit
 #if DEBUG
 import MusicKit
@@ -16,14 +19,36 @@ import AVFoundation
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-auth-emulator")
+            || ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+            let options = FirebaseOptions(googleAppID: "1:123456789:ios:abcdef", gcmSenderID: "123456789")
+            options.projectID = "demo-pictune-auth"
+            options.apiKey = "emulator-only"
+            FirebaseApp.configure(options: options)
+            Auth.auth().useEmulator(withHost: "127.0.0.1", port: 9099)
+            let database = Firestore.firestore()
+            let settings = database.settings
+            settings.host = "127.0.0.1:8187"
+            settings.isSSLEnabled = false
+            settings.cacheSettings = MemoryCacheSettings()
+            database.settings = settings
+            if ProcessInfo.processInfo.arguments.contains("-auth-reset-session") {
+                try? Auth.auth().signOut()
+            }
+        } else {
+            FirebaseApp.configure()
+        }
+        #else
         FirebaseApp.configure()
+        #endif
       
         return true
     }
     // MARK: URL Schemes
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
         let sourceApplication = options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String
-        if FUIAuth.defaultAuthUI()?.handleOpen(url, sourceApplication: sourceApplication) ?? false {
+        if GIDSignIn.sharedInstance.handle(url) || (FUIAuth.defaultAuthUI()?.handleOpen(url, sourceApplication: sourceApplication) ?? false) {
             return true
         }
         // other URL handling goes here.
