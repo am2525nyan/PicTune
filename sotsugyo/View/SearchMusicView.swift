@@ -49,7 +49,7 @@ struct SearchView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 4)
-            .background(.bar)
+            .background(Color(uiColor: .systemBackground))
         }
         .tint(musicAccent)
         .navigationTitle("音楽を追加")
