@@ -14,7 +14,7 @@ final class sotsugyoUITests: XCTestCase {
         capture("auth-01-anonymous-settings", app: app)
         app.buttons["auth.openAccount"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("登録せずに利用中"))
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("未ログイン"))
         XCTAssertFalse(app.buttons["ログアウト"].exists)
         capture("auth-11-anonymous-account", app: app)
 
@@ -26,7 +26,7 @@ final class sotsugyoUITests: XCTestCase {
         XCTAssertTrue(app.buttons["auth.linkGoogle"].waitForExistence(timeout: 5))
         capture("auth-03-google-link", app: app)
         app.navigationBars.buttons["アカウント"].tap()
-        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("登録せずに利用中"))
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("未ログイン"))
 
         app.buttons["auth.connect.password"].tap()
         XCTAssertTrue(app.textFields["auth.email"].waitForExistence(timeout: 5))
@@ -49,10 +49,10 @@ final class sotsugyoUITests: XCTestCase {
         XCTAssertTrue(app.buttons["auth.linkEmail"].isEnabled)
         app.buttons["auth.linkEmail"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 15))
-        XCTAssertFalse(app.descendants(matching: .any)["auth.accountStatus"].label.contains("登録せずに利用中"))
+        XCTAssertFalse(app.descendants(matching: .any)["auth.accountStatus"].label.contains("未ログイン"))
         capture("auth-12-linked-account", app: app)
         app.navigationBars.buttons["設定"].tap()
-        XCTAssertTrue(app.buttons["auth.openAccount"].label.contains("連携済み"))
+        XCTAssertTrue(app.buttons["auth.openAccount"].label.contains("ログイン済み"))
         capture("auth-05-linked-settings", app: app)
 
         app.terminate()
@@ -112,7 +112,7 @@ final class sotsugyoUITests: XCTestCase {
         app.buttons["auth.openExistingLogin"].tap()
         XCTAssertTrue(app.alerts["アカウントを切り替えますか？"].waitForExistence(timeout: 5))
         app.alerts.buttons["キャンセル"].tap()
-        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("登録せずに利用中"))
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("未ログイン"))
         app.buttons["auth.openExistingLogin"].tap()
         app.alerts.buttons["ログインへ進む"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["auth.existingLogin"].waitForExistence(timeout: 10))
@@ -137,7 +137,7 @@ final class sotsugyoUITests: XCTestCase {
         XCTAssertFalse(app.buttons["auth.connect.apple.com"].exists)
         capture("auth-01-anonymous-settings", app: app)
         app.buttons["auth.openAccount"].tap()
-        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("登録せずに利用中"))
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("未ログイン"))
     }
 
     @MainActor

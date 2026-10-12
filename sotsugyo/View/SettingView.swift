@@ -51,7 +51,7 @@ struct SettingView: View {
                         }
                     }
                 } label: {
-                    LabeledContent("アカウント", value: viewModel.isAnonymous ? "未連携" : "連携済み")
+                    LabeledContent("アカウント", value: viewModel.isAnonymous ? "未ログイン" : "ログイン済み")
                 }
                 .disabled(viewModel.isDeleting)
                 .accessibilityIdentifier("auth.openAccount")

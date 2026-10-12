@@ -10,7 +10,7 @@ struct AccountSettingsView: View {
     var body: some View {
         Form {
             Section {
-                LabeledContent("利用状況", value: viewModel.isAnonymous ? "登録せずに利用中" : "連携済み")
+                LabeledContent("利用状況", value: viewModel.isAnonymous ? "未ログイン" : "ログイン済み")
                     .accessibilityElement(children: .combine)
                     .accessibilityIdentifier("auth.accountStatus")
             }
