@@ -34,6 +34,27 @@ struct SettingView: View {
 
     var body: some View {
         Form {
+            Section {
+                NavigationLink {
+                    AccountSettingsView(viewModel: viewModel) {
+                        viewModel.refreshAccount()
+                        Task {
+                            do {
+                                try await viewModel.didLinkAccount()
+                                hasLoadedProfile = true
+                                profileError = nil
+                            } catch {
+                                profileError = "アカウントは連携されました。プロフィールを読み込むには再読み込みしてください。"
+                            }
+                        }
+                    }
+                } label: {
+                    LabeledContent("アカウント", value: viewModel.isAnonymous ? "未ログイン" : "ログイン済み")
+                }
+                .disabled(viewModel.isDeleting)
+                .accessibilityIdentifier("auth.openAccount")
+            }
+
             Section("プロフィール") {
                 if hasLoadedProfile {
                     Button {
@@ -66,7 +87,7 @@ struct SettingView: View {
                 }
             }
 
-            if hasLoadedProfile {
+            if hasLoadedProfile && !viewModel.mailAddress.isEmpty {
                 Section {
                     Text(viewModel.mailAddress.isEmpty ? "未登録" : viewModel.mailAddress)
                         .textSelection(.enabled)
@@ -77,11 +98,13 @@ struct SettingView: View {
                 }
             }
 
-            Section {
-                Button("ログアウト") {
-                    isShowingLogout = true
+            if !viewModel.isAnonymous {
+                Section {
+                    Button("ログアウト") {
+                        isShowingLogout = true
+                    }
+                    .disabled(viewModel.isDeleting)
                 }
-                .disabled(viewModel.isDeleting)
             }
 
             Section {

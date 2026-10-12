@@ -48,7 +48,9 @@ struct UITestRootView: View {
                 NavigationStack { FolderLibraryView(viewModel: folders) }
                     .tabItem { Label("フォルダ", systemImage: "folder") }
                 NavigationStack {
-                    SettingView(viewModel: UITestSettingViewModel(profile: UserProfile(name: "確認用ユーザー", email: "demo@example.com")))
+                    SettingView(viewModel: UITestSettingViewModel(
+                        profile: UserProfile(name: "確認用ユーザー", email: "demo@example.com"),
+                        isAnonymous: false, linkedProviderIDs: ["google.com"]))
                 }
                 .tabItem { Label("設定", systemImage: "gearshape") }
             }

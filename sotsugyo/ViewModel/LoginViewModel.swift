@@ -30,16 +30,18 @@ struct LoginView: UIViewControllerRepresentable {
             FUIEmailAuth()
         ]
         authUI!.providers = providers
+        // This screen signs into an existing account. Linking is handled in Settings.
+        authUI!.shouldAutoUpgradeAnonymousUsers = false
 
 
 
         // FirebaseUIを表示する
         let authViewController = authUI!.authViewController()
+        authViewController.view.accessibilityIdentifier = "auth.existingLogin"
 
 
         // デリゲートを設定
         authUI!.delegate = context.coordinator
-        context.coordinator.startListening()
         return authViewController
     }
 
@@ -51,13 +53,8 @@ struct LoginView: UIViewControllerRepresentable {
         Coordinator(viewModel: viewModel, onError: onError)
     }
 
-    static func dismantleUIViewController(_ uiViewController: UIViewController, coordinator: Coordinator) {
-        coordinator.stopListening()
-    }
-
     @MainActor class Coordinator: NSObject, FUIAuthDelegate {
         var viewModel: MainContentModel
-        var handle: AuthStateDidChangeListenerHandle?
         private let onError: (String) -> Void
 
         init(viewModel: MainContentModel, onError: @escaping (String) -> Void = { _ in }) {
@@ -86,31 +83,18 @@ struct LoginView: UIViewControllerRepresentable {
         }
 
 
-        func startListening() {
-            handle = Auth.auth().addStateDidChangeListener { [weak self] (_, user) in
-                if user != nil, let self {
-                    Task { @MainActor in
-                        self.viewModel.isShowSheet = false
-                    }
-
-
-                }
-            }
-        }
-        func stopListening() {
-            if let handle = handle {
-                Auth.auth().removeStateDidChangeListener(handle)
-                self.handle = nil
-            }
-        }
-
     }
 
 }
 /// Fill missing account fields without replacing an edited name or the library date.
 enum UserAccountBootstrap {
     static func missingProfileFields(existing: [String: Any], profile: UserProfile, userID: String) -> [String: Any] {
-        profile.firestoreData(userID: userID).filter { existing[$0.key] == nil }
+        var fields = profile.firestoreData(userID: userID).filter { existing[$0.key] == nil }
+        // Anonymous accounts have no email. Fill it on linking without overwriting edited names.
+        if (existing["email"] as? String)?.isEmpty == true, let email = profile.email, !email.isEmpty {
+            fields["email"] = email
+        }
+        return fields
     }
 
     static func save(userID: String, profile: UserProfile, database: Firestore? = nil) async throws {

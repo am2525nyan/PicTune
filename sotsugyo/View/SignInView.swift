@@ -10,6 +10,8 @@ import SwiftUI
 struct SignInView: View {
     @StateObject var viewModel: MainContentModel
     @StateObject var Color: ColorModel
+    var startupError: String?
+    var startAnonymously: () async -> Void = {}
     
     
     var body: some View {
@@ -27,11 +29,23 @@ struct SignInView: View {
                 .padding(.leading, 30)
         }
         VStack(alignment: .center){
+            if let startupError {
+                Text(startupError)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal)
+            }
+            Button("登録せずに始める") {
+                Task { await startAnonymously() }
+            }
+            .buttonStyle(.borderedProminent)
+            .accessibilityIdentifier("auth.startAnonymous")
+
             Button {
                 viewModel.isShowSheet.toggle()
                 
             } label: {
-                Text("Get Started")
+                Text("既存のアカウントでログイン")
                     .font(.custom("Roboto", size: 15))
                     .padding(.all, 4)
                     .frame(maxWidth: .infinity, alignment: .top)

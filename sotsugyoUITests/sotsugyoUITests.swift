@@ -3,6 +3,209 @@ import XCTest
 /// Exercises production views with local fixtures; screenshots are retained in the xcresult.
 final class sotsugyoUITests: XCTestCase {
     @MainActor
+    func testAnonymousLinkingAndSessionRestoration() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-auth-emulator", "-auth-reset-session", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 20))
+        app.tabBars.buttons["設定"].tap()
+        XCTAssertTrue(app.buttons["auth.openAccount"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["auth.connect.apple.com"].exists)
+        capture("auth-01-anonymous-settings", app: app)
+        app.buttons["auth.openAccount"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("未ログイン"))
+        XCTAssertFalse(app.buttons["ログアウト"].exists)
+        capture("auth-11-anonymous-account", app: app)
+
+        app.buttons["auth.connect.apple.com"].tap()
+        XCTAssertTrue(app.buttons["auth.linkApple"].waitForExistence(timeout: 5))
+        capture("auth-02-apple-link", app: app)
+        app.navigationBars.buttons["アカウント"].tap()
+        app.buttons["auth.connect.google.com"].tap()
+        XCTAssertTrue(app.buttons["auth.linkGoogle"].waitForExistence(timeout: 5))
+        capture("auth-03-google-link", app: app)
+        app.navigationBars.buttons["アカウント"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("未ログイン"))
+
+        app.buttons["auth.connect.password"].tap()
+        XCTAssertTrue(app.textFields["auth.email"].waitForExistence(timeout: 5))
+        capture("auth-04-email-link", app: app)
+        let email = "ui-\(UUID().uuidString.lowercased())@example.invalid"
+        app.textFields["auth.email"].tap()
+        app.textFields["auth.email"].typeText(email)
+        XCTAssertEqual(app.textFields["auth.email"].value as? String, email)
+        XCTAssertFalse(app.buttons["auth.linkEmail"].isEnabled)
+        app.secureTextFields["auth.password"].tap()
+        // iOS can replace the keyboard with its strong-password suggestion.
+        // Dismiss that system UI before entering our known test password.
+        if app.buttons["GenerateStrongPasswordButton"].waitForExistence(timeout: 2) {
+            app.buttons["xmark"].tap()
+        }
+        for character in "linkedpass" {
+            app.keys[String(character)].tap()
+        }
+        XCTAssertEqual((app.secureTextFields["auth.password"].value as? String)?.count, 10)
+        XCTAssertTrue(app.buttons["auth.linkEmail"].isEnabled)
+        app.buttons["auth.linkEmail"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 15))
+        XCTAssertFalse(app.descendants(matching: .any)["auth.accountStatus"].label.contains("未ログイン"))
+        capture("auth-12-linked-account", app: app)
+        app.navigationBars.buttons["設定"].tap()
+        XCTAssertTrue(app.buttons["auth.openAccount"].label.contains("ログイン済み"))
+        capture("auth-05-linked-settings", app: app)
+
+        app.terminate()
+        app.launchArguments.removeAll { $0 == "-auth-reset-session" }
+        app.launch()
+        XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 15))
+        app.tabBars.buttons["設定"].tap()
+        app.buttons["auth.openAccount"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 10))
+        app.navigationBars.buttons["設定"].tap()
+        XCTAssertTrue(app.staticTexts[email].exists)
+        app.buttons["ログアウト"].tap()
+        app.alerts.buttons["ログアウト"].tap()
+        XCTAssertTrue(app.buttons["既存のアカウントでログイン"].waitForExistence(timeout: 10))
+        capture("auth-06-signed-out", app: app)
+        app.buttons["既存のアカウントでログイン"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.existingLogin"].waitForExistence(timeout: 10))
+        capture("auth-07-existing-login", app: app)
+        app.buttons["メールアドレスでログイン"].tap()
+        XCTAssertTrue(app.textFields.firstMatch.waitForExistence(timeout: 5))
+        app.textFields.firstMatch.tap()
+        app.textFields.firstMatch.typeText(email)
+        app.buttons["次へ"].tap()
+        XCTAssertTrue(app.secureTextFields.firstMatch.waitForExistence(timeout: 5))
+        app.secureTextFields.firstMatch.tap()
+        app.secureTextFields.firstMatch.typeText("linkedpass")
+        app.buttons["ログイン"].tap()
+        // Do not save emulator-only credentials in the system password manager.
+        if app.buttons["Not Now"].waitForExistence(timeout: 5) {
+            // The save prompt is hosted in SafariViewService. Target that process
+            // so the tap is delivered to its sheet after FirebaseUI has closed.
+            let passwordService = XCUIApplication(bundleIdentifier: "com.apple.SafariViewService")
+            let notNow = passwordService.buttons["Not Now"]
+            XCTAssertTrue(notNow.waitForExistence(timeout: 5))
+            notNow.tap()
+            XCTAssertTrue(app.buttons["Not Now"].waitForNonExistence(timeout: 5))
+        }
+        XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 15))
+        // The new TabView's AX hit point can remain invalid after the system sheet
+        // closes. Tap the center of the actual tab frame to exercise the user gesture.
+        app.tabBars.buttons["設定"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(app.buttons["auth.openAccount"].waitForExistence(timeout: 10))
+        app.buttons["auth.openAccount"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 10))
+        app.navigationBars.buttons["設定"].tap()
+        capture("auth-10-signed-in-again", app: app)
+    }
+
+    @MainActor
+    func testExistingLoginUsesTheSameEmailEntryAndCanBeCancelled() async throws {
+        let email = "existing-ui-\(UUID().uuidString.lowercased())@example.invalid"
+        var request = URLRequest(url: URL(string: "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signUp?key=emulator-only")!)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONSerialization.data(withJSONObject: ["email": email, "password": "linkedpass", "returnSecureToken": true])
+        let (_, response) = try await URLSession.shared.data(for: request)
+        XCTAssertEqual((response as? HTTPURLResponse)?.statusCode, 200)
+
+        let app = XCUIApplication()
+        app.launchArguments = ["-auth-emulator", "-auth-reset-session", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 20))
+        app.tabBars.buttons["設定"].tap()
+        app.buttons["auth.openAccount"].tap()
+        XCTAssertFalse(app.buttons["auth.openExistingLogin"].exists)
+        app.buttons["auth.connect.password"].tap()
+        XCTAssertTrue(app.textFields["auth.email"].waitForExistence(timeout: 5))
+        app.textFields["auth.email"].tap()
+        app.textFields["auth.email"].typeText(email)
+        app.secureTextFields["auth.password"].tap()
+        app.secureTextFields["auth.password"].typeText("linkedpass")
+        XCTAssertEqual((app.secureTextFields["auth.password"].value as? String)?.count, 10)
+        app.buttons["auth.linkEmail"].tap()
+        let confirmation = app.alerts["登録済みのアカウントにログインしますか？"]
+        XCTAssertTrue(confirmation.waitForExistence(timeout: 10))
+        capture("auth-08-existing-login-confirmation", app: app)
+        confirmation.buttons["キャンセル"].tap()
+        app.navigationBars.buttons["アカウント"].tap()
+        dismissPasswordSavePrompt(app)
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("未ログイン"))
+
+        app.buttons["auth.connect.password"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(app.textFields["auth.email"].waitForExistence(timeout: 5))
+        app.textFields["auth.email"].tap()
+        app.textFields["auth.email"].typeText(email)
+        app.secureTextFields["auth.password"].tap()
+        app.secureTextFields["auth.password"].typeText("wrongpass1")
+        app.buttons["auth.linkEmail"].tap()
+        XCTAssertTrue(confirmation.waitForExistence(timeout: 10))
+        confirmation.buttons["ログイン"].tap()
+        XCTAssertTrue(app.alerts["認証できませんでした"].waitForExistence(timeout: 10))
+        capture("auth-15-existing-login-error", app: app)
+        app.alerts.buttons["閉じる"].tap()
+        app.navigationBars.buttons["アカウント"].tap()
+        dismissPasswordSavePrompt(app)
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("未ログイン"))
+
+        app.buttons["auth.connect.password"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(app.textFields["auth.email"].waitForExistence(timeout: 5))
+        app.textFields["auth.email"].tap()
+        app.textFields["auth.email"].typeText(email)
+        app.secureTextFields["auth.password"].tap()
+        app.secureTextFields["auth.password"].typeText("linkedpass")
+        app.buttons["auth.linkEmail"].tap()
+        XCTAssertTrue(confirmation.waitForExistence(timeout: 10))
+        confirmation.buttons["ログイン"].tap()
+        XCTAssertTrue(confirmation.waitForNonExistence(timeout: 10))
+        dismissPasswordSavePrompt(app)
+        XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 10))
+        app.tabBars.buttons["設定"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(app.buttons["auth.openAccount"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["auth.openAccount"].label.contains("ログイン済み"))
+        XCTAssertTrue(app.staticTexts[email].exists)
+        app.buttons["auth.openAccount"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 5))
+        capture("auth-14-existing-login-from-same-entry", app: app)
+    }
+
+    @MainActor
+    private func dismissPasswordSavePrompt(_ app: XCUIApplication) {
+        // iOS may offer to save a password when the form disappears, even after
+        // cancellation. Dismiss the system sheet before interacting with the app.
+        if app.buttons["Not Now"].waitForExistence(timeout: 5) {
+            let passwordService = XCUIApplication(bundleIdentifier: "com.apple.SafariViewService")
+            let notNow = passwordService.buttons["Not Now"]
+            XCTAssertTrue(notNow.waitForExistence(timeout: 5))
+            notNow.tap()
+            XCTAssertTrue(app.buttons["Not Now"].waitForNonExistence(timeout: 5))
+        }
+    }
+
+    @MainActor
+    func testAnonymousAccountCanBeDeletedAndStartedAgain() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-auth-emulator", "-auth-reset-session", "-AppleLanguages", "(ja)"]
+        app.launch()
+        XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 20))
+        app.tabBars.buttons["設定"].tap()
+        app.swipeUp()
+        app.buttons["アカウントを削除"].tap()
+        app.alerts.buttons["削除"].tap()
+        XCTAssertTrue(app.buttons["auth.startAnonymous"].waitForExistence(timeout: 10))
+        app.buttons["auth.startAnonymous"].tap()
+        XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 15))
+        app.tabBars.buttons["設定"].tap()
+        XCTAssertTrue(app.buttons["auth.openAccount"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["auth.connect.apple.com"].exists)
+        capture("auth-01-anonymous-settings", app: app)
+        app.buttons["auth.openAccount"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("未ログイン"))
+    }
+
+    @MainActor
     func testInvitationOpeningAndLiveLetterUpdate() throws {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing", "-ui-testing-invite", "-ui-testing-invite-update", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
@@ -285,6 +488,13 @@ final class sotsugyoUITests: XCTestCase {
     func testSettingsAndNameEditor() {
         let app = launch()
         app.tabBars.buttons["設定"].tap()
+        XCTAssertTrue(app.buttons["auth.openAccount"].waitForExistence(timeout: 5))
+        capture("auth-09-existing-user-settings", app: app)
+        app.buttons["auth.openAccount"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.linked.google.com"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["auth.connect.apple.com"].exists)
+        capture("auth-13-existing-user-account", app: app)
+        app.navigationBars.buttons["設定"].tap()
         XCTAssertTrue(app.staticTexts["demo@example.com"].waitForExistence(timeout: 5))
         capture("09-settings", app: app)
         app.buttons.containing(.staticText, identifier: "名前").firstMatch.tap()

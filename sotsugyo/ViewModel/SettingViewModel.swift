@@ -19,14 +19,18 @@ class SettingViewModel: ObservableObject {
     @Published private(set) var profile = UserProfile()
     @Published private(set) var isDeleting = false
     @Published var operationError: String?
+    @Published private(set) var isAnonymous: Bool
+    @Published private(set) var linkedProviderIDs: Set<String>
     let authorizationDelegate = AuthorizationDelegate()
     private var pendingDeletionUserID: String?
 
     var mailAddress: String { profile.email ?? "" }
     var name: String { profile.name ?? "" }
 
-    init(profile: UserProfile = UserProfile()) {
+    init(profile: UserProfile = UserProfile(), isAnonymous: Bool? = nil, linkedProviderIDs: Set<String>? = nil) {
         self.profile = profile
+        self.isAnonymous = isAnonymous ?? Auth.auth().currentUser?.isAnonymous ?? false
+        self.linkedProviderIDs = linkedProviderIDs ?? Set(Auth.auth().currentUser?.providerData.map(\.providerID) ?? [])
         authorizationDelegate.onCompletion = { [weak self] error in
             self?.isDeleting = false
             if let error { self?.operationError = error.localizedDescription }
@@ -35,6 +39,7 @@ class SettingViewModel: ObservableObject {
 
     func loadProfile() async throws {
         guard let currentUser = Auth.auth().currentUser else { throw AccountOperationError.signedOut }
+        refreshAccount()
         let document = try await Firestore.firestore()
             .collection("users").document(currentUser.uid)
             .collection("personal").document("info").getDocument()
@@ -55,7 +60,7 @@ class SettingViewModel: ObservableObject {
     }
 
     func logout() {
-        guard !isDeleting else { return }
+        guard !isDeleting, Auth.auth().currentUser?.isAnonymous != true else { return }
         do {
             try Auth.auth().signOut()
             GIDSignIn.sharedInstance.signOut()
@@ -75,7 +80,18 @@ class SettingViewModel: ObservableObject {
         pendingDeletionUserID = user.uid
         let providers = user.providerData.map(\.providerID)
         // A linked account must start only one reauthentication flow.
-        if providers.contains("apple.com") {
+        if user.isAnonymous {
+            isDeleting = true
+            Task {
+                defer { isDeleting = false }
+                do {
+                    guard Auth.auth().currentUser?.uid == user.uid else { throw AccountOperationError.signedOut }
+                    try await user.delete()
+                } catch {
+                    operationError = error.localizedDescription
+                }
+            }
+        } else if providers.contains("apple.com") {
             isDeleting = true
             authorizationDelegate.deleteCurrentUser(user)
         } else if providers.contains("password") {
@@ -144,10 +160,27 @@ class SettingViewModel: ObservableObject {
             .flatMap(\.windows).first(where: \.isKeyWindow)
     }
 
-    private static var presentationController: UIViewController? {
+    static var presentationController: UIViewController? {
         var controller = presentationWindow?.rootViewController
         while let presented = controller?.presentedViewController { controller = presented }
         return controller
+    }
+
+    func refreshAccount() {
+        let user = Auth.auth().currentUser
+        isAnonymous = user?.isAnonymous ?? false
+        linkedProviderIDs = Set(user?.providerData.map(\.providerID) ?? [])
+    }
+
+    func didLinkAccount() async throws {
+        guard let user = Auth.auth().currentUser else { throw AccountOperationError.signedOut }
+        refreshAccount()
+        // Update the display immediately, even when the profile write needs a later retry.
+        if profile.email?.isEmpty != false { profile.email = user.email }
+        try await UserAccountBootstrap.save(userID: user.uid,
+                                            profile: UserProfile(name: user.displayName, email: user.email))
+        guard Auth.auth().currentUser?.uid == user.uid else { throw AccountOperationError.signedOut }
+        try await loadProfile()
     }
 }
 
