@@ -1,5 +1,4 @@
 import SwiftUI
-import FirebaseAuth
 import CodeScanner
 
 struct FriendQRView: View {
@@ -7,64 +6,265 @@ struct FriendQRView: View {
     @StateObject var cameraManager: CameraManager
     @Binding var isPresentingQR: Bool
     @State var friendUid: String
-    @State private var isPresentingScanner = false
+
+    private enum Mode: String, CaseIterable {
+        case scan = "読み取る"
+        case show = "見せる"
+    }
+
+    private let createInvitation: () async throws -> CameraInvitation
+    private let acceptInvitation: (String) async throws -> CameraInvitation
+    private let qrCodeGenerator = QRCodeGenerator()
+    @State private var mode: Mode = .scan
+    @State private var scannerID = UUID()
     @State private var isPresentingQRCode = false
     @State private var qrCodeImage: UIImage?
-    @State private var error: String?
+    @State private var codeError: String?
+    @State private var scanError: String?
+    @State private var needsCameraAccess = false
     @State private var friendName: String?
-    @State private var isLoading = false
-    private let qrCodeGenerator = QRCodeGenerator()
+    @State private var isCreatingCode = false
+    @State private var isCheckingCode = false
+
+    init(isPresentingCamera: Binding<Bool>, cameraManager: CameraManager,
+         isPresentingQR: Binding<Bool>, friendUid: String,
+         createInvitation: @escaping () async throws -> CameraInvitation = CameraInvitationService.create,
+         acceptInvitation: @escaping (String) async throws -> CameraInvitation = CameraInvitationService.accept) {
+        _isPresentingCamera = isPresentingCamera
+        _cameraManager = StateObject(wrappedValue: cameraManager)
+        _isPresentingQR = isPresentingQR
+        _friendUid = State(initialValue: friendUid)
+        self.createInvitation = createInvitation
+        self.acceptInvitation = acceptInvitation
+    }
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 24) {
-                Text("一緒に撮る招待").font(.title2.bold())
-                Text("このコードを見せた相手から、写真を受け取れます。\nコードは15分間有効です。")
-                    .font(.subheadline).multilineTextAlignment(.center)
-                if let qrCodeImage { Image(uiImage: qrCodeImage).interpolation(.none).resizable().frame(width: 220, height: 220) }
-                if isLoading { ProgressView() }
-                if let error { Text(error).font(.footnote).foregroundStyle(.red) }
-                Button("コードを更新") { Task { await createCode() } }.disabled(isLoading)
-                Button("相手のQRコードを読み取る") {
-                    friendUid = ""; friendName = nil; error = nil
-                    isPresentingScanner = true
-                }
-                    .buttonStyle(.borderedProminent).disabled(isLoading)
-            }.padding(24)
-            .sheet(isPresented: $isPresentingScanner) {
-                CodeScannerView(codeTypes: [.qr]) { result in
-                    isPresentingScanner = false
-                    switch result {
-                    case .success(let scan):
-                        Task { @MainActor in
-                            isLoading = true
-                            defer { isLoading = false }
-                            do {
-                                let invitation = try await CameraInvitationService.accept(payload: scan.string)
-                                friendUid = invitation.ownerID; friendName = invitation.name
-                            } catch { self.error = "招待を確認できませんでした。最新のQRコードを読み取ってください。\n\(error.localizedDescription)" }
+            ScrollView {
+                VStack(spacing: 24) {
+                    Picker("QRコードの使い方", selection: $mode) {
+                        ForEach(Mode.allCases, id: \.self) { mode in
+                            Text(mode.rawValue).tag(mode)
                         }
-                    case .failure(let error): self.error = error.localizedDescription
                     }
+                    .pickerStyle(.segmented)
+                    .accessibilityIdentifier("qr.mode")
+                    .disabled(isCheckingCode)
+
+                    if mode == .scan { scanContent }
+                    else { showContent }
+                }
+                .frame(maxWidth: 440)
+                .frame(maxWidth: .infinity)
+                .padding(24)
+            }
+            .background(Color(uiColor: .systemGroupedBackground))
+            .navigationTitle("一緒に撮る")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("閉じる") { isPresentingQR = false }
                 }
             }
-            .alert("相手を確認しました", isPresented: Binding(get: { friendName != nil }, set: { if !$0 { friendName = nil } })) {
-                Button("撮影する") { isPresentingQRCode = true }
-                Button("キャンセル", role: .cancel) { friendUid = "" }
-            } message: { Text("\(friendName ?? "")さんと撮ります。") }
+            .safeAreaInset(edge: .bottom) {
+                if mode == .scan, friendName != nil {
+                    Button { isPresentingQRCode = true } label: {
+                        Text("撮影する")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, minHeight: 52)
+                    }
+                        .buttonStyle(.borderedProminent)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .background(.bar)
+                        .accessibilityIdentifier("qr.takePhoto")
+                }
+            }
             .fullScreenCover(isPresented: $isPresentingQRCode) {
-                CameraView(isPresentingCamera: $isPresentingQRCode, cameraManager: cameraManager, isPresentingSearch: .constant(true), friendUid: $friendUid)
+                CameraView(isPresentingCamera: $isPresentingQRCode, cameraManager: cameraManager,
+                           isPresentingSearch: .constant(true), friendUid: $friendUid)
             }
             .onChange(of: isPresentingQRCode) { wasPresented, isPresented in
                 if wasPresented && !isPresented { isPresentingQR = false }
             }
-            .task { await createCode() }
+            .onChange(of: mode) { _, newMode in
+                if newMode == .scan {
+                    scannerID = UUID()
+                } else if qrCodeImage == nil {
+                    Task { await createCode() }
+                }
+            }
+        }
+        .tint(GiftPalette.purple)
+    }
+
+    private var scanContent: some View {
+        VStack(spacing: 16) {
+            if let friendName {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 48))
+                    .foregroundStyle(GiftPalette.purpleText)
+                    .accessibilityHidden(true)
+                Text("\(friendName)さんと撮影")
+                    .font(.title2.bold())
+                    .accessibilityIdentifier("qr.confirmedName")
+                Text("撮影した写真を相手にも届けます。")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Button("別のコードを読み取る") { resetScanner() }
+                    .padding(.top, 8)
+            } else if isCheckingCode {
+                ProgressView("招待を確認しています…")
+                    .frame(maxWidth: .infinity, minHeight: 320)
+            } else if let scanError {
+                ContentUnavailableView("読み取れませんでした", systemImage: "qrcode.viewfinder",
+                                       description: Text(scanError))
+                    .accessibilityIdentifier("qr.scanError")
+                if needsCameraAccess {
+                    Button("設定を開く") {
+                        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+                        UIApplication.shared.open(url)
+                    }
+                    .buttonStyle(.borderedProminent)
+                } else {
+                    Button("もう一度読み取る") { resetScanner() }
+                        .buttonStyle(.borderedProminent)
+                        .accessibilityIdentifier("qr.retry")
+                }
+            } else {
+                Text("友達のQRコードを枠に合わせてください")
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+                #if targetEnvironment(simulator)
+                ContentUnavailableView("カメラを使用できません", systemImage: "camera",
+                                       description: Text("QRコードの読み取りは実機で確認してください。"))
+                    .frame(maxWidth: .infinity, minHeight: 320)
+                #if DEBUG
+                if UITestFixtures.isEnabled && ProcessInfo.processInfo.arguments.contains("-ui-testing-qr") {
+                    Button("読み取りを試す") {
+                        Task { await checkCode("ui-test-code") }
+                    }
+                    .accessibilityIdentifier("qr.simulateScan")
+                }
+                #endif
+                #else
+                CodeScannerView(codeTypes: [.qr], scanMode: .once, showViewfinder: true,
+                                requiresPhotoOutput: false) { result in
+                    switch result {
+                    case .success(let scan):
+                        Task { await checkCode(scan.string) }
+                    case .failure(let error):
+                        needsCameraAccess = { if case .permissionDenied = error { return true }; return false }()
+                        scanError = needsCameraAccess
+                            ? "カメラへのアクセスを許可してください。"
+                            : "カメラを使用できません。もう一度お試しください。"
+                    }
+                }
+                .id(scannerID)
+                .frame(height: 320)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .accessibilityLabel("QRコード読み取りカメラ")
+                #endif
+                Text("読み取ると、撮影相手を確認できます。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var showContent: some View {
+        VStack(spacing: 16) {
+            Text("このQRコードを友達に見せてください")
+                .font(.headline)
+                .multilineTextAlignment(.center)
+            if let qrCodeImage {
+                Image(uiImage: qrCodeImage)
+                    .interpolation(.none)
+                    .resizable()
+                    .frame(width: 236, height: 236)
+                    .padding(20)
+                    .background(.white, in: RoundedRectangle(cornerRadius: 20))
+                    .accessibilityLabel("友達に見せる招待QRコード")
+                    .accessibilityIdentifier("qr.code")
+            } else if isCreatingCode {
+                ProgressView("QRコードを作成しています…")
+                    .frame(maxWidth: .infinity, minHeight: 276)
+            }
+            if let codeError {
+                Text(codeError)
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+                    .multilineTextAlignment(.center)
+                    .accessibilityIdentifier("qr.codeError")
+            } else {
+                Text("友達が読み取ると、一緒に撮った写真を受け取れます。\nQRコードは15分間有効です。")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            if !isCreatingCode {
+                Button(qrCodeImage == nil ? "もう一度作成する" : "QRコードを更新") {
+                    Task { await createCode() }
+                }
+                .accessibilityIdentifier("qr.refresh")
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    @MainActor private func checkCode(_ payload: String) async {
+        guard !isCheckingCode, friendName == nil, scanError == nil else { return }
+        isCheckingCode = true
+        defer { isCheckingCode = false }
+        do {
+            let invitation = try await acceptInvitation(payload)
+            guard !Task.isCancelled, mode == .scan else { return }
+            friendUid = invitation.ownerID
+            friendName = invitation.name
+        } catch {
+            guard !Task.isCancelled, mode == .scan else { return }
+            if let invitationError = error as? FolderInviteError {
+                switch invitationError {
+                case .invalidLink:
+                    scanError = "PicTuneの撮影用QRコードを読み取ってください。"
+                case .unavailable:
+                    scanError = "このQRコードは期限切れか使用できません。友達に新しいコードを表示してもらってください。"
+                default:
+                    scanError = invitationError.localizedDescription
+                }
+            } else {
+                scanError = "招待を確認できませんでした。通信状態を確認して、もう一度お試しください。"
+            }
         }
     }
+
+    private func resetScanner() {
+        friendUid = ""
+        friendName = nil
+        scanError = nil
+        needsCameraAccess = false
+        scannerID = UUID()
+    }
+
     @MainActor private func createCode() async {
-        isLoading = true; error = nil
-        defer { isLoading = false }
-        do { qrCodeImage = qrCodeGenerator.generate(with: try await CameraInvitationService.create().payload) }
-        catch { self.error = error.localizedDescription }
+        guard !isCreatingCode else { return }
+        isCreatingCode = true
+        qrCodeImage = nil
+        codeError = nil
+        defer { isCreatingCode = false }
+        do {
+            let invitation = try await createInvitation()
+            guard !Task.isCancelled else { return }
+            guard let image = qrCodeGenerator.generate(with: invitation.payload) else {
+                codeError = "QRコードを作成できませんでした。もう一度お試しください。"
+                return
+            }
+            qrCodeImage = image
+        } catch {
+            guard !Task.isCancelled else { return }
+            codeError = "QRコードを作成できませんでした。通信状態を確認して、もう一度お試しください。"
+        }
     }
 }

@@ -14,15 +14,15 @@ struct ButtonView: View {
         .labelStyle(.iconOnly)
         .accessibilityLabel("撮影")
         .popoverTip(CameraTip())
-        .alert("コード交換", isPresented: $showQRAlart) {
-            Button("しない") {
+        .confirmationDialog("撮影方法を選択", isPresented: $showQRAlart, titleVisibility: .visible) {
+            Button("一人で撮る") {
                 isPresentingCamera = true
             }
-            Button("する") {
+            Button("友達と撮る") {
                 isPresentingQR = true
             }
         } message: {
-            Text("一緒のお友達のコードを読み込みますか？")
+            Text("友達と撮る場合は、QRコードを読み取るか見せてください。")
         }
     }
 }

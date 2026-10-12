@@ -206,6 +206,49 @@ final class sotsugyoUITests: XCTestCase {
     }
 
     @MainActor
+    func testCameraEntryAndDismissal() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        app.buttons["撮影"].tap()
+        XCTAssertTrue(app.buttons["一人で撮る"].waitForExistence(timeout: 5))
+        app.buttons["友達と撮る"].tap()
+        XCTAssertTrue(app.staticTexts["友達のQRコードを枠に合わせてください"].waitForExistence(timeout: 5))
+        app.buttons["閉じる"].tap()
+        XCTAssertTrue(app.buttons["撮影"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testCameraQRCodeFlow() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-ui-testing-qr", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        XCTAssertTrue(app.buttons["qr.simulateScan"].waitForExistence(timeout: 10))
+        attachScreenshot("QRコード読み取り")
+        app.buttons["qr.simulateScan"].tap()
+        XCTAssertTrue(app.staticTexts["qr.confirmedName"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["qr.takePhoto"].exists)
+        attachScreenshot("撮影相手の確認")
+        app.buttons["別のコードを読み取る"].tap()
+        XCTAssertTrue(app.buttons["qr.simulateScan"].waitForExistence(timeout: 5))
+        app.buttons["見せる"].tap()
+        XCTAssertTrue(app.images["qr.code"].waitForExistence(timeout: 5))
+        attachScreenshot("友達に見せるQRコード")
+    }
+
+    @MainActor
+    func testExpiredCameraQRCodeCanRetry() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-ui-testing-qr", "-ui-testing-qr-expired", "-AppleLanguages", "(ja)"]
+        app.launch()
+        app.buttons["qr.simulateScan"].tap()
+        XCTAssertTrue(app.staticTexts["qr.scanError"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["qr.takePhoto"].exists)
+        app.buttons["qr.retry"].tap()
+        XCTAssertTrue(app.buttons["qr.simulateScan"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
     func testInvitationOpeningAndLiveLetterUpdate() throws {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing", "-ui-testing-invite", "-ui-testing-invite-update", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]

@@ -38,6 +38,7 @@ struct ContentView: View {
         }
         .sheet(isPresented: $isPresentingQR) {
             FriendQRView(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingQR: $isPresentingQR, friendUid: "")
+                .presentationDetents([.large])
         }
         .onAppear {
             Task {
