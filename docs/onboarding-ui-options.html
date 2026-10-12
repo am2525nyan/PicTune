@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>PicTune 初回体験 UI 比較</title>
+  <style>
+    :root {
+      --ink: #25213b;
+      --muted: #615b6d;
+      --purple: #59459f;
+      --lilac: #f7f2ff;
+      --line: #e4ddeb;
+      --cream: #fff8ee;
+      --rose: #b95e7a;
+      --page: #f3f1f5;
+      --paper: #fffdfb;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      color: var(--ink);
+      background: var(--page);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button { font: inherit; cursor: pointer; }
+    .page { max-width: 1250px; margin: auto; padding: 36px 24px 72px; }
+    .eyebrow { color: var(--purple); font-size: 12px; font-weight: 800; letter-spacing: .13em; }
+    h1 { font-size: clamp(27px, 3vw, 40px); line-height: 1.2; letter-spacing: -.04em; margin: 10px 0 12px; }
+    .intro { color: var(--muted); line-height: 1.8; margin: 0; max-width: 760px; }
+    .switcher { display: flex; gap: 8px; flex-wrap: wrap; margin: 26px 0 30px; }
+    .switcher button { border: 1px solid var(--line); color: var(--ink); background: white; border-radius: 999px; padding: 10px 18px; min-height: 44px; font-weight: 700; }
+    .switcher button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: white; }
+    .proposal { background: white; border: 1px solid var(--line); border-radius: 24px; padding: 26px; margin: 0 0 24px; box-shadow: 0 12px 36px #2b21400a; }
+    .proposal[hidden] { display: none; }
+    .proposal-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; margin-bottom: 24px; }
+    .proposal h2 { font-size: 25px; letter-spacing: -.04em; margin: 5px 0 7px; }
+    .proposal-head p { margin: 0; color: var(--muted); line-height: 1.65; max-width: 660px; }
+    .badge { align-self: start; border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .badge-a { color: #59459f; background: #eee8fb; }
+    .badge-b { color: #8b5264; background: #fceef1; }
+    .badge-c { color: #296b69; background: #e5f4f2; }
+    .phones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; justify-items: center; align-items: start; }
+    .phone-group { width: 100%; max-width: 365px; }
+    .screen-label { font-size: 13px; font-weight: 800; color: var(--muted); margin: 0 0 11px; text-align: center; }
+    .phone { position: relative; width: 100%; aspect-ratio: 365 / 760; overflow: hidden; border: 8px solid #21202a; border-radius: 47px; box-shadow: 0 17px 35px #201a2b21; background: white; }
+    .phone::after { content: ""; position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); width: 112px; height: 4px; border-radius: 8px; background: #272530; z-index: 10; }
+    .island { position: absolute; z-index: 10; top: 8px; left: 50%; transform: translateX(-50%); background: #1e1c23; border-radius: 20px; width: 100px; height: 27px; }
+    .status { position: absolute; z-index: 10; top: 15px; left: 25px; right: 22px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 800; letter-spacing: -.03em; color: #28262f; }
+    .status .right { letter-spacing: .08em; }
+    .screen { height: 100%; padding: 58px 22px 31px; display: flex; flex-direction: column; overflow: hidden; }
+    .brand { font-size: 16px; font-weight: 900; letter-spacing: .01em; }
+    .screen h3 { margin: 0; font-size: clamp(25px, 2.4vw, 29px); letter-spacing: -.065em; line-height: 1.3; }
+    .screen p { line-height: 1.6; }
+    .cta { width: 100%; min-height: 52px; display: grid; place-items: center; border: 0; border-radius: 14px; background: var(--purple); color: white; font-size: 15px; font-weight: 800; box-shadow: 0 5px 10px #49358420; }
+    .secondary-link { text-align: center; color: var(--muted); font-weight: 700; font-size: 13px; padding: 17px 0 6px; }
+    .screen-bottom { margin-top: auto; }
+    .tabbar { display: flex; justify-content: space-around; align-items: center; height: 66px; margin: auto -22px -23px; border-top: 1px solid #eae7ec; background: #fffefa; }
+    .tab-item { display: grid; place-items: center; gap: 1px; color: #77717d; font-size: 10px; font-weight: 700; }
+    .tab-item.active { color: var(--purple); }
+    .tab-item .sym { font-size: 22px; line-height: 1; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; }
+    .topbar .camera-sym { color: var(--purple); font-size: 22px; }
+    .tiny-label { display: inline-block; color: var(--purple); font-weight: 800; font-size: 11px; letter-spacing: .07em; }
+    .photo-scene { position: relative; width: 100%; height: 100%; overflow: hidden; background: #c9d9dc; }
+    .photo-scene .sky { position: absolute; inset: 0 0 36%; background: #bfd8dc; }
+    .photo-scene .sun { position: absolute; width: 72px; height: 72px; border-radius: 50%; top: 21%; right: 16%; background: #f6d68b; }
+    .photo-scene .hill-one { position: absolute; width: 160%; height: 47%; left: -32%; bottom: -10%; border-radius: 50% 50% 0 0; transform: rotate(-12deg); background: #7f9b93; }
+    .photo-scene .hill-two { position: absolute; width: 130%; height: 29%; right: -35%; bottom: -9%; border-radius: 50% 50% 0 0; transform: rotate(13deg); background: #aebbad; }
+    .photo-scene .glow { position: absolute; width: 24%; height: 40%; left: 7%; top: 20%; background: #ffffff66; filter: blur(18px); transform: rotate(20deg); }
+    .cheki { background: #fffdf9; padding: 9px 9px 35px; box-shadow: 0 13px 30px #201a2b24; }
+    .cheki .photo-scene { aspect-ratio: 1 / 1.08; }
+    .cheki-caption { color: #847a85; font-family: Georgia, serif; font-size: 11px; text-align: center; padding-top: 12px; letter-spacing: .03em; }
+    .track { display: flex; align-items: center; gap: 10px; border-radius: 14px; background: #fff; padding: 11px 12px; box-shadow: 0 6px 17px #2f234319; color: #292339; }
+    .track .note { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; background: #f0eafa; color: var(--purple); font-weight: 900; font-size: 20px; }
+    .track strong { display: block; font-size: 12px; }
+    .track small { color: #827c8b; font-size: 10px; }
+
+    /* A — 写真そのものを入口に据える */
+    .a-welcome { background: var(--lilac); }
+    .a-welcome .brand { color: var(--purple); }
+    .a-hero { position: relative; flex: 1; min-height: 0; display: grid; place-items: center; margin: 10px 0 8px; }
+    .a-hero .cheki { width: 64%; max-width: 205px; transform: rotate(-6deg) translate(-7px, -2px); }
+    .a-hero .track { position: absolute; right: -3px; bottom: 12%; transform: rotate(5deg); width: 56%; }
+    .a-welcome h3 { color: var(--ink); }
+    .a-welcome .copy { font-size: 13px; color: var(--muted); margin: 9px 0 22px; }
+    .a-empty { background: #fffefa; }
+    .a-empty h3 { font-size: 28px; margin-top: 9px; }
+    .a-empty .empty-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 8px 15px; text-align: center; }
+    .a-empty .empty-center .cheki { width: 49%; max-width: 160px; transform: rotate(6deg); opacity: .92; }
+    .a-empty .empty-center h4 { margin: 28px 0 6px; font-size: 20px; letter-spacing: -.05em; }
+    .a-empty .empty-center p { margin: 0; font-size: 12px; color: var(--muted); }
+    .a-empty .cta { margin-bottom: 18px; }
+
+    /* B — 手紙を開く温かさを中心に */
+    .b-welcome { background: var(--cream); }
+    .b-welcome .brand { color: #95566b; }
+    .b-hero { flex: 1; position: relative; display: grid; place-items: center; min-height: 0; }
+    .envelope { position: relative; width: 70%; height: 155px; border-radius: 6px 6px 13px 13px; background: #e7b8c5; box-shadow: 0 17px 29px #7047522d; transform: rotate(-5deg); }
+    .envelope::before { content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 100%; clip-path: polygon(0 0, 50% 55%, 100% 0); background: #f4d7df; z-index: 2; }
+    .envelope::after { content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 72%; clip-path: polygon(0 100%, 0 0, 50% 70%, 100% 0, 100% 100%); background: #dca7b6; z-index: 4; }
+    .b-hero .cheki { position: absolute; top: 13%; left: 28%; width: 45%; transform: rotate(8deg); z-index: 1; }
+    .seal { position: absolute; width: 36px; height: 36px; border-radius: 50%; background: #ac6d82; color: white; z-index: 5; left: 50%; top: 55%; transform: translate(-50%, -50%); display: grid; place-items: center; font-size: 18px; }
+    .b-welcome h3 { font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; font-size: 27px; letter-spacing: -.04em; }
+    .b-welcome .copy { font-size: 13px; color: #665960; margin: 10px 0 20px; }
+    .b-welcome .cta, .b-empty .cta { background: #885667; box-shadow: 0 5px 10px #70475220; }
+    .b-empty { background: #fffaf2; }
+    .b-empty .topbar .camera-sym { color: #885667; }
+    .b-empty .center-letter { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: left; }
+    .letter-card { position: relative; background: #fffdf8; border: 1px solid #eddcd1; border-radius: 8px; padding: 27px 22px; box-shadow: 0 14px 27px #5f3d2115; transform: rotate(-2deg); margin: 0 15px 25px; }
+    .letter-card .tiny-label { color: #a26778; }
+    .letter-card h4 { font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; font-size: 22px; line-height: 1.45; margin: 15px 0 9px; font-weight: 700; }
+    .letter-card p { font-size: 12px; color: #6b5e64; margin: 0; }
+    .letter-card::after { content: "✦"; position: absolute; right: 19px; bottom: 14px; color: #ca8d9e; font-size: 15px; }
+    .b-empty .tab-item.active { color: #885667; }
+    .b-empty .tabbar { background: #fffdf8; }
+
+    /* C — 最短で一枚目に到達 */
+    .c-welcome { background: #fff; }
+    .c-welcome .brand { color: #344844; }
+    .c-welcome .quiet { color: #50837d; font-size: 12px; font-weight: 800; margin-top: 26px; }
+    .c-welcome h3 { font-size: 32px; margin-top: 10px; color: #1f3130; }
+    .c-welcome .copy { font-size: 13px; color: #65706f; margin: 11px 0 0; }
+    .c-gallery { display: flex; align-items: center; gap: 10px; flex: 1; min-height: 0; padding: 14px 0; }
+    .c-gallery .cheki { width: 57%; transform: rotate(-4deg); flex: 0 0 auto; }
+    .c-gallery .stack { display: flex; flex-direction: column; gap: 10px; width: 43%; }
+    .mini-card { background: #f1f4f1; border-radius: 13px; padding: 12px 9px; min-height: 82px; color: #486762; font-size: 11px; font-weight: 800; }
+    .mini-card span { display: block; font-size: 23px; margin-bottom: 4px; }
+    .c-welcome .cta, .c-empty .cta { background: #356e69; box-shadow: 0 5px 10px #22534c1c; }
+    .c-empty { background: #fbfcfa; }
+    .c-empty .topbar .camera-sym { color: #356e69; }
+    .c-empty .empty-center { flex: 1; display: flex; flex-direction: column; align-items: stretch; justify-content: center; }
+    .c-empty .number { color: #c0cdc7; font-size: 85px; font-weight: 200; letter-spacing: -.09em; line-height: 1; }
+    .c-empty .empty-center h4 { font-size: 24px; margin: 16px 0 7px; letter-spacing: -.05em; color: #1f3130; }
+    .c-empty .empty-center p { font-size: 12px; color: #65706f; margin: 0; }
+    .c-empty .step { display: flex; gap: 7px; align-items: center; margin: 23px 0 0; color: #52756f; font-size: 11px; font-weight: 800; }
+    .c-empty .step i { width: 5px; height: 5px; border-radius: 50%; background: #91b3ac; }
+    .c-empty .tab-item.active { color: #356e69; }
+    .c-empty .tabbar { background: #fff; }
+    .caption { margin: 20px auto 0; max-width: 760px; color: var(--muted); font-size: 13px; line-height: 1.75; }
+    .page-note { margin: 28px 0 0; font-size: 13px; color: var(--muted); line-height: 1.7; }
+    @media (max-width: 760px) {
+      .page { padding: 24px 14px 45px; }
+      .proposal { padding: 18px 12px 24px; border-radius: 17px; }
+      .proposal-head { grid-template-columns: 1fr; }
+      .badge { justify-self: start; }
+      .phones { grid-template-columns: 1fr; gap: 24px; }
+      .phone-group { max-width: 365px; }
+    }
+    @media (max-width: 375px) {
+      .phone { border-width: 6px; border-radius: 38px; }
+      .screen { padding-left: 18px; padding-right: 18px; }
+      .tabbar { margin-left: -18px; margin-right: -18px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="eyebrow">PICTUNE · FIRST LAUNCH</div>
+    <h1>オンボーディング UI、3つの方向</h1>
+    <p class="intro">初回の入口と、ログイン後に写真がまだない状態を一組にしています。いずれも「ログイン → 最初の一枚を撮る」を主な導線とし、音楽は任意、フォルダ・手紙・共有は後から触れる構成です。</p>
+    <div class="switcher" role="group" aria-label="表示する案">
+      <button type="button" data-show="all" aria-pressed="true">すべて</button>
+      <button type="button" data-show="a" aria-pressed="false">A チェキ</button>
+      <button type="button" data-show="b" aria-pressed="false">B 手紙</button>
+      <button type="button" data-show="c" aria-pressed="false">C すぐ撮る</button>
+    </div>
+
+    <section class="proposal" data-proposal="a" aria-labelledby="proposal-a-title">
+      <div class="proposal-head">
+        <div><div class="eyebrow">A / PHOTO FIRST</div><h2 id="proposal-a-title">チェキを主役に</h2><p>完成した一枚と楽曲カードで、何を残せるアプリかを最初に伝えます。既存のアイコンと写真編集 UI の世界観をもっとも素直に引き継ぐ案です。</p></div>
+        <span class="badge badge-a">写真と音楽が伝わる</span>
+      </div>
+      <div class="phones">
+        <div class="phone-group"><div class="screen-label">初回の入口</div><div class="phone"><div class="island"></div><div class="status"><span>9:41</span><span class="right">●●● ▰</span></div><div class="screen a-welcome"><div class="brand">PicTune</div><div class="a-hero"><div class="cheki"><div class="photo-scene"><div class="sky"></div><div class="sun"></div><div class="hill-one"></div><div class="hill-two"></div><div class="glow"></div></div><div class="cheki-caption">a day to remember</div></div><div class="track"><span class="note">♪</span><span><strong>思い出の曲</strong><small>あなたの一枚に</small></span></div></div><h3>写真に、<br>あの曲を添えて。</h3><p class="copy">撮った一枚を、音楽や手紙と一緒に残せます。</p><div class="screen-bottom"><button class="cta" type="button">はじめる</button><div class="secondary-link">すでにアカウントをお持ちの方</div></div></div></div></div>
+        <div class="phone-group"><div class="screen-label">ログイン後・写真 0 枚</div><div class="phone"><div class="island"></div><div class="status"><span>9:41</span><span class="right">●●● ▰</span></div><div class="screen a-empty"><div class="topbar"><span>PicTune</span><span class="camera-sym">◎</span></div><h3>写真</h3><div class="empty-center"><div class="cheki"><div class="photo-scene"><div class="sky"></div><div class="sun"></div><div class="hill-one"></div><div class="hill-two"></div></div><div class="cheki-caption">your first memory</div></div><h4>最初の一枚を<br>残しましょう</h4><p>音楽は付けなくても保存できます。</p></div><button class="cta" type="button">写真を撮る</button><div class="tabbar"><div class="tab-item active"><span class="sym">▣</span>写真</div><div class="tab-item"><span class="sym">▱</span>フォルダ</div><div class="tab-item"><span class="sym">⚙</span>設定</div></div></div></div></div>
+      </div>
+      <p class="caption">入口の体験価値が明確です。初回の説明を一画面に収め、写真がない状態から撮影へつなげます。</p>
+    </section>
+
+    <section class="proposal" data-proposal="b" aria-labelledby="proposal-b-title">
+      <div class="proposal-head">
+        <div><div class="eyebrow">B / LETTER FIRST</div><h2 id="proposal-b-title">手紙を開くように</h2><p>「思い出を贈り、しまう」気持ちを前面に出します。写真と手紙を扱う PicTune らしい温度感が強く、友人との共有にもつながる案です。</p></div>
+        <span class="badge badge-b">感情と共有が伝わる</span>
+      </div>
+      <div class="phones">
+        <div class="phone-group"><div class="screen-label">初回の入口</div><div class="phone"><div class="island"></div><div class="status"><span>9:41</span><span class="right">●●● ▰</span></div><div class="screen b-welcome"><div class="brand">PicTune</div><div class="b-hero"><div class="cheki"><div class="photo-scene"><div class="sky"></div><div class="sun"></div><div class="hill-one"></div><div class="hill-two"></div></div><div class="cheki-caption">dear you</div></div><div class="envelope"><div class="seal">♡</div></div></div><h3>あの日の気持ちを、<br>しまっておこう。</h3><p class="copy">写真に音楽や手紙を添えて、大切な人とも共有できます。</p><div class="screen-bottom"><button class="cta" type="button">思い出を残す</button><div class="secondary-link">すでにアカウントをお持ちの方</div></div></div></div></div>
+        <div class="phone-group"><div class="screen-label">ログイン後・写真 0 枚</div><div class="phone"><div class="island"></div><div class="status"><span>9:41</span><span class="right">●●● ▰</span></div><div class="screen b-empty"><div class="topbar"><span>PicTune</span><span class="camera-sym">◎</span></div><h3>写真</h3><div class="center-letter"><div class="letter-card"><div class="tiny-label">YOUR ALBUM</div><h4>ここから、あなたの<br>アルバムが始まります。</h4><p>まずは写真を一枚。音楽は任意で添えられます。</p></div></div><button class="cta" type="button">一枚目を撮る</button><div class="tabbar"><div class="tab-item active"><span class="sym">▣</span>写真</div><div class="tab-item"><span class="sym">▱</span>フォルダ</div><div class="tab-item"><span class="sym">⚙</span>設定</div></div></div></div></div>
+      </div>
+      <p class="caption">気持ちを伝える力が強い一方、写真を撮る機能は A・C より一目で伝わりにくいため、空状態で撮影を明確に示します。</p>
+    </section>
+
+    <section class="proposal" data-proposal="c" aria-labelledby="proposal-c-title">
+      <div class="proposal-head">
+        <div><div class="eyebrow">C / ACTION FIRST</div><h2 id="proposal-c-title">すぐに一枚目へ</h2><p>装飾と説明を最小限にし、ログイン後の撮影を強く促します。最初の一枚までの短さを優先した、機能がわかりやすい案です。</p></div>
+        <span class="badge badge-c">開始までが短い</span>
+      </div>
+      <div class="phones">
+        <div class="phone-group"><div class="screen-label">初回の入口</div><div class="phone"><div class="island"></div><div class="status"><span>9:41</span><span class="right">●●● ▰</span></div><div class="screen c-welcome"><div class="brand">PicTune</div><div class="quiet">写真から始める、小さなアルバム</div><h3>はじめの一枚を<br>撮ろう。</h3><p class="copy">撮って、飾って、保存する。好きな曲は任意で添えられます。</p><div class="c-gallery"><div class="cheki"><div class="photo-scene"><div class="sky"></div><div class="sun"></div><div class="hill-one"></div><div class="hill-two"></div></div><div class="cheki-caption">your moment</div></div><div class="stack"><div class="mini-card"><span>◎</span>撮る</div><div class="mini-card"><span>✦</span>飾る</div><div class="mini-card"><span>♪</span>曲を添える</div></div></div><div class="screen-bottom"><button class="cta" type="button">ログインして始める</button><div class="secondary-link">すでにアカウントをお持ちの方</div></div></div></div></div>
+        <div class="phone-group"><div class="screen-label">ログイン後・写真 0 枚</div><div class="phone"><div class="island"></div><div class="status"><span>9:41</span><span class="right">●●● ▰</span></div><div class="screen c-empty"><div class="topbar"><span>PicTune</span><span class="camera-sym">◎</span></div><h3>写真</h3><div class="empty-center"><div class="number">01</div><h4>最初の写真を<br>撮影しましょう</h4><p>ひとりで撮ることも、友だちと一緒に残すこともできます。</p><div class="step"><span>撮影</span><i></i><span>加工</span><i></i><span>保存</span></div></div><button class="cta" type="button">カメラを開く</button><div class="tabbar"><div class="tab-item active"><span class="sym">▣</span>写真</div><div class="tab-item"><span class="sym">▱</span>フォルダ</div><div class="tab-item"><span class="sym">⚙</span>設定</div></div></div></div></div>
+      </div>
+      <p class="caption">撮影への導線がもっとも直接的です。写真と音楽に加えて「贈る・共有する」印象は、利用後の画面で伝える構成になります。</p>
+    </section>
+
+    <p class="page-note">この HTML は比較用モックアップです。ボタンはアプリに接続していません。風景はサンプル表現であり、ユーザーの写真ではありません。認証・権限・撮影の実装は含みません。</p>
+  </main>
+  <script>
+    (function () {
+      var controls = Array.from(document.querySelectorAll('[data-show]'));
+      var proposals = Array.from(document.querySelectorAll('[data-proposal]'));
+      controls.forEach(function (control) {
+        control.addEventListener('click', function () {
+          var selected = control.getAttribute('data-show');
+          controls.forEach(function (item) {
+            item.setAttribute('aria-pressed', item === control ? 'true' : 'false');
+          });
+          proposals.forEach(function (item) {
+            item.hidden = selected !== 'all' && item.getAttribute('data-proposal') !== selected;
+          });
+        });
+      });
+    }());
+  </script>
+</body>
+</html>
