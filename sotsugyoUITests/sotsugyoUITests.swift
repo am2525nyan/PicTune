@@ -26,14 +26,23 @@ final class sotsugyoUITests: XCTestCase {
 
         app.buttons["auth.connect.password"].tap()
         XCTAssertTrue(app.textFields["auth.email"].waitForExistence(timeout: 5))
+        capture("auth-04-email-link", app: app)
         let email = "ui-\(UUID().uuidString.lowercased())@example.invalid"
         app.textFields["auth.email"].tap()
         app.textFields["auth.email"].typeText(email)
+        XCTAssertEqual(app.textFields["auth.email"].value as? String, email)
         XCTAssertFalse(app.buttons["auth.linkEmail"].isEnabled)
         app.secureTextFields["auth.password"].tap()
-        app.secureTextFields["auth.password"].typeText("Linked123!")
+        // iOS can replace the keyboard with its strong-password suggestion.
+        // Dismiss that system UI before entering our known test password.
+        if app.buttons["GenerateStrongPasswordButton"].waitForExistence(timeout: 2) {
+            app.buttons["xmark"].tap()
+        }
+        for character in "linkedpass" {
+            app.keys[String(character)].tap()
+        }
+        XCTAssertEqual((app.secureTextFields["auth.password"].value as? String)?.count, 10)
         XCTAssertTrue(app.buttons["auth.linkEmail"].isEnabled)
-        capture("auth-04-email-link", app: app)
         app.buttons["auth.linkEmail"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 15))
         XCTAssertFalse(app.descendants(matching: .any)["auth.accountStatus"].label.contains("匿名で利用中"))
@@ -61,11 +70,19 @@ final class sotsugyoUITests: XCTestCase {
         app.buttons["次へ"].tap()
         XCTAssertTrue(app.secureTextFields.firstMatch.waitForExistence(timeout: 5))
         app.secureTextFields.firstMatch.tap()
-        app.secureTextFields.firstMatch.typeText("Linked123!")
+        app.secureTextFields.firstMatch.typeText("linkedpass")
         app.buttons["ログイン"].tap()
+        // Do not save emulator-only credentials in the system password manager.
+        if app.buttons["Not Now"].waitForExistence(timeout: 5) {
+            app.buttons["Not Now"].tap()
+            XCTAssertTrue(app.buttons["Not Now"].waitForNonExistence(timeout: 5))
+        }
         XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 15))
-        app.tabBars.buttons["設定"].tap()
+        // The new TabView's AX hit point can remain invalid after the system sheet
+        // closes. Tap the center of the actual tab frame to exercise the user gesture.
+        app.tabBars.buttons["設定"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 10))
+        capture("auth-10-signed-in-again", app: app)
     }
 
     @MainActor
@@ -388,6 +405,9 @@ final class sotsugyoUITests: XCTestCase {
     func testSettingsAndNameEditor() {
         let app = launch()
         app.tabBars.buttons["設定"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.linked.google.com"].waitForExistence(timeout: 5))
+        capture("auth-09-existing-user-settings", app: app)
+        app.swipeUp()
         XCTAssertTrue(app.staticTexts["demo@example.com"].waitForExistence(timeout: 5))
         capture("09-settings", app: app)
         app.buttons.containing(.staticText, identifier: "名前").firstMatch.tap()

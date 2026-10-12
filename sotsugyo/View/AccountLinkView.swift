@@ -8,35 +8,66 @@ struct AccountLinkView: View {
     @StateObject private var model = AccountLinkingModel()
     @State private var email = ""
     @State private var password = ""
+    @FocusState private var focusedField: Field?
+
+    private enum Field { case email, password }
+
+    private var canLinkEmail: Bool {
+        !model.isWorking && !email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && password.count >= 6
+    }
 
     var body: some View {
         NavigationStack {
             Form {
                 Section {
-                    Text("現在のアカウントに\(provider.title)を連携します。写真・フォルダ・手紙を引き継ぎ、連携した方法で別の端末からもログインできます。")
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("今の思い出を引き継ぐ")
+                            .font(.headline)
+                        Text("\(provider.title)を使って、今のアカウントにログインできるようにします。写真・フォルダ・手紙はそのまま残ります。")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 4)
                 }
                 if provider == .email {
                     Section("ログイン情報") {
-                        TextField("メールアドレス", text: $email)
-                            .textContentType(.emailAddress)
-                            .keyboardType(.emailAddress)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                            .accessibilityIdentifier("auth.email")
-                        SecureField("パスワード", text: $password)
-                            .textContentType(.newPassword)
-                            .accessibilityIdentifier("auth.password")
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("メールアドレス").font(.caption).foregroundStyle(.secondary)
+                            TextField("メールアドレスを入力", text: $email)
+                                .textContentType(.emailAddress)
+                                .keyboardType(.emailAddress)
+                                .textInputAutocapitalization(.never)
+                                .autocorrectionDisabled()
+                                .focused($focusedField, equals: .email)
+                                .submitLabel(.next)
+                                .onSubmit { focusedField = .password }
+                                .accessibilityLabel("メールアドレス")
+                                .accessibilityIdentifier("auth.email")
+                        }
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("パスワード").font(.caption).foregroundStyle(.secondary)
+                            SecureField("6文字以上で入力", text: $password)
+                                .textContentType(.newPassword)
+                                .textInputAutocapitalization(.never)
+                                .autocorrectionDisabled()
+                                .focused($focusedField, equals: .password)
+                                .submitLabel(.done)
+                                .onSubmit { focusedField = nil }
+                                .accessibilityLabel("パスワード")
+                                .accessibilityIdentifier("auth.password")
+                        }
                     }
                     .disabled(model.isWorking)
                     Section {
                         Button("メールアドレスを連携") {
+                            focusedField = nil
                             Task { finish(await model.linkEmail(email: email, password: password)) }
                         }
                         .accessibilityIdentifier("auth.linkEmail")
-                        .disabled(model.isWorking || email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                                  || password.count < 6)
+                        .disabled(!canLinkEmail)
                     } footer: {
-                        Text("パスワードは6文字以上で入力してください。")
+                        Text("次回から、このメールアドレスとパスワードでログインできます。")
                     }
                 } else if provider == .apple {
                     Section {
@@ -60,6 +91,7 @@ struct AccountLinkView: View {
                     ProgressView("連携しています…")
                 }
             }
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle("\(provider.title)を連携")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

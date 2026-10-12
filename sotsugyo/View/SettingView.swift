@@ -39,26 +39,80 @@ struct SettingView: View {
     var body: some View {
         Form {
             Section {
-                LabeledContent("利用状態", value: viewModel.isAnonymous ? "匿名で利用中" : "連携済み")
-                    .accessibilityIdentifier("auth.accountStatus")
+                HStack(alignment: .top, spacing: 12) {
+                    Image(systemName: viewModel.isAnonymous ? "person.crop.circle" : "person.crop.circle.badge.checkmark")
+                        .font(.title)
+                        .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(viewModel.isAnonymous ? "匿名で利用中" : "アカウント連携済み")
+                            .font(.headline)
+                        Text(viewModel.isAnonymous
+                             ? "今の写真や手紙を引き継ぐには、ログイン方法を連携してください。"
+                             : "連携した方法で、別の端末からもログインできます。")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.vertical, 4)
+                .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("auth.accountStatus")
                 ForEach(AccountProvider.allCases) { provider in
                     if viewModel.linkedProviderIDs.contains(provider.rawValue) {
-                        LabeledContent(provider.title, value: "連携済み")
-                            .accessibilityIdentifier("auth.linked.\(provider.rawValue)")
+                        HStack {
+                            Text(provider.title)
+                            Spacer()
+                            Label("連携済み", systemImage: "checkmark.circle.fill")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        .accessibilityElement(children: .combine)
+                        .accessibilityIdentifier("auth.linked.\(provider.rawValue)")
                     } else {
-                        Button("\(provider.title)を連携") { linkingProvider = provider }
-                            .disabled(viewModel.isDeleting)
-                            .accessibilityIdentifier("auth.connect.\(provider.rawValue)")
+                        Button { linkingProvider = provider } label: {
+                            HStack {
+                                Text(provider.title)
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                Text("連携する")
+                                    .font(.subheadline)
+                                Image(systemName: "chevron.right")
+                                    .font(.footnote.weight(.semibold))
+                                    .foregroundStyle(.tertiary)
+                            }
+                            .contentShape(Rectangle())
+                        }
+                        .disabled(viewModel.isDeleting)
+                        .accessibilityLabel("\(provider.title)を連携")
+                        .accessibilityIdentifier("auth.connect.\(provider.rawValue)")
                     }
                 }
             } header: {
-                Text("アカウント連携")
+                Text("ログイン方法")
             } footer: {
                 if viewModel.isAnonymous {
-                    Text("登録なしでご利用いただけます。機種変更後も思い出を引き継ぐには、いずれかの方法を連携してください。")
-                } else {
-                    Text("連携した方法で、同じアカウントにログインできます。")
+                    Text("連携後も、今の写真・フォルダ・手紙はそのまま残ります。")
                 }
+            }
+
+            Section {
+                Button {
+                    isShowingExistingLogin = true
+                } label: {
+                    HStack {
+                        Text("既存のアカウントでログイン")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+                .disabled(viewModel.isDeleting)
+                .accessibilityIdentifier("auth.openExistingLogin")
+            } header: {
+                Text(viewModel.isAnonymous ? "すでにアカウントをお持ちの方" : "アカウントの切り替え")
+            } footer: {
+                Text("以前のアカウントに保存した思い出を開きます。今のアカウントのデータは統合されません。")
             }
 
             Section("プロフィール") {
@@ -93,7 +147,7 @@ struct SettingView: View {
                 }
             }
 
-            if hasLoadedProfile {
+            if hasLoadedProfile && !viewModel.mailAddress.isEmpty {
                 Section {
                     Text(viewModel.mailAddress.isEmpty ? "未登録" : viewModel.mailAddress)
                         .textSelection(.enabled)
@@ -104,12 +158,8 @@ struct SettingView: View {
                 }
             }
 
-            Section {
-                Button("既存のアカウントでログイン") {
-                    isShowingExistingLogin = true
-                }
-                .disabled(viewModel.isDeleting)
-                if !viewModel.isAnonymous {
+            if !viewModel.isAnonymous {
+                Section {
                     Button("ログアウト") {
                         isShowingLogout = true
                     }
