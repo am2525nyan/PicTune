@@ -130,7 +130,7 @@ final class AccountLinkingModel: ObservableObject {
         guard error.domain == AuthErrorDomain else { return error.localizedDescription }
         switch AuthErrorCode.Code(rawValue: error.code) {
         case .credentialAlreadyInUse, .emailAlreadyInUse, .accountExistsWithDifferentCredential:
-            return "この認証方法は、すでに別のアカウントで使われています。現在のデータはそのまま保持されています。既存のアカウントを使う場合は、設定の「既存のアカウントでログイン」から操作してください。"
+            return "この認証方法は、すでに別のアカウントで使われています。現在のデータはそのまま保持されています。既存のアカウントを使う場合は、設定の「アカウント」からログインしてください。"
         case .providerAlreadyLinked:
             return "この認証方法はすでに連携済みです。"
         case .invalidEmail:

@@ -26,8 +26,6 @@ struct SettingView: View {
     @State private var isLoading = false
     @State private var hasLoadedProfile = false
     @State private var profileError: String?
-    @State private var linkingProvider: AccountProvider?
-    @State private var isShowingExistingLogin = false
     private let onExistingLogin: () -> Void
 
     init(viewModel: SettingViewModel? = nil, onExistingLogin: @escaping () -> Void = {}) {
@@ -39,80 +37,24 @@ struct SettingView: View {
     var body: some View {
         Form {
             Section {
-                HStack(alignment: .top, spacing: 12) {
-                    Image(systemName: viewModel.isAnonymous ? "person.crop.circle" : "person.crop.circle.badge.checkmark")
-                        .font(.title)
-                        .foregroundStyle(.secondary)
-                        .accessibilityHidden(true)
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(viewModel.isAnonymous ? "匿名で利用中" : "アカウント連携済み")
-                            .font(.headline)
-                        Text(viewModel.isAnonymous
-                             ? "今の写真や手紙を引き継ぐには、ログイン方法を連携してください。"
-                             : "連携した方法で、別の端末からもログインできます。")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .padding(.vertical, 4)
-                .accessibilityElement(children: .combine)
-                .accessibilityIdentifier("auth.accountStatus")
-                ForEach(AccountProvider.allCases) { provider in
-                    if viewModel.linkedProviderIDs.contains(provider.rawValue) {
-                        HStack {
-                            Text(provider.title)
-                            Spacer()
-                            Label("連携済み", systemImage: "checkmark.circle.fill")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                        .accessibilityElement(children: .combine)
-                        .accessibilityIdentifier("auth.linked.\(provider.rawValue)")
-                    } else {
-                        Button { linkingProvider = provider } label: {
-                            HStack {
-                                Text(provider.title)
-                                    .foregroundStyle(.primary)
-                                Spacer()
-                                Text("連携する")
-                                    .font(.subheadline)
-                                Image(systemName: "chevron.right")
-                                    .font(.footnote.weight(.semibold))
-                                    .foregroundStyle(.tertiary)
+                NavigationLink {
+                    AccountSettingsView(viewModel: viewModel, onExistingLogin: onExistingLogin) {
+                        viewModel.refreshAccount()
+                        Task {
+                            do {
+                                try await viewModel.didLinkAccount()
+                                hasLoadedProfile = true
+                                profileError = nil
+                            } catch {
+                                profileError = "アカウントは連携されました。プロフィールを読み込むには再読み込みしてください。"
                             }
-                            .contentShape(Rectangle())
                         }
-                        .disabled(viewModel.isDeleting)
-                        .accessibilityLabel("\(provider.title)を連携")
-                        .accessibilityIdentifier("auth.connect.\(provider.rawValue)")
                     }
-                }
-            } header: {
-                Text("ログイン方法")
-            } footer: {
-                if viewModel.isAnonymous {
-                    Text("連携後も、今の写真・フォルダ・手紙はそのまま残ります。")
-                }
-            }
-
-            Section {
-                Button {
-                    isShowingExistingLogin = true
                 } label: {
-                    HStack {
-                        Text("既存のアカウントでログイン")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.tertiary)
-                    }
+                    LabeledContent("アカウント", value: viewModel.isAnonymous ? "未連携" : "連携済み")
                 }
                 .disabled(viewModel.isDeleting)
-                .accessibilityIdentifier("auth.openExistingLogin")
-            } header: {
-                Text(viewModel.isAnonymous ? "すでにアカウントをお持ちの方" : "アカウントの切り替え")
-            } footer: {
-                Text("以前のアカウントに保存した思い出を開きます。今のアカウントのデータは統合されません。")
+                .accessibilityIdentifier("auth.openAccount")
             }
 
             Section("プロフィール") {
@@ -187,28 +129,6 @@ struct SettingView: View {
             NameEditView(name: viewModel.name) { name in
                 try await viewModel.saveName(name: name)
             }
-        }
-        .sheet(item: $linkingProvider) { provider in
-            AccountLinkView(provider: provider) {
-                viewModel.refreshAccount()
-                Task {
-                    do {
-                        try await viewModel.didLinkAccount()
-                        hasLoadedProfile = true
-                        profileError = nil
-                    } catch {
-                        profileError = "アカウントは連携されました。プロフィールを読み込むには再読み込みしてください。"
-                    }
-                }
-            }
-        }
-        .alert("既存のアカウントに切り替えますか？", isPresented: $isShowingExistingLogin) {
-            Button("キャンセル", role: .cancel) {}
-            Button("ログイン画面へ") { onExistingLogin() }
-        } message: {
-            Text(viewModel.isAnonymous
-                 ? "現在の匿名アカウントの写真や手紙は、既存のアカウントには移りません。切り替えると現在の匿名アカウントには戻れなくなります。現在のデータを引き継ぐ場合は、アカウント連携をご利用ください。"
-                 : "ログインに成功すると、選択したアカウントに切り替わります。データは統合されません。")
         }
         .alert("ログアウトしますか？", isPresented: $isShowingLogout) {
             Button("キャンセル", role: .cancel) {}

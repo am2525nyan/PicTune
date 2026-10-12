@@ -9,20 +9,24 @@ final class sotsugyoUITests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 20))
         app.tabBars.buttons["設定"].tap()
-        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("匿名で利用中"))
-        XCTAssertFalse(app.buttons["ログアウト"].exists)
+        XCTAssertTrue(app.buttons["auth.openAccount"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["auth.connect.apple.com"].exists)
         capture("auth-01-anonymous-settings", app: app)
+        app.buttons["auth.openAccount"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("登録せずに利用中"))
+        XCTAssertFalse(app.buttons["ログアウト"].exists)
+        capture("auth-11-anonymous-account", app: app)
 
         app.buttons["auth.connect.apple.com"].tap()
         XCTAssertTrue(app.buttons["auth.linkApple"].waitForExistence(timeout: 5))
         capture("auth-02-apple-link", app: app)
-        app.buttons["キャンセル"].tap()
+        app.navigationBars.buttons["アカウント"].tap()
         app.buttons["auth.connect.google.com"].tap()
         XCTAssertTrue(app.buttons["auth.linkGoogle"].waitForExistence(timeout: 5))
         capture("auth-03-google-link", app: app)
-        app.buttons["キャンセル"].tap()
-        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("匿名で利用中"))
+        app.navigationBars.buttons["アカウント"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("登録せずに利用中"))
 
         app.buttons["auth.connect.password"].tap()
         XCTAssertTrue(app.textFields["auth.email"].waitForExistence(timeout: 5))
@@ -45,7 +49,10 @@ final class sotsugyoUITests: XCTestCase {
         XCTAssertTrue(app.buttons["auth.linkEmail"].isEnabled)
         app.buttons["auth.linkEmail"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 15))
-        XCTAssertFalse(app.descendants(matching: .any)["auth.accountStatus"].label.contains("匿名で利用中"))
+        XCTAssertFalse(app.descendants(matching: .any)["auth.accountStatus"].label.contains("登録せずに利用中"))
+        capture("auth-12-linked-account", app: app)
+        app.navigationBars.buttons["設定"].tap()
+        XCTAssertTrue(app.buttons["auth.openAccount"].label.contains("連携済み"))
         capture("auth-05-linked-settings", app: app)
 
         app.terminate()
@@ -53,8 +60,9 @@ final class sotsugyoUITests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 15))
         app.tabBars.buttons["設定"].tap()
+        app.buttons["auth.openAccount"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 10))
-        app.swipeUp()
+        app.navigationBars.buttons["設定"].tap()
         XCTAssertTrue(app.staticTexts[email].exists)
         app.buttons["ログアウト"].tap()
         app.alerts.buttons["ログアウト"].tap()
@@ -74,14 +82,22 @@ final class sotsugyoUITests: XCTestCase {
         app.buttons["ログイン"].tap()
         // Do not save emulator-only credentials in the system password manager.
         if app.buttons["Not Now"].waitForExistence(timeout: 5) {
-            app.buttons["Not Now"].tap()
+            // The save prompt is hosted in SafariViewService. Target that process
+            // so the tap is delivered to its sheet after FirebaseUI has closed.
+            let passwordService = XCUIApplication(bundleIdentifier: "com.apple.SafariViewService")
+            let notNow = passwordService.buttons["Not Now"]
+            XCTAssertTrue(notNow.waitForExistence(timeout: 5))
+            notNow.tap()
             XCTAssertTrue(app.buttons["Not Now"].waitForNonExistence(timeout: 5))
         }
         XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 15))
         // The new TabView's AX hit point can remain invalid after the system sheet
         // closes. Tap the center of the actual tab frame to exercise the user gesture.
         app.tabBars.buttons["設定"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(app.buttons["auth.openAccount"].waitForExistence(timeout: 10))
+        app.buttons["auth.openAccount"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 10))
+        app.navigationBars.buttons["設定"].tap()
         capture("auth-10-signed-in-again", app: app)
     }
 
@@ -92,15 +108,13 @@ final class sotsugyoUITests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 20))
         app.tabBars.buttons["設定"].tap()
-        app.swipeUp()
-        app.buttons["既存のアカウントでログイン"].tap()
-        XCTAssertTrue(app.alerts["既存のアカウントに切り替えますか？"].waitForExistence(timeout: 5))
+        app.buttons["auth.openAccount"].tap()
+        app.buttons["auth.openExistingLogin"].tap()
+        XCTAssertTrue(app.alerts["アカウントを切り替えますか？"].waitForExistence(timeout: 5))
         app.alerts.buttons["キャンセル"].tap()
-        app.swipeDown()
-        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("匿名で利用中"))
-        app.swipeUp()
-        app.buttons["既存のアカウントでログイン"].tap()
-        app.alerts.buttons["ログイン画面へ"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("登録せずに利用中"))
+        app.buttons["auth.openExistingLogin"].tap()
+        app.alerts.buttons["ログインへ進む"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["auth.existingLogin"].waitForExistence(timeout: 10))
         capture("auth-08-existing-login-from-anonymous", app: app)
     }
@@ -119,7 +133,11 @@ final class sotsugyoUITests: XCTestCase {
         app.buttons["auth.startAnonymous"].tap()
         XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 15))
         app.tabBars.buttons["設定"].tap()
-        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("匿名で利用中"))
+        XCTAssertTrue(app.buttons["auth.openAccount"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["auth.connect.apple.com"].exists)
+        capture("auth-01-anonymous-settings", app: app)
+        app.buttons["auth.openAccount"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("登録せずに利用中"))
     }
 
     @MainActor
@@ -405,9 +423,13 @@ final class sotsugyoUITests: XCTestCase {
     func testSettingsAndNameEditor() {
         let app = launch()
         app.tabBars.buttons["設定"].tap()
-        XCTAssertTrue(app.descendants(matching: .any)["auth.linked.google.com"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["auth.openAccount"].waitForExistence(timeout: 5))
         capture("auth-09-existing-user-settings", app: app)
-        app.swipeUp()
+        app.buttons["auth.openAccount"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.linked.google.com"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["auth.connect.apple.com"].exists)
+        capture("auth-13-existing-user-account", app: app)
+        app.navigationBars.buttons["設定"].tap()
         XCTAssertTrue(app.staticTexts["demo@example.com"].waitForExistence(timeout: 5))
         capture("09-settings", app: app)
         app.buttons.containing(.staticText, identifier: "名前").firstMatch.tap()

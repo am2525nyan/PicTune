@@ -21,7 +21,7 @@ final class AuthRegressionTests: XCTestCase {
         for code in [AuthErrorCode.credentialAlreadyInUse, .emailAlreadyInUse, .accountExistsWithDifferentCredential] {
             let message = AccountLinkingModel.message(for: NSError(domain: AuthErrorDomain, code: code.rawValue))
             XCTAssertTrue(message.contains("現在のデータはそのまま保持"))
-            XCTAssertTrue(message.contains("既存のアカウントでログイン"))
+            XCTAssertTrue(message.contains("設定の「アカウント」からログイン"))
         }
     }
     func testSigningInAgainDoesNotOverwriteEditedProfile() {
