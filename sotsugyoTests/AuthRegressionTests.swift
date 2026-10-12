@@ -20,10 +20,22 @@ final class AuthRegressionTests: XCTestCase {
     func testConflictExplainsThatTheCurrentDataIsPreserved() {
         for code in [AuthErrorCode.credentialAlreadyInUse, .emailAlreadyInUse, .accountExistsWithDifferentCredential] {
             let message = AccountLinkingModel.message(for: NSError(domain: AuthErrorDomain, code: code.rawValue))
-            XCTAssertTrue(message.contains("現在のデータはそのまま保持"))
-            XCTAssertTrue(message.contains("設定の「アカウント」からログイン"))
+            XCTAssertTrue(message.contains("今の写真や手紙はそのまま残っています"))
+            XCTAssertTrue(message.contains("以前使ったログイン方法"))
         }
     }
+    func testCollisionUsesUpdatedAppleCredentialAndDoesNotTreatOtherErrorsAsLogin() {
+        let original = OAuthProvider.credential(withProviderID: "apple.com", idToken: "old", rawNonce: "nonce")
+        let updated = OAuthProvider.credential(withProviderID: "apple.com", idToken: "updated", rawNonce: "nonce")
+        let collision = NSError(domain: AuthErrorDomain, code: AuthErrorCode.credentialAlreadyInUse.rawValue,
+                                userInfo: [AuthErrorUserInfoUpdatedCredentialKey: updated])
+        XCTAssertTrue(AccountLinkingModel.existingSignInCredential(for: collision, original: original) === updated)
+        for code in [AuthErrorCode.networkError, .invalidCredential, .accountExistsWithDifferentCredential] {
+            let error = NSError(domain: AuthErrorDomain, code: code.rawValue)
+            XCTAssertNil(AccountLinkingModel.existingSignInCredential(for: error, original: original))
+        }
+    }
+
     func testSigningInAgainDoesNotOverwriteEditedProfile() {
         let existing: [String: Any] = ["name": "編集した名前", "email": "saved@example.com", "uid": "user", "custom": "keep"]
         let fields = UserAccountBootstrap.missingProfileFields(existing: existing,
@@ -187,16 +199,105 @@ final class AnonymousAuthIntegrationTests: XCTestCase {
     func testExistingEmailConflictKeepsAnonymousSessionAndAllowsExplicitExistingLogin() async throws {
         let email = uniqueEmail()
         let existing = try await auth.createUser(withEmail: email, password: "Existing123!")
+        try await UserAccountBootstrap.save(userID: existing.user.uid, profile: UserProfile(email: email), database: database)
+        let existingFolder = database.collection("users").document(existing.user.uid).collection("folders").document("all")
+        try await existingFolder.updateData(["letter": "以前のアカウントの手紙"])
         try auth.signOut()
         let anonymous = try await auth.signInAnonymously()
+        try await UserAccountBootstrap.save(userID: anonymous.user.uid, profile: UserProfile(), database: database)
+        let anonymousFolder = database.collection("users").document(anonymous.user.uid).collection("folders").document("all")
+        try await anonymousFolder.updateData(["letter": "今の手紙"])
         let model = AccountLinkingModel(auth: auth)
         let linked = await model.linkEmail(email: email, password: "Existing123!")
         XCTAssertFalse(linked)
-        XCTAssertNotNil(model.errorMessage)
+        XCTAssertNil(model.errorMessage)
+        XCTAssertTrue(model.hasPendingSignIn)
         XCTAssertEqual(auth.currentUser?.uid, anonymous.user.uid)
         XCTAssertTrue(try XCTUnwrap(auth.currentUser).isAnonymous)
-        let restored = try await auth.signIn(withEmail: email, password: "Existing123!")
-        XCTAssertEqual(restored.user.uid, existing.user.uid)
+        model.cancelExistingSignIn()
+        let cancelled = await model.confirmExistingSignIn()
+        XCTAssertFalse(cancelled)
+        XCTAssertEqual(auth.currentUser?.uid, anonymous.user.uid)
+        let currentLetter = try await anonymousFolder.getDocument(source: .server)
+        XCTAssertEqual(currentLetter.data()?["letter"] as? String, "今の手紙")
+        let retried = await model.linkEmail(email: email, password: "Existing123!")
+        XCTAssertFalse(retried)
+        let signedIn = await model.confirmExistingSignIn()
+        XCTAssertTrue(signedIn, model.errorMessage ?? "")
+        XCTAssertEqual(auth.currentUser?.uid, existing.user.uid)
+        XCTAssertFalse(model.hasPendingSignIn)
+        let restoredLetter = try await existingFolder.getDocument(source: .server)
+        XCTAssertEqual(restoredLetter.data()?["letter"] as? String, "以前のアカウントの手紙")
+    }
+
+    func testWrongExistingPasswordKeepsAnonymousAccountAndAllowsRetry() async throws {
+        let email = uniqueEmail()
+        let existing = try await auth.createUser(withEmail: email, password: "Existing123!")
+        try auth.signOut()
+        let anonymous = try await auth.signInAnonymously()
+        let model = AccountLinkingModel(auth: auth)
+        // Generate an incorrect password for this emulator-only attempt.
+        let linked = await model.linkEmail(email: email, password: UUID().uuidString)
+        XCTAssertFalse(linked)
+        XCTAssertTrue(model.hasPendingSignIn)
+        let signedIn = await model.confirmExistingSignIn()
+        XCTAssertFalse(signedIn)
+        XCTAssertNotNil(model.errorMessage)
+        XCTAssertFalse(model.hasPendingSignIn)
+        XCTAssertEqual(auth.currentUser?.uid, anonymous.user.uid)
+        XCTAssertTrue(try XCTUnwrap(auth.currentUser).isAnonymous)
+        _ = await model.linkEmail(email: email, password: "Existing123!")
+        let retried = await model.confirmExistingSignIn()
+        XCTAssertTrue(retried)
+        XCTAssertEqual(auth.currentUser?.uid, existing.user.uid)
+    }
+
+    func testPendingSignInCannotReplaceASubsequentlyChangedSession() async throws {
+        let email = uniqueEmail()
+        _ = try await auth.createUser(withEmail: email, password: "Existing123!")
+        try auth.signOut()
+        _ = try await auth.signInAnonymously()
+        let model = AccountLinkingModel(auth: auth)
+        _ = await model.linkEmail(email: email, password: "Existing123!")
+        XCTAssertTrue(model.hasPendingSignIn)
+        try auth.signOut()
+        let other = try await auth.signInAnonymously()
+        let signedIn = await model.confirmExistingSignIn()
+        XCTAssertFalse(signedIn)
+        XCTAssertEqual(auth.currentUser?.uid, other.user.uid)
+        XCTAssertFalse(model.hasPendingSignIn)
+    }
+
+    func testPasswordResetDoesNotReplaceTheAnonymousSession() async throws {
+        let email = uniqueEmail()
+        _ = try await auth.createUser(withEmail: email, password: "Existing123!")
+        try auth.signOut()
+        let anonymous = try await auth.signInAnonymously()
+        let model = AccountLinkingModel(auth: auth)
+        let sent = await model.sendPasswordReset(email: email)
+        XCTAssertTrue(sent, model.errorMessage ?? "")
+        XCTAssertEqual(auth.currentUser?.uid, anonymous.user.uid)
+        XCTAssertTrue(try XCTUnwrap(auth.currentUser).isAnonymous)
+    }
+
+    func testExistingGoogleAndAppleAccountsUseTheSameEntryAndRequireConfirmation() async throws {
+        for credential in [
+            GoogleAuthProvider.credential(withIDToken: fakeIDToken(issuer: "https://accounts.google.com"), accessToken: "emulator"),
+            OAuthProvider.credential(withProviderID: "apple.com", idToken: fakeIDToken(issuer: "https://appleid.apple.com"), rawNonce: "emulator")
+        ] as [AuthCredential] {
+            let existing = try await auth.signIn(with: credential)
+            try auth.signOut()
+            let anonymous = try await auth.signInAnonymously()
+            let model = AccountLinkingModel(auth: auth)
+            let linked = await model.link(credential: credential)
+            XCTAssertFalse(linked)
+            XCTAssertTrue(model.hasPendingSignIn)
+            XCTAssertEqual(auth.currentUser?.uid, anonymous.user.uid)
+            let signedIn = await model.confirmExistingSignIn()
+            XCTAssertTrue(signedIn, model.errorMessage ?? "")
+            XCTAssertEqual(auth.currentUser?.uid, existing.user.uid)
+            try auth.signOut()
+        }
     }
 
     func testStaleLinkScreenCannotModifyAnotherUser() async throws {

@@ -26,19 +26,17 @@ struct SettingView: View {
     @State private var isLoading = false
     @State private var hasLoadedProfile = false
     @State private var profileError: String?
-    private let onExistingLogin: () -> Void
 
-    init(viewModel: SettingViewModel? = nil, onExistingLogin: @escaping () -> Void = {}) {
+    init(viewModel: SettingViewModel? = nil) {
         _viewModel = StateObject(wrappedValue: viewModel ?? SettingViewModel())
         _hasLoadedProfile = State(initialValue: viewModel != nil)
-        self.onExistingLogin = onExistingLogin
     }
 
     var body: some View {
         Form {
             Section {
                 NavigationLink {
-                    AccountSettingsView(viewModel: viewModel, onExistingLogin: onExistingLogin) {
+                    AccountSettingsView(viewModel: viewModel) {
                         viewModel.refreshAccount()
                         Task {
                             do {

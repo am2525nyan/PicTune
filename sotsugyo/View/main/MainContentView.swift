@@ -41,7 +41,7 @@ struct MainContentView: View {
                     }
 
                     NavigationStack {
-                        SettingView(onExistingLogin: { viewModel.isShowSheet = true })
+                        SettingView()
                     }
                     .tabItem {
                         Label("設定", systemImage: "gearshape")

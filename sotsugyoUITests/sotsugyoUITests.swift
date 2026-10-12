@@ -102,21 +102,86 @@ final class sotsugyoUITests: XCTestCase {
     }
 
     @MainActor
-    func testAnonymousExistingLoginRequiresConfirmationAndKeepsSheetOpen() {
+    func testExistingLoginUsesTheSameEmailEntryAndCanBeCancelled() async throws {
+        let email = "existing-ui-\(UUID().uuidString.lowercased())@example.invalid"
+        var request = URLRequest(url: URL(string: "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signUp?key=emulator-only")!)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONSerialization.data(withJSONObject: ["email": email, "password": "linkedpass", "returnSecureToken": true])
+        let (_, response) = try await URLSession.shared.data(for: request)
+        XCTAssertEqual((response as? HTTPURLResponse)?.statusCode, 200)
+
         let app = XCUIApplication()
-        app.launchArguments = ["-auth-emulator", "-auth-reset-session", "-AppleLanguages", "(ja)"]
+        app.launchArguments = ["-auth-emulator", "-auth-reset-session", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
         app.launch()
         XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 20))
         app.tabBars.buttons["設定"].tap()
         app.buttons["auth.openAccount"].tap()
-        app.buttons["auth.openExistingLogin"].tap()
-        XCTAssertTrue(app.alerts["アカウントを切り替えますか？"].waitForExistence(timeout: 5))
-        app.alerts.buttons["キャンセル"].tap()
+        XCTAssertFalse(app.buttons["auth.openExistingLogin"].exists)
+        app.buttons["auth.connect.password"].tap()
+        XCTAssertTrue(app.textFields["auth.email"].waitForExistence(timeout: 5))
+        app.textFields["auth.email"].tap()
+        app.textFields["auth.email"].typeText(email)
+        app.secureTextFields["auth.password"].tap()
+        app.secureTextFields["auth.password"].typeText("linkedpass")
+        XCTAssertEqual((app.secureTextFields["auth.password"].value as? String)?.count, 10)
+        app.buttons["auth.linkEmail"].tap()
+        let confirmation = app.alerts["登録済みのアカウントにログインしますか？"]
+        XCTAssertTrue(confirmation.waitForExistence(timeout: 10))
+        capture("auth-08-existing-login-confirmation", app: app)
+        confirmation.buttons["キャンセル"].tap()
+        app.navigationBars.buttons["アカウント"].tap()
+        dismissPasswordSavePrompt(app)
         XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("未ログイン"))
-        app.buttons["auth.openExistingLogin"].tap()
-        app.alerts.buttons["ログインへ進む"].tap()
-        XCTAssertTrue(app.descendants(matching: .any)["auth.existingLogin"].waitForExistence(timeout: 10))
-        capture("auth-08-existing-login-from-anonymous", app: app)
+
+        app.buttons["auth.connect.password"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(app.textFields["auth.email"].waitForExistence(timeout: 5))
+        app.textFields["auth.email"].tap()
+        app.textFields["auth.email"].typeText(email)
+        app.secureTextFields["auth.password"].tap()
+        app.secureTextFields["auth.password"].typeText("wrongpass1")
+        app.buttons["auth.linkEmail"].tap()
+        XCTAssertTrue(confirmation.waitForExistence(timeout: 10))
+        confirmation.buttons["ログイン"].tap()
+        XCTAssertTrue(app.alerts["認証できませんでした"].waitForExistence(timeout: 10))
+        capture("auth-15-existing-login-error", app: app)
+        app.alerts.buttons["閉じる"].tap()
+        app.navigationBars.buttons["アカウント"].tap()
+        dismissPasswordSavePrompt(app)
+        XCTAssertTrue(app.descendants(matching: .any)["auth.accountStatus"].label.contains("未ログイン"))
+
+        app.buttons["auth.connect.password"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(app.textFields["auth.email"].waitForExistence(timeout: 5))
+        app.textFields["auth.email"].tap()
+        app.textFields["auth.email"].typeText(email)
+        app.secureTextFields["auth.password"].tap()
+        app.secureTextFields["auth.password"].typeText("linkedpass")
+        app.buttons["auth.linkEmail"].tap()
+        XCTAssertTrue(confirmation.waitForExistence(timeout: 10))
+        confirmation.buttons["ログイン"].tap()
+        XCTAssertTrue(confirmation.waitForNonExistence(timeout: 10))
+        dismissPasswordSavePrompt(app)
+        XCTAssertTrue(app.tabBars.buttons["設定"].waitForExistence(timeout: 10))
+        app.tabBars.buttons["設定"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(app.buttons["auth.openAccount"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["auth.openAccount"].label.contains("ログイン済み"))
+        XCTAssertTrue(app.staticTexts[email].exists)
+        app.buttons["auth.openAccount"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["auth.linked.password"].waitForExistence(timeout: 5))
+        capture("auth-14-existing-login-from-same-entry", app: app)
+    }
+
+    @MainActor
+    private func dismissPasswordSavePrompt(_ app: XCUIApplication) {
+        // iOS may offer to save a password when the form disappears, even after
+        // cancellation. Dismiss the system sheet before interacting with the app.
+        if app.buttons["Not Now"].waitForExistence(timeout: 5) {
+            let passwordService = XCUIApplication(bundleIdentifier: "com.apple.SafariViewService")
+            let notNow = passwordService.buttons["Not Now"]
+            XCTAssertTrue(notNow.waitForExistence(timeout: 5))
+            notNow.tap()
+            XCTAssertTrue(app.buttons["Not Now"].waitForNonExistence(timeout: 5))
+        }
     }
 
     @MainActor

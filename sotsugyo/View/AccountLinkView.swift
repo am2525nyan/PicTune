@@ -3,9 +3,7 @@ import SwiftUI
 
 struct AccountSettingsView: View {
     @ObservedObject var viewModel: SettingViewModel
-    let onExistingLogin: () -> Void
     let onLinked: () -> Void
-    @State private var isShowingExistingLogin = false
 
     var body: some View {
         Form {
@@ -31,37 +29,20 @@ struct AccountSettingsView: View {
                         NavigationLink {
                             AccountLinkView(provider: provider, onLinked: onLinked)
                         } label: {
-                            LabeledContent(provider.title, value: provider == .email ? "登録する" : "連携する")
+                            LabeledContent(provider.title, value: "続ける")
                         }
-                        .accessibilityLabel(provider == .email ? "メールアドレスを登録" : "\(provider.title)と連携する")
+                        .accessibilityLabel("\(provider.title)で続ける")
                         .accessibilityIdentifier("auth.connect.\(provider.rawValue)")
                     }
                 }
             } header: {
                 Text("ログイン方法")
             } footer: {
-                Text("連携した方法で、機種変更後もログインできます。今の写真や手紙はそのまま残ります。")
-            }
-
-            Section {
-                Button(viewModel.isAnonymous ? "ログイン" : "別のアカウントでログイン") {
-                    isShowingExistingLogin = true
-                }
-                .accessibilityIdentifier("auth.openExistingLogin")
-            } header: {
-                Text(viewModel.isAnonymous ? "すでにアカウントをお持ちの方" : "アカウントの切り替え")
+                Text("初めての場合は、今の写真や手紙を引き継いで登録します。登録済みの場合は、そのアカウントにログインできます。")
             }
         }
         .navigationTitle("アカウント")
         .navigationBarTitleDisplayMode(.inline)
-        .alert("アカウントを切り替えますか？", isPresented: $isShowingExistingLogin) {
-            Button("キャンセル", role: .cancel) {}
-            Button("ログインへ進む") { onExistingLogin() }
-        } message: {
-            Text(viewModel.isAnonymous
-                 ? "ログインすると、今の写真や手紙は引き継がれず、このアカウントには戻れなくなります。今のデータを残すには、ログイン方法を連携してください。"
-                 : "ログインしたアカウントに切り替わります。今のアカウントのデータは引き継がれません。")
-        }
     }
 }
 
@@ -72,13 +53,15 @@ struct AccountLinkView: View {
     @StateObject private var model = AccountLinkingModel()
     @State private var email = ""
     @State private var password = ""
+    @State private var isShowingExistingSignIn = false
+    @State private var isShowingPasswordReset = false
     @FocusState private var focusedField: Field?
 
     private enum Field { case email, password }
 
     private var canLinkEmail: Bool {
         !model.isWorking && !email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            && password.count >= 6
+            && !password.isEmpty
     }
 
     var body: some View {
@@ -100,8 +83,8 @@ struct AccountLinkView: View {
                     }
                     VStack(alignment: .leading, spacing: 8) {
                         Text("パスワード").font(.caption).foregroundStyle(.secondary)
-                        SecureField("6文字以上で入力", text: $password)
-                            .textContentType(.newPassword)
+                        SecureField("パスワードを入力", text: $password)
+                            .textContentType(.password)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                             .focused($focusedField, equals: .password)
@@ -113,14 +96,22 @@ struct AccountLinkView: View {
                 }
                 .disabled(model.isWorking)
                 Section {
-                    Button("登録する") {
+                    Button("メールアドレスで続ける") {
                         focusedField = nil
                         Task { finish(await model.linkEmail(email: email, password: password)) }
                     }
                     .accessibilityIdentifier("auth.linkEmail")
                     .disabled(!canLinkEmail)
                 } footer: {
-                    Text("次回から、このメールアドレスとパスワードでログインできます。")
+                    Text("初めての場合は、6文字以上のパスワードを設定してください。登録済みの場合は、いつものパスワードを入力してください。")
+                }
+                Section {
+                    Button("パスワードをお忘れですか？") {
+                        focusedField = nil
+                        Task { isShowingPasswordReset = await model.sendPasswordReset(email: email) }
+                    }
+                    .disabled(model.isWorking || email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .accessibilityIdentifier("auth.resetPassword")
                 }
             } else if provider == .apple {
                 Section {
@@ -131,7 +122,7 @@ struct AccountLinkView: View {
                     .disabled(model.isWorking)
                     .accessibilityIdentifier("auth.linkApple")
                 } footer: {
-                    Text("Appleと連携すると、次回からAppleでログインできます。")
+                    Text("初めて使うAppleアカウントは、今の写真や手紙に紐づけます。登録済みなら、そのアカウントにログインします。")
                 }
             } else {
                 Section {
@@ -141,18 +132,42 @@ struct AccountLinkView: View {
                     .disabled(model.isWorking)
                     .accessibilityIdentifier("auth.linkGoogle")
                 } footer: {
-                    Text("Googleと連携すると、次回からGoogleでログインできます。")
+                    Text("初めて使うGoogleアカウントは、今の写真や手紙に紐づけます。登録済みなら、そのアカウントにログインします。")
                 }
             }
             if model.isWorking {
-                ProgressView("連携しています…")
+                ProgressView("認証しています…")
             }
         }
         .scrollDismissesKeyboard(.interactively)
-        .navigationTitle(provider == .email ? "メールアドレスを登録" : "\(provider.title)と連携")
+        .navigationTitle("\(provider.title)で続ける")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(model.isWorking)
-        .alert("連携できませんでした", isPresented: Binding(
+        .onChange(of: model.hasPendingSignIn) { _, pending in
+            isShowingExistingSignIn = pending
+        }
+        .onDisappear { model.cancelExistingSignIn() }
+        .alert("メールをご確認ください", isPresented: $isShowingPasswordReset) {
+            Button("閉じる", role: .cancel) {}
+        } message: {
+            Text("パスワードを再設定するためのメールを送信しました。届かない場合は、入力したメールアドレスと迷惑メールをご確認ください。")
+        }
+        .alert("登録済みのアカウントにログインしますか？", isPresented: $isShowingExistingSignIn) {
+            Button("キャンセル", role: .cancel) { model.cancelExistingSignIn() }
+            Button("ログイン") {
+                Task {
+                    if await model.confirmExistingSignIn() {
+                        password = ""
+                        dismiss()
+                    }
+                }
+            }
+        } message: {
+            Text(model.isAnonymous
+                 ? "今の写真や手紙は引き継がれず、このアカウントには戻れなくなります。"
+                 : "ログインしたアカウントに切り替わります。今の写真や手紙は、そのアカウントには引き継がれません。")
+        }
+        .alert("認証できませんでした", isPresented: Binding(
             get: { model.errorMessage != nil }, set: { if !$0 { model.errorMessage = nil } }
         )) {
             Button("閉じる", role: .cancel) { model.errorMessage = nil }
