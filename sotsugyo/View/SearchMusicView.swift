@@ -6,6 +6,7 @@ struct SearchView: View {
     @StateObject private var viewModel: SearchViewModel
     @State private var retryCount = 0
     @State private var isConfirmingClearHistory = false
+    private let musicAccent = Color(uiColor: .systemPurple)
 
     init(selectedTrack: Binding<Track?>, viewModel: SearchViewModel? = nil) {
         _selectedTrack = selectedTrack
@@ -29,33 +30,65 @@ struct SearchView: View {
         .scrollDismissesKeyboard(.interactively)
         .overlay { emptyState }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if let track = viewModel.selection {
-                selectedTrackSummary(track)
+            if viewModel.selection != nil {
+                selectionSummary
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color(uiColor: .systemBackground))
             }
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) { addButton }
+        }
+        .tint(musicAccent)
         .navigationTitle("音楽を追加")
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $viewModel.searchText, prompt: "Apple Musicで曲名・アーティスト名を検索")
+        .modifier(KeepToolbarDuringSearch())
         .onSubmit(of: .search) { viewModel.remember(viewModel.query) }
-        .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                Button("追加") {
-                    guard let selection = viewModel.selection else { return }
-                    selectedTrack = selection
-                    dismiss()
-                }
-                .fontWeight(.semibold)
-                .buttonStyle(.borderedProminent)
-                .disabled(viewModel.selection == nil)
-                .accessibilityHint("選択した曲を写真に追加して、写真編集に戻ります")
-            }
-        }
         .confirmationDialog("検索履歴を消去しますか？", isPresented: $isConfirmingClearHistory, titleVisibility: .visible) {
             Button("履歴を消去", role: .destructive) { viewModel.clearHistory() }
             Button("キャンセル", role: .cancel) { }
         }
         .task(id: SearchRequest(query: viewModel.query, retryCount: retryCount)) {
             await viewModel.search()
+        }
+    }
+
+    private var addButton: some View {
+        Button {
+            guard let selection = viewModel.selection else { return }
+            selectedTrack = selection
+            dismiss()
+        } label: {
+            Text("追加")
+                .fontWeight(.semibold)
+                .frame(minWidth: 44, minHeight: 44)
+        }
+        .disabled(viewModel.selection == nil)
+        .accessibilityIdentifier("music.add")
+        .accessibilityHint("選択した曲を写真に追加して、写真編集に戻ります")
+    }
+
+    @ViewBuilder
+    private var selectionSummary: some View {
+        if let track = viewModel.selection {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("選択した曲")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(musicAccent)
+                HStack(spacing: 8) {
+                    MusicArtwork(track: track, size: 36)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(track.name).font(.subheadline.weight(.semibold)).lineLimit(1)
+                        Text(track.artist).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                    }
+                }
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("選択中の曲: \(track.name)、\(track.artist)")
+            .accessibilityIdentifier("music.selection")
         }
     }
 
@@ -111,21 +144,21 @@ struct SearchView: View {
         if !viewModel.tracks.isEmpty {
             Section {
                 ForEach(viewModel.tracks) { track in
-                    VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 0) {
                         Button {
                             viewModel.select(track)
                         } label: {
                             HStack(spacing: 12) {
                                 MusicArtwork(track: track)
                                 trackInfo(track)
-                                Spacer(minLength: 8)
-                                Image(systemName: viewModel.selection?.selectionID == track.selectionID ? "checkmark.circle.fill" : "circle")
-                                    .foregroundStyle(viewModel.selection?.selectionID == track.selectionID ? Color.accentColor : Color.secondary)
-                                    .font(.title3)
-                                    .accessibilityHidden(true)
+                                if viewModel.selection?.selectionID == track.selectionID {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.title3)
+                                        .foregroundStyle(musicAccent)
+                                        .accessibilityHidden(true)
+                                }
                             }
-                            .frame(minHeight: 56)
-                            .padding(.vertical, 6)
+                            .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
                             .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
@@ -133,12 +166,15 @@ struct SearchView: View {
                         .accessibilityAddTraits(viewModel.selection?.selectionID == track.selectionID ? .isSelected : [])
                         .accessibilityHint("写真に追加する曲として選択します")
                         if let url = track.serviceURL {
-                            Link("Apple Musicで聴く", destination: url)
-                                .font(.caption)
-                                .padding(.leading, 64)
-                                .frame(minHeight: 32)
+                            Link(destination: url) {
+                                Image(systemName: "arrow.up.right")
+                                    .font(.subheadline.weight(.semibold))
+                                    .frame(width: 44, height: 44)
+                            }
+                            .accessibilityLabel("Apple Musicで聴く")
                         }
                     }
+                    .padding(.vertical, 4)
                 }
             } header: {
                 Text(viewModel.resultsQuery == viewModel.query ? "曲" : "「\(viewModel.resultsQuery)」の検索結果")
@@ -164,28 +200,10 @@ struct SearchView: View {
         }
     }
 
-    private func selectedTrackSummary(_ track: Track) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("選択中").font(.caption).foregroundStyle(.secondary)
-            HStack(spacing: 12) {
-                MusicArtwork(track: track)
-                trackInfo(track)
-                Spacer(minLength: 0)
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(Color.accentColor)
-                    .accessibilityHidden(true)
-            }
-        }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.regularMaterial)
-        .accessibilityElement(children: .combine)
-    }
-
     private func trackInfo(_ track: Track) -> some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text(track.name).font(.body).foregroundStyle(.primary).lineLimit(2)
-            Text(track.artist).font(.subheadline).foregroundStyle(.secondary).lineLimit(2)
+            Text(track.name).font(.body.weight(.semibold)).foregroundStyle(.primary).lineLimit(1)
+            Text(track.artist).font(.subheadline).foregroundStyle(.secondary).lineLimit(1)
             if let album = track.albumName, !album.isEmpty {
                 Text(album).font(.caption).foregroundStyle(.secondary).lineLimit(1)
             }
@@ -194,19 +212,32 @@ struct SearchView: View {
     }
 }
 
+private struct KeepToolbarDuringSearch: ViewModifier {
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.searchPresentationToolbarBehavior(.avoidHidingContent)
+        } else {
+            content
+        }
+    }
+}
+
 private struct MusicArtwork: View {
     let track: Track
+    var size: CGFloat = 56
 
     var body: some View {
         AsyncImage(url: track.albumImages.first.flatMap(URL.init(string:))) { image in
             image.resizable().scaledToFill()
         } placeholder: {
             Image(systemName: "music.note")
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.white)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(uiColor: .tertiarySystemFill))
+                .background(LinearGradient(colors: [Color("mainColor"), Color(uiColor: .systemPurple)],
+                                           startPoint: .topLeading, endPoint: .bottomTrailing))
         }
-        .frame(width: 52, height: 52)
+        .frame(width: size, height: size)
         .clipShape(RoundedRectangle(cornerRadius: 6))
         .accessibilityHidden(true)
     }
