@@ -231,7 +231,7 @@ final class sotsugyoUITests: XCTestCase {
         attachScreenshot("撮影相手の確認")
         app.buttons["別のコードを読み取る"].tap()
         XCTAssertTrue(app.buttons["qr.simulateScan"].waitForExistence(timeout: 5))
-        app.buttons["見せる"].tap()
+        app.buttons["qr.showMode"].tap()
         XCTAssertTrue(app.images["qr.code"].waitForExistence(timeout: 5))
         attachScreenshot("友達に見せるQRコード")
     }

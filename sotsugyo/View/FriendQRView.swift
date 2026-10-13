@@ -7,9 +7,9 @@ struct FriendQRView: View {
     @Binding var isPresentingQR: Bool
     @State var friendUid: String
 
-    private enum Mode: String, CaseIterable {
-        case scan = "読み取る"
-        case show = "見せる"
+    private enum Mode {
+        case scan
+        case show
     }
 
     private let createInvitation: () async throws -> CameraInvitation
@@ -41,29 +41,31 @@ struct FriendQRView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
-                    Picker("QRコードの使い方", selection: $mode) {
-                        ForEach(Mode.allCases, id: \.self) { mode in
-                            Text(mode.rawValue).tag(mode)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .accessibilityIdentifier("qr.mode")
-                    .disabled(isCheckingCode)
-
+                VStack(spacing: 0) {
                     if mode == .scan { scanContent }
                     else { showContent }
                 }
                 .frame(maxWidth: 440)
                 .frame(maxWidth: .infinity)
-                .padding(24)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 32)
             }
-            .background(Color(uiColor: .systemGroupedBackground))
-            .navigationTitle("一緒に撮る")
+            .background(Color(uiColor: .systemBackground))
+            .navigationTitle(mode == .scan ? "QRコードを読み取る" : "QRコードを見せる")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("閉じる") { isPresentingQR = false }
+                    if mode == .show {
+                        Button("読み取る", systemImage: "chevron.left") { mode = .scan }
+                            .accessibilityIdentifier("qr.scanMode")
+                    } else {
+                        Button("閉じる") { isPresentingQR = false }
+                    }
+                }
+                if mode == .show {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("閉じる") { isPresentingQR = false }
+                    }
                 }
             }
             .safeAreaInset(edge: .bottom) {
@@ -73,11 +75,11 @@ struct FriendQRView: View {
                             .font(.headline)
                             .frame(maxWidth: .infinity, minHeight: 52)
                     }
-                        .buttonStyle(.borderedProminent)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
-                        .background(.bar)
-                        .accessibilityIdentifier("qr.takePhoto")
+                    .buttonStyle(.borderedProminent)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(.bar)
+                    .accessibilityIdentifier("qr.takePhoto")
                 }
             }
             .fullScreenCover(isPresented: $isPresentingQRCode) {
@@ -99,23 +101,21 @@ struct FriendQRView: View {
     }
 
     private var scanContent: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 24) {
             if let friendName {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 48))
-                    .foregroundStyle(GiftPalette.purpleText)
-                    .accessibilityHidden(true)
-                Text("\(friendName)さんと撮影")
-                    .font(.title2.bold())
-                    .accessibilityIdentifier("qr.confirmedName")
-                Text("撮影した写真を相手にも届けます。")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                VStack(spacing: 12) {
+                    Text("\(friendName)さんと撮影")
+                        .font(.title.bold())
+                        .accessibilityIdentifier("qr.confirmedName")
+                    Text("撮影した写真を相手にも届けます。")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, minHeight: 360)
                 Button("別のコードを読み取る") { resetScanner() }
-                    .padding(.top, 8)
             } else if isCheckingCode {
                 ProgressView("招待を確認しています…")
-                    .frame(maxWidth: .infinity, minHeight: 320)
+                    .frame(maxWidth: .infinity, minHeight: 360)
             } else if let scanError {
                 ContentUnavailableView("読み取れませんでした", systemImage: "qrcode.viewfinder",
                                        description: Text(scanError))
@@ -133,12 +133,23 @@ struct FriendQRView: View {
                 }
             } else {
                 Text("友達のQRコードを枠に合わせてください")
-                    .font(.headline)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                 #if targetEnvironment(simulator)
-                ContentUnavailableView("カメラを使用できません", systemImage: "camera",
-                                       description: Text("QRコードの読み取りは実機で確認してください。"))
-                    .frame(maxWidth: .infinity, minHeight: 320)
+                ZStack {
+                    Color.black
+                    RoundedRectangle(cornerRadius: 16)
+                        .strokeBorder(.white.opacity(0.8), lineWidth: 2)
+                        .frame(width: 236, height: 236)
+                    Text("カメラは実機で使用できます")
+                        .font(.subheadline)
+                        .foregroundStyle(.white)
+                        .padding(12)
+                        .background(.black.opacity(0.65), in: Capsule())
+                }
+                .frame(height: 400)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
                 #if DEBUG
                 if UITestFixtures.isEnabled && ProcessInfo.processInfo.arguments.contains("-ui-testing-qr") {
                     Button("読み取りを試す") {
@@ -161,36 +172,34 @@ struct FriendQRView: View {
                     }
                 }
                 .id(scannerID)
-                .frame(height: 320)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .frame(height: 400)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
                 .accessibilityLabel("QRコード読み取りカメラ")
                 #endif
-                Text("読み取ると、撮影相手を確認できます。")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
+            }
+            if !isCheckingCode && friendName == nil {
+                Button("自分のQRコードを見せる") { mode = .show }
+                    .accessibilityIdentifier("qr.showMode")
             }
         }
         .frame(maxWidth: .infinity)
     }
 
     private var showContent: some View {
-        VStack(spacing: 16) {
-            Text("このQRコードを友達に見せてください")
-                .font(.headline)
-                .multilineTextAlignment(.center)
+        VStack(spacing: 24) {
             if let qrCodeImage {
                 Image(uiImage: qrCodeImage)
                     .interpolation(.none)
                     .resizable()
                     .frame(width: 236, height: 236)
-                    .padding(20)
-                    .background(.white, in: RoundedRectangle(cornerRadius: 20))
+                    .padding(24)
+                    .background(.white)
                     .accessibilityLabel("友達に見せる招待QRコード")
                     .accessibilityIdentifier("qr.code")
+                    .frame(maxWidth: .infinity, minHeight: 360)
             } else if isCreatingCode {
                 ProgressView("QRコードを作成しています…")
-                    .frame(maxWidth: .infinity, minHeight: 276)
+                    .frame(maxWidth: .infinity, minHeight: 360)
             }
             if let codeError {
                 Text(codeError)
@@ -199,7 +208,7 @@ struct FriendQRView: View {
                     .multilineTextAlignment(.center)
                     .accessibilityIdentifier("qr.codeError")
             } else {
-                Text("友達が読み取ると、一緒に撮った写真を受け取れます。\nQRコードは15分間有効です。")
+                Text("友達に見せてください。15分間有効です。")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
