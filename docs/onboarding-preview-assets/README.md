@@ -1,6 +1,8 @@
 # オンボーディング比較用の写真
 
-`onboarding-five-patterns.html` のプロトタイプ専用です。人物写真は組み込みの ImageGen で生成しました。チェキ枠は既存の `sotsugyo/Assets.xcassets/チェキ素材.imageset/チェキ素材.jpg` をHTMLから直接参照しています。
+`onboarding-five-patterns.html` のプロトタイプ専用です。人物写真は組み込みの ImageGen で生成しました。
+
+`decorated-cheki-lace.jpg` と `decorated-cheki-ribbon.jpg` は、`codex/onboarding-reference-study` ブランチの `docs/research/onboarding-2026-10-07/pictune-capture/` にある同名の画像を使用しています。PicTuneの実ビルドを iPhone 18 Pro・iOS 27.0 シミュレーターで動かし、既存の描画処理から書き出したチェキです。中の写真は比較用のサンプルで、ユーザーの写真ではありません。
 
 | ファイル | 生成時の指示 |
 | --- | --- |
