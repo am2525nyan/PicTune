@@ -214,6 +214,9 @@ final class sotsugyoUITests: XCTestCase {
         XCTAssertTrue(app.buttons["一人で撮る"].waitForExistence(timeout: 5))
         app.buttons["友達と撮る"].tap()
         XCTAssertTrue(app.staticTexts["友達のQRコードを枠に合わせてください"].waitForExistence(timeout: 5))
+        app.buttons["qr.showMode"].tap()
+        XCTAssertTrue(app.navigationBars["QRコードを見せる"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.buttons.matching(identifier: "閉じる").count, 1)
         app.buttons["閉じる"].tap()
         XCTAssertTrue(app.buttons["撮影"].waitForExistence(timeout: 5))
     }
@@ -234,6 +237,8 @@ final class sotsugyoUITests: XCTestCase {
         app.buttons["qr.showMode"].tap()
         XCTAssertTrue(app.images["qr.code"].waitForExistence(timeout: 5))
         attachScreenshot("友達に見せるQRコード")
+        app.buttons["qr.scanMode"].tap()
+        XCTAssertTrue(app.buttons["qr.simulateScan"].waitForExistence(timeout: 5))
     }
 
     @MainActor

@@ -55,17 +55,7 @@ struct FriendQRView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    if mode == .show {
-                        Button("読み取る", systemImage: "chevron.left") { mode = .scan }
-                            .accessibilityIdentifier("qr.scanMode")
-                    } else {
-                        Button("閉じる") { isPresentingQR = false }
-                    }
-                }
-                if mode == .show {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("閉じる") { isPresentingQR = false }
-                    }
+                    Button("閉じる") { isPresentingQR = false }
                 }
             }
             .safeAreaInset(edge: .bottom) {
@@ -219,6 +209,8 @@ struct FriendQRView: View {
                 }
                 .accessibilityIdentifier("qr.refresh")
             }
+            Button("QRコードを読み取る") { mode = .scan }
+                .accessibilityIdentifier("qr.scanMode")
         }
         .frame(maxWidth: .infinity)
     }
