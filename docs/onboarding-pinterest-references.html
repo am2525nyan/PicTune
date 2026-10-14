@@ -87,9 +87,9 @@
 </head>
 <body>
   <header class="hero"><div class="hero-inner">
-    <span class="stamp">PICTUNE × PINTEREST / 30 REFERENCES</span>
+    <span class="stamp">PICTUNE / 32 REFERENCES</span>
     <h1>好きな雰囲気を、<br>スワイプで。</h1>
-    <p>新しい参考を15件追加しました。写真が主役の画面から、気になるものを右へ、違うものを左へ。04・18・22は「好き」に入れています。</p>
+    <p>Pinterestの参考30件と、いただいた画像2枚を並べました。気になるものを右へ、違うものを左へ。04・18・22と、今回の2枚は「好き」に入れています。</p>
     <div class="intro-strip"><span>→ 好き</span><span>← 嫌い</span><span>結果はこのブラウザに自動保存</span></div>
   </div></header>
   <main class="page">
@@ -99,8 +99,8 @@
         <h2 id="swipe-title">1枚ずつ選ぶ</h2>
         <p>左右にドラッグ・スワイプできます。下のボタン、キーボードの←・→でも判定できます。「戻す」で直前の判定を取り消せます。</p>
         <div class="gesture-guide"><span class="left">← 嫌い</span><span>／</span><span class="right">好き →</span></div>
-        <div class="progress-label"><span>判定した数</span><span id="progressText">0 / 30</span></div>
-        <div class="progress-track" role="progressbar" aria-label="判定の進捗" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-label"><span>判定した数</span><span id="progressText">0 / 32</span></div>
+        <div class="progress-track" role="progressbar" aria-label="判定の進捗" aria-valuemin="0" aria-valuemax="32" aria-valuenow="0" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
         <div class="counts"><span id="pendingCount">未判定 0</span><span id="likeCount">好き 0</span><span id="dislikeCount">嫌い 0</span></div>
         <p class="save-state" id="saveState">このブラウザに判定結果を保存します。</p>
       </div>
@@ -114,19 +114,20 @@
     </section>
     <section class="results" aria-labelledby="results-title">
       <div class="results-head"><div><span class="section-kicker">02 / REVIEW</span><h2 id="results-title">選んだ結果</h2></div><button class="copy-button" id="copyButton" type="button">好き／嫌いの番号をコピー</button></div>
-      <div class="filters" role="group" aria-label="表示する判定"><button type="button" data-filter="like" aria-pressed="true">好き <span id="filterLikeCount">0</span></button><button type="button" data-filter="dislike" aria-pressed="false">嫌い <span id="filterDislikeCount">0</span></button><button type="button" data-filter="pending" aria-pressed="false">未判定 <span id="filterPendingCount">0</span></button><button type="button" data-filter="all" aria-pressed="false">すべて 30</button></div>
+      <div class="filters" role="group" aria-label="表示する判定"><button type="button" data-filter="like" aria-pressed="true">好き <span id="filterLikeCount">0</span></button><button type="button" data-filter="dislike" aria-pressed="false">嫌い <span id="filterDislikeCount">0</span></button><button type="button" data-filter="pending" aria-pressed="false">未判定 <span id="filterPendingCount">0</span></button><button type="button" data-filter="all" aria-pressed="false">すべて 32</button></div>
       <div class="result-grid" id="resultGrid"></div>
     </section>
     <div id="announcer" class="sr-only" role="status" aria-live="polite"></div>
   </main>
-  <footer>画像はPinterestの配信元から直接読み込む参考表示です。Pinの画像やリンクはPinterest側で変わる場合があります。作品や画像の権利は各権利者に帰属します。PicTuneの実装素材として転用するものではありません。</footer>
-  <script id="pin-data" type="application/json">[{"id":"23","pin":"112097478222038077","image":"https://i.pinimg.com/474x/b0/ad/fe/b0adfeb00486f84920a2e5c1a9a7780a.jpg","title":"写真を前に出した編集アプリ","focus":"大胆な写真配置と黒い画面","group":"写真と配色","new":true},{"id":"24","pin":"23151385580882862","image":"https://i.pinimg.com/474x/06/ac/4b/06ac4bf7305dee1a5372c28da5b851a4.jpg","title":"友だちの写真で始まる画面","focus":"人物写真と緑の強い背景","group":"写真と配色","new":true},{"id":"25","pin":"2674081026611649","image":"https://i.pinimg.com/474x/46/a4/da/46a4da6856d868af374fbea2da940af4.jpg","title":"写真を使ったポップな初回画面","focus":"黄・ピンク・青の見せ方","group":"写真と配色","new":true},{"id":"26","pin":"1144899536554991839","image":"https://i.pinimg.com/474x/5f/55/dd/5f55dd5a9eabacf7d6b84ecead58f524.jpg","title":"紫と写真のポップな画面","focus":"人物写真に重なるUIパーツ","group":"写真と配色","new":true},{"id":"27","pin":"985231165186176","image":"https://i.pinimg.com/474x/f3/e4/01/f3e4010ece2d4d2d42aea3968fe79cb2.jpg","title":"暗色の写真ジャーナル","focus":"写真だけが浮き上がる背景","group":"写真と配色","new":true},{"id":"28","pin":"295196950601062761","image":"https://i.pinimg.com/474x/32/5a/cd/325acd7ac87b82eed754fff4e6b47fdb.jpg","title":"レトロな写真ウィンドウ","focus":"紙ものと小窓の重ね方","group":"コラージュ","new":true},{"id":"29","pin":"3870349675948736","image":"https://i.pinimg.com/474x/d6/39/cb/d639cba71e5221f696184f4a1401c0fa.jpg","title":"デジタルスクラップブック","focus":"写真をめくる立体感","group":"コラージュ","new":true},{"id":"30","pin":"1100426490233051400","image":"https://i.pinimg.com/474x/d2/30/86/d23086182e2119dd27d8af2a8dd67711.jpg","title":"写真で語るメモリー初回画面","focus":"実際の写真を中心にした説明","group":"思い出アプリ","new":true},{"id":"31","pin":"634303928814755469","image":"https://i.pinimg.com/474x/59/99/cb/5999cb9deca201b2739935986c054e2a.jpg","title":"共有アルバムのビジュアル","focus":"友だちの写真を強く見せる","group":"思い出アプリ","new":true},{"id":"32","pin":"526358275225568478","image":"https://i.pinimg.com/474x/7e/cb/fa/7ecbfa29e4718d237002b393cb787ed7.jpg","title":"写真とイベントの記録UI","focus":"色と写真を同じ強さで扱う","group":"思い出アプリ","new":true},{"id":"33","pin":"337699672081908427","image":"https://i.pinimg.com/474x/6a/44/c8/6a44c8d1b98b33eb1d1c111015f6445d.jpg","title":"大きな文字と写真コラージュ","focus":"写真の上に文字を重ねる勢い","group":"コラージュ","new":true},{"id":"34","pin":"1122663013410015103","image":"https://i.pinimg.com/474x/a1/eb/6b/a1eb6b97ae8479f5a4985f571e89f112.jpg","title":"写真と楽曲の初回画面","focus":"写真と音楽の情報を一緒に見せる","group":"思い出アプリ","new":true},{"id":"35","pin":"1094515515719111394","image":"https://i.pinimg.com/474x/d5/c5/c2/d5c5c25c2ea5452cdc1ab928bddc2332.jpg","title":"黒とピンクの写真編集UI","focus":"暗色の中で写真とピンクを光らせる","group":"暗色と蛍光色","new":true},{"id":"36","pin":"1123366700838594308","image":"https://i.pinimg.com/474x/47/de/f3/47def3f7c28c0653bf5ea3a7a2a64f74.jpg","title":"暗色の動画・写真編集UI","focus":"画面群で色と質感を揃える","group":"暗色と蛍光色","new":true},{"id":"37","pin":"703756185088528","image":"https://i.pinimg.com/474x/8e/8d/e5/8e8de5f77cbbbf685d3662e3b5b48896.jpg","title":"青と蛍光色の音楽UI","focus":"音楽を添える時の色のアクセント","group":"暗色と蛍光色","new":true},{"id":"04","pin":"563018699373529","image":"https://i.pinimg.com/474x/07/b9/dd/07b9dd88e1578a414e8101dab875077c.jpg","title":"ビビッドな画面を連続させる","focus":"人物写真と強い配色を画面ごとに切り替える","group":"既存の参考","new":false},{"id":"18","pin":"2674081025450612","image":"https://i.pinimg.com/474x/68/b5/5a/68b55a7837103037061a7af9ad12b151.jpg","title":"Y2K風のアプリ画面","focus":"淡い色、細部の装飾、画面数の多さ","group":"既存の参考","new":false},{"id":"22","pin":"2674081026080044","image":"https://i.pinimg.com/474x/1d/6b/eb/1d6beb127b3d1f6b4d05ff4e5c07fe1e.jpg","title":"ポップな画面の一覧","focus":"黒と蛍光色のコントラスト、画面群の統一感","group":"既存の参考","new":false},{"id":"08","pin":"12173861490015139","image":"https://i.pinimg.com/474x/d5/22/3e/d5223eeb43daa1e448d330a9818bba85.jpg","title":"Digital Scrapbook","focus":"写真・手書き・ステッカーの重ね方","group":"既存の参考","new":false},{"id":"09","pin":"7388786885072463","image":"https://i.pinimg.com/474x/44/fc/97/44fc97bddac7680ab493bf3f2797f954.jpg","title":"写真と手描きのレイアウト","focus":"写真を主役にしたにぎやかさ","group":"既存の参考","new":false},{"id":"10","pin":"4151824653419676","image":"https://i.pinimg.com/474x/72/e3/0e/72e30ebdd954595b640535ed21449920.jpg","title":"黄色とオレンジの写真コラージュ","focus":"温かい色と切り抜き写真","group":"既存の参考","new":false},{"id":"11","pin":"45247171253221380","image":"https://i.pinimg.com/474x/ac/99/a5/ac99a5b1b4bd4eb19bb83c532f6c4cb1.jpg","title":"Monthly dump","focus":"複数の思い出を一つの作品にする密度","group":"既存の参考","new":false},{"id":"12","pin":"968203619912520458","image":"https://i.pinimg.com/474x/b3/78/8b/b3788be0ac97cb06085c42228c562135.jpg","title":"Memory Board","focus":"写真を重ねたアルバムの見せ方","group":"既存の参考","new":false},{"id":"13","pin":"2674081026860008","image":"https://i.pinimg.com/474x/b2/c1/22/b2c12269bf7e0608d8965e5f287b531c.jpg","title":"Collage App UI","focus":"アプリ画面の中で写真を重ねる","group":"既存の参考","new":false},{"id":"14","pin":"2674081026855384","image":"https://i.pinimg.com/474x/32/90/c0/3290c07344919216b6272a4016fccfee.jpg","title":"写真を切手のように並べる","focus":"小さな写真を収集物に見せる","group":"既存の参考","new":false},{"id":"15","pin":"56858014040835633","image":"https://i.pinimg.com/474x/97/31/51/97315167fc75b9b6a32c5a92827d5292.jpg","title":"写真日記の画面群","focus":"実際の写真が並ぶときの情報量","group":"既存の参考","new":false},{"id":"16","pin":"1900024839884242","image":"https://i.pinimg.com/474x/42/d1/e1/42d1e1730ca7804daa7a4af6ed68f3b3.jpg","title":"写真と再生UI","focus":"写真に曲を添える画面構成","group":"既存の参考","new":false},{"id":"17","pin":"1970393584534699","image":"https://i.pinimg.com/474x/df/60/7f/df607f89786323b170c32e8842f4a792.jpg","title":"レトロなウィンドウのコラージュ","focus":"写真やラベルを自由に重ねる発想","group":"既存の参考","new":false},{"id":"19","pin":"12525705209750940","image":"https://i.pinimg.com/474x/b9/42/ec/b942ecd09d3067208294d0b6a7efeb1a.jpg","title":"Neo BrutalismのモバイルUI","focus":"太い線・高いコントラスト","group":"既存の参考","new":false},{"id":"20","pin":"1970393584280865","image":"https://i.pinimg.com/474x/7e/4c/fd/7e4cfd2849972e5bf6d5ff16ce907d98.jpg","title":"ゲームのような画面構成","focus":"小さな装飾を大量に置くバランス","group":"既存の参考","new":false}]</script>
+  <footer>Pinterestの画像は配信元から直接読み込みます。いただいた2枚は参考資料としてこのHTMLと一緒に保存しています。作品や画像の権利は各権利者に帰属し、PicTuneの実装素材として転用するものではありません。</footer>
+  <script id="pin-data" type="application/json">[{"id":"38","image":"onboarding-reference-images/user-favorite-38.png","title":"人物写真を重ねるオンボーディング","focus":"大きく重なる角丸写真、白い余白、オレンジのアクセント","group":"いただいた参考","new":true},{"id":"39","image":"onboarding-reference-images/user-favorite-39.png","title":"浮遊する小物と中央ボタン","focus":"切り抜きモチーフの浮遊感と、余白の中の一つのアクション","group":"いただいた参考","new":true},{"id":"23","pin":"112097478222038077","image":"https://i.pinimg.com/474x/b0/ad/fe/b0adfeb00486f84920a2e5c1a9a7780a.jpg","title":"写真を前に出した編集アプリ","focus":"大胆な写真配置と黒い画面","group":"写真と配色","new":true},{"id":"24","pin":"23151385580882862","image":"https://i.pinimg.com/474x/06/ac/4b/06ac4bf7305dee1a5372c28da5b851a4.jpg","title":"友だちの写真で始まる画面","focus":"人物写真と緑の強い背景","group":"写真と配色","new":true},{"id":"25","pin":"2674081026611649","image":"https://i.pinimg.com/474x/46/a4/da/46a4da6856d868af374fbea2da940af4.jpg","title":"写真を使ったポップな初回画面","focus":"黄・ピンク・青の見せ方","group":"写真と配色","new":true},{"id":"26","pin":"1144899536554991839","image":"https://i.pinimg.com/474x/5f/55/dd/5f55dd5a9eabacf7d6b84ecead58f524.jpg","title":"紫と写真のポップな画面","focus":"人物写真に重なるUIパーツ","group":"写真と配色","new":true},{"id":"27","pin":"985231165186176","image":"https://i.pinimg.com/474x/f3/e4/01/f3e4010ece2d4d2d42aea3968fe79cb2.jpg","title":"暗色の写真ジャーナル","focus":"写真だけが浮き上がる背景","group":"写真と配色","new":true},{"id":"28","pin":"295196950601062761","image":"https://i.pinimg.com/474x/32/5a/cd/325acd7ac87b82eed754fff4e6b47fdb.jpg","title":"レトロな写真ウィンドウ","focus":"紙ものと小窓の重ね方","group":"コラージュ","new":true},{"id":"29","pin":"3870349675948736","image":"https://i.pinimg.com/474x/d6/39/cb/d639cba71e5221f696184f4a1401c0fa.jpg","title":"デジタルスクラップブック","focus":"写真をめくる立体感","group":"コラージュ","new":true},{"id":"30","pin":"1100426490233051400","image":"https://i.pinimg.com/474x/d2/30/86/d23086182e2119dd27d8af2a8dd67711.jpg","title":"写真で語るメモリー初回画面","focus":"実際の写真を中心にした説明","group":"思い出アプリ","new":true},{"id":"31","pin":"634303928814755469","image":"https://i.pinimg.com/474x/59/99/cb/5999cb9deca201b2739935986c054e2a.jpg","title":"共有アルバムのビジュアル","focus":"友だちの写真を強く見せる","group":"思い出アプリ","new":true},{"id":"32","pin":"526358275225568478","image":"https://i.pinimg.com/474x/7e/cb/fa/7ecbfa29e4718d237002b393cb787ed7.jpg","title":"写真とイベントの記録UI","focus":"色と写真を同じ強さで扱う","group":"思い出アプリ","new":true},{"id":"33","pin":"337699672081908427","image":"https://i.pinimg.com/474x/6a/44/c8/6a44c8d1b98b33eb1d1c111015f6445d.jpg","title":"大きな文字と写真コラージュ","focus":"写真の上に文字を重ねる勢い","group":"コラージュ","new":true},{"id":"34","pin":"1122663013410015103","image":"https://i.pinimg.com/474x/a1/eb/6b/a1eb6b97ae8479f5a4985f571e89f112.jpg","title":"写真と楽曲の初回画面","focus":"写真と音楽の情報を一緒に見せる","group":"思い出アプリ","new":true},{"id":"35","pin":"1094515515719111394","image":"https://i.pinimg.com/474x/d5/c5/c2/d5c5c25c2ea5452cdc1ab928bddc2332.jpg","title":"黒とピンクの写真編集UI","focus":"暗色の中で写真とピンクを光らせる","group":"暗色と蛍光色","new":true},{"id":"36","pin":"1123366700838594308","image":"https://i.pinimg.com/474x/47/de/f3/47def3f7c28c0653bf5ea3a7a2a64f74.jpg","title":"暗色の動画・写真編集UI","focus":"画面群で色と質感を揃える","group":"暗色と蛍光色","new":true},{"id":"37","pin":"703756185088528","image":"https://i.pinimg.com/474x/8e/8d/e5/8e8de5f77cbbbf685d3662e3b5b48896.jpg","title":"青と蛍光色の音楽UI","focus":"音楽を添える時の色のアクセント","group":"暗色と蛍光色","new":true},{"id":"04","pin":"563018699373529","image":"https://i.pinimg.com/474x/07/b9/dd/07b9dd88e1578a414e8101dab875077c.jpg","title":"ビビッドな画面を連続させる","focus":"人物写真と強い配色を画面ごとに切り替える","group":"既存の参考","new":false},{"id":"18","pin":"2674081025450612","image":"https://i.pinimg.com/474x/68/b5/5a/68b55a7837103037061a7af9ad12b151.jpg","title":"Y2K風のアプリ画面","focus":"淡い色、細部の装飾、画面数の多さ","group":"既存の参考","new":false},{"id":"22","pin":"2674081026080044","image":"https://i.pinimg.com/474x/1d/6b/eb/1d6beb127b3d1f6b4d05ff4e5c07fe1e.jpg","title":"ポップな画面の一覧","focus":"黒と蛍光色のコントラスト、画面群の統一感","group":"既存の参考","new":false},{"id":"08","pin":"12173861490015139","image":"https://i.pinimg.com/474x/d5/22/3e/d5223eeb43daa1e448d330a9818bba85.jpg","title":"Digital Scrapbook","focus":"写真・手書き・ステッカーの重ね方","group":"既存の参考","new":false},{"id":"09","pin":"7388786885072463","image":"https://i.pinimg.com/474x/44/fc/97/44fc97bddac7680ab493bf3f2797f954.jpg","title":"写真と手描きのレイアウト","focus":"写真を主役にしたにぎやかさ","group":"既存の参考","new":false},{"id":"10","pin":"4151824653419676","image":"https://i.pinimg.com/474x/72/e3/0e/72e30ebdd954595b640535ed21449920.jpg","title":"黄色とオレンジの写真コラージュ","focus":"温かい色と切り抜き写真","group":"既存の参考","new":false},{"id":"11","pin":"45247171253221380","image":"https://i.pinimg.com/474x/ac/99/a5/ac99a5b1b4bd4eb19bb83c532f6c4cb1.jpg","title":"Monthly dump","focus":"複数の思い出を一つの作品にする密度","group":"既存の参考","new":false},{"id":"12","pin":"968203619912520458","image":"https://i.pinimg.com/474x/b3/78/8b/b3788be0ac97cb06085c42228c562135.jpg","title":"Memory Board","focus":"写真を重ねたアルバムの見せ方","group":"既存の参考","new":false},{"id":"13","pin":"2674081026860008","image":"https://i.pinimg.com/474x/b2/c1/22/b2c12269bf7e0608d8965e5f287b531c.jpg","title":"Collage App UI","focus":"アプリ画面の中で写真を重ねる","group":"既存の参考","new":false},{"id":"14","pin":"2674081026855384","image":"https://i.pinimg.com/474x/32/90/c0/3290c07344919216b6272a4016fccfee.jpg","title":"写真を切手のように並べる","focus":"小さな写真を収集物に見せる","group":"既存の参考","new":false},{"id":"15","pin":"56858014040835633","image":"https://i.pinimg.com/474x/97/31/51/97315167fc75b9b6a32c5a92827d5292.jpg","title":"写真日記の画面群","focus":"実際の写真が並ぶときの情報量","group":"既存の参考","new":false},{"id":"16","pin":"1900024839884242","image":"https://i.pinimg.com/474x/42/d1/e1/42d1e1730ca7804daa7a4af6ed68f3b3.jpg","title":"写真と再生UI","focus":"写真に曲を添える画面構成","group":"既存の参考","new":false},{"id":"17","pin":"1970393584534699","image":"https://i.pinimg.com/474x/df/60/7f/df607f89786323b170c32e8842f4a792.jpg","title":"レトロなウィンドウのコラージュ","focus":"写真やラベルを自由に重ねる発想","group":"既存の参考","new":false},{"id":"19","pin":"12525705209750940","image":"https://i.pinimg.com/474x/b9/42/ec/b942ecd09d3067208294d0b6a7efeb1a.jpg","title":"Neo BrutalismのモバイルUI","focus":"太い線・高いコントラスト","group":"既存の参考","new":false},{"id":"20","pin":"1970393584280865","image":"https://i.pinimg.com/474x/7e/4c/fd/7e4cfd2849972e5bf6d5ff16ce907d98.jpg","title":"ゲームのような画面構成","focus":"小さな装飾を大量に置くバランス","group":"既存の参考","new":false}]</script>
   <script>
   (function () {
     'use strict';
     const references = JSON.parse(document.getElementById('pin-data').textContent);
-    const storageKey = 'pictune-pinterest-swipe-v1';
-    const seed = { '04': 'like', '18': 'like', '22': 'like' };
+    const storageKey = 'pictune-pinterest-swipe-v2';
+    const legacyStorageKey = 'pictune-pinterest-swipe-v1';
+    const seed = { '04': 'like', '18': 'like', '22': 'like', '38': 'like', '39': 'like' };
     const knownIds = new Set(references.map(item => item.id));
     let decisions = loadDecisions();
     let filter = 'like';
@@ -140,11 +141,14 @@
 
     function loadDecisions() {
       try {
-        const stored = localStorage.getItem(storageKey);
+        const current = localStorage.getItem(storageKey);
+        const legacy = current === null ? localStorage.getItem(legacyStorageKey) : null;
+        const stored = current === null ? legacy : current;
         if (stored) {
           const parsed = JSON.parse(stored);
           if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-            return Object.fromEntries(Object.entries(parsed).filter(([id, value]) => knownIds.has(id) && (value === 'like' || value === 'dislike')));
+            const valid = Object.fromEntries(Object.entries(parsed).filter(([id, value]) => knownIds.has(id) && (value === 'like' || value === 'dislike')));
+            return legacy === null ? valid : { '38': 'like', '39': 'like', ...valid };
           }
         }
       } catch (_) { /* Saving may be unavailable for local files. */ }
@@ -184,7 +188,8 @@
         el('deckGroup').textContent = item.group;
         el('deckTitle').textContent = item.title;
         el('deckFocus').textContent = item.focus;
-        el('deckLink').href = 'https://www.pinterest.com/pin/' + item.pin + '/';
+        el('deckLink').hidden = !item.pin;
+        if (item.pin) el('deckLink').href = 'https://www.pinterest.com/pin/' + item.pin + '/';
       }
       el('likeButton').disabled = !item;
       el('dislikeButton').disabled = !item;
@@ -219,17 +224,21 @@
       label.textContent = 'NO. ' + item.id + (item.new ? ' · NEW' : '');
       const title = document.createElement('h3');
       title.textContent = item.title;
-      const link = document.createElement('a');
-      link.href = 'https://www.pinterest.com/pin/' + item.pin + '/';
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.textContent = '元のPinを見る ↗';
       const change = document.createElement('button');
       change.type = 'button';
       change.dataset.id = item.id;
       change.textContent = decisions[item.id] ? '再判定する' : 'この画像を好きにする';
       change.dataset.action = decisions[item.id] ? 'clear' : 'like';
-      info.append(label, title, link, change);
+      info.append(label, title);
+      if (item.pin) {
+        const link = document.createElement('a');
+        link.href = 'https://www.pinterest.com/pin/' + item.pin + '/';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = '元のPinを見る ↗';
+        info.append(link);
+      }
+      info.append(change);
       box.append(image, info);
       return box;
     }
