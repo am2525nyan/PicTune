@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>PicTune | オンボーディング 5案</title>
+  <style>
+    :root { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif; color: #211e27; background: #f6f3ef; }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; cursor: pointer; }
+    a { color: inherit; }
+    .page-head { padding: 58px clamp(20px, 6vw, 90px) 49px; background: #e8ddf6; border-bottom: 1px solid #d4c6e3; }
+    .page-head-inner { max-width: 1420px; margin: auto; }
+    .eyebrow { margin: 0 0 13px; font-size: 11px; font-weight: 850; letter-spacing: .17em; text-transform: uppercase; }
+    .page-head h1 { margin: 0; max-width: 900px; font-size: clamp(38px, 5vw, 68px); letter-spacing: -.07em; line-height: 1.12; }
+    .page-head p:last-of-type { max-width: 780px; line-height: 1.8; font-size: 15px; margin: 18px 0 0; color: #4e465c; }
+    .jump { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
+    .jump a { text-decoration: none; background: #fff; border: 1px solid #c7b7da; border-radius: 99px; padding: 9px 14px; font-size: 12px; font-weight: 750; }
+    .jump a:hover, .jump a:focus-visible { background: #211e27; color: #fff; }
+    main { max-width: 1500px; margin: 0 auto; padding: 0 clamp(16px, 5vw, 75px) 65px; }
+    .pattern { display: grid; grid-template-columns: minmax(240px, 1fr) minmax(330px, 430px); gap: clamp(25px, 5vw, 85px); padding: 76px 0; border-bottom: 1px solid #ddd5dc; align-items: center; }
+    .pattern:nth-of-type(even) .pattern-copy { order: 2; }
+    .pattern:nth-of-type(even) .preview { order: 1; }
+    .pattern-copy { max-width: 480px; }
+    .pattern-number { font-family: Georgia, serif; font-size: 86px; line-height: 1; letter-spacing: -.08em; color: #b9a8c3; }
+    .pattern-copy h2 { font-size: clamp(34px, 4vw, 52px); line-height: 1.12; letter-spacing: -.065em; margin: 14px 0 18px; }
+    .pattern-copy p { line-height: 1.85; margin: 0 0 15px; color: #514c54; font-size: 15px; }
+    .pattern-copy .source { font-size: 12px; font-weight: 750; color: #665973; }
+    .pattern-copy .tags { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 21px; }
+    .tags span { border: 1px solid #d4c8d4; padding: 7px 10px; border-radius: 8px; font-size: 11px; font-weight: 750; background: #fff; }
+    .preview { width: min(100%, 430px); justify-self: center; }
+    .phone { width: min(100%, 390px); aspect-ratio: 390 / 790; position: relative; margin: auto; overflow: hidden; border: 8px solid #26212a; border-radius: 48px; box-shadow: 0 24px 55px #27212c28, inset 0 0 0 1px #fff9; background: var(--base); color: var(--ink); }
+    .phone::after { content: ""; position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); width: 115px; height: 4px; border-radius: 9px; background: var(--ink); opacity: .8; z-index: 9; pointer-events: none; }
+    .phone-top { height: 45px; position: relative; z-index: 5; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; font-size: 13px; font-weight: 850; letter-spacing: -.03em; }
+    .phone-top .signals { font-size: 13px; letter-spacing: 1px; }
+    .phone-top .island { position: absolute; left: 50%; top: 7px; transform: translateX(-50%); height: 20px; width: 90px; border-radius: 99px; background: #17141b; }
+    .phone-body { height: calc(100% - 45px); display: flex; flex-direction: column; }
+    .slides { flex: 1; min-height: 0; position: relative; }
+    .slide { display: none; height: 100%; min-height: 0; flex-direction: column; }
+    .slide.active { display: flex; animation: enter .32s ease both; }
+    @keyframes enter { from { opacity: .25; transform: translateY(9px); } to { opacity: 1; transform: none; } }
+    .visual { flex: 1; min-height: 0; position: relative; overflow: hidden; }
+    .visual img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .copy { position: relative; z-index: 2; flex: none; padding: 0 26px; }
+    .copy .micro { font-size: 10px; letter-spacing: .18em; font-weight: 850; text-transform: uppercase; margin: 0 0 9px; }
+    .copy h3 { font-size: 31px; line-height: 1.2; letter-spacing: -.06em; margin: 0 0 10px; }
+    .copy p:last-child { font-size: 12px; line-height: 1.65; margin: 0; color: var(--muted); }
+    .phone-bottom { flex: none; padding: 17px 25px 23px; position: relative; z-index: 4; }
+    .dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 13px; }
+    .dot { width: 7px; height: 7px; border: 0; border-radius: 99px; padding: 0; background: var(--ink); opacity: .23; }
+    .dot[aria-current="step"] { width: 24px; opacity: 1; }
+    .primary { width: 100%; min-height: 49px; border: 0; border-radius: 15px; font-weight: 800; font-size: 14px; background: var(--button); color: var(--button-text); }
+    .primary:hover { filter: brightness(.95); }
+    .skip { display: block; border: 0; background: transparent; color: var(--muted); font-size: 11px; font-weight: 750; margin: 7px auto 0; padding: 5px 12px; min-height: 30px; }
+    .preview-controls { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 20px; font-size: 12px; font-weight: 750; }
+    .preview-controls button { min-height: 38px; border: 1px solid #c4b9c5; background: #fff; border-radius: 99px; padding: 8px 14px; font-weight: 750; }
+    .preview-controls button:disabled { opacity: .4; cursor: default; }
+    .auth-sheet { position: absolute; inset: 0; z-index: 12; display: flex; flex-direction: column; justify-content: flex-end; background: #1a162990; }
+    .auth-content { padding: 25px 22px 38px; background: #fffdfb; color: #211e27; border-radius: 26px 26px 0 0; box-shadow: 0 -12px 35px #0002; }
+    .auth-content .handle { display: block; width: 36px; height: 4px; border-radius: 99px; background: #c5bac5; margin: -10px auto 18px; }
+    .auth-content h4 { margin: 0 0 7px; font-size: 23px; letter-spacing: -.05em; }
+    .auth-content p { margin: 0 0 18px; line-height: 1.55; color: #625968; font-size: 12px; }
+    .auth-option { width: 100%; min-height: 46px; margin-top: 8px; border: 1px solid #bfb5c2; border-radius: 12px; background: #fff; font-size: 13px; font-weight: 750; }
+    .auth-option:first-of-type { background: #211e27; color: #fff; border-color: #211e27; }
+    .auth-close { position: absolute; top: 15px; right: 15px; border: 0; background: #f1edf1; border-radius: 99px; width: 31px; height: 31px; font-size: 20px; }
+    .auth-content { position: relative; }
+    .demo-notice { margin: 12px 0 0 !important; font-size: 10px !important; text-align: center; }
+    .end-note { font-size: 12px; color: #66616b; margin: 29px 0 0; line-height: 1.7; }
+
+    /* 01 — soft photo overlap, from reference 38 */
+    .overlap { --base: #fffcf9; --ink: #241d1b; --muted: #685f5c; --button: #f65b28; --button-text: #fff; }
+    .overlap .brand { position: absolute; top: 4px; left: 26px; font-size: 21px; font-weight: 900; letter-spacing: -.07em; }
+    .overlap .visual { margin: 0 0 9px; }
+    .overlap .photo { position: absolute; border: 5px solid #fff; border-radius: 40px; overflow: hidden; box-shadow: 0 12px 24px #35251c23; }
+    .overlap .photo.main { left: 26%; top: 13%; width: 62%; height: 70%; z-index: 2; }
+    .overlap .photo.left { left: -15%; top: 21%; width: 48%; height: 63%; transform: rotate(-5deg); }
+    .overlap .photo.right { right: -25%; top: 23%; width: 45%; height: 66%; transform: rotate(7deg); }
+    .overlap .floating-pill { position: absolute; z-index: 3; background: #fff; border-radius: 99px; padding: 9px 12px; font-size: 11px; font-weight: 800; box-shadow: 0 5px 15px #0002; }
+    .overlap .pill-one { left: 11%; top: 68%; transform: rotate(-7deg); }
+    .overlap .pill-two { right: 4%; top: 25%; transform: rotate(8deg); }
+    .overlap .orange-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #fa5a22; margin-right: 5px; }
+    .overlap .copy h3 em { font-style: normal; color: #f65b28; }
+    .overlap .copy { padding-bottom: 1px; }
+    .overlap .visual.two .photo.main { left: 10%; width: 68%; height: 76%; top: 10%; }
+    .overlap .visual.two .album-chip { position: absolute; z-index: 3; right: 5%; bottom: 9%; width: 190px; padding: 13px; background: #fff; border-radius: 16px; box-shadow: 0 10px 24px #0003; }
+    .album-chip strong, .album-chip span { display: block; }
+    .album-chip strong { font-size: 12px; }
+    .album-chip span { font-size: 10px; color: #777; margin-top: 4px; }
+    .overlap .visual.three .photo.main { left: 8%; top: 11%; width: 70%; height: 68%; transform: rotate(-6deg); }
+    .overlap .note-card { position: absolute; z-index: 3; right: -2%; top: 30%; width: 51%; min-height: 44%; background: #ffe8d4; padding: 24px 12px; transform: rotate(8deg); box-shadow: 0 10px 20px #0002; font-family: Georgia, serif; font-size: 13px; line-height: 1.6; }
+
+    /* 02 — sky orbit, from reference 39 */
+    .orbit { --base: #b8d5e8; --ink: #1c2633; --muted: #334b61; --button: #1f2632; --button-text: #fff; }
+    .orbit .visual { background: #b8d5e8; }
+    .orbit .visual::before { content: ""; position: absolute; width: 500px; height: 190px; left: -55px; bottom: -115px; background: #f0f4f1; border-radius: 50%; }
+    .orbit .mini-photo { position: absolute; width: 34%; height: 36%; overflow: hidden; padding: 6px 6px 19px; background: #fff; box-shadow: 0 8px 15px #23485c35; }
+    .orbit .mini-photo img { object-fit: cover; }
+    .orbit .mini-photo.one { top: 9%; left: 8%; transform: rotate(-15deg); }
+    .orbit .mini-photo.two { top: 4%; right: 5%; transform: rotate(11deg); }
+    .orbit .mini-photo.three { bottom: 14%; left: 4%; transform: rotate(13deg); }
+    .orbit .mini-photo.four { bottom: 16%; right: 5%; transform: rotate(-9deg); }
+    .orbit .center-orb { position: absolute; top: 43%; left: 50%; transform: translate(-50%, -50%); z-index: 2; width: 90px; height: 90px; display: grid; place-items: center; border-radius: 50%; background: #ffffffcf; border: 2px solid #fff; box-shadow: 0 8px 17px #426d8435; font-size: 46px; font-weight: 200; }
+    .orbit .float-word { position: absolute; z-index: 3; font-family: Georgia, serif; font-weight: 900; color: #236a8b; }
+    .orbit .float-word.a { top: 22%; left: 46%; transform: rotate(-12deg); font-size: 32px; }
+    .orbit .float-word.b { bottom: 19%; left: 42%; transform: rotate(15deg); font-size: 29px; }
+    .orbit .float-word.c { top: 49%; right: 10%; transform: rotate(14deg); font-size: 21px; }
+    .orbit .copy { text-align: center; }
+    .orbit .copy h3 { font-size: 29px; }
+    .orbit .copy p:last-child { max-width: 270px; margin: auto; }
+    .orbit .visual.two .center-orb { background: #fff6e9; font-size: 24px; }
+    .orbit .visual.three .center-orb { background: #d5f1f0; font-size: 22px; }
+
+    /* 03 — editorial pop, from references 04 and 22 */
+    .pop { --base: #f9dc44; --ink: #202018; --muted: #4a3b34; --button: #1e1d1a; --button-text: #fff; }
+    .pop .phone-top { background: #f9dc44; }
+    .pop .visual { margin: 0 16px 5px; border: 3px solid #202018; background: #f18bac; }
+    .pop .visual::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 33%; background: linear-gradient(transparent, #1b1218aa); }
+    .pop .visual > img { object-position: center 42%; }
+    .pop .big-stamp { position: absolute; z-index: 2; top: 13px; left: -11px; background: #f9dc44; padding: 6px 12px; border: 2px solid #202018; transform: rotate(-5deg); font-size: 12px; font-weight: 900; }
+    .pop .sticker-text { position: absolute; z-index: 2; bottom: 15px; left: 13px; color: #fff; font-weight: 950; font-size: 46px; line-height: .89; letter-spacing: -.09em; text-shadow: 2px 3px #1c151c; }
+    .pop .copy h3 { font-size: 35px; font-weight: 900; line-height: 1.04; }
+    .pop .copy { padding-bottom: 3px; }
+    .pop .visual.two { background: #fa93b9; }
+    .pop .visual.three { background: #90e3e6; }
+    .pop .visual .track-label { position: absolute; z-index: 3; right: -6px; top: 42%; background: #fff; color: #211e27; border: 2px solid #211e27; padding: 10px; font-size: 11px; font-weight: 850; transform: rotate(8deg); box-shadow: 4px 4px #211e27; }
+
+    /* 04 — paper scrapbook, from reference 18 */
+    .paper { --base: #f6e9e1; --ink: #372d3a; --muted: #615361; --button: #6b4d91; --button-text: #fff; }
+    .paper .visual { background: #f1dded; margin: 0 17px 8px; border-radius: 18px; }
+    .paper .paper-photo { position: absolute; left: 13%; top: 12%; width: 75%; height: 70%; padding: 12px 12px 44px; background: #fffdf9; transform: rotate(-7deg); box-shadow: 0 8px 22px #4a2c4338; }
+    .paper .paper-photo img { object-position: center; }
+    .paper .tape { position: absolute; z-index: 2; top: 5%; left: 36%; width: 85px; height: 25px; background: #f0c4cfb8; transform: rotate(-13deg); }
+    .paper .date-label { position: absolute; z-index: 2; right: 5%; bottom: 11%; background: #ffe899; border: 1px solid #d3a854; padding: 8px 10px; transform: rotate(10deg); font: 700 12px Georgia, serif; }
+    .paper .heart { position: absolute; z-index: 2; bottom: 19%; left: 5%; color: #c35d82; font: 60px Georgia, serif; transform: rotate(-16deg); }
+    .paper .copy { text-align: left; }
+    .paper .copy h3 { font-family: Georgia, "Yu Mincho", serif; font-size: 29px; letter-spacing: -.035em; }
+    .paper .visual.two { background: #e8dbec; }
+    .paper .visual.three { background: #f5e7d4; }
+    .paper .letter { position: absolute; z-index: 3; left: 20%; top: 22%; width: 74%; min-height: 55%; background: #fffdf6; padding: 25px 18px; transform: rotate(5deg); box-shadow: 0 8px 18px #3e24372c; font: 13px/1.9 Georgia, "Yu Mincho", serif; }
+    .paper .letter::before { content: "TO YOU"; display: block; font: 800 10px -apple-system, sans-serif; letter-spacing: .2em; margin-bottom: 13px; color: #ab6785; }
+
+    /* 05 — music afterglow, from reference 22 */
+    .afterglow { --base: #292235; --ink: #fff8ef; --muted: #d8cbdc; --button: #f1a5bd; --button-text: #292235; }
+    .afterglow .visual { margin: 0 17px 8px; border-radius: 20px; }
+    .afterglow .visual > img { filter: saturate(.75) contrast(1.08); }
+    .afterglow .visual::after { content: ""; position: absolute; inset: 42% 0 0; background: linear-gradient(transparent, #211b30ee); }
+    .afterglow .image-topline { position: absolute; z-index: 3; left: 17px; top: 15px; right: 17px; display: flex; justify-content: space-between; color: #fff; font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+    .afterglow .vinyl { position: absolute; z-index: 2; width: 165px; height: 165px; border-radius: 50%; right: -30px; bottom: -30px; background: repeating-radial-gradient(circle, #27202c 0 5px, #3a3042 6px 7px, #27202c 8px 12px); border: 2px solid #62526a; box-shadow: 0 8px 22px #0008; }
+    .afterglow .vinyl::after { content: ""; position: absolute; inset: 60px; border-radius: 50%; background: #dba2b8; border: 8px solid #ccb3bd; }
+    .afterglow .track { position: absolute; z-index: 3; left: 13px; bottom: 17px; width: 75%; background: #292235dc; border: 1px solid #ffffff5c; border-radius: 12px; padding: 11px; color: #fff; }
+    .afterglow .track small { display: block; font-size: 9px; color: #c7f0ed; letter-spacing: .16em; margin-bottom: 5px; }
+    .afterglow .track strong { display: block; font-size: 12px; }
+    .afterglow .wave { display: flex; align-items: center; gap: 3px; height: 24px; margin-top: 7px; }
+    .afterglow .wave i { display: block; width: 3px; height: var(--h); border-radius: 4px; background: #b5eeee; }
+    .afterglow .copy h3 { font-size: 30px; }
+    .afterglow .copy { padding-bottom: 3px; }
+    .afterglow .visual.three .vinyl { right: -50px; bottom: 45px; transform: scale(.75); }
+
+    @media (max-width: 850px) { .pattern { grid-template-columns: 1fr; gap: 22px; padding: 54px 0; } .pattern:nth-of-type(even) .pattern-copy, .pattern:nth-of-type(even) .preview { order: initial; } .pattern-copy { max-width: 600px; } .pattern-number { font-size: 56px; } .preview { width: 100%; } }
+    @media (max-width: 430px) { .page-head { padding: 35px 18px; } main { padding: 0 12px 55px; } .phone { border-width: 6px; border-radius: 41px; } .copy h3 { font-size: 28px; } .pattern-copy h2 { font-size: 35px; } }
+    @media (prefers-reduced-motion: reduce) { .slide.active { animation: none; } }
+  </style>
+</head>
+<body>
+  <header class="page-head"><div class="page-head-inner">
+    <p class="eyebrow">PicTune / First launch studies</p>
+    <h1>思い出の入口、5つの表情。</h1>
+    <p>写真・音楽・手紙をひとつに残すPicTuneの初回体験案です。各端末の「次へ」で3画面を確認できます。「今すぐはじめる」からログイン画面のイメージも表示できます。</p>
+    <nav class="jump" aria-label="案に移動"><a href="#pattern-1">01 写真の重なり</a><a href="#pattern-2">02 浮遊する思い出</a><a href="#pattern-3">03 ポップな編集誌</a><a href="#pattern-4">04 手紙のアルバム</a><a href="#pattern-5">05 夜のサウンド</a></nav>
+  </div></header>
+  <main>
+    <section class="pattern" id="pattern-1">
+      <div class="pattern-copy"><span class="pattern-number">01</span><h2>写真の重なり</h2><p>いただいた人物写真の参考を軸に、3枚が重なって覗く画面です。白い余白とオレンジの一点だけで、友だちとの写真を最初から大きく見せます。</p><p class="source">参照点：提供画像 38 / 人物写真・角丸・オレンジ</p><div class="tags"><span>写真が最初に見える</span><span>短いコピー</span><span>軽やかな余白</span></div></div>
+      <div class="preview"><div class="phone overlap" data-pattern="01"><div class="phone-top"><span>9:41</span><span class="island"></span><span class="signals">▮▮▮ ◉ ▰</span></div><div class="phone-body"><div class="slides">
+        <div class="slide active" data-step="0"><div class="visual one"><span class="brand">PicTune.</span><div class="photo left"><img src="onboarding-preview-assets/friends-music.png" alt="夕方に音楽を聴く友だち"></div><div class="photo right"><img src="onboarding-preview-assets/memory-table.png" alt="思い出のチェキ"></div><div class="photo main"><img src="onboarding-preview-assets/friends-seaside.png" alt="海辺で笑う友だち"></div><span class="floating-pill pill-one"><span class="orange-dot"></span>あの日の写真</span><span class="floating-pill pill-two">♪ あの日の曲</span></div><div class="copy"><p class="micro">PIC + TUNE</p><h3>その写真に、<br><em>あの日の音を。</em></h3><p>一枚の写真から、思い出をもっと近くに。</p></div></div>
+        <div class="slide" data-step="1"><div class="visual two"><span class="brand">PicTune.</span><div class="photo main"><img src="onboarding-preview-assets/friends-seaside.png" alt="海辺で笑う友だち"></div><div class="photo right"><img src="onboarding-preview-assets/friends-music.png" alt="夕方の友だち"></div><div class="album-chip"><strong>♪ 夕暮れのプレイリスト</strong><span>写真に好きな曲を添える</span></div></div><div class="copy"><p class="micro">01 / KEEP</p><h3>写真を選んで、<br><em>曲を添える。</em></h3><p>音楽はあとからでも。写真だけでも残せます。</p></div></div>
+        <div class="slide" data-step="2"><div class="visual three"><span class="brand">PicTune.</span><div class="photo main"><img src="onboarding-preview-assets/friends-seaside.png" alt="海辺で笑う友だち"></div><div class="note-card">楽しかったね。<br>また同じ海を見に行こう。<br><br>from me</div></div><div class="copy"><p class="micro">02 / SHARE</p><h3>ひと言も、<br><em>いっしょに贈る。</em></h3><p>写真と曲に手紙を添えて、大切な人へ。</p></div></div>
+      </div><div class="phone-bottom"><div class="dots"></div><button class="primary next" type="button">次へ</button><button class="skip" type="button">今すぐはじめる</button></div></div><div class="auth-sheet" hidden><div class="auth-content"><span class="handle"></span><button class="auth-close" type="button" aria-label="閉じる">×</button><h4>PicTuneをはじめる</h4><p>写真を残すにはアカウントが必要です。</p><button class="auth-option" type="button">Appleで続ける</button><button class="auth-option" type="button">Googleで続ける</button><button class="auth-option" type="button">メールで続ける</button><p class="demo-notice">ログイン画面のイメージです</p></div></div></div><div class="preview-controls"><button class="back" type="button">← 戻る</button><span class="step-label">1 / 3</span><button class="forward" type="button">次の画面 →</button></div></div>
+    </section>
+
+    <section class="pattern" id="pattern-2">
+      <div class="pattern-copy"><span class="pattern-number">02</span><h2>浮遊する思い出</h2><p>いただいた2枚目の参考から、切り抜いた写真や曲の断片が中央に集まる構成にしました。最初の動作をひとつの丸い「＋」で示します。</p><p class="source">参照点：提供画像 39 / 浮遊感・中央の操作</p><div class="tags"><span>軽い動きの予感</span><span>中央に主役</span><span>淡い青とラベンダー</span></div></div>
+      <div class="preview"><div class="phone orbit" data-pattern="02"><div class="phone-top"><span>9:41</span><span class="island"></span><span class="signals">▮▮▮ ◉ ▰</span></div><div class="phone-body"><div class="slides">
+        <div class="slide active" data-step="0"><div class="visual one"><div class="mini-photo one"><img src="onboarding-preview-assets/friends-seaside.png" alt="海辺の友だち"></div><div class="mini-photo two"><img src="onboarding-preview-assets/friends-music.png" alt="夕方の友だち"></div><div class="mini-photo three"><img src="onboarding-preview-assets/memory-table.png" alt="チェキの思い出"></div><div class="mini-photo four"><img src="onboarding-preview-assets/friends-seaside.png" alt="笑顔の写真"></div><span class="float-word a">♪</span><span class="float-word b">✳</span><span class="float-word c">love</span><span class="center-orb">＋</span></div><div class="copy"><p class="micro">PicTune / 01</p><h3>ひとつの写真から、<br>思い出が広がる。</h3><p>写真を残すだけで、あの日への入口ができます。</p></div></div>
+        <div class="slide" data-step="1"><div class="visual two"><div class="mini-photo one"><img src="onboarding-preview-assets/friends-music.png" alt="音楽を共有する友だち"></div><div class="mini-photo two"><img src="onboarding-preview-assets/memory-table.png" alt="写真と手紙"></div><div class="mini-photo three"><img src="onboarding-preview-assets/friends-seaside.png" alt="海辺の友だち"></div><span class="float-word a">♪</span><span class="float-word b">02</span><span class="center-orb">♫</span></div><div class="copy"><p class="micro">PicTune / 02</p><h3>その日の曲を、<br>写真のとなりに。</h3><p>曲を探して添える。音楽なしでも先へ進めます。</p></div></div>
+        <div class="slide" data-step="2"><div class="visual three"><div class="mini-photo one"><img src="onboarding-preview-assets/friends-seaside.png" alt="海辺の友だち"></div><div class="mini-photo two"><img src="onboarding-preview-assets/friends-music.png" alt="夕方の友だち"></div><div class="mini-photo four"><img src="onboarding-preview-assets/memory-table.png" alt="手紙のある思い出"></div><span class="float-word a">♡</span><span class="float-word b">to you</span><span class="center-orb">↗</span></div><div class="copy"><p class="micro">PicTune / 03</p><h3>あなたの気持ちも、<br>友だちに届く。</h3><p>手紙を添えたフォルダを共有できます。</p></div></div>
+      </div><div class="phone-bottom"><div class="dots"></div><button class="primary next" type="button">次へ</button><button class="skip" type="button">今すぐはじめる</button></div></div><div class="auth-sheet" hidden><div class="auth-content"><span class="handle"></span><button class="auth-close" type="button" aria-label="閉じる">×</button><h4>PicTuneをはじめる</h4><p>写真を残すにはアカウントが必要です。</p><button class="auth-option" type="button">Appleで続ける</button><button class="auth-option" type="button">Googleで続ける</button><button class="auth-option" type="button">メールで続ける</button><p class="demo-notice">ログイン画面のイメージです</p></div></div></div><div class="preview-controls"><button class="back" type="button">← 戻る</button><span class="step-label">1 / 3</span><button class="forward" type="button">次の画面 →</button></div></div>
+    </section>
+
+    <section class="pattern" id="pattern-3">
+      <div class="pattern-copy"><span class="pattern-number">03</span><h2>ポップな編集誌</h2><p>04の大胆な写真と、22の強い色面を合わせた案です。画面をめくるたびに主役の言葉と写真が切り替わり、雑誌の表紙のような勢いを出します。</p><p class="source">参照点：Pinterest 04・22 / 強い配色・大きな文字</p><div class="tags"><span>一目で目立つ</span><span>写真の熱量</span><span>太い文字</span></div></div>
+      <div class="preview"><div class="phone pop" data-pattern="03"><div class="phone-top"><span>9:41</span><span class="island"></span><span class="signals">▮▮▮ ◉ ▰</span></div><div class="phone-body"><div class="slides">
+        <div class="slide active" data-step="0"><div class="visual one"><img src="onboarding-preview-assets/friends-seaside.png" alt="海辺で笑う友だち"><span class="big-stamp">PICTUNE / VOL.01</span><span class="sticker-text">THIS<br>DAY.</span></div><div class="copy"><p class="micro">写真 × 音楽 × 手紙</p><h3>今日を、<br>忘れない。</h3><p>好きな一枚から、自分たちだけの記録を作ろう。</p></div></div>
+        <div class="slide" data-step="1"><div class="visual two"><img src="onboarding-preview-assets/friends-music.png" alt="一緒に音楽を聴く友だち"><span class="big-stamp">PHOTO + TRACK</span><span class="track-label">♪ 今日のBGMを添える</span><span class="sticker-text">PLAY<br>IT BACK.</span></div><div class="copy"><p class="micro">気分まで残す</p><h3>写真だけじゃ、<br>足りないから。</h3><p>あの日に聴いた曲も、一緒にしまっておく。</p></div></div>
+        <div class="slide" data-step="2"><div class="visual three"><img src="onboarding-preview-assets/memory-table.png" alt="写真と手紙のあるテーブル"><span class="big-stamp">SEND THE MEMORY</span><span class="sticker-text">TO<br>YOU.</span></div><div class="copy"><p class="micro">友だちと共有</p><h3>思い出を、<br>渡そう。</h3><p>フォルダに手紙を添えて、友だちに届ける。</p></div></div>
+      </div><div class="phone-bottom"><div class="dots"></div><button class="primary next" type="button">次へ</button><button class="skip" type="button">今すぐはじめる</button></div></div><div class="auth-sheet" hidden><div class="auth-content"><span class="handle"></span><button class="auth-close" type="button" aria-label="閉じる">×</button><h4>PicTuneをはじめる</h4><p>写真を残すにはアカウントが必要です。</p><button class="auth-option" type="button">Appleで続ける</button><button class="auth-option" type="button">Googleで続ける</button><button class="auth-option" type="button">メールで続ける</button><p class="demo-notice">ログイン画面のイメージです</p></div></div></div><div class="preview-controls"><button class="back" type="button">← 戻る</button><span class="step-label">1 / 3</span><button class="forward" type="button">次の画面 →</button></div></div>
+    </section>
+
+    <section class="pattern" id="pattern-4">
+      <div class="pattern-copy"><span class="pattern-number">04</span><h2>手紙のアルバム</h2><p>18の細かな装飾を、PicTuneのチェキと手紙に寄せました。紙を開くように写真・曲・ひと言を見せる、やわらかい方向です。</p><p class="source">参照点：Pinterest 18 / 紙・手書き・小さな装飾</p><div class="tags"><span>既存アイコンと相性</span><span>手紙が主役</span><span>温かい記憶</span></div></div>
+      <div class="preview"><div class="phone paper" data-pattern="04"><div class="phone-top"><span>9:41</span><span class="island"></span><span class="signals">▮▮▮ ◉ ▰</span></div><div class="phone-body"><div class="slides">
+        <div class="slide active" data-step="0"><div class="visual one"><div class="paper-photo"><img src="onboarding-preview-assets/friends-seaside.png" alt="海辺で笑う友だち"></div><span class="tape"></span><span class="heart">♡</span><span class="date-label">our favorite day · 2026</span></div><div class="copy"><p class="micro">Dear memories</p><h3>好きな日を、<br>しまっておこう。</h3><p>写真から始まる、あなたと友だちの小さなアルバム。</p></div></div>
+        <div class="slide" data-step="1"><div class="visual two"><div class="paper-photo"><img src="onboarding-preview-assets/friends-music.png" alt="音楽を聴く友だち"></div><span class="tape"></span><span class="date-label">♪ あの日の曲も</span></div><div class="copy"><p class="micro">The sound of that day</p><h3>音も一緒に、<br>貼っておく。</h3><p>写真に曲を添えると、その日の気分まで残せます。</p></div></div>
+        <div class="slide" data-step="2"><div class="visual three"><div class="paper-photo"><img src="onboarding-preview-assets/friends-seaside.png" alt="友だちとの一枚"></div><div class="letter">一緒に笑った時間を、<br>いつでも思い出せますように。<br><br>また会おうね。</div><span class="tape"></span></div><div class="copy"><p class="micro">A note for you</p><h3>言葉にして、<br>贈れる。</h3><p>フォルダの手紙を、写真と一緒に共有できます。</p></div></div>
+      </div><div class="phone-bottom"><div class="dots"></div><button class="primary next" type="button">次へ</button><button class="skip" type="button">今すぐはじめる</button></div></div><div class="auth-sheet" hidden><div class="auth-content"><span class="handle"></span><button class="auth-close" type="button" aria-label="閉じる">×</button><h4>PicTuneをはじめる</h4><p>写真を残すにはアカウントが必要です。</p><button class="auth-option" type="button">Appleで続ける</button><button class="auth-option" type="button">Googleで続ける</button><button class="auth-option" type="button">メールで続ける</button><p class="demo-notice">ログイン画面のイメージです</p></div></div></div><div class="preview-controls"><button class="back" type="button">← 戻る</button><span class="step-label">1 / 3</span><button class="forward" type="button">次の画面 →</button></div></div>
+    </section>
+
+    <section class="pattern" id="pattern-5">
+      <div class="pattern-copy"><span class="pattern-number">05</span><h2>夜のサウンド</h2><p>22の暗色と鮮やかな差し色を、音楽を聴き返す場面に絞りました。写真の上に曲名と小さな再生の気配を重ね、音楽があるPicTuneらしさを見せます。</p><p class="source">参照点：Pinterest 22 / 暗色・写真・音楽のアクセント</p><div class="tags"><span>音楽から記憶へ</span><span>暗色で写真を強調</span><span>差し色は控えめ</span></div></div>
+      <div class="preview"><div class="phone afterglow" data-pattern="05"><div class="phone-top"><span>9:41</span><span class="island"></span><span class="signals">▮▮▮ ◉ ▰</span></div><div class="phone-body"><div class="slides">
+        <div class="slide active" data-step="0"><div class="visual one"><img src="onboarding-preview-assets/friends-music.png" alt="夕方に一緒に音楽を聴く友だち"><div class="image-topline"><span>PICTUNE / 001</span><span>MEMORY</span></div><span class="vinyl"></span><div class="track"><small>NOW IN YOUR MEMORY</small><strong>あの日の写真と、あの日の曲</strong><div class="wave"><i style="--h:10px"></i><i style="--h:19px"></i><i style="--h:13px"></i><i style="--h:23px"></i><i style="--h:8px"></i><i style="--h:16px"></i><i style="--h:11px"></i><i style="--h:21px"></i><i style="--h:14px"></i><i style="--h:9px"></i><i style="--h:17px"></i><i style="--h:12px"></i></div></div></div><div class="copy"><p class="micro">Remember how it sounded</p><h3>写真を見るたび、<br>あの曲が浮かぶ。</h3><p>思い出を、音楽と一緒に残せます。</p></div></div>
+        <div class="slide" data-step="1"><div class="visual two"><img src="onboarding-preview-assets/friends-seaside.png" alt="海辺で笑う友だち"><div class="image-topline"><span>PICTUNE / 002</span><span>PHOTO + MUSIC</span></div><span class="vinyl"></span><div class="track"><small>PHOTO + TRACK</small><strong>好きな一枚に、好きな一曲</strong><div class="wave"><i style="--h:16px"></i><i style="--h:8px"></i><i style="--h:21px"></i><i style="--h:12px"></i><i style="--h:19px"></i><i style="--h:10px"></i><i style="--h:22px"></i><i style="--h:13px"></i><i style="--h:17px"></i></div></div></div><div class="copy"><p class="micro">Make it yours</p><h3>写真に曲を、<br>あとからでも。</h3><p>曲を添えずに写真だけで残すこともできます。</p></div></div>
+        <div class="slide" data-step="2"><div class="visual three"><img src="onboarding-preview-assets/memory-table.png" alt="写真と手紙のあるテーブル"><div class="image-topline"><span>PICTUNE / 003</span><span>TOGETHER</span></div><span class="vinyl"></span><div class="track"><small>LETTER + FOLDER</small><strong>ふたりだけの思い出に、手紙を</strong></div></div><div class="copy"><p class="micro">Keep it together</p><h3>その続きは、<br>友だちと。</h3><p>写真・曲・手紙をまとめたフォルダを共有できます。</p></div></div>
+      </div><div class="phone-bottom"><div class="dots"></div><button class="primary next" type="button">次へ</button><button class="skip" type="button">今すぐはじめる</button></div></div><div class="auth-sheet" hidden><div class="auth-content"><span class="handle"></span><button class="auth-close" type="button" aria-label="閉じる">×</button><h4>PicTuneをはじめる</h4><p>写真を残すにはアカウントが必要です。</p><button class="auth-option" type="button">Appleで続ける</button><button class="auth-option" type="button">Googleで続ける</button><button class="auth-option" type="button">メールで続ける</button><p class="demo-notice">ログイン画面のイメージです</p></div></div></div><div class="preview-controls"><button class="back" type="button">← 戻る</button><span class="step-label">1 / 3</span><button class="forward" type="button">次の画面 →</button></div></div>
+    </section>
+    <p class="end-note">このHTMLはデザイン比較用です。ボタンは画面イメージの切り替えのみ行い、認証や写真保存は実行しません。使用した人物写真と紙面写真はこの比較用に生成したオリジナル素材です。</p>
+  </main>
+  <script>
+    document.querySelectorAll('.preview').forEach(preview => {
+      const phone = preview.querySelector('.phone');
+      const slides = [...phone.querySelectorAll('.slide')];
+      const dots = phone.querySelector('.dots');
+      const sheet = phone.querySelector('.auth-sheet');
+      let step = 0;
+      slides.forEach((_, index) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'dot';
+        dot.setAttribute('aria-label', `${index + 1}枚目を表示`);
+        dot.addEventListener('click', () => show(index));
+        dots.append(dot);
+      });
+      function show(index) {
+        step = Math.max(0, Math.min(index, slides.length - 1));
+        slides.forEach((slide, i) => slide.classList.toggle('active', i === step));
+        [...dots.children].forEach((dot, i) => i === step ? dot.setAttribute('aria-current', 'step') : dot.removeAttribute('aria-current'));
+        phone.querySelector('.next').textContent = step === slides.length - 1 ? '写真を残す' : '次へ';
+        preview.querySelector('.step-label').textContent = `${step + 1} / ${slides.length}`;
+        preview.querySelector('.back').disabled = step === 0;
+        preview.querySelector('.forward').textContent = step === slides.length - 1 ? 'ログイン画面 →' : '次の画面 →';
+      }
+      function advance() { if (step === slides.length - 1) sheet.hidden = false; else show(step + 1); }
+      phone.querySelector('.next').addEventListener('click', advance);
+      phone.querySelector('.skip').addEventListener('click', () => { sheet.hidden = false; });
+      phone.querySelector('.auth-close').addEventListener('click', () => { sheet.hidden = true; });
+      phone.querySelectorAll('.auth-option').forEach(button => button.addEventListener('click', () => {
+        phone.querySelector('.demo-notice').textContent = 'このHTMLでは認証を行いません';
+      }));
+      preview.querySelector('.back').addEventListener('click', () => show(step - 1));
+      preview.querySelector('.forward').addEventListener('click', advance);
+      show(0);
+    });
+  </script>
+</body>
+</html>
