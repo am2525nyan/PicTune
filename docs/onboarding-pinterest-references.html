@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>PicTune / 好きなUIをスワイプで選ぶ</title>
+  <style>
+    :root { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif; color: #231d31; background: #fff8ed; }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; }
+    button { font: inherit; cursor: pointer; }
+    a { color: inherit; }
+    .page { max-width: 1260px; margin: auto; padding: 0 22px 72px; }
+    .hero { background: #fddc49; border-bottom: 3px solid #231d31; overflow: hidden; }
+    .hero-inner { max-width: 1260px; margin: auto; padding: 42px 22px 45px; position: relative; }
+    .hero-inner::after { content: "✳"; color: #ff6595; -webkit-text-stroke: 2px #231d31; font-size: clamp(180px, 28vw, 350px); position: absolute; right: 0; top: -67px; line-height: 1; transform: rotate(-17deg); opacity: .95; pointer-events: none; }
+    .stamp { display: inline-block; position: relative; z-index: 1; padding: 8px 12px; border: 2px solid #231d31; box-shadow: 4px 4px #231d31; background: #fff; font-size: 12px; font-weight: 900; letter-spacing: .06em; }
+    h1 { position: relative; z-index: 1; font-size: clamp(42px, 7.4vw, 90px); letter-spacing: -.075em; line-height: 1.05; margin: 23px 0 16px; }
+    .hero p { position: relative; z-index: 1; margin: 0; max-width: 650px; font-size: clamp(15px, 1.8vw, 19px); font-weight: 700; line-height: 1.7; }
+    .intro-strip { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 25px; position: relative; z-index: 1; }
+    .intro-strip span { padding: 8px 12px; border: 2px solid #231d31; border-radius: 99px; background: white; font-size: 12px; font-weight: 800; }
+    .workspace { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(0, 470px); gap: clamp(28px, 5vw, 70px); align-items: start; padding-top: 44px; }
+    .work-copy { padding-top: 18px; }
+    .section-kicker { display: block; color: #ac3564; letter-spacing: .12em; font-size: 12px; font-weight: 900; }
+    h2 { font-size: clamp(28px, 3.5vw, 46px); letter-spacing: -.055em; line-height: 1.15; margin: 8px 0 15px; }
+    .work-copy p { max-width: 470px; font-size: 15px; line-height: 1.8; color: #5f5865; margin: 0 0 15px; }
+    .gesture-guide { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; font-weight: 800; margin: 27px 0; }
+    .gesture-guide .left, .gesture-guide .right { border: 2px solid #231d31; padding: 8px 12px; border-radius: 8px; background: #fff; }
+    .gesture-guide .left { box-shadow: 3px 3px #83c6df; }
+    .gesture-guide .right { box-shadow: 3px 3px #fa7cad; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; margin-bottom: 8px; }
+    .progress-track { height: 12px; border: 2px solid #231d31; border-radius: 999px; background: #fff; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0; background: #f875a5; transition: width .25s; }
+    .counts { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 17px; }
+    .counts span { background: white; border: 2px solid #231d31; border-radius: 8px; padding: 8px 11px; font-size: 12px; font-weight: 800; }
+    .save-state { margin-top: 17px !important; font-size: 12px !important; }
+    .deck-wrap { min-width: 0; }
+    .deck-shell { position: relative; border: 3px solid #231d31; border-radius: 23px; box-shadow: 9px 11px #231d31; background: #fff; padding: 10px; }
+    .deck-shell::before { content: ""; position: absolute; left: 11px; right: 11px; top: 11px; bottom: -12px; border: 2px solid #231d31; border-radius: 19px; background: #ffaad0; z-index: -1; transform: rotate(2deg); }
+    .swipe-card { background: #fff; border-radius: 14px; overflow: hidden; cursor: grab; touch-action: pan-y; user-select: none; will-change: transform; }
+    .swipe-card:active { cursor: grabbing; }
+    .deck-image { height: clamp(335px, 42vw, 500px); position: relative; display: grid; place-items: center; background: #f1ebf2; overflow: hidden; }
+    .deck-image img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+    .decision-mark { position: absolute; top: 22px; padding: 8px 17px; font-size: 25px; font-weight: 900; border: 4px solid; border-radius: 8px; background: #ffffffed; opacity: 0; pointer-events: none; transform: rotate(-12deg); }
+    .decision-mark.no { left: 17px; color: #237aa0; }
+    .decision-mark.yes { right: 17px; color: #d63177; transform: rotate(12deg); }
+    .deck-info { padding: 18px 16px 17px; border-top: 2px solid #231d31; }
+    .deck-topline { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; font-weight: 900; color: #a92d63; letter-spacing: .05em; }
+    .deck-info h3 { font-size: 22px; margin: 9px 0 5px; letter-spacing: -.045em; }
+    .deck-info p { color: #635b67; font-size: 13px; margin: 0; line-height: 1.6; }
+    .source-link { display: inline-block; margin-top: 13px; font-size: 12px; font-weight: 800; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+    .deck-empty { width: 100%; height: 100%; display: grid; place-content: center; text-align: center; padding: 30px; }
+    .deck-empty strong { font-size: 27px; letter-spacing: -.05em; }
+    .deck-empty p { color: #635b67; line-height: 1.7; }
+    .actions { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; margin: 25px 4px 0; }
+    .action { min-height: 58px; border: 2px solid #231d31; border-radius: 14px; font-size: 17px; font-weight: 900; box-shadow: 4px 4px #231d31; }
+    .action.no { background: #d4f0fa; }
+    .action.yes { background: #ff9ec2; }
+    .action.undo { min-width: 80px; background: #fff; font-size: 13px; }
+    .action:disabled { opacity: .45; cursor: default; box-shadow: none; }
+    .action:not(:disabled):active { transform: translate(3px,3px); box-shadow: 1px 1px #231d31; }
+    .results { margin-top: 83px; border-top: 3px solid #231d31; padding-top: 27px; }
+    .results-head { display: flex; align-items: end; justify-content: space-between; gap: 15px; flex-wrap: wrap; }
+    .results-head h2 { margin-bottom: 0; }
+    .copy-button { border: 2px solid #231d31; border-radius: 10px; padding: 11px 14px; min-height: 44px; background: white; font-size: 13px; font-weight: 800; box-shadow: 3px 3px #231d31; }
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 25px 0; }
+    .filters button { min-height: 44px; border: 2px solid #231d31; border-radius: 999px; padding: 9px 15px; background: #fff; font-size: 13px; font-weight: 800; }
+    .filters button[aria-pressed="true"] { background: #231d31; color: #fff; }
+    .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 18px; }
+    .result-card { min-width: 0; border: 2px solid #231d31; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 4px 5px #231d31; }
+    .result-card img { display: block; width: 100%; height: 190px; object-fit: contain; background: #f2edf3; }
+    .result-info { border-top: 2px solid #231d31; padding: 12px; }
+    .result-info small { color: #a92d63; font-weight: 900; }
+    .result-info h3 { font-size: 14px; line-height: 1.4; margin: 5px 0 8px; }
+    .result-info a { display: inline-block; font-size: 12px; font-weight: 800; text-underline-offset: 3px; }
+    .result-info button { display: block; margin-top: 12px; border: 1px solid #231d31; border-radius: 8px; min-height: 36px; padding: 6px 9px; background: #fff8ed; font-size: 12px; font-weight: 800; }
+    .no-results { border: 2px dashed #a99da7; border-radius: 14px; padding: 30px; color: #635b67; line-height: 1.7; }
+    footer { max-width: 1260px; margin: 0 auto; border-top: 1px solid #d6cbd3; padding: 20px 22px 42px; color: #635b67; font-size: 12px; line-height: 1.8; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (max-width: 800px) { .workspace { grid-template-columns: 1fr; gap: 25px; } .work-copy { padding-top: 0; } .deck-wrap { max-width: 470px; width: 100%; margin: auto; } .hero-inner::after { right: -65px; opacity: .5; } }
+    @media (max-width: 520px) { .page { padding: 0 15px 55px; } .hero-inner { padding: 29px 16px 35px; } .workspace { padding-top: 30px; } .deck-image { height: 410px; } .deck-shell { box-shadow: 6px 7px #231d31; } .actions { gap: 7px; margin-top: 18px; } .action { font-size: 15px; } .action.undo { min-width: 72px; } .results { margin-top: 67px; } .result-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; } .result-card img { height: 150px; } }
+    @media (max-width: 350px) { .result-grid { grid-template-columns: 1fr; } .deck-image { height: 350px; } }
+    @media (prefers-reduced-motion: reduce) { .progress-fill { transition: none; } }
+  </style>
+</head>
+<body>
+  <header class="hero"><div class="hero-inner">
+    <span class="stamp">PICTUNE / 32 REFERENCES</span>
+    <h1>好きな雰囲気を、<br>スワイプで。</h1>
+    <p>Pinterestの参考30件と、いただいた画像2枚を並べました。気になるものを右へ、違うものを左へ。04・18・22と、今回の2枚は「好き」に入れています。</p>
+    <div class="intro-strip"><span>→ 好き</span><span>← 嫌い</span><span>結果はこのブラウザに自動保存</span></div>
+  </div></header>
+  <main class="page">
+    <section class="workspace" aria-labelledby="swipe-title">
+      <div class="work-copy">
+        <span class="section-kicker">01 / SWIPE</span>
+        <h2 id="swipe-title">1枚ずつ選ぶ</h2>
+        <p>左右にドラッグ・スワイプできます。下のボタン、キーボードの←・→でも判定できます。「戻す」で直前の判定を取り消せます。</p>
+        <div class="gesture-guide"><span class="left">← 嫌い</span><span>／</span><span class="right">好き →</span></div>
+        <div class="progress-label"><span>判定した数</span><span id="progressText">0 / 32</span></div>
+        <div class="progress-track" role="progressbar" aria-label="判定の進捗" aria-valuemin="0" aria-valuemax="32" aria-valuenow="0" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="counts"><span id="pendingCount">未判定 0</span><span id="likeCount">好き 0</span><span id="dislikeCount">嫌い 0</span></div>
+        <p class="save-state" id="saveState">このブラウザに判定結果を保存します。</p>
+      </div>
+      <div class="deck-wrap">
+        <div class="deck-shell"><div class="swipe-card" id="swipeCard" aria-label="現在の参考画像。右へスワイプで好き、左へスワイプで嫌い">
+          <div class="deck-image"><img id="deckImage" alt="" draggable="false"><span class="decision-mark no" id="noMark" aria-hidden="true">嫌い</span><span class="decision-mark yes" id="yesMark" aria-hidden="true">好き</span><div class="deck-empty" id="deckEmpty" hidden><strong>すべて判定しました</strong><p>下の「好き」「嫌い」から見返せます。<br>再判定したい画像は一覧から戻せます。</p></div></div>
+          <div class="deck-info" id="deckInfo"><div class="deck-topline"><span id="deckNumber"></span><span id="deckGroup"></span></div><h3 id="deckTitle"></h3><p id="deckFocus"></p><a class="source-link" id="deckLink" href="#" target="_blank" rel="noopener noreferrer">Pinterestで元のPinを見る ↗</a></div>
+        </div></div>
+        <div class="actions"><button class="action no" id="dislikeButton" type="button">← 嫌い</button><button class="action undo" id="undoButton" type="button">戻す</button><button class="action yes" id="likeButton" type="button">好き →</button></div>
+      </div>
+    </section>
+    <section class="results" aria-labelledby="results-title">
+      <div class="results-head"><div><span class="section-kicker">02 / REVIEW</span><h2 id="results-title">選んだ結果</h2></div><button class="copy-button" id="copyButton" type="button">好き／嫌いの番号をコピー</button></div>
+      <div class="filters" role="group" aria-label="表示する判定"><button type="button" data-filter="like" aria-pressed="true">好き <span id="filterLikeCount">0</span></button><button type="button" data-filter="dislike" aria-pressed="false">嫌い <span id="filterDislikeCount">0</span></button><button type="button" data-filter="pending" aria-pressed="false">未判定 <span id="filterPendingCount">0</span></button><button type="button" data-filter="all" aria-pressed="false">すべて 32</button></div>
+      <div class="result-grid" id="resultGrid"></div>
+    </section>
+    <div id="announcer" class="sr-only" role="status" aria-live="polite"></div>
+  </main>
+  <footer>Pinterestの画像は配信元から直接読み込みます。いただいた2枚は参考資料としてこのHTMLと一緒に保存しています。作品や画像の権利は各権利者に帰属し、PicTuneの実装素材として転用するものではありません。</footer>
+  <script id="pin-data" type="application/json">[{"id":"38","image":"onboarding-reference-images/user-favorite-38.png","title":"人物写真を重ねるオンボーディング","focus":"大きく重なる角丸写真、白い余白、オレンジのアクセント","group":"いただいた参考","new":true},{"id":"39","image":"onboarding-reference-images/user-favorite-39.png","title":"浮遊する小物と中央ボタン","focus":"切り抜きモチーフの浮遊感と、余白の中の一つのアクション","group":"いただいた参考","new":true},{"id":"23","pin":"112097478222038077","image":"https://i.pinimg.com/474x/b0/ad/fe/b0adfeb00486f84920a2e5c1a9a7780a.jpg","title":"写真を前に出した編集アプリ","focus":"大胆な写真配置と黒い画面","group":"写真と配色","new":true},{"id":"24","pin":"23151385580882862","image":"https://i.pinimg.com/474x/06/ac/4b/06ac4bf7305dee1a5372c28da5b851a4.jpg","title":"友だちの写真で始まる画面","focus":"人物写真と緑の強い背景","group":"写真と配色","new":true},{"id":"25","pin":"2674081026611649","image":"https://i.pinimg.com/474x/46/a4/da/46a4da6856d868af374fbea2da940af4.jpg","title":"写真を使ったポップな初回画面","focus":"黄・ピンク・青の見せ方","group":"写真と配色","new":true},{"id":"26","pin":"1144899536554991839","image":"https://i.pinimg.com/474x/5f/55/dd/5f55dd5a9eabacf7d6b84ecead58f524.jpg","title":"紫と写真のポップな画面","focus":"人物写真に重なるUIパーツ","group":"写真と配色","new":true},{"id":"27","pin":"985231165186176","image":"https://i.pinimg.com/474x/f3/e4/01/f3e4010ece2d4d2d42aea3968fe79cb2.jpg","title":"暗色の写真ジャーナル","focus":"写真だけが浮き上がる背景","group":"写真と配色","new":true},{"id":"28","pin":"295196950601062761","image":"https://i.pinimg.com/474x/32/5a/cd/325acd7ac87b82eed754fff4e6b47fdb.jpg","title":"レトロな写真ウィンドウ","focus":"紙ものと小窓の重ね方","group":"コラージュ","new":true},{"id":"29","pin":"3870349675948736","image":"https://i.pinimg.com/474x/d6/39/cb/d639cba71e5221f696184f4a1401c0fa.jpg","title":"デジタルスクラップブック","focus":"写真をめくる立体感","group":"コラージュ","new":true},{"id":"30","pin":"1100426490233051400","image":"https://i.pinimg.com/474x/d2/30/86/d23086182e2119dd27d8af2a8dd67711.jpg","title":"写真で語るメモリー初回画面","focus":"実際の写真を中心にした説明","group":"思い出アプリ","new":true},{"id":"31","pin":"634303928814755469","image":"https://i.pinimg.com/474x/59/99/cb/5999cb9deca201b2739935986c054e2a.jpg","title":"共有アルバムのビジュアル","focus":"友だちの写真を強く見せる","group":"思い出アプリ","new":true},{"id":"32","pin":"526358275225568478","image":"https://i.pinimg.com/474x/7e/cb/fa/7ecbfa29e4718d237002b393cb787ed7.jpg","title":"写真とイベントの記録UI","focus":"色と写真を同じ強さで扱う","group":"思い出アプリ","new":true},{"id":"33","pin":"337699672081908427","image":"https://i.pinimg.com/474x/6a/44/c8/6a44c8d1b98b33eb1d1c111015f6445d.jpg","title":"大きな文字と写真コラージュ","focus":"写真の上に文字を重ねる勢い","group":"コラージュ","new":true},{"id":"34","pin":"1122663013410015103","image":"https://i.pinimg.com/474x/a1/eb/6b/a1eb6b97ae8479f5a4985f571e89f112.jpg","title":"写真と楽曲の初回画面","focus":"写真と音楽の情報を一緒に見せる","group":"思い出アプリ","new":true},{"id":"35","pin":"1094515515719111394","image":"https://i.pinimg.com/474x/d5/c5/c2/d5c5c25c2ea5452cdc1ab928bddc2332.jpg","title":"黒とピンクの写真編集UI","focus":"暗色の中で写真とピンクを光らせる","group":"暗色と蛍光色","new":true},{"id":"36","pin":"1123366700838594308","image":"https://i.pinimg.com/474x/47/de/f3/47def3f7c28c0653bf5ea3a7a2a64f74.jpg","title":"暗色の動画・写真編集UI","focus":"画面群で色と質感を揃える","group":"暗色と蛍光色","new":true},{"id":"37","pin":"703756185088528","image":"https://i.pinimg.com/474x/8e/8d/e5/8e8de5f77cbbbf685d3662e3b5b48896.jpg","title":"青と蛍光色の音楽UI","focus":"音楽を添える時の色のアクセント","group":"暗色と蛍光色","new":true},{"id":"04","pin":"563018699373529","image":"https://i.pinimg.com/474x/07/b9/dd/07b9dd88e1578a414e8101dab875077c.jpg","title":"ビビッドな画面を連続させる","focus":"人物写真と強い配色を画面ごとに切り替える","group":"既存の参考","new":false},{"id":"18","pin":"2674081025450612","image":"https://i.pinimg.com/474x/68/b5/5a/68b55a7837103037061a7af9ad12b151.jpg","title":"Y2K風のアプリ画面","focus":"淡い色、細部の装飾、画面数の多さ","group":"既存の参考","new":false},{"id":"22","pin":"2674081026080044","image":"https://i.pinimg.com/474x/1d/6b/eb/1d6beb127b3d1f6b4d05ff4e5c07fe1e.jpg","title":"ポップな画面の一覧","focus":"黒と蛍光色のコントラスト、画面群の統一感","group":"既存の参考","new":false},{"id":"08","pin":"12173861490015139","image":"https://i.pinimg.com/474x/d5/22/3e/d5223eeb43daa1e448d330a9818bba85.jpg","title":"Digital Scrapbook","focus":"写真・手書き・ステッカーの重ね方","group":"既存の参考","new":false},{"id":"09","pin":"7388786885072463","image":"https://i.pinimg.com/474x/44/fc/97/44fc97bddac7680ab493bf3f2797f954.jpg","title":"写真と手描きのレイアウト","focus":"写真を主役にしたにぎやかさ","group":"既存の参考","new":false},{"id":"10","pin":"4151824653419676","image":"https://i.pinimg.com/474x/72/e3/0e/72e30ebdd954595b640535ed21449920.jpg","title":"黄色とオレンジの写真コラージュ","focus":"温かい色と切り抜き写真","group":"既存の参考","new":false},{"id":"11","pin":"45247171253221380","image":"https://i.pinimg.com/474x/ac/99/a5/ac99a5b1b4bd4eb19bb83c532f6c4cb1.jpg","title":"Monthly dump","focus":"複数の思い出を一つの作品にする密度","group":"既存の参考","new":false},{"id":"12","pin":"968203619912520458","image":"https://i.pinimg.com/474x/b3/78/8b/b3788be0ac97cb06085c42228c562135.jpg","title":"Memory Board","focus":"写真を重ねたアルバムの見せ方","group":"既存の参考","new":false},{"id":"13","pin":"2674081026860008","image":"https://i.pinimg.com/474x/b2/c1/22/b2c12269bf7e0608d8965e5f287b531c.jpg","title":"Collage App UI","focus":"アプリ画面の中で写真を重ねる","group":"既存の参考","new":false},{"id":"14","pin":"2674081026855384","image":"https://i.pinimg.com/474x/32/90/c0/3290c07344919216b6272a4016fccfee.jpg","title":"写真を切手のように並べる","focus":"小さな写真を収集物に見せる","group":"既存の参考","new":false},{"id":"15","pin":"56858014040835633","image":"https://i.pinimg.com/474x/97/31/51/97315167fc75b9b6a32c5a92827d5292.jpg","title":"写真日記の画面群","focus":"実際の写真が並ぶときの情報量","group":"既存の参考","new":false},{"id":"16","pin":"1900024839884242","image":"https://i.pinimg.com/474x/42/d1/e1/42d1e1730ca7804daa7a4af6ed68f3b3.jpg","title":"写真と再生UI","focus":"写真に曲を添える画面構成","group":"既存の参考","new":false},{"id":"17","pin":"1970393584534699","image":"https://i.pinimg.com/474x/df/60/7f/df607f89786323b170c32e8842f4a792.jpg","title":"レトロなウィンドウのコラージュ","focus":"写真やラベルを自由に重ねる発想","group":"既存の参考","new":false},{"id":"19","pin":"12525705209750940","image":"https://i.pinimg.com/474x/b9/42/ec/b942ecd09d3067208294d0b6a7efeb1a.jpg","title":"Neo BrutalismのモバイルUI","focus":"太い線・高いコントラスト","group":"既存の参考","new":false},{"id":"20","pin":"1970393584280865","image":"https://i.pinimg.com/474x/7e/4c/fd/7e4cfd2849972e5bf6d5ff16ce907d98.jpg","title":"ゲームのような画面構成","focus":"小さな装飾を大量に置くバランス","group":"既存の参考","new":false}]</script>
+  <script>
+  (function () {
+    'use strict';
+    const references = JSON.parse(document.getElementById('pin-data').textContent);
+    const storageKey = 'pictune-pinterest-swipe-v2';
+    const legacyStorageKey = 'pictune-pinterest-swipe-v1';
+    const seed = { '04': 'like', '18': 'like', '22': 'like', '38': 'like', '39': 'like' };
+    const knownIds = new Set(references.map(item => item.id));
+    let decisions = loadDecisions();
+    let filter = 'like';
+    let busy = false;
+    let drag = null;
+    const history = [];
+    const el = id => document.getElementById(id);
+    const card = el('swipeCard');
+    const yesMark = el('yesMark');
+    const noMark = el('noMark');
+
+    function loadDecisions() {
+      try {
+        const current = localStorage.getItem(storageKey);
+        const legacy = current === null ? localStorage.getItem(legacyStorageKey) : null;
+        const stored = current === null ? legacy : current;
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+            const valid = Object.fromEntries(Object.entries(parsed).filter(([id, value]) => knownIds.has(id) && (value === 'like' || value === 'dislike')));
+            return legacy === null ? valid : { '38': 'like', '39': 'like', ...valid };
+          }
+        }
+      } catch (_) { /* Saving may be unavailable for local files. */ }
+      return { ...seed };
+    }
+    function persist() {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(decisions));
+        el('saveState').textContent = 'このブラウザに判定結果を自動保存しています。';
+      } catch (_) {
+        el('saveState').textContent = 'このブラウザでは保存できません。ページを閉じる前に番号をコピーしてください。';
+      }
+    }
+    function remaining() { return references.filter(item => !decisions[item.id]); }
+    function current() { return remaining()[0] || null; }
+    function count(status) { return references.filter(item => (decisions[item.id] || 'pending') === status).length; }
+    function announce(message) { el('announcer').textContent = message; }
+    function resetDrag() { card.style.transition = 'transform 180ms ease'; card.style.transform = ''; yesMark.style.opacity = 0; noMark.style.opacity = 0; drag = null; }
+
+    function renderDeck() {
+      const item = current();
+      card.style.transition = 'none';
+      card.style.transform = '';
+      yesMark.style.opacity = 0;
+      noMark.style.opacity = 0;
+      if (!item) {
+        el('deckImage').hidden = true;
+        el('deckInfo').hidden = true;
+        el('deckEmpty').hidden = false;
+      } else {
+        el('deckImage').hidden = false;
+        el('deckInfo').hidden = false;
+        el('deckEmpty').hidden = true;
+        el('deckImage').src = item.image;
+        el('deckImage').alt = item.title + 'のPinterest参考画像';
+        el('deckNumber').textContent = 'NO. ' + item.id + (item.new ? ' / NEW' : '');
+        el('deckGroup').textContent = item.group;
+        el('deckTitle').textContent = item.title;
+        el('deckFocus').textContent = item.focus;
+        el('deckLink').hidden = !item.pin;
+        if (item.pin) el('deckLink').href = 'https://www.pinterest.com/pin/' + item.pin + '/';
+      }
+      el('likeButton').disabled = !item;
+      el('dislikeButton').disabled = !item;
+      el('undoButton').disabled = history.length === 0;
+    }
+    function renderCounts() {
+      const like = count('like');
+      const dislike = count('dislike');
+      const pending = references.length - like - dislike;
+      const done = like + dislike;
+      el('pendingCount').textContent = '未判定 ' + pending;
+      el('likeCount').textContent = '好き ' + like;
+      el('dislikeCount').textContent = '嫌い ' + dislike;
+      el('filterLikeCount').textContent = like;
+      el('filterDislikeCount').textContent = dislike;
+      el('filterPendingCount').textContent = pending;
+      el('progressText').textContent = done + ' / ' + references.length;
+      el('progressTrack').setAttribute('aria-valuenow', done);
+      el('progressFill').style.width = (done / references.length * 100) + '%';
+    }
+    function makeResultCard(item) {
+      const box = document.createElement('article');
+      box.className = 'result-card';
+      const image = document.createElement('img');
+      image.src = item.image;
+      image.alt = item.title + 'のPinterest参考画像';
+      image.loading = 'lazy';
+      image.referrerPolicy = 'no-referrer';
+      const info = document.createElement('div');
+      info.className = 'result-info';
+      const label = document.createElement('small');
+      label.textContent = 'NO. ' + item.id + (item.new ? ' · NEW' : '');
+      const title = document.createElement('h3');
+      title.textContent = item.title;
+      const change = document.createElement('button');
+      change.type = 'button';
+      change.dataset.id = item.id;
+      change.textContent = decisions[item.id] ? '再判定する' : 'この画像を好きにする';
+      change.dataset.action = decisions[item.id] ? 'clear' : 'like';
+      info.append(label, title);
+      if (item.pin) {
+        const link = document.createElement('a');
+        link.href = 'https://www.pinterest.com/pin/' + item.pin + '/';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = '元のPinを見る ↗';
+        info.append(link);
+      }
+      info.append(change);
+      box.append(image, info);
+      return box;
+    }
+    function renderResults() {
+      const list = references.filter(item => filter === 'all' || (decisions[item.id] || 'pending') === filter);
+      const grid = el('resultGrid');
+      grid.replaceChildren();
+      if (list.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'no-results';
+        empty.textContent = filter === 'like' ? 'まだ「好き」がありません。右へスワイプして選べます。' : filter === 'dislike' ? 'まだ「嫌い」がありません。左へスワイプして選べます。' : '表示する画像がありません。';
+        grid.append(empty);
+      } else {
+        const fragment = document.createDocumentFragment();
+        list.forEach(item => fragment.append(makeResultCard(item)));
+        grid.append(fragment);
+      }
+      document.querySelectorAll('[data-filter]').forEach(button => button.setAttribute('aria-pressed', button.dataset.filter === filter ? 'true' : 'false'));
+    }
+    function render() { renderDeck(); renderCounts(); renderResults(); persist(); }
+    function record(id, status) {
+      const previous = decisions[id] || null;
+      if (previous === status) return;
+      history.push({ id, previous });
+      if (status) decisions[id] = status; else delete decisions[id];
+      render();
+    }
+    function decide(status) {
+      const item = current();
+      if (!item || busy) return;
+      busy = true;
+      const id = item.id;
+      history.push({ id, previous: null });
+      decisions[id] = status;
+      persist();
+      const direction = status === 'like' ? 1 : -1;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      card.style.transition = reducedMotion ? 'none' : 'transform 220ms ease, opacity 220ms ease';
+      card.style.transform = 'translateX(' + direction * (window.innerWidth + 150) + 'px) rotate(' + direction * 15 + 'deg)';
+      card.style.opacity = reducedMotion ? '1' : '0';
+      window.setTimeout(() => {
+        card.style.opacity = '1';
+        render();
+        busy = false;
+        announce('No. ' + id + ' を「' + (status === 'like' ? '好き' : '嫌い') + '」に入れました。');
+      }, reducedMotion ? 0 : 220);
+    }
+    function undo() {
+      if (busy || history.length === 0) return;
+      const last = history.pop();
+      if (last.previous) decisions[last.id] = last.previous; else delete decisions[last.id];
+      render();
+      announce('No. ' + last.id + ' の判定を戻しました。');
+    }
+    card.addEventListener('pointerdown', event => {
+      if (busy || !current() || event.target.closest('a, button')) return;
+      drag = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, dx: 0 };
+      card.style.transition = 'none';
+      card.setPointerCapture(event.pointerId);
+    });
+    card.addEventListener('pointermove', event => {
+      if (!drag || drag.pointerId !== event.pointerId || busy) return;
+      drag.dx = event.clientX - drag.startX;
+      const dy = event.clientY - drag.startY;
+      if (Math.abs(dy) > Math.abs(drag.dx) * 1.5) return;
+      card.style.transform = 'translateX(' + drag.dx + 'px) rotate(' + (drag.dx / 24) + 'deg)';
+      const yes = el('yesMark');
+      const no = el('noMark');
+      yes.style.opacity = Math.max(0, Math.min(1, drag.dx / 90));
+      no.style.opacity = Math.max(0, Math.min(1, -drag.dx / 90));
+    });
+    card.addEventListener('pointerup', event => {
+      if (!drag || drag.pointerId !== event.pointerId || busy) return;
+      const dx = event.clientX - drag.startX;
+      const threshold = Math.max(70, Math.min(120, card.offsetWidth * .18));
+      drag = null;
+      if (Math.abs(dx) >= threshold) decide(dx > 0 ? 'like' : 'dislike'); else resetDrag();
+    });
+    card.addEventListener('pointercancel', resetDrag);
+    card.addEventListener('lostpointercapture', () => { if (drag && !busy) resetDrag(); });
+    card.addEventListener('dragstart', event => event.preventDefault());
+    el('likeButton').addEventListener('click', () => decide('like'));
+    el('dislikeButton').addEventListener('click', () => decide('dislike'));
+    el('undoButton').addEventListener('click', undo);
+    document.addEventListener('keydown', event => {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.target.matches('input, textarea, select')) return;
+      if (event.key === 'ArrowRight') { event.preventDefault(); decide('like'); }
+      if (event.key === 'ArrowLeft') { event.preventDefault(); decide('dislike'); }
+      if (event.key.toLowerCase() === 'z') undo();
+    });
+    document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click', () => { filter = button.dataset.filter; renderResults(); }));
+    el('resultGrid').addEventListener('click', event => {
+      const button = event.target.closest('button[data-action]');
+      if (!button) return;
+      record(button.dataset.id, button.dataset.action === 'clear' ? null : 'like');
+      announce('No. ' + button.dataset.id + ' の判定を変更しました。');
+    });
+    el('copyButton').addEventListener('click', async () => {
+      const liked = references.filter(item => decisions[item.id] === 'like').map(item => item.id).join(', ') || 'なし';
+      const disliked = references.filter(item => decisions[item.id] === 'dislike').map(item => item.id).join(', ') || 'なし';
+      const content = 'PicTune参考\n好き: ' + liked + '\n嫌い: ' + disliked;
+      try {
+        await navigator.clipboard.writeText(content);
+        announce('判定した番号をコピーしました。');
+        el('copyButton').textContent = 'コピーしました';
+        window.setTimeout(() => { el('copyButton').textContent = '好き／嫌いの番号をコピー'; }, 1800);
+      } catch (_) {
+        window.prompt('以下の結果をコピーしてください', content);
+      }
+    });
+    window.addEventListener('storage', event => { if (event.key === storageKey) { decisions = loadDecisions(); render(); } });
+    render();
+  }());
+  </script>
+</body>
+</html>
