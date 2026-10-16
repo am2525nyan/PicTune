@@ -240,6 +240,115 @@ to{opacity:1;translate:0 0}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
 
+
+/* Additional ideas derived from the user's preferred compositions 01, 02 and 03. */
+.tab.new-tab::after{content:"NEW";margin-left:7px;color:#9e5a72;font-size:8px;font-weight:800;letter-spacing:.04em}
+.tab.new-tab[aria-selected=true]::after{color:#ffc1d7}
+.preference{font-size:10px;display:inline-block;background:#e8e0ef;color:#725980;border-radius:10px;padding:5px 9px;margin-bottom:12px}
+.tab-scroll{display:flex;gap:8px;overflow:auto;padding:3px 3px 9px;min-width:0;flex:1;scrollbar-width:thin}
+.tab-scroll .tab{flex-shrink:0;white-space:nowrap}
+.tabs{flex-wrap:nowrap}
+.compare{flex-shrink:0}
+/* 06 — two long photo strips, moving in opposite directions */
+.booth{--bg:#f4bea2;--button-bg:#e75c38;color:#2c2827}
+.booth-brand{position:absolute;top:68px;left:28px;right:28px;z-index:7;display:flex;align-items:center;justify-content:space-between}
+.booth-brand>span{font-size:7px;font-weight:700;letter-spacing:.06em;width:75px;line-height:1.6}
+.booth-stage{position:absolute;top:115px;left:0;right:0;height:401px;overflow:hidden;background:#f4bea2}
+.booth-strip{position:absolute;width:175px;padding:8px;background:#fff9ee;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 22px #693b2730;transition:translate .8s cubic-bezier(.2,.8,.2,1)}
+.booth-strip .cheki{box-shadow:none}
+.strip-a{left:6px;top:-72px;transform:rotate(-10deg)}
+.strip-b{left:215px;top:-240px;transform:rotate(12deg)}
+.booth-stage.shifted .strip-a{translate:0 -104px}
+.booth-stage.shifted .strip-b{translate:0 105px}
+.booth-song{position:absolute;top:134px;left:64px;z-index:4;display:flex;align-items:center;gap:9px;background:#fffdf4;border:1px solid #e5d9c4;box-shadow:0 5px 15px #39291e20;transform:rotate(-6deg);border-radius:30px;padding:13px 18px;font-size:9px;letter-spacing:.05em;font-weight:750}
+.booth-song .icon{width:19px;height:19px;color:#e75c38}
+.booth-shuffle{position:absolute;bottom:29px;right:24px;display:flex;align-items:center;gap:8px;border:0;border-radius:30px;background:#fff6e8;padding:9px 15px;min-height:44px;font-size:11px;font-weight:600;box-shadow:0 4px 16px #492f2825;z-index:8}
+.booth-shuffle .icon{width:17px;height:17px;transform:rotate(90deg)}
+.booth-paper{position:absolute;top:499px;bottom:0;width:100%;background:#fffaf2;border-radius:34px 34px 0 0}
+.booth-copy{position:absolute;top:536px;left:28px;right:25px}
+.booth-copy>span{font-size:8px;letter-spacing:.13em;color:#b27354;font-weight:700}
+.booth-copy h2{font-size:29px;letter-spacing:-.07em;line-height:1.35;margin:12px 0 0;font-weight:800}
+.booth-copy p{font-size:13px;line-height:1.75;color:#8c7566;margin:14px 0 0}
+/* 07 — a physical fan of cheki that opens around a common hinge */
+.pocket{--bg:#eae1fa;--button-bg:#483559;color:#3b2d47}
+.pocket-brand{position:absolute;top:69px;left:28px;right:28px;display:flex;align-items:center;justify-content:space-between}
+.pocket-brand>span{font-size:7px;letter-spacing:.08em;width:75px;line-height:1.6;text-align:right}
+.pocket-title{position:absolute;top:134px;left:28px;margin:0;font-size:38px;line-height:1.22;letter-spacing:-.065em}
+.pocket-stage{position:absolute;top:267px;width:390px;height:335px}
+.pocket-orbit{position:absolute;width:305px;height:240px;top:43px;left:43px;border:1px solid #c4addc;border-radius:50%;transform:rotate(-19deg)}
+.pocket-card{position:absolute;top:2px;left:105px;width:180px;padding:0;border:0;background:white;transform-origin:50% 100%;transition:transform .7s cubic-bezier(.2,.8,.2,1);box-shadow:0 14px 24px #69537c20}
+.pocket-left{transform:rotate(-12deg) translate(-12px,33px);z-index:2}
+.pocket-right{transform:rotate(12deg) translate(12px,33px);z-index:3}
+.pocket-center{transform:rotate(-2deg);z-index:4}
+.pocket-stage.open .pocket-left{transform:rotate(-32deg) translate(-28px,2px)}
+.pocket-stage.open .pocket-right{transform:rotate(32deg) translate(28px,2px)}
+.pocket-stage.open .pocket-center{transform:rotate(0deg) translateY(-13px)}
+.pocket-heart{position:absolute;left:31px;top:7px;color:#e687b5;transform:rotate(-18deg);z-index:5}
+.pocket-heart .icon{width:42px;height:42px;fill:#e687b5;stroke:#fff;stroke-width:1.2}
+.pocket-spark{position:absolute;right:24px;top:144px;color:#a183ba;z-index:5}
+.pocket-spark .icon{width:29px;height:29px;fill:#fdf4cc;stroke-width:1.2}
+.pocket-label{position:absolute;bottom:9px;left:101px;z-index:6;font-size:8px;letter-spacing:.11em;font-weight:800;background:#fff9e8;border:1px solid #e9dbbc;padding:9px 17px;transform:rotate(3deg);border-radius:4px}
+.pocket-copy{position:absolute;top:610px;left:28px;right:28px;text-align:center}
+.pocket-open{display:inline-flex;align-items:center;gap:7px;background:none;border:0;min-height:44px;padding:4px 12px;font-size:12px;font-weight:650}
+.pocket-open .icon{width:16px;height:16px;transition:transform .5s}
+.pocket-open[aria-expanded=true] .icon{transform:rotate(45deg)}
+.pocket-copy p{font-size:12px;line-height:1.75;margin:5px 0 0;color:#8a7899}
+/* 08 — photo and music meet across a bold color split */
+.duet{--bg:#e7f294;--button-bg:#292c24;color:#292c24}
+.duet-brand{position:absolute;top:69px;left:28px;right:28px;z-index:8;display:flex;justify-content:space-between;align-items:center}
+.duet-brand>span{font-size:8px;line-height:1.3;letter-spacing:.08em;font-weight:750}
+.duet-color{position:absolute;top:458px;left:0;right:0;bottom:0;background:#f2b7cf}
+.duet-title{position:absolute;top:135px;left:26px;z-index:5;font-size:53px;line-height:1.18;letter-spacing:-.075em;margin:0;font-weight:850}
+.duet-title span{border-bottom:3px solid #292c24}
+.duet-intro{position:absolute;top:276px;left:28px;margin:0;font-size:12px;letter-spacing:.03em}
+.duet-stage{position:absolute;top:341px;left:0;width:390px;height:266px}
+.duet-photo{position:absolute;width:180px;left:23px;top:0;z-index:3;transform:rotate(-9deg);transition:transform .7s}
+.duet-track{position:absolute;left:198px;top:86px;width:178px;z-index:4;background:#fffaf0;box-shadow:0 10px 20px #724b5c20;padding:15px 14px 13px;transform:rotate(8deg);transition:transform .7s}
+.duet-track-top{display:block;font-size:6px;letter-spacing:.12em;font-weight:750;color:#9b8b7d}
+.duet-track-body{display:flex;gap:11px;align-items:center;margin:16px 0}
+.duet-track-body>.icon{width:32px;height:32px;color:#8c5b8b}
+.duet-track-body strong{display:block;font-size:14px;font-weight:750}
+.duet-track-body span{display:block;font:italic 10px/1.8 Georgia,serif;color:#9b8b7d}
+.duet-wave{display:flex;align-items:center;gap:5px;height:22px;color:#d79eb8}
+.duet-wave i{width:4px;height:8px;background:currentColor;border-radius:4px}
+.duet-wave i:nth-child(3n){height:19px}.duet-wave i:nth-child(3n+1){height:12px}
+.duet-pair{position:absolute;left:169px;top:72px;width:48px;height:48px;border-radius:50%;background:#292c24;color:#e7f294;z-index:6;border:3px solid #e7f294;display:grid;place-items:center}
+.duet-caption{position:absolute;bottom:3px;right:27px;font-size:9px;font-weight:800;letter-spacing:.1em}
+.duet-stage.paired .duet-photo{transform:rotate(-3deg) translate(20px,-5px)}
+.duet-stage.paired .duet-track{transform:rotate(3deg) translate(-38px,8px)}
+.duet-stage.paired .duet-pair{background:#e7f294;color:#292c24}
+.duet-copy{position:absolute;top:640px;left:28px;right:28px}
+.duet-copy p{font-size:13px;line-height:1.8;margin:0}
+/* 09 — a perforated sticker sheet and three meaningful decoration choices */
+.club{--bg:#fff9ef;--button-bg:#d75254;color:#2f2d3e}
+.club-brand{position:absolute;left:28px;right:28px;top:69px;display:flex;align-items:center;justify-content:space-between}
+.club-brand .wordmark{color:#d75254}.club-brand>span{font-size:8px;letter-spacing:.12em;font-weight:750}
+.club-sheet{position:absolute;left:25px;top:124px;width:340px;height:406px;background:#f5b6b8;border:1px dashed #c46d79;border-radius:14px;box-shadow:0 9px 20px #9c57541c;overflow:hidden}
+.club-sheet-label{position:absolute;left:18px;top:16px;font-size:7px;letter-spacing:.11em;font-weight:800;color:#9f515c}
+.club-big{position:absolute;left:18px;top:44px;font-size:45px;line-height:.92;letter-spacing:-.06em;font-weight:850;color:#94424f}
+.club-big em{font-family:Georgia,serif;font-weight:400;font-size:51px}
+.club-photo{position:absolute;left:17px;top:150px;width:175px;z-index:3;transform:rotate(-8deg)}
+.club-small{position:absolute;left:206px;top:105px;width:115px;transform:rotate(13deg);z-index:2}
+.club-caption{position:absolute;right:14px;bottom:21px;font:italic 18px Georgia,serif;transform:rotate(-8deg);color:#93434e}
+.club-added{position:absolute;z-index:5;filter:drop-shadow(0 3px 2px #633e5020);animation:sticker-pop .3s ease-out}
+.add-heart{left:4px;top:255px;color:#d85760;transform:rotate(-16deg)}
+.add-heart .icon{width:52px;height:52px;fill:currentColor;stroke:#fff9ef;stroke-width:1.5}
+.add-spark{left:167px;top:144px;color:#405ba3;transform:rotate(12deg)}
+.add-spark .icon{width:47px;height:47px;fill:#ddecff;stroke-width:1.4}
+.add-music{left:196px;top:298px;color:#435aa6;background:#fff9ef;padding:8px;border-radius:12px;transform:rotate(13deg)}
+.add-music .icon{width:27px;height:27px}
+.club-tools{position:absolute;top:541px;left:28px;right:28px;display:flex;gap:8px;align-items:center;justify-content:flex-end}
+.club-tools>span{font-size:10px;color:#a18483;margin-right:auto}
+.club-tools button{width:44px;height:44px;border:1px solid #e4d2d1;border-radius:50%;background:#fff;color:#ba6c79;display:grid;place-items:center}
+.club-tools button[aria-pressed=true]{background:#f5b6b8;border-color:#b46b79;color:#7d3e4b}
+.club-tools .icon{width:20px;height:20px}
+.club-copy{position:absolute;top:604px;left:28px}
+.club-copy h2{font-size:28px;line-height:1.25;letter-spacing:-.05em;margin:0}
+.club-copy p{font-size:12px;line-height:1.7;margin:12px 0 0;color:#977f83}
+.phone.entering .booth-stage,.phone.entering .pocket-stage,.phone.entering .duet-stage,.phone.entering .club-sheet{animation:arrive .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes sticker-pop{from{opacity:0;scale:.65}to{opacity:1;scale:1}}
+@media(max-width:700px){.tabs{align-items:flex-start;flex-wrap:wrap;overflow:visible}.tab-scroll{flex-basis:100%}.compare{margin-left:auto}}
+@media(prefers-reduced-motion:reduce){.phone.entering .booth-stage,.phone.entering .pocket-stage,.phone.entering .duet-stage,.phone.entering .club-sheet,.club-added{animation:none!important}}
 </style></head>
 <body>
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -277,13 +386,13 @@ to{opacity:1;translate:0 0}
 <div>
 <div class="studio-name">PicTune<span>ONBOARDING DESIGN STUDY</span>
 </div>
-<h1>思い出の見せ方から、つくり直す。</h1>
+<h1>気になる3案から、さらに4つのアイディア。</h1>
 </div>
-<p>実際のデコチェキを使った5つの構成。<br>各案のボタンや写真を触って比較できます。</p>
+<p>01・02・03を軸に、06〜09を追加しました。<br>各案のボタンや写真を触って比較できます。</p>
 </header>
 <nav class="tabs" aria-label="デザイン案">
-<div role="tablist" aria-label="5つのデザイン" style="display:contents">
-<button class="tab" id="tab-01" role="tab" aria-controls="concept-01" aria-selected="true" tabindex="0">
+<div role="tablist" aria-label="9つのデザイン" class="tab-scroll">
+<button class="tab" id="tab-01" role="tab" aria-controls="concept-01" aria-selected="false" tabindex="-1">
 <span>01</span>Photo gallery</button>
 <button class="tab" id="tab-02" role="tab" aria-controls="concept-02" aria-selected="false" tabindex="-1">
 <span>02</span>Little universe</button>
@@ -293,13 +402,17 @@ to{opacity:1;translate:0 0}
 <span>04</span>Dear memories</button>
 <button class="tab" id="tab-05" role="tab" aria-controls="concept-05" aria-selected="false" tabindex="-1">
 <span>05</span>Play our days</button>
+<button class="tab new-tab" id="tab-06" role="tab" aria-controls="concept-06" aria-selected="true" tabindex="0"><span>06</span>Photo booth</button>
+<button class="tab new-tab" id="tab-07" role="tab" aria-controls="concept-07" aria-selected="false" tabindex="-1"><span>07</span>Pocket collection</button>
+<button class="tab new-tab" id="tab-08" role="tab" aria-controls="concept-08" aria-selected="false" tabindex="-1"><span>08</span>Photo + tune</button>
+<button class="tab new-tab" id="tab-09" role="tab" aria-controls="concept-09" aria-selected="false" tabindex="-1"><span>09</span>Sticker club</button>
 </div>
-<button class="compare" aria-pressed="false">5案を並べる</button>
+<button class="compare" aria-pressed="false">9案を並べる</button>
 </nav>
 <div class="concepts">
-<section class="concept" id="concept-01" role="tabpanel" aria-labelledby="tab-01" >
+<section class="concept" id="concept-01" role="tabpanel" aria-labelledby="tab-01" hidden>
 <div class="description">
-<span class="design-id">01 / PHOTO GALLERY</span>
+<span class="preference">気になった案</span><br><span class="design-id">01 / PHOTO GALLERY</span>
 <h2>写真で、好きになる。</h2>
 <p>白い余白の上に、画面からはみ出す大きなチェキ。写真についた手描きの色を引き立て、曲のラベルでPicTuneの価値を伝えます。</p>
 <dl class="details">
@@ -388,7 +501,7 @@ to{opacity:1;translate:0 0}
 </section>
 <section class="concept" id="concept-02" role="tabpanel" aria-labelledby="tab-02" hidden>
 <div class="description">
-<span class="design-id">02 / LITTLE UNIVERSE</span>
+<span class="preference">気になった案</span><br><span class="design-id">02 / LITTLE UNIVERSE</span>
 <h2>好きなものが、集まる。</h2>
 <p>いただいた「浮遊する小物」の参考を、写真・曲・手紙に置き換えました。小さな思い出が中央へ集まり、一つのアルバムになる動きを作っています。</p>
 <dl class="details">
@@ -508,7 +621,7 @@ to{opacity:1;translate:0 0}
 </section>
 <section class="concept" id="concept-03" role="tabpanel" aria-labelledby="tab-03" hidden>
 <div class="description">
-<span class="design-id">03 / POP POSTER</span>
+<span class="preference">気になった案</span><br><span class="design-id">03 / POP POSTER</span>
 <h2>かわいいを、大胆に。</h2>
 <p>大きな日本語と色面が先に目に入り、その下からチェキが飛び出す構図です。小さな装飾を足すより、文字と写真のサイズで楽しさを出しています。</p>
 <dl class="details">
@@ -788,6 +901,452 @@ to{opacity:1;translate:0 0}
 <p class="hint">再生マークを押すと、ジャケットが回転します（音は出ません）。</p>
 </div>
 </section>
+<section class="concept" id="concept-06" role="tabpanel" aria-labelledby="tab-06" >
+<div class="description">
+<span class="preference">追加案 · 01 / 写真の迫力</span>
+<br>
+<span class="design-id">06 / PHOTO BOOTH</span>
+<h2>思い出が、つながっていく。</h2>
+<p>01の大きな写真を、上下に連なるフォトストリップへ。写真の帯が画面からはみ出すことで、思い出が増えていく楽しさを見せます。</p>
+<dl class="details">
+<div>
+<dt>展開元</dt>
+<dd>01 / 写真の迫力</dd>
+</div>
+<div>
+<dt>配色</dt>
+<dd>クリーム × アプリコット</dd>
+</div>
+</dl>
+<button class="replay">
+<svg class="icon" aria-hidden="true">
+<use href="#replay"/>
+</svg>登場の動きを再生</button>
+</div>
+<div class="preview">
+<div class="phone-shell">
+<div class="phone booth">
+<div class="status" aria-hidden="true">
+<b>9:41</b>
+<span class="island">
+</span>
+<span class="system-icons">
+<i class="signal">
+</i>
+<i class="wifi">
+</i>
+<i class="battery">
+</i>
+</span>
+</div>
+<div class="booth-brand">
+<div class="wordmark">pictune<span>®</span>
+</div>
+<span>GOOD DAYS, ON REPEAT.</span>
+</div>
+<div class="booth-stage">
+<div class="booth-strip strip-a">
+<img class="cheki" src="onboarding-preview-assets/user-cheki-yellow.jpg" alt="黄色とラベンダーの手描きチェキ">
+<img class="cheki" src="onboarding-preview-assets/user-cheki-pink.jpg" alt="ピンクの手描きチェキ">
+<img class="cheki" src="onboarding-preview-assets/user-cheki-yellow.jpg" alt="黄色とラベンダーの手描きチェキ">
+</div>
+<div class="booth-strip strip-b">
+<img class="cheki" src="onboarding-preview-assets/user-cheki-pink.jpg" alt="ピンクの手描きチェキ">
+<img class="cheki" src="onboarding-preview-assets/user-cheki-yellow.jpg" alt="黄色とラベンダーの手描きチェキ">
+<img class="cheki" src="onboarding-preview-assets/user-cheki-pink.jpg" alt="ピンクの手描きチェキ">
+</div>
+<div class="booth-song">
+<svg class="icon" aria-hidden="true">
+<use href="#music"/>
+</svg> ONE PHOTO. ONE SONG.</div>
+<button class="booth-shuffle" aria-pressed="false">写真をめくる <svg class="icon" aria-hidden="true">
+<use href="#arrow"/>
+</svg>
+</button>
+</div>
+<div class="booth-paper">
+</div>
+<div class="booth-copy">
+<span>KEEP THE LITTLE THINGS.</span>
+<h2>なんでもない日が、<br>忘れられない日に。</h2>
+<p>好きな曲と、いつもの笑顔。<br>ふたつ一緒に、残しておこう。</p>
+</div>
+<div class="bottom">
+<button class="primary" data-auth>はじめる<svg class="icon" aria-hidden="true">
+<use href="#arrow"/>
+</svg>
+</button>
+<button class="login" data-auth>アカウントをお持ちの方</button>
+</div>
+<div class="auth" hidden>
+<section class="auth-panel" role="dialog" aria-modal="true" aria-label="ログイン画面のプレビュー">
+<button class="auth-close" aria-label="閉じる">
+<svg class="icon " aria-hidden="true">
+<use href="#close"/>
+</svg>
+</button>
+<h3>PicTuneをはじめる</h3>
+<p>あなたの思い出を、ひとつのアルバムへ。</p>
+<div class="auth-option apple">Appleで続ける</div>
+<div class="auth-option">Googleで続ける</div>
+<div class="auth-option">メールで続ける</div>
+<p class="demo">デザイン用プレビュー・認証は行いません</p>
+</section>
+</div>
+</div>
+</div>
+<p class="hint">写真の帯を、ボタンで上下に動かせます。</p>
+</div>
+</section>
+<section class="concept" id="concept-07" role="tabpanel" aria-labelledby="tab-07" hidden>
+<div class="description">
+<span class="preference">追加案 · 02 / 浮かぶ写真</span>
+<br>
+<span class="design-id">07 / POCKET COLLECTION</span>
+<h2>好きな日を、ひと束に。</h2>
+<p>02の浮遊感を、手のひらで開くチェキの束に。タップで写真が扇状に広がり、「集めて、見返す」感覚を最初の画面で触れられます。</p>
+<dl class="details">
+<div>
+<dt>展開元</dt>
+<dd>02 / 浮かぶ写真</dd>
+</div>
+<div>
+<dt>配色</dt>
+<dd>ラベンダー × ミルク × 深い紫</dd>
+</div>
+</dl>
+<button class="replay">
+<svg class="icon" aria-hidden="true">
+<use href="#replay"/>
+</svg>登場の動きを再生</button>
+</div>
+<div class="preview">
+<div class="phone-shell">
+<div class="phone pocket">
+<div class="status" aria-hidden="true">
+<b>9:41</b>
+<span class="island">
+</span>
+<span class="system-icons">
+<i class="signal">
+</i>
+<i class="wifi">
+</i>
+<i class="battery">
+</i>
+</span>
+</div>
+<div class="pocket-brand">
+<div class="wordmark">pictune<span>®</span>
+</div>
+<span>YOUR LITTLE COLLECTION</span>
+</div>
+<h2 class="pocket-title">好きな日を、<br>ポケットに。</h2>
+<div class="pocket-stage">
+<div class="pocket-orbit">
+</div>
+<div class="pocket-card pocket-left">
+<img class="cheki" src="onboarding-preview-assets/user-cheki-pink.jpg" alt="ピンクの手描きチェキ">
+</div>
+<div class="pocket-card pocket-right">
+<img class="cheki" src="onboarding-preview-assets/user-cheki-pink.jpg" alt="ピンクの手描きチェキ">
+</div>
+<button class="pocket-card pocket-center" aria-label="チェキの束を開く" aria-expanded="false">
+<img class="cheki" src="onboarding-preview-assets/user-cheki-yellow.jpg" alt="黄色とラベンダーの手描きチェキ">
+</button>
+<span class="pocket-heart">
+<svg class="icon" aria-hidden="true">
+<use href="#heart"/>
+</svg>
+</span>
+<span class="pocket-spark">
+<svg class="icon" aria-hidden="true">
+<use href="#spark"/>
+</svg>
+</span>
+<span class="pocket-label">MY FAVORITE DAYS</span>
+</div>
+<div class="pocket-copy">
+<button class="pocket-open" aria-expanded="false">ひらく <svg class="icon" aria-hidden="true">
+<use href="#plus"/>
+</svg>
+</button>
+<p>写真も、曲も、大切な人との時間も。<br>見返すたび、好きになるアルバム。</p>
+</div>
+<div class="bottom">
+<button class="primary" data-auth>思い出をあつめる<svg class="icon" aria-hidden="true">
+<use href="#arrow"/>
+</svg>
+</button>
+<button class="login" data-auth>アカウントをお持ちの方</button>
+</div>
+<div class="auth" hidden>
+<section class="auth-panel" role="dialog" aria-modal="true" aria-label="ログイン画面のプレビュー">
+<button class="auth-close" aria-label="閉じる">
+<svg class="icon " aria-hidden="true">
+<use href="#close"/>
+</svg>
+</button>
+<h3>PicTuneをはじめる</h3>
+<p>あなたの思い出を、ひとつのアルバムへ。</p>
+<div class="auth-option apple">Appleで続ける</div>
+<div class="auth-option">Googleで続ける</div>
+<div class="auth-option">メールで続ける</div>
+<p class="demo">デザイン用プレビュー・認証は行いません</p>
+</section>
+</div>
+</div>
+</div>
+<p class="hint">真ん中のチェキ、または「ひらく」をタップできます。</p>
+</div>
+</section>
+<section class="concept" id="concept-08" role="tabpanel" aria-labelledby="tab-08" hidden>
+<div class="description">
+<span class="preference">追加案 · 01 ＋ 03 / 写真と大きな文字</span>
+<br>
+<span class="design-id">08 / PHOTO + TUNE</span>
+<h2>二つで、ひとつの思い出。</h2>
+<p>03の大きな文字と色面に、01のチェキを組み合わせました。写真と曲のカードを近づける動きで、PicTuneならではの「音楽を添える」を見せます。</p>
+<dl class="details">
+<div>
+<dt>展開元</dt>
+<dd>01 ＋ 03 / 写真と大きな文字</dd>
+</div>
+<div>
+<dt>配色</dt>
+<dd>ライム × ピンク × 墨黒</dd>
+</div>
+</dl>
+<button class="replay">
+<svg class="icon" aria-hidden="true">
+<use href="#replay"/>
+</svg>登場の動きを再生</button>
+</div>
+<div class="preview">
+<div class="phone-shell">
+<div class="phone duet">
+<div class="status" aria-hidden="true">
+<b>9:41</b>
+<span class="island">
+</span>
+<span class="system-icons">
+<i class="signal">
+</i>
+<i class="wifi">
+</i>
+<i class="battery">
+</i>
+</span>
+</div>
+<div class="duet-brand">
+<div class="wordmark">pictune<span>®</span>
+</div>
+<span>BETTER<br>TOGETHER.</span>
+</div>
+<div class="duet-color">
+</div>
+<h2 class="duet-title">写真に、<br>
+<span>音楽</span>を。</h2>
+<p class="duet-intro">あの日を、もっと鮮やかに。</p>
+<div class="duet-stage">
+<div class="duet-photo">
+<img class="cheki" src="onboarding-preview-assets/user-cheki-pink.jpg" alt="ピンクの手描きチェキ">
+</div>
+<div class="duet-track">
+<span class="duet-track-top">THE SOUND OF THAT DAY</span>
+<div class="duet-track-body">
+<svg class="icon" aria-hidden="true">
+<use href="#music"/>
+</svg>
+<div>
+<strong>好きな一曲</strong>
+<span>for this memory</span>
+</div>
+</div>
+<div class="duet-wave" aria-hidden="true">
+<i>
+</i>
+<i>
+</i>
+<i>
+</i>
+<i>
+</i>
+<i>
+</i>
+<i>
+</i>
+<i>
+</i>
+<i>
+</i>
+<i>
+</i>
+<i>
+</i>
+<i>
+</i>
+<i>
+</i>
+</div>
+</div>
+<button class="duet-pair" aria-label="写真と曲を重ねる" aria-pressed="false">
+<svg class="icon" aria-hidden="true">
+<use href="#plus"/>
+</svg>
+</button>
+<span class="duet-caption" aria-live="polite">PHOTO + TUNE</span>
+</div>
+<div class="duet-copy">
+<p>写真だけじゃ、残せない気持ちも。<br>好きな曲と一緒に、とっておこう。</p>
+</div>
+<div class="bottom">
+<button class="primary" data-auth>一枚と一曲を残す<svg class="icon" aria-hidden="true">
+<use href="#arrow"/>
+</svg>
+</button>
+<button class="login" data-auth>アカウントをお持ちの方</button>
+</div>
+<div class="auth" hidden>
+<section class="auth-panel" role="dialog" aria-modal="true" aria-label="ログイン画面のプレビュー">
+<button class="auth-close" aria-label="閉じる">
+<svg class="icon " aria-hidden="true">
+<use href="#close"/>
+</svg>
+</button>
+<h3>PicTuneをはじめる</h3>
+<p>あなたの思い出を、ひとつのアルバムへ。</p>
+<div class="auth-option apple">Appleで続ける</div>
+<div class="auth-option">Googleで続ける</div>
+<div class="auth-option">メールで続ける</div>
+<p class="demo">デザイン用プレビュー・認証は行いません</p>
+</section>
+</div>
+</div>
+</div>
+<p class="hint">中央の＋で、写真と曲のカードを重ねられます。</p>
+</div>
+</section>
+<section class="concept" id="concept-09" role="tabpanel" aria-labelledby="tab-09" hidden>
+<div class="description">
+<span class="preference">追加案 · 02 ＋ 03 / 小物と大胆さ</span>
+<br>
+<span class="design-id">09 / STICKER CLUB</span>
+<h2>かわいいは、自分でつくる。</h2>
+<p>02の小物と03の大胆さを、ステッカーシートのような一画面に。自分で飾る小さな操作から、PicTuneのデコレーションへつなげます。</p>
+<dl class="details">
+<div>
+<dt>展開元</dt>
+<dd>02 ＋ 03 / 小物と大胆さ</dd>
+</div>
+<div>
+<dt>配色</dt>
+<dd>ミルク × コーラル × ブルー</dd>
+</div>
+</dl>
+<button class="replay">
+<svg class="icon" aria-hidden="true">
+<use href="#replay"/>
+</svg>登場の動きを再生</button>
+</div>
+<div class="preview">
+<div class="phone-shell">
+<div class="phone club">
+<div class="status" aria-hidden="true">
+<b>9:41</b>
+<span class="island">
+</span>
+<span class="system-icons">
+<i class="signal">
+</i>
+<i class="wifi">
+</i>
+<i class="battery">
+</i>
+</span>
+</div>
+<div class="club-brand">
+<div class="wordmark">pictune<span>®</span>
+</div>
+<span>STICKER CLUB</span>
+</div>
+<div class="club-sheet">
+<span class="club-sheet-label">A LITTLE PIECE OF YOU.</span>
+<div class="club-big">MAKE IT<br>
+<em>YOURS.</em>
+</div>
+<div class="club-photo">
+<img class="cheki" src="onboarding-preview-assets/user-cheki-pink.jpg" alt="ピンクの手描きチェキ">
+</div>
+<div class="club-small">
+<img class="cheki" src="onboarding-preview-assets/user-cheki-yellow.jpg" alt="黄色とラベンダーの手描きチェキ">
+</div>
+<span class="club-added add-heart" hidden>
+<svg class="icon" aria-hidden="true">
+<use href="#heart"/>
+</svg>
+</span>
+<span class="club-added add-spark" hidden>
+<svg class="icon" aria-hidden="true">
+<use href="#spark"/>
+</svg>
+</span>
+<span class="club-added add-music" hidden>
+<svg class="icon" aria-hidden="true">
+<use href="#music"/>
+</svg>
+</span>
+<span class="club-caption">made by me.</span>
+</div>
+<div class="club-tools">
+<span>ひとつ、飾ってみる？</span>
+<button data-sticker="heart" aria-label="ハートを飾る" aria-pressed="false">
+<svg class="icon" aria-hidden="true">
+<use href="#heart"/>
+</svg>
+</button>
+<button data-sticker="spark" aria-label="きらめきを飾る" aria-pressed="false">
+<svg class="icon" aria-hidden="true">
+<use href="#spark"/>
+</svg>
+</button>
+<button data-sticker="music" aria-label="音符を飾る" aria-pressed="false">
+<svg class="icon" aria-hidden="true">
+<use href="#music"/>
+</svg>
+</button>
+</div>
+<div class="club-copy">
+<h2>思い出に、<br>わたしのしるし。</h2>
+<p>好きなデコと曲で、世界にひとつの一枚に。</p>
+</div>
+<div class="bottom">
+<button class="primary" data-auth>自分らしい一枚をつくる<svg class="icon" aria-hidden="true">
+<use href="#arrow"/>
+</svg>
+</button>
+<button class="login" data-auth>アカウントをお持ちの方</button>
+</div>
+<div class="auth" hidden>
+<section class="auth-panel" role="dialog" aria-modal="true" aria-label="ログイン画面のプレビュー">
+<button class="auth-close" aria-label="閉じる">
+<svg class="icon " aria-hidden="true">
+<use href="#close"/>
+</svg>
+</button>
+<h3>PicTuneをはじめる</h3>
+<p>あなたの思い出を、ひとつのアルバムへ。</p>
+<div class="auth-option apple">Appleで続ける</div>
+<div class="auth-option">Googleで続ける</div>
+<div class="auth-option">メールで続ける</div>
+<p class="demo">デザイン用プレビュー・認証は行いません</p>
+</section>
+</div>
+</div>
+</div>
+<p class="hint">下の3つのステッカーを押すと、チェキの周りに飾れます。</p>
+</div>
+</section>
 </div>
 <footer class="studio-footer">デザイン比較用のHTMLです。写真はご本人のPicTuneから取得したデコチェキを使用しています。画面内の動きとログイン入口はプレビューで、認証・音楽再生・写真の保存は行いません。</footer>
 </main>
@@ -796,7 +1355,7 @@ const studio=document.querySelector('.studio');
 const tabs=[...document.querySelectorAll('.tab')];
 const panels=[...document.querySelectorAll('.concept')];
 const compare=document.querySelector('.compare');
-let active=0;
+let active=5;
 function fit(){document.querySelectorAll('.phone-shell').forEach(shell=>{if(shell.clientWidth) shell.querySelector('.phone').style.setProperty('--scale',shell.clientWidth/390);});}
 const resize=new ResizeObserver(fit);document.querySelectorAll('.phone-shell').forEach(shell=>resize.observe(shell));
 function animate(panel){const phone=panel.querySelector('.phone');phone.classList.remove('entering');void phone.offsetWidth;phone.classList.add('entering');}
@@ -811,5 +1370,14 @@ document.querySelector('.gather').addEventListener('click',event=>{const button=
 document.querySelector('.letter-note').addEventListener('click',event=>{const button=event.currentTarget;button.setAttribute('aria-expanded',button.getAttribute('aria-expanded')!=='true');});
 document.querySelector('.record-play').addEventListener('click',event=>{const button=event.currentTarget;const on=document.querySelector('.record-stage').classList.toggle('playing');button.setAttribute('aria-pressed',on);button.setAttribute('aria-label',on?'ジャケットの動きを止める':'ジャケットの動きを再生');});
 document.querySelectorAll('.phone').forEach(phone=>{const auth=phone.querySelector('.auth');let trigger;const close=()=>{auth.hidden=true;phone.querySelectorAll('[data-auth]').forEach(button=>button.inert=false);if(trigger)trigger.focus();};phone.querySelectorAll('[data-auth]').forEach(button=>button.addEventListener('click',()=>{trigger=button;auth.hidden=false;phone.querySelectorAll('[data-auth]').forEach(el=>el.inert=true);auth.querySelector('.auth-close').focus();}));auth.querySelector('.auth-close').addEventListener('click',close);auth.addEventListener('click',event=>{if(event.target===auth)close();});auth.addEventListener('keydown',event=>{if(event.key==='Escape')close();if(event.key==='Tab'){event.preventDefault();auth.querySelector('.auth-close').focus();}});});
-fit();animate(panels[0]);
+
+document.querySelector('.booth-shuffle').addEventListener('click',event=>{const button=event.currentTarget;const on=button.closest('.booth-stage').classList.toggle('shifted');button.setAttribute('aria-pressed',on);});
+const pocketStage=document.querySelector('.pocket-stage');
+const pocketButtons=[document.querySelector('.pocket-center'),document.querySelector('.pocket-open')];
+pocketButtons.forEach(button=>button.addEventListener('click',()=>{const on=pocketStage.classList.toggle('open');pocketButtons.forEach(control=>control.setAttribute('aria-expanded',on));pocketButtons[0].setAttribute('aria-label',on?'チェキの束を閉じる':'チェキの束を開く');pocketButtons[1].firstChild.textContent=on?'とじる ':'ひらく ';}));
+document.querySelector('.duet-pair').addEventListener('click',event=>{const button=event.currentTarget;const stage=button.closest('.duet-stage');const on=stage.classList.toggle('paired');button.setAttribute('aria-pressed',on);button.setAttribute('aria-label',on?'写真と曲を広げる':'写真と曲を重ねる');button.querySelector('use').setAttribute('href',on?'#heart':'#plus');stage.querySelector('.duet-caption').textContent=on?'ひとつの思い出に。':'PHOTO + TUNE';});
+document.querySelectorAll('[data-sticker]').forEach(button=>button.addEventListener('click',()=>{const on=button.getAttribute('aria-pressed')!=='true';button.setAttribute('aria-pressed',on);document.querySelector('.add-'+button.dataset.sticker).hidden=!on;}));
+
+fit();animate(panels[active]);
+tabs[active].scrollIntoView({block:'nearest',inline:'nearest'});
 </script></body></html>
