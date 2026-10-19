@@ -11,6 +11,10 @@ struct PhotoRecord: Identifiable {
 }
 
 extension PhotoRecord {
+    func replacingImage(fileName: String) -> PhotoRecord {
+        PhotoRecord(id: id, fileName: fileName, date: date, music: music, livePhotoFileName: livePhotoFileName)
+    }
+
     init?(id: String, data: [String: Any]) {
         guard let fileName = data["url"] as? String,
               !fileName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }

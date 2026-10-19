@@ -56,6 +56,16 @@ class PhotoPreviewViewModel: ObservableObject {
     }
 
     static func saveErrorMessage(for error: Error) -> String {
+        if let networkError = error as? URLError {
+            switch networkError.code {
+            case .notConnectedToInternet, .networkConnectionLost, .cannotConnectToHost, .cannotFindHost:
+                return "インターネット接続を確認して、もう一度保存してください。編集内容はこの画面に残っています。"
+            case .timedOut:
+                return "保存がタイムアウトしました。通信状況を確認して、もう一度保存してください。"
+            default:
+                break
+            }
+        }
         // StorageError does not conform to LocalizedError. Its NSError code is
         // an enum index (e.g. unauthorized = 5), not a StorageErrorCode value.
         guard let storageError = error as? StorageError else {

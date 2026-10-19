@@ -24,10 +24,13 @@ class MainContentModel: ObservableObject {
     private let widgetDefaults: UserDefaults?
     private let reloadWidgets: () -> Void
     private var photoDataCache: [String: Data] = [:]
+    private var editedImages: [String: LibraryPhoto] = [:]
     private var photoLoadID = UUID()
     private var folderLoadID = UUID()
     private var coverLoadIDs: [String: UUID] = [:]
     private var sessionID = UUID()
+    private var photoEditObserver: AnyCancellable?
+    private static let photoEdited = Notification.Name("PicTune.photoEdited")
 
     init(repository: any PhotoLibraryRepository = FirebasePhotoLibraryRepository(),
          currentUserID: @escaping () -> String? = { Auth.auth().currentUser?.uid },
@@ -39,6 +42,14 @@ class MainContentModel: ObservableObject {
         self.widgetDirectory = widgetDirectory
         self.widgetDefaults = widgetDefaults
         self.reloadWidgets = reloadWidgets
+        photoEditObserver = NotificationCenter.default.publisher(for: Self.photoEdited).sink { [weak self] notification in
+            guard let uid = notification.userInfo?["userID"] as? String,
+                  let oldFileName = notification.userInfo?["oldFileName"] as? String,
+                  let photo = notification.userInfo?["photo"] as? LibraryPhoto,
+                  let data = notification.userInfo?["data"] as? Data else { return }
+            // This internal notification is posted synchronously from the main actor.
+            MainActor.assumeIsolated { self?.applyPhotoEdits(photo, replacing: oldFileName, data: data, userID: uid) }
+        }
     }
 
     func reset() {
@@ -51,6 +62,7 @@ class MainContentModel: ObservableObject {
         folderCoverImages = [:]
         coverLoadIDs = [:]
         photoDataCache = [:]
+        editedImages = [:]
         folderDocument = PhotoFolder.allID
         userDataList = ""
         isShowSheet = false
@@ -80,7 +92,7 @@ class MainContentModel: ObservableObject {
                 loaded.append(LibraryPhoto(record: record, image: image))
                 // Keep the library's progressive loading without splitting record fields.
                 if folderID == PhotoFolder.allID, isCurrentPhotoRequest(requestID, userID: uid) {
-                    photos = loaded
+                    photos = loaded.map(latestPhoto)
                 }
             } catch is CancellationError {
                 return
@@ -90,7 +102,7 @@ class MainContentModel: ObservableObject {
             }
         }
         guard isCurrentPhotoRequest(requestID, userID: uid) else { return }
-        photos = loaded
+        photos = loaded.map(latestPhoto)
 
         if folderID == PhotoFolder.allID {
             await updateWidget(records: records, requestID: requestID, userID: uid)
@@ -106,9 +118,11 @@ class MainContentModel: ObservableObject {
     }
 
     private func imageData(fileName: String) async throws -> Data {
+        if let edited = editedImages[fileName] { return try await imageData(fileName: edited.record.fileName) }
         if let cached = photoDataCache[fileName] { return cached }
         let session = sessionID
         let data = try await repository.imageData(fileName: fileName)
+        if let edited = editedImages[fileName] { return try await imageData(fileName: edited.record.fileName) }
         if sessionID == session { photoDataCache[fileName] = data }
         return data
     }
@@ -120,7 +134,8 @@ class MainContentModel: ObservableObject {
             guard isCurrentPhotoRequest(requestID, userID: userID) else { return }
             guard index < chosen.count else { defaults.removeObject(forKey: key); continue }
             do {
-                let data = try await imageData(fileName: chosen[index].fileName)
+                let fileName = editedImages[chosen[index].fileName]?.record.fileName ?? chosen[index].fileName
+                let data = try await imageData(fileName: fileName)
                 guard isCurrentPhotoRequest(requestID, userID: userID) else { return }
                 let destination = directory.appendingPathComponent("widget-\(key).jpg")
                 try data.write(to: destination, options: .atomic)
@@ -168,7 +183,7 @@ class MainContentModel: ObservableObject {
         let data = try await imageData(fileName: record.fileName)
         guard sessionID == session, currentUserID() == uid, coverLoadIDs[folderId] == request,
               folders.contains(where: { $0.id == folderId }), let image = UIImage(data: data) else { return }
-        folderCoverImages[folderId] = image
+        folderCoverImages[folderId] = latestPhoto(LibraryPhoto(record: record, image: image)).image
     }
 
     func appendFolder(photoDocumentID: String, to destinationFolderID: String) async throws {
@@ -177,6 +192,50 @@ class MainContentModel: ObservableObject {
         try await repository.copyPhoto(userID: uid, photoID: photoDocumentID, to: destinationFolderID)
         guard sessionID == session, currentUserID() == uid else { throw CancellationError() }
         invalidateCover(folderID: destinationFolderID)
+    }
+
+    func savePhotoEdits(photo: LibraryPhoto, image: UIImage, folderID: String) async throws -> LibraryPhoto {
+        let uid = try signedInUserID()
+        let session = sessionID
+        guard let data = image.jpegData(compressionQuality: 0.95), let savedImage = UIImage(data: data) else {
+            throw folderError("写真を作成できませんでした。")
+        }
+        let fileName = try await repository.savePhotoEdits(userID: uid, folderID: folderID,
+                                                         photo: photo.record, imageData: data)
+        guard sessionID == session, currentUserID() == uid else { throw CancellationError() }
+        let result = LibraryPhoto(record: photo.record.replacingImage(fileName: fileName), image: savedImage)
+        NotificationCenter.default.post(name: Self.photoEdited, object: nil, userInfo: [
+            "userID": uid, "oldFileName": photo.record.fileName, "photo": result, "data": data
+        ])
+        // Widget refresh is best effort; a completed save must never become a retry.
+        let requestID = photoLoadID
+        if let records = try? await repository.photos(userID: uid, folderID: PhotoFolder.allID),
+           sessionID == session, isCurrentPhotoRequest(requestID, userID: uid) {
+            await updateWidget(records: records, requestID: requestID, userID: uid)
+        }
+        guard sessionID == session, currentUserID() == uid else { throw CancellationError() }
+        return result
+    }
+
+    private func applyPhotoEdits(_ photo: LibraryPhoto, replacing oldFileName: String, data: Data, userID: String) {
+        guard currentUserID() == userID else { return }
+        photoDataCache[photo.record.fileName] = data
+        for key in Array(editedImages.keys) where editedImages[key]?.record.fileName == oldFileName {
+            editedImages[key] = photo
+        }
+        editedImages[oldFileName] = photo
+        photos = photos.map(latestPhoto)
+        let covers = Set(folderCoverImages.keys).union(coverLoadIDs.keys)
+        coverLoadIDs = [:]
+        folderCoverImages = [:]
+        Task { @MainActor [weak self] in
+            for id in covers { try? await self?.loadFolderCover(folderId: id) }
+        }
+    }
+
+    private func latestPhoto(_ photo: LibraryPhoto) -> LibraryPhoto {
+        guard let edited = editedImages[photo.record.fileName] else { return photo }
+        return LibraryPhoto(record: photo.record.replacingImage(fileName: edited.record.fileName), image: edited.image)
     }
 
     func saveLetter(_ text: String, folderID: String) async throws {

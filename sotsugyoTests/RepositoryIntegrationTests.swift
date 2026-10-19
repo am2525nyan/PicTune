@@ -54,6 +54,54 @@ final class RepositoryIntegrationTests: XCTestCase {
         return reference
     }
 
+    func testPhotoEditingUpdatesOwnCopiesAtomicallyAndPreservesMusicAndRecipients() async throws {
+        let date = Timestamp(date: Date(timeIntervalSince1970: 100))
+        let data: [String: Any] = ["url": "original.jpg", "date": date, "trackName": "曲", "id": "music", "custom": "keep", "livephotoUrl": "live.mov"]
+        try await folder(owner, "album").setData(["title": "アルバム"])
+        let all = folder(owner, "all").collection("photos").document("original")
+        let copy = folder(owner, "album").collection("photos").document("legacy-copy")
+        let friend = folder(recipient, "all").collection("photos").document("original")
+        for reference in [all, copy, friend] { try await reference.setData(data) }
+        var uploaded: [String] = []
+        let editing = FirebasePhotoLibraryRepository(database: database, imageUpload: { fileName, bytes in
+            uploaded.append(fileName)
+            XCTAssertEqual(bytes, Data([1, 2, 3]))
+        })
+        let original = try XCTUnwrap(PhotoRecord(id: "original", data: data))
+        let fileName = try await editing.savePhotoEdits(userID: owner, folderID: "all", photo: original, imageData: Data([1, 2, 3]))
+        XCTAssertEqual(uploaded, [fileName])
+        var expected = data
+        expected["url"] = fileName
+        for reference in [all, copy] {
+            let document = try await reference.getDocument()
+            XCTAssertTrue(NSDictionary(dictionary: document.data() ?? [:]).isEqual(to: expected))
+        }
+        let recipientPhoto = try await friend.getDocument()
+        XCTAssertTrue(NSDictionary(dictionary: recipientPhoto.data() ?? [:]).isEqual(to: data))
+        let ownership = try await database.collection("imageOwners").document(fileName).getDocument()
+        XCTAssertEqual(ownership.data()?["ownerID"] as? String, owner)
+        let reloaded = try await editing.photos(userID: owner, folderID: "album")
+        XCTAssertEqual(reloaded.first?.fileName, fileName)
+        XCTAssertEqual(reloaded.first?.music?.trackId, "music")
+        // A stale editor cannot overwrite the newer image.
+        do { _ = try await editing.savePhotoEdits(userID: owner, folderID: "all", photo: original, imageData: Data()); XCTFail("Expected stale edit error") } catch { }
+        XCTAssertEqual(uploaded.count, 1)
+    }
+
+    func testFailedUploadOrConcurrentDeletionDoesNotChangeOrRecreatePhotos() async throws {
+        let source = folder(owner, "all").collection("photos").document("photo")
+        try await source.setData(["url": "original.jpg"])
+        let record = PhotoRecord(id: "photo", fileName: "original.jpg", date: nil, music: nil, livePhotoFileName: "")
+        let failing = FirebasePhotoLibraryRepository(database: database, imageUpload: { _, _ in throw URLError(.notConnectedToInternet) })
+        do { _ = try await failing.savePhotoEdits(userID: owner, folderID: "all", photo: record, imageData: Data()); XCTFail("Expected upload error") } catch { }
+        let unchanged = try await source.getDocument()
+        XCTAssertEqual(unchanged.data()?["url"] as? String, "original.jpg")
+        let deleting = FirebasePhotoLibraryRepository(database: database, imageUpload: { _, _ in try await source.delete() })
+        do { _ = try await deleting.savePhotoEdits(userID: owner, folderID: "all", photo: record, imageData: Data()); XCTFail("Expected deletion error") } catch { }
+        let deleted = try await source.getDocument()
+        XCTAssertFalse(deleted.exists)
+    }
+
     func testRepeatedImportKeepsPhotoIdentityMusicAndRecipientLetter() async throws {
         let reference = try await seed()
         try await folder(recipient, reference.folderID).setData(["title": "自分の既存フォルダ", "letter": "keep"])

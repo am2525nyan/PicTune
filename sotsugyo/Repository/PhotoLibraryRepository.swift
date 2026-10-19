@@ -10,6 +10,7 @@ protocol PhotoLibraryRepository {
     func folders(userID: String) async throws -> [PhotoFolder]
     func createFolder(userID: String, folder: PhotoFolder) async throws
     func copyPhoto(userID: String, photoID: String, to folderID: String) async throws
+    func savePhotoEdits(userID: String, folderID: String, photo: PhotoRecord, imageData: Data) async throws -> String
     func deletePhoto(userID: String, photoID: String, folderID: String) async throws
     func deleteFolder(userID: String, folderID: String) async throws
     func letter(userID: String, folderID: String) async throws -> String
@@ -28,9 +29,13 @@ extension PhotoLibraryRepository {
 
 struct FirebasePhotoLibraryRepository: PhotoLibraryRepository {
     private let injectedDatabase: Firestore?
+    private let injectedImageUpload: ((String, Data) async throws -> Void)?
     private var database: Firestore { injectedDatabase ?? Firestore.firestore() }
 
-    init(database: Firestore? = nil) { injectedDatabase = database }
+    init(database: Firestore? = nil, imageUpload: ((String, Data) async throws -> Void)? = nil) {
+        injectedDatabase = database
+        injectedImageUpload = imageUpload
+    }
 
     private func foldersReference(_ userID: String) -> CollectionReference {
         database.collection("users").document(userID).collection("folders")
@@ -80,6 +85,54 @@ struct FirebasePhotoLibraryRepository: PhotoLibraryRepository {
     func deletePhoto(userID: String, photoID: String, folderID: String) async throws {
         try await foldersReference(userID).document(folderID).collection("photos")
             .document(photoID).delete()
+    }
+
+    func savePhotoEdits(userID: String, folderID: String, photo: PhotoRecord, imageData: Data) async throws -> String {
+        let folders = foldersReference(userID)
+        let source = folders.document(folderID).collection("photos").document(photo.id)
+        let snapshot = try await source.getDocument(source: .server)
+        guard snapshot.data()?["url"] as? String == photo.fileName else {
+            throw folderError("写真が変更または削除されています。読み込み直してから編集してください。")
+        }
+
+        // Legacy copies can have different document IDs. Match the actual image instead.
+        var references = [source.path: source]
+        let folderIDs = Set(try await folders.getDocuments(source: .server).documents.map(\.documentID))
+            .union([PhotoFolder.allID, folderID])
+        for id in folderIDs {
+            let copies = try await folders.document(id).collection("photos")
+                .whereField("url", isEqualTo: photo.fileName).getDocuments(source: .server)
+            for copy in copies.documents { references[copy.reference.path] = copy.reference }
+        }
+        // Keep every copy atomic rather than leaving a partially edited library.
+        guard references.count <= 500 else { throw folderError("同じ写真を含むフォルダが多すぎるため、保存できません。") }
+        let targets = Array(references.values)
+        let fileName = "\(UUID().uuidString).jpg"
+        // Never overwrite the original: QR/NFC recipients may still reference it.
+        try await database.collection("imageOwners").document(fileName).setData(["ownerID": userID])
+        if let injectedImageUpload {
+            try await injectedImageUpload(fileName, imageData)
+        } else {
+            let metadata = StorageMetadata()
+            metadata.contentType = "image/jpeg"
+            metadata.customMetadata = ["ownerIDs": userID]
+            _ = try await Storage.storage().reference().child("images/\(fileName)")
+                .putDataAsync(imageData, metadata: metadata)
+        }
+        _ = try await database.runTransaction { transaction, errorPointer in
+            do {
+                let current = try targets.map { try transaction.getDocument($0) }
+                guard current.allSatisfy({ $0.data()?["url"] as? String == photo.fileName }) else {
+                    throw folderError("写真が変更または削除されています。読み込み直してから編集してください。")
+                }
+                for reference in targets { transaction.updateData(["url": fileName], forDocument: reference) }
+                return nil
+            } catch {
+                errorPointer?.pointee = error as NSError
+                return nil
+            }
+        }
+        return fileName
     }
 
     func deleteFolder(userID: String, folderID: String) async throws {

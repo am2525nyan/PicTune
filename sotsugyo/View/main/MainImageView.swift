@@ -23,7 +23,9 @@ struct MainImageView: View {
 
     private func photoCell(_ photo: LibraryPhoto, position: Int) -> some View {
         return NavigationLink {
-            ImageDetailView(photo: photo)
+            ImageDetailView(photo: photo, saveEdits: { photo, image in
+                try await viewModel.savePhotoEdits(photo: photo, image: image, folderID: folderId)
+            })
         } label: {
             Image(uiImage: photo.image)
                 .resizable()
