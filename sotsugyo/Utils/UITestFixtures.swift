@@ -33,7 +33,18 @@ struct UITestRootView: View {
     @StateObject private var camera = CameraManager()
 
     var body: some View {
-        if ProcessInfo.processInfo.arguments.contains("-ui-testing-invite") {
+        if ProcessInfo.processInfo.arguments.contains("-ui-testing-qr") {
+            FriendQRView(isPresentingCamera: .constant(false), cameraManager: camera,
+                         isPresentingQR: .constant(true), friendUid: "",
+                         createInvitation: {
+                CameraInvitation(token: String(repeating: "a", count: 64), ownerID: "fixture-user", name: "確認用ユーザー")
+            }, acceptInvitation: { _ in
+                if ProcessInfo.processInfo.arguments.contains("-ui-testing-qr-expired") {
+                    throw FolderInviteError.unavailable
+                }
+                return CameraInvitation(token: String(repeating: "a", count: 64), ownerID: "friend-user", name: "さき")
+            })
+        } else if ProcessInfo.processInfo.arguments.contains("-ui-testing-invite") {
             FolderInvitationView(link: UITestInvitationRepository.link, repository: UITestInvitationRepository())
         } else if UITestFixtures.isSearch {
             UITestSearchView()
