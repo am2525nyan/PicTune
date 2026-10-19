@@ -1,0 +1,82 @@
+[
+  {
+    "name": "a-album",
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "New York": 5,
+        "SF Pro": 8
+      },
+      "sizes": [
+        40,
+        28,
+        22,
+        17,
+        15,
+        13,
+        11
+      ],
+      "weights": [
+        "400",
+        "600",
+        "700"
+      ],
+      "leftEdges": 4,
+      "accentHues": [],
+      "cards": 0
+    }
+  },
+  {
+    "name": "b-sound-gallery",
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "SF Pro": 9
+      },
+      "sizes": [
+        40,
+        22,
+        15,
+        13
+      ],
+      "weights": [
+        "400",
+        "700",
+        "800"
+      ],
+      "leftEdges": 2,
+      "accentHues": [
+        48
+      ],
+      "cards": 1
+    }
+  },
+  {
+    "name": "c-memory-box",
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "Zen Maru Gothic": 2,
+        "SF Pro": 6
+      },
+      "sizes": [
+        40,
+        22,
+        15,
+        13
+      ],
+      "weights": [
+        "400",
+        "700"
+      ],
+      "leftEdges": 1,
+      "accentHues": [
+        216
+      ],
+      "cards": 1
+    }
+  }
+]

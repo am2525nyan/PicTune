@@ -1,0 +1,30 @@
+{
+  "checks": [
+    {
+      "screen": "a-album",
+      "photo_open": true,
+      "metadata": true,
+      "no_music": true,
+      "close_button": true,
+      "escape": true
+    },
+    {
+      "screen": "b-sound-gallery",
+      "photo_open": true,
+      "metadata": true,
+      "no_music": true,
+      "close_button": true,
+      "escape": true
+    },
+    {
+      "screen": "c-memory-box",
+      "photo_open": true,
+      "metadata": true,
+      "no_music": true,
+      "close_button": true,
+      "escape": true
+    }
+  ],
+  "reduced_motion": true,
+  "page_errors": []
+}
