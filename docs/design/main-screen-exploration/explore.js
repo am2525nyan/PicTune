@@ -5,7 +5,11 @@ const icons = {
   folder:'<path d="M3 7V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7h17"/>',
   settings:'<path d="m10 3-.7 2.4-2 .8-2.3-1.1-2 3.5 2 1.5-.1 2.2L3 14l2 3.5 2.4-.8 1.8 1.2L10 21h4l.8-2.4 1.8-1.2 2.4.8 2-3.5-1.9-1.7-.1-2.2 2-1.5-2-3.5-2.3 1.1-2-.8L14 3Z"/><circle cx="12" cy="12" r="3"/>',
   arrow:'<path d="m9 5 7 7-7 7"/>',
-  close:'<path d="m7 7 10 10M17 7 7 17"/>'
+  close:'<path d="m7 7 10 10M17 7 7 17"/>',
+  heart:'<path d="M12 20S3 14.5 3 8.5C3 3 9 2 12 7c3-5 9-4 9 1.5C21 14.5 12 20 12 20Z"/>',
+  bow:'<path d="M10 10C3 0 0 3 2 12c1 4 5 2 8 0M14 10c7-10 10-7 8 2-1 4-5 2-8 0M10 13 6 21l5-2 1-5m2-1 4 8-5-2-1-5"/><rect x="9" y="8" width="6" height="7" rx="2.5"/>',
+  flower:'<path d="M9 5c-1-6 7-6 6 0 5-4 9 3 4 6 6 2 2 10-3 6 1 7-7 7-7 1-5 4-10-3-4-6C-1 9 3 2 9 5Z"/><circle cx="12" cy="11" r="2.6"/>',
+  swish:'<path d="m4 4 3 5M14 2l-1 7M21 7l-5 5M3 17c6-4 9 5 15-1"/>'
 };
 function iconMarkup(name) { return `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[name] || ''}</svg>`; }
 function paintIcons(root = document) { root.querySelectorAll('[data-icon]').forEach(node => { node.innerHTML = iconMarkup(node.dataset.icon); }); }

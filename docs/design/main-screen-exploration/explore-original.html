@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PicTune · メイン画面3案</title>
+  <link rel="stylesheet" href="file:///Users/hosonuma/.codex/skills/app-designer/assets/device.css">
+  <!-- 同梱のkitは、スキルを持たない環境で開くためのfallbackです。 -->
+  <link rel="stylesheet" href="assets/device.css">
+  <link rel="stylesheet" href="explore-original.css">
+</head>
+<body>
+  <header class="presentation-header">
+    <p>PicTune / Main screen studies</p>
+    <h1>同じ思い出を、3つのかたちで。</h1>
+    <p>メイン画面の比較用モックアップ · 写真・曲の組み合わせはサンプルです</p>
+  </header>
+  <main class="studies">
+    <article class="study">
+      <div class="study-caption"><b>A</b><div><h2>日々のアルバム</h2><p>写真を眺め、日付をたどる。</p></div></div>
+      <section class="screen album" data-name="a-album" data-time="17:42" aria-label="A 日々のアルバム">
+        <div class="page" data-scrolls>
+          <div class="brand-row"><span class="wordmark">PicTune<span class="wordmark-dot"></span></span><span class="meta">27枚の思い出</span></div>
+          <div class="intro"><h1>写真</h1></div>
+          <div class="date-row"><h2>2026年10月</h2><span class="meta">3枚</span></div>
+          <button class="print feature" data-photo="coast" aria-label="10月18日の写真を開く">
+            <img src="assets/coast.jpg" alt="夕暮れの海沿いの線路">
+            <span class="print-caption"><span class="print-date">10.18</span><span class="print-track"><span class="song"><i data-icon="music"></i>風をあつめて</span><span class="artist">はっぴいえんど</span></span><i class="quiet-arrow" data-icon="arrow"></i></span>
+          </button>
+          <div class="photo-pair">
+            <button class="print small-print" data-photo="beach" aria-label="10月12日の写真を開く"><img src="assets/beach.jpg" alt="山に囲まれた青い入り江"><span class="small-caption"><b>10.12</b><span><i data-icon="music"></i>水平線</span></span></button>
+            <button class="print small-print" data-photo="cafe" aria-label="10月4日の写真を開く"><img src="assets/cafe.jpg" alt="自然光の入る窓辺の喫茶店"><span class="small-caption"><b>10.04</b><span>音楽なし</span></span></button>
+          </div>
+        </div>
+        <div class="camera-action" data-float><i data-icon="camera"></i><span>撮影する</span></div>
+        <nav class="tabs glass" data-system data-float aria-label="メインタブ"><div class="tab selected"><i data-icon="photos"></i><span>写真</span></div><div class="tab"><i data-icon="folder"></i><span>フォルダ</span></div><div class="tab"><i data-icon="settings"></i><span>設定</span></div></nav>
+      </section>
+      <p class="study-note">写真が主役。白い余白と日付で、チェキらしさを残します。</p>
+    </article>
+    <article class="study">
+      <div class="study-caption"><b>B</b><div><h2>音のギャラリー</h2><p>一枚の写真に、一曲の記憶。</p></div></div>
+      <section class="screen gallery" data-name="b-sound-gallery" data-time="17:42" data-theme="dark" data-chrome="light" aria-label="B 音のギャラリー">
+        <div class="page" data-scrolls>
+          <div class="brand-row"><span class="wordmark">PicTune<span class="wordmark-dot"></span></span><i class="brand-note" data-icon="music"></i></div>
+          <div class="intro"><h1>写真</h1><p>写真と、その日の曲。</p></div>
+          <div class="sleeve-stage">
+            <div class="record" aria-hidden="true" data-bleed><div class="record-label"><i data-icon="music"></i></div></div>
+            <button class="sleeve" data-photo="coast" aria-label="10月18日の写真と曲を開く"><img src="assets/coast.jpg" alt="夕暮れの海沿いの線路"><span class="sleeve-edge" aria-hidden="true"></span></button>
+          </div>
+          <div class="gallery-date"><span>2026.10.18</span><span>01 / 27</span></div>
+          <div class="track-detail"><i data-icon="music"></i><div><h2>風をあつめて</h2><p>はっぴいえんど</p></div><i class="quiet-arrow" data-icon="arrow"></i></div>
+          <div class="library-preview"><h2>すべての写真</h2><div class="thumbnail-strip"><button class="current" data-photo="coast" aria-label="10月18日の写真を開く"><img src="assets/coast.jpg" alt="海沿いの線路"></button><button data-photo="beach" aria-label="10月12日の写真を開く"><img src="assets/beach.jpg" alt="青い入り江"></button><button data-photo="cafe" aria-label="10月4日の写真を開く"><img src="assets/cafe.jpg" alt="窓辺の喫茶店"></button></div></div>
+        </div>
+        <div class="camera-action" data-float><i data-icon="camera"></i><span>撮影する</span></div>
+        <nav class="tabs glass" data-system data-float aria-label="メインタブ"><div class="tab selected"><i data-icon="photos"></i><span>写真</span></div><div class="tab"><i data-icon="folder"></i><span>フォルダ</span></div><div class="tab"><i data-icon="settings"></i><span>設定</span></div></nav>
+      </section>
+      <p class="study-note">音楽とのつながりが主役。写真をレコードのジャケットに見立てます。</p>
+    </article>
+    <article class="study">
+      <div class="study-caption"><b>C</b><div><h2>思い出のたからばこ</h2><p>しまっておいた一日を、取り出す。</p></div></div>
+      <section class="screen treasure" data-name="c-memory-box" data-time="17:42" data-chrome="light" aria-label="C 思い出のたからばこ">
+        <div class="page" data-scrolls>
+          <div class="brand-row"><span class="wordmark">PicTune<span class="wordmark-dot"></span></span><span class="meta">27枚の写真</span></div>
+          <div class="intro"><h1>写真の<br>たからばこ。</h1></div>
+          <div class="treasure-stage">
+            <div class="box-back" aria-hidden="true"></div>
+            <button class="keepsake back-photo" data-photo="beach" aria-label="10月12日の写真を開く"><img src="assets/beach.jpg" alt="青い入り江の写真"></button>
+            <button class="keepsake middle-photo" data-photo="cafe" aria-label="10月4日の写真を開く"><img src="assets/cafe.jpg" alt="窓辺の喫茶店の写真"></button>
+            <button class="keepsake front-photo" data-photo="coast" aria-label="10月18日の写真を取り出す"><img src="assets/coast.jpg" alt="夕暮れの海沿いの線路の写真"></button>
+            <div class="box-front" aria-hidden="true"><span class="box-stitch"></span><span class="box-notch"></span></div>
+          </div>
+          <div class="treasure-caption"><div><span class="caption-label">2026.10.18</span><h2>風をあつめて</h2><p>はっぴいえんど</p></div><span class="photo-position">1 / 27</span></div>
+        </div>
+        <div class="camera-action" data-float><i data-icon="camera"></i><span>撮影する</span></div>
+        <nav class="tabs glass" data-system data-float aria-label="メインタブ"><div class="tab selected"><i data-icon="photos"></i><span>写真</span></div><div class="tab"><i data-icon="folder"></i><span>フォルダ</span></div><div class="tab"><i data-icon="settings"></i><span>設定</span></div></nav>
+      </section>
+      <p class="study-note">触れる楽しさが主役。写真の重なりと箱の素材感で表現します。</p>
+    </article>
+  </main>
+  <footer class="presentation-footer">402 × 874 pt / 3x render · 実装前の画面案です。写真を押すと、拡大する動きを確認できます。撮影とタブは外観のみです。</footer>
+  <script src="assets/device.js"></script>
+  <script src="explore.js"></script>
+</body>
+</html>

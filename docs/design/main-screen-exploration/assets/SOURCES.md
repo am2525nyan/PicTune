@@ -17,3 +17,9 @@
 アイコン：explore.js内で作図したSF Symbols風のSVG（stroke 1.8pt）。実装時の対応：`camera`、`music.note`、`photo.on.rectangle`、`folder`、`gearshape`、`chevron.right`、`xmark`。
 
 既存画面の参照：`docs/screenshots/photo-folder-toolbar/photos.png`。既存チェキ枠とAppIconは監査しましたが、画面案でAppIconの改変・差し替えは行っていません。
+
+## ポップ＆キュート版の追加素材
+
+`mochiy-pop-display.ttf`：Google FontsのMochiy Pop One Regular。`PicTune`と`写真`だけの表示用サブセットです。配布元：https://github.com/google/fonts/tree/main/ofl/mochiypopone 。ライセンス：同梱 `MochiyPopOne-OFL.txt`（SIL Open Font License）。
+
+リボン・花・ハート・手描き線は、既存チェキフレームのモチーフを参考にexplore.js内で作図したSVGです。既存JPGの黒背景を透明化したり、生成画像で置き換えたりしていません。トイカメラはCSSで構成した表示用の図形です。

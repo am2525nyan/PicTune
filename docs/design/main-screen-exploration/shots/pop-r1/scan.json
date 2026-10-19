@@ -1,0 +1,85 @@
+[
+  {
+    "name": "a-ribbon",
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "Mochiy Pop One": 2,
+        "SF Pro": 9
+      },
+      "sizes": [
+        40,
+        22,
+        15,
+        13
+      ],
+      "weights": [
+        "400",
+        "700"
+      ],
+      "leftEdges": 5,
+      "accentHues": [
+        336
+      ],
+      "cards": 0
+    }
+  },
+  {
+    "name": "b-camera-toy",
+    "fails": [],
+    "warns": [
+      "Three saturated hue families (216°, 48°, 192°). Is each one earning its place?"
+    ],
+    "facts": {
+      "fonts": {
+        "Zen Maru Gothic": 2,
+        "SF Pro": 7
+      },
+      "sizes": [
+        40,
+        22,
+        15,
+        13
+      ],
+      "weights": [
+        "400",
+        "700"
+      ],
+      "leftEdges": 2,
+      "accentHues": [
+        216,
+        48,
+        192
+      ],
+      "cards": 1
+    }
+  },
+  {
+    "name": "c-soda-booth",
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "SF Pro": 10
+      },
+      "sizes": [
+        40,
+        22,
+        15,
+        13,
+        11
+      ],
+      "weights": [
+        "400",
+        "700",
+        "800"
+      ],
+      "leftEdges": 3,
+      "accentHues": [
+        168
+      ],
+      "cards": 0
+    }
+  }
+]

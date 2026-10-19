@@ -1,44 +1,42 @@
-# PicTune メイン画面3案
+# PicTune メイン画面3案 · ポップ＆キュート版
 
-2026年10月19日。「方向を絞らず比較する」という指定で、同じ写真・日付・曲を使った3方向を制作しました。採用案は未決定です。
+2026年10月19日。「もっとポップで可愛いのが良い」という指定を受け、明るい色、丸い文字、リボンや花、紙とトイカメラの造形で3案を作り直しました。採用案は未決定です。
 
-![メイン画面3案](shots/r2/sheet.png)
+![ポップで可愛いメイン画面3案](shots/pop-r2/sheet.png)
 
-| 案 | 主役・見た目 | 強み | 比較上の弱み |
-|---|---|---|---|
-| A 日々のアルバム | 明るい背景、明朝、白いチェキ | 写真と日付をたどりやすい | 音楽の印象・造形の意外性は控えめ |
-| B 音のギャラリー | 暗い背景、太い文字、レコードの溝 | 写真と音楽の組み合わせが明快 | 同時に比較できる写真が少ない |
-| C 思い出のたからばこ | 青い背景、丸文字、写真の束と箱 | 写真を取り出す楽しさと固有性 | 写真を素早く探す効率はAに劣る |
+| 案 | 表現 | 比較上の特徴 |
+|---|---|---|
+| A リボンチェキ | ピンクの紙・太く丸い見出し・リボン | 最も甘め。既存のチェキやスタンプに近い可愛さです。 |
+| B カメラトイ | レモン色・丸文字・青いトイカメラ | 最も元気でポップ。カメラから写真が出る楽しさを表します。 |
+| C ソーダブース | ミントの景色・白い紙・丸い切り口 | すっきりした可愛さ。写真ごとの日付と曲を並べます。 |
 
-各案は背景・書体・豊かさの源・色の系統が異なります。名前、撮影、写真・フォルダ・設定の3タブを維持し、曲名と日付を一覧で見せています。構想は写真タップから写真と曲を取り出す遷移です。実装前の比較資料で、アプリの画面は差し替えていません。
+名前、写真と曲、撮影、写真・フォルダ・設定の3タブを維持しています。アプリの画面を差し替える前の比較資料です。
 
-## 開き方・成果物
+## 成果物
 
-- [3案のHTML](explore.html)：ローカルのブラウザで開き、写真を押すと拡大表示の試作を確認できます。撮影・タブは外観のみです。
-- [現状との比較](before-after.html)：現行画面と3案を並べます。
-- [現状との比較画像](shots/before-after.png)
-- [仕様・保持機能・判断の根拠](DIRECTION.md)
-- [2回の評価と確認結果](CRITIQUE.md)
-- [写真・フォントの出典](assets/SOURCES.md)
-- 通常サイズの個別画像：[A](shots/r2/01-a-album.png) / [B](shots/r2/02-b-sound-gallery.png) / [C](shots/r2/03-c-memory-box.png)
-- [小さい画面の比較](shots/r2-small/sheet.png)
+- [3案のHTML](explore.html)：写真を押すと拡大表示を確認できます。撮影とタブは外観のみです。
+- 個別画像：[A](shots/pop-r2/01-a-ribbon.png) / [B](shots/pop-r2/02-b-camera-toy.png) / [C](shots/pop-r2/03-c-soda-booth.png)
+- [小型画面の比較](shots/pop-r2-small/sheet.png)
+- [現状との比較HTML](before-after.html) / [比較画像](shots/before-after.png)
+- [今回の仕様と判断](POP-DIRECTION.md) / [今回の批評と確認](POP-CRITIQUE.md)
+- [素材の出典](assets/SOURCES.md)
+- 初稿の記録：[HTML](explore-original.html) / [仕様](DIRECTION.md) / [批評](CRITIQUE.md)
 
-表示対象は402×874ptのiPhone相当と375×667ptの小型画面相当です。Chrome/macOS上で3x描画し、画像を個別に確認しています。iOS実機・シミュレーターのスクリーンショットではありません。システムフォント参照はmacOS向けです。
+## 確認範囲
 
-## 確認結果
+Chrome/macOSで402×874pt・375×667ptを3x描画し、各画面を個別に目視確認しました。同じ批評担当による2回の評価は46→48/60、Fidelityは3→4/5。最終6画面の自動スキャンはFAIL0・WARN0です。
 
-2回の描画・別担当批評で、Bの重なり順、Cの日付、小型画面の撮影ボタン、Aの上部余白とホーム領域を改善しました。評価は46→49/60、Fidelityは3→4/5。最終6画面の自動スキャンはFAIL0・WARN0です。
-写真拡大、正しい日付と曲、音楽なし、閉じる、Escape、Reduced Motionを確認し、ページエラーは0でした。
+花が日付を隠す箇所、複数写真の日付の対応、小型カメラの大きさ、背景の濃さを修正しました。操作の確認結果は `shots/pop-interaction/verification.json` に保存しています。
 
-写真と曲の対応は架空のサンプルです。写真の出典は同梱しています。生成画像は使用していません。ムードと参照物は制作側で補完しました。実機の触覚・遷移、装飾済みチェキ、Dynamic Type、データ接続、反対のカラーモードは未確認です。アプリソースを変更していないため、Xcodeビルド・アプリテストは実行していません。
+実装前のHTMLモックアップで、iOSアプリのシミュレーター画像ではありません。アプリソースは変更していないためXcodeビルド・アプリテストは対象外です。実機の操作・触覚、指に追従する遷移、Dynamic Type、横画面、装飾済みチェキ、多数の実データ、ダークモード、macOS以外のフォント置換は未確認です。撮影・タブ先・音楽再生・Firebase・QR・NFCはHTMLに接続していません。写真と曲の対応は架空のサンプルです。
+
+生成画像・有料クレジットは使っていません。色とモチーフの具体化は制作側で補完しています。
 
 ## 再描画
 
 app-designerスキルとplaywright-core、Chromeがある環境の場合：
 
 ```sh
-node ~/.codex/skills/app-designer/scripts/shoot.mjs docs/design/main-screen-exploration/explore.html --out /tmp/pictune-normal
-node ~/.codex/skills/app-designer/scripts/shoot.mjs docs/design/main-screen-exploration/explore.html --out /tmp/pictune-small --width 375 --height 667
+node ~/.codex/skills/app-designer/scripts/shoot.mjs docs/design/main-screen-exploration/explore.html --out /tmp/pictune-pop-normal
+node ~/.codex/skills/app-designer/scripts/shoot.mjs docs/design/main-screen-exploration/explore.html --out /tmp/pictune-pop-small --width 375 --height 667
 ```
-
-kitは同梱しています。グローバルのスキル参照が利用できない場合も、相対パスのkitで表示できます。各shotsフォルダにスキャン結果JSONを残しています。
