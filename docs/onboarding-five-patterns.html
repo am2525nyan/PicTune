@@ -86,58 +86,60 @@ button:focus-visible,a:focus-visible{outline:3px solid #5365e7;outline-offset:5p
 .gallery-copy h2 span{color:#f45a2a}
 .gallery-copy p{font-size:14px;line-height:1.65;color:#79716b;margin:15px 0 0}
 
-/* 02 — a controlled curved cascade, converging on one action */
-.universe{--bg:#eee7fa;--accent:#7549be;--button-bg:#292231}
-.universe>.wordmark{position:absolute;top:68px;left:28px}
-.universe-stage{position:absolute;top:90px;left:0;width:390px;height:421px}
+/* 02 — oversized photo confetti, pink paper and punchy purple */
+.universe{--bg:#ffd5e8;--accent:#7139da;--button-bg:#7139da;color:#351c52}
+.universe>.wordmark{position:absolute;top:68px;left:28px;color:#7139da}
+.universe-stage{position:absolute;top:123px;left:0;width:390px;height:416px;--gather-x:195px;--gather-y:377px}
 .float{position:absolute;transition:transform .75s cubic-bezier(.2,.8,.2,1),opacity .65s;transform:rotate(var(--r));z-index:2}
-.f1{width:104px;left:-22px;top:53px;--r:-24deg}
-.f2{width:128px;left:154px;top:23px;--r:16deg;z-index:4}
-.f3{width:93px;left:292px;top:152px;--r:19deg}
-.f4{width:79px;left:93px;top:222px;--r:-19deg;z-index:4}
-.f5{left:77px;top:39px;--r:-12deg;color:#ed5d96}
-.f5 .icon{width:53px;height:53px;fill:#ed5d96;stroke:#fff;stroke-width:1}
-.f6{left:289px;top:64px;--r:15deg;background:#fff;padding:12px;border-radius:17px;box-shadow:0 6px 14px #614b7925;color:#6a4c90}
-.f6 .icon{width:30px;height:30px}
-.f7{left:15px;top:201px;--r:9deg;width:119px;background:#fff9e9;box-shadow:0 5px 10px #614b7918;padding:13px;font:italic 18px Georgia,serif}
-.f7 span{font:10px/2 -apple-system,sans-serif}
-.f8{left:229px;top:258px;--r:13deg;background:#e5ff8f;color:#3c4730;border-radius:50%;padding:13px 19px;text-align:center;font-size:12px;font-weight:800;line-height:1.05}
-.f8 em{font:italic 22px Georgia,serif}
-.f9{left:107px;top:141px;--r:12deg;color:#8060ac}
-.f9 .icon{width:36px;height:36px;fill:#c4afe3}
-.f10{left:221px;top:230px;--r:2deg;color:#eaa538}
-.f10 .icon{width:26px;height:26px;fill:#f8de83}
-.f11{left:39px;top:333px;--r:-15deg;border:1px solid #9c7cc8;color:#6b4c91;border-radius:4px;padding:5px 8px;font-size:9px;font-weight:750;letter-spacing:.09em}
-.f12{left:309px;top:348px;--r:20deg;color:#cc83a5}
-.f12 .icon{width:27px;height:27px}
-.gather{position:absolute;bottom:1px;left:163px;z-index:10;width:64px;height:64px;border-radius:50%;border:1px solid #fff;background:#ffffffc9;color:#65468f;display:grid;place-items:center;box-shadow:0 5px 15px #8b70a93a,inset 0 0 12px white;transition:transform .65s}
-.gather .icon{width:27px;height:27px;transition:transform .6s}
-.universe-stage.collected .float{transform:translate(calc(195px - var(--x)),calc(389px - var(--y))) rotate(0deg) scale(.1);opacity:0}
-.universe-stage.collected .gather{transform:scale(1.18);background:#fff}
+.f1{width:184px;left:29px;top:61px;--r:-12deg;z-index:3}
+.f2{width:178px;left:177px;top:7px;--r:10deg;z-index:4}
+.f3{width:120px;left:219px;top:246px;--r:14deg;z-index:5}
+.f5{left:93px;top:-17px;--r:-18deg;color:#ff4f9a;z-index:5}
+.f5 .icon{width:86px;height:86px;fill:currentColor;stroke:#fff6fc;stroke-width:1.5;filter:drop-shadow(0 4px 0 #b52f6c)}
+.f6{left:9px;top:233px;--r:-12deg;background:#7139da;padding:17px;border:3px solid #fff5fc;border-radius:22px;box-shadow:3px 5px 0 #54269b;color:#fff;z-index:6}
+.f6 .icon{width:38px;height:38px;stroke-width:2.3}
+.f7{left:20px;top:322px;--r:-13deg;width:130px;background:#fff9e9;box-shadow:3px 5px 0 #d091b0;padding:12px 15px;font:italic 25px Georgia,serif;z-index:5}
+.f7 span{font:11px/2 -apple-system,sans-serif}
+.f8{left:283px;top:197px;--r:14deg;background:#ffeb73;color:#55306b;border:3px solid #fff9cf;border-radius:50%;width:98px;height:83px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:14px;font-weight:900;line-height:1.05;box-shadow:3px 4px 0 #aa7e32;z-index:7}
+.f8 em{font:italic 27px Georgia,serif}
+.f9{left:4px;top:2px;--r:-8deg;color:#7139da}
+.f9 .icon{width:49px;height:49px;fill:currentColor;stroke-width:1}
+.f10{left:164px;top:288px;--r:12deg;color:#7139da;z-index:6}
+.f10 .icon{width:38px;height:38px;fill:#fff6a5;stroke-width:1.6}
+.f12{left:342px;top:345px;--r:20deg;color:#e9378b}
+.f12 .icon{width:33px;height:33px;fill:currentColor}
+.gather{position:absolute;bottom:0;left:156px;z-index:10;width:78px;height:78px;border-radius:50%;border:3px solid #fff;background:#ffeb73;color:#5f2ca2;display:grid;place-items:center;box-shadow:0 5px 0 #d399b7;transition:transform .65s}
+.gather .icon{width:34px;height:34px;stroke-width:2.6;transition:transform .6s}
+.universe-stage.collected .float{transform:translate(calc(var(--gather-x) - var(--x)),calc(var(--gather-y) - var(--y))) rotate(0deg) scale(.1);opacity:0}
+.universe-stage.collected .gather{transform:scale(1.12);background:#fff}
 .universe-stage.collected .gather .icon{transform:rotate(135deg)}
-.universe-copy{position:absolute;top:540px;left:28px;right:28px;text-align:center}
-.universe-copy h2{margin:0;font-size:29px;line-height:1.35;letter-spacing:-.045em;font-weight:750}
-.universe-copy p{font-size:13px;line-height:1.8;color:#7a6b8b;margin:16px 0 0}
+.universe-copy{position:absolute;top:563px;left:24px;right:24px;text-align:center}
+.universe-copy h2{margin:0;font-size:44px;line-height:1.12;letter-spacing:-.065em;font-weight:900}
+.universe-copy h2 span{font-size:35px;color:#7139da}
+.universe-copy p{font-size:12px;line-height:1.7;color:#745369;margin:13px 0 0}
+.universe .primary{font-size:17px;min-height:60px;box-shadow:0 4px 0 #51279d}
 
-/* 03 — Japanese typography and a diagonal photo composition */
-.poster{--bg:#e5f48a;--button-bg:#252622;--button-text:#fff}
+/* 03 — purple poster; both complete cheki stay inside the viewport */
+.poster{--bg:#c4a0f4;--button-bg:#54209a;--button-text:#fff;color:#361259}
 .poster-top{position:absolute;top:69px;left:28px;right:28px;display:flex;align-items:center;justify-content:space-between}
 .edition{font-size:8px;line-height:1.4;font-weight:800;letter-spacing:.07em}
-.poster-title{position:absolute;left:26px;top:131px;z-index:8}
-.poster-title h2{font-size:33px;line-height:1.3;letter-spacing:-.075em;margin:0;font-weight:850}
-.poster-title h2 span{font-size:44px}
-.title-underline{width:191px;height:9px;position:absolute;bottom:-8px;left:3px;border-bottom:3px solid #252622;border-radius:50%;transform:rotate(-3deg)}
-.poster-stage{position:absolute;top:263px;left:0;width:390px;height:365px}
-.big-type{position:absolute;left:-4px;top:28px;font-size:111px;line-height:.86;font-weight:900;letter-spacing:-.08em;color:#849c45;opacity:.25}
-.poster-photo{position:absolute;background:white;border:0;padding:0;transition:transform .6s;box-shadow:4px 9px 20px #3c492b30}
-.p-one{left:-18px;top:24px;width:211px;transform:rotate(-13deg);z-index:3}
-.p-two{left:179px;top:22px;width:184px;transform:rotate(11deg);z-index:4}
-.poster-stage.swapped .p-one{z-index:5;transform:rotate(-5deg) translate(23px,8px)}
-.poster-stage.swapped .p-two{transform:rotate(18deg) translate(7px,5px)}
-.poster-seal{position:absolute;right:13px;top:-26px;z-index:6;background:#ff9fc1;border-radius:50%;width:78px;height:78px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:16px;line-height:.95;font-weight:850;transform:rotate(14deg)}
-.poster-seal .icon{width:18px;height:18px;margin-top:3px;fill:currentColor}
-.poster-strip{position:absolute;bottom:24px;left:-10px;width:410px;z-index:7;background:#ff9fc1;padding:11px;text-align:center;transform:rotate(-6deg);font-size:13px;font-weight:850;letter-spacing:.08em}
-.poster-copy{position:absolute;top:640px;left:28px;margin:0;font-size:14px;line-height:1.65;font-weight:550}
+.poster-title{position:absolute;left:25px;top:130px;z-index:8;transform:rotate(-3deg)}
+.poster-title h2{font-size:36px;line-height:1.3;letter-spacing:-.075em;margin:0;font-weight:900}
+.poster-title h2 span{display:inline-block;font-size:52px;line-height:1.2;color:#fff8fc;text-shadow:3px 4px 0 #7434b3}
+.title-underline{width:283px;height:12px;position:absolute;bottom:-13px;left:3px;border-bottom:6px solid #ffef84;border-radius:50%;transform:rotate(-2deg)}
+.poster-stage{position:absolute;top:285px;left:0;width:390px;height:340px}
+.poster-orbit{position:absolute;left:15px;top:13px;width:360px;height:293px;border:2px solid #e9d4ff;border-radius:50%;transform:rotate(-20deg)}
+.poster-photo{position:absolute;background:white;border:0;padding:0;transition:transform .6s;box-shadow:4px 7px 0 #793cb83d,0 12px 22px #54209a22}
+.poster-photo .cheki{box-shadow:none}
+.p-one{left:26px;top:90px;width:170px;transform:rotate(-9deg);z-index:3}
+.p-two{left:193px;top:8px;width:170px;transform:rotate(7deg);z-index:4}
+.poster-stage.swapped .p-one{z-index:5;transform:rotate(-4deg)}
+.poster-stage.swapped .p-two{transform:rotate(4deg)}
+.poster-seal{position:absolute;left:33px;top:3px;z-index:6;background:#ff81bd;border:3px solid #ffe4f2;border-radius:50%;width:66px;height:66px;display:grid;place-items:center;transform:rotate(-15deg);box-shadow:3px 4px 0 #8736bc}
+.poster-seal .icon{width:35px;height:35px;fill:#fff6fb;stroke:#fff6fb;stroke-width:1}
+.poster-spark{position:absolute;left:269px;top:289px;width:45px;height:45px;color:#ffef84;fill:currentColor;stroke-width:1;transform:rotate(13deg)}
+.poster-copy{position:absolute;top:646px;left:28px;right:28px;margin:0;font-size:14px;line-height:1.65;font-weight:650;text-align:center}
+.poster .primary{min-height:60px;font-size:17px;box-shadow:0 4px 0 #35135d}
 
 /* 04 — a letter and photograph, tactile but quiet */
 .dear{--bg:#fff8f0;--button-bg:#a83f47;--button-text:#fff;color:#5b3737;background-image:repeating-linear-gradient(0deg,transparent,transparent 3px,#a3574210 4px);background-size:100% 4px}
@@ -386,15 +388,15 @@ to{opacity:1;translate:0 0}
 <div>
 <div class="studio-name">PicTune<span>ONBOARDING DESIGN STUDY</span>
 </div>
-<h1>気になる3案から、さらに4つのアイディア。</h1>
+<h1>02と03を、もっと大きく、もっとポップに。</h1>
 </div>
-<p>01・02・03を軸に、06〜09を追加しました。<br>各案のボタンや写真を触って比較できます。</p>
+<p>02は大胆なコラージュ、03は紫のポスターに。<br>各案のボタンや写真を触って比較できます。</p>
 </header>
 <nav class="tabs" aria-label="デザイン案">
 <div role="tablist" aria-label="9つのデザイン" class="tab-scroll">
 <button class="tab" id="tab-01" role="tab" aria-controls="concept-01" aria-selected="false" tabindex="-1">
 <span>01</span>Photo gallery</button>
-<button class="tab" id="tab-02" role="tab" aria-controls="concept-02" aria-selected="false" tabindex="-1">
+<button class="tab" id="tab-02" role="tab" aria-controls="concept-02" aria-selected="true" tabindex="0">
 <span>02</span>Little universe</button>
 <button class="tab" id="tab-03" role="tab" aria-controls="concept-03" aria-selected="false" tabindex="-1">
 <span>03</span>Pop poster</button>
@@ -402,7 +404,7 @@ to{opacity:1;translate:0 0}
 <span>04</span>Dear memories</button>
 <button class="tab" id="tab-05" role="tab" aria-controls="concept-05" aria-selected="false" tabindex="-1">
 <span>05</span>Play our days</button>
-<button class="tab new-tab" id="tab-06" role="tab" aria-controls="concept-06" aria-selected="true" tabindex="0"><span>06</span>Photo booth</button>
+<button class="tab new-tab" id="tab-06" role="tab" aria-controls="concept-06" aria-selected="false" tabindex="-1"><span>06</span>Photo booth</button>
 <button class="tab new-tab" id="tab-07" role="tab" aria-controls="concept-07" aria-selected="false" tabindex="-1"><span>07</span>Pocket collection</button>
 <button class="tab new-tab" id="tab-08" role="tab" aria-controls="concept-08" aria-selected="false" tabindex="-1"><span>08</span>Photo + tune</button>
 <button class="tab new-tab" id="tab-09" role="tab" aria-controls="concept-09" aria-selected="false" tabindex="-1"><span>09</span>Sticker club</button>
@@ -499,19 +501,19 @@ to{opacity:1;translate:0 0}
 <p class="hint">左右のチェキをタップして切り替えられます。</p>
 </div>
 </section>
-<section class="concept" id="concept-02" role="tabpanel" aria-labelledby="tab-02" hidden>
+<section class="concept" id="concept-02" role="tabpanel" aria-labelledby="tab-02">
 <div class="description">
-<span class="preference">気になった案</span><br><span class="design-id">02 / LITTLE UNIVERSE</span>
+<span class="preference">調整した案</span><br><span class="design-id">02 / LITTLE UNIVERSE</span>
 <h2>好きなものが、集まる。</h2>
-<p>いただいた「浮遊する小物」の参考を、写真・曲・手紙に置き換えました。小さな思い出が中央へ集まり、一つのアルバムになる動きを作っています。</p>
+<p>チェキを大きく広げ、ハート・音符・手紙を大胆に重ねました。ピンクの背景に紫と黄色を効かせ、好きなものが弾けるようなコラージュに。中央の＋で一つに集まります。</p>
 <dl class="details">
 <div>
 <dt>構図</dt>
-<dd>小さな思い出の集合</dd>
+<dd>大きなチェキと弾むステッカー</dd>
 </div>
 <div>
 <dt>配色</dt>
-<dd>ラベンダー × チェリーピンク</dd>
+<dd>ピンク × パープル × イエロー</dd>
 </div>
 </dl>
 <button class="replay">
@@ -547,9 +549,6 @@ to{opacity:1;translate:0 0}
 <div class="float f3">
 <img class="cheki " src="onboarding-preview-assets/user-cheki-pink.jpg" alt="ピンクの手描きチェキ" >
 </div>
-<div class="float f4">
-<img class="cheki " src="onboarding-preview-assets/user-cheki-yellow.jpg" alt="黄色とラベンダーの手描きチェキ" >
-</div>
 <div class="float f5">
 <svg class="icon " aria-hidden="true">
 <use href="#heart"/>
@@ -576,7 +575,6 @@ to{opacity:1;translate:0 0}
 <use href="#spark"/>
 </svg>
 </div>
-<div class="float f11">SOUND ON</div>
 <div class="float f12">
 <svg class="icon " aria-hidden="true">
 <use href="#heart"/>
@@ -589,8 +587,8 @@ to{opacity:1;translate:0 0}
 </button>
 </div>
 <div class="universe-copy">
-<h2>思い出は、<br>好きなもの全部で。</h2>
-<p>写真も、音楽も、伝えたいことも。<br>一緒に残す、わたしたちのアルバム。</p>
+<h2>思い出は、<br><span>好きなもの全部で。</span></h2>
+<p>写真と音楽で、わたしたちのアルバム。</p>
 </div>
 <div class="bottom">
 <button class="primary" data-auth>思い出をつくる<svg class="icon " aria-hidden="true">
@@ -621,17 +619,17 @@ to{opacity:1;translate:0 0}
 </section>
 <section class="concept" id="concept-03" role="tabpanel" aria-labelledby="tab-03" hidden>
 <div class="description">
-<span class="preference">気になった案</span><br><span class="design-id">03 / POP POSTER</span>
+<span class="preference">調整した案</span><br><span class="design-id">03 / POP POSTER</span>
 <h2>かわいいを、大胆に。</h2>
-<p>大きな日本語と色面が先に目に入り、その下からチェキが飛び出す構図です。小さな装飾を足すより、文字と写真のサイズで楽しさを出しています。</p>
+<p>紫の色面に、影をつけた大きな白文字と黄色の手描きライン。2枚のチェキは画面内に収め、上下にずらして見せています。英語の帯を外し、写真のデコと余白が見える構成にしました。</p>
 <dl class="details">
 <div>
 <dt>構図</dt>
-<dd>文字と写真の強弱</dd>
+<dd>大きな白文字と、全体が見える2枚</dd>
 </div>
 <div>
 <dt>配色</dt>
-<dd>ライム × ピンク × 墨黒</dd>
+<dd>パープル × ピンク × イエロー</dd>
 </div>
 </dl>
 <button class="replay">
@@ -668,18 +666,18 @@ to{opacity:1;translate:0 0}
 </div>
 </div>
 <div class="poster-stage">
-<div class="big-type" aria-hidden="true">OUR<br>DAYS.</div>
+<div class="poster-orbit" aria-hidden="true"></div>
 <button class="poster-photo p-one" aria-label="ピンクのチェキを手前にする">
 <img class="cheki " src="onboarding-preview-assets/user-cheki-pink.jpg" alt="ピンクの手描きチェキ" >
 </button>
 <button class="poster-photo p-two" aria-label="黄色のチェキを手前にする">
 <img class="cheki " src="onboarding-preview-assets/user-cheki-yellow.jpg" alt="黄色とラベンダーの手描きチェキ" >
 </button>
-<div class="poster-seal">KEEP<br>IT!<svg class="icon " aria-hidden="true">
+<div class="poster-seal" aria-hidden="true"><svg class="icon">
 <use href="#heart"/>
 </svg>
 </div>
-<div class="poster-strip">PHOTOS + MUSIC + YOU</div>
+<svg class="icon poster-spark" aria-hidden="true"><use href="#spark"/></svg>
 </div>
 <p class="poster-copy">撮って、デコって、好きな曲を。<br>いつもの毎日が、宝物になる。</p>
 <div class="bottom">
@@ -901,7 +899,7 @@ to{opacity:1;translate:0 0}
 <p class="hint">再生マークを押すと、ジャケットが回転します（音は出ません）。</p>
 </div>
 </section>
-<section class="concept" id="concept-06" role="tabpanel" aria-labelledby="tab-06" >
+<section class="concept" id="concept-06" role="tabpanel" aria-labelledby="tab-06" hidden>
 <div class="description">
 <span class="preference">追加案 · 01 / 写真の迫力</span>
 <br>
@@ -1355,7 +1353,7 @@ const studio=document.querySelector('.studio');
 const tabs=[...document.querySelectorAll('.tab')];
 const panels=[...document.querySelectorAll('.concept')];
 const compare=document.querySelector('.compare');
-let active=5;
+let active=1;
 function fit(){document.querySelectorAll('.phone-shell').forEach(shell=>{if(shell.clientWidth) shell.querySelector('.phone').style.setProperty('--scale',shell.clientWidth/390);});}
 const resize=new ResizeObserver(fit);document.querySelectorAll('.phone-shell').forEach(shell=>resize.observe(shell));
 function animate(panel){const phone=panel.querySelector('.phone');phone.classList.remove('entering');void phone.offsetWidth;phone.classList.add('entering');}
@@ -1366,7 +1364,7 @@ document.querySelectorAll('.replay').forEach(button=>button.addEventListener('cl
 document.querySelectorAll('.gallery-card').forEach(button=>button.addEventListener('click',()=>button.closest('.gallery-stage').classList.toggle('swapped')));
 document.querySelectorAll('.poster-photo').forEach(button=>button.addEventListener('click',()=>button.closest('.poster-stage').classList.toggle('swapped')));
 document.querySelectorAll('.float').forEach(el=>{el.style.setProperty('--x',(el.offsetLeft+el.offsetWidth/2)+'px');el.style.setProperty('--y',(el.offsetTop+el.offsetHeight/2)+'px');});
-document.querySelector('.gather').addEventListener('click',event=>{const button=event.currentTarget;const stage=button.closest('.universe-stage');stage.querySelectorAll('.float').forEach(el=>{el.style.setProperty('--x',(el.offsetLeft+el.offsetWidth/2)+'px');el.style.setProperty('--y',(el.offsetTop+el.offsetHeight/2)+'px');});const on=stage.classList.toggle('collected');button.setAttribute('aria-pressed',on);button.setAttribute('aria-label',on?'思い出を広げる':'思い出を一つに集める');});
+document.querySelector('.gather').addEventListener('click',event=>{const button=event.currentTarget;const stage=button.closest('.universe-stage');stage.style.setProperty('--gather-x',(button.offsetLeft+button.offsetWidth/2)+'px');stage.style.setProperty('--gather-y',(button.offsetTop+button.offsetHeight/2)+'px');stage.querySelectorAll('.float').forEach(el=>{el.style.setProperty('--x',(el.offsetLeft+el.offsetWidth/2)+'px');el.style.setProperty('--y',(el.offsetTop+el.offsetHeight/2)+'px');});const on=stage.classList.toggle('collected');button.setAttribute('aria-pressed',on);button.setAttribute('aria-label',on?'思い出を広げる':'思い出を一つに集める');});
 document.querySelector('.letter-note').addEventListener('click',event=>{const button=event.currentTarget;button.setAttribute('aria-expanded',button.getAttribute('aria-expanded')!=='true');});
 document.querySelector('.record-play').addEventListener('click',event=>{const button=event.currentTarget;const on=document.querySelector('.record-stage').classList.toggle('playing');button.setAttribute('aria-pressed',on);button.setAttribute('aria-label',on?'ジャケットの動きを止める':'ジャケットの動きを再生');});
 document.querySelectorAll('.phone').forEach(phone=>{const auth=phone.querySelector('.auth');let trigger;const close=()=>{auth.hidden=true;phone.querySelectorAll('[data-auth]').forEach(button=>button.inert=false);if(trigger)trigger.focus();};phone.querySelectorAll('[data-auth]').forEach(button=>button.addEventListener('click',()=>{trigger=button;auth.hidden=false;phone.querySelectorAll('[data-auth]').forEach(el=>el.inert=true);auth.querySelector('.auth-close').focus();}));auth.querySelector('.auth-close').addEventListener('click',close);auth.addEventListener('click',event=>{if(event.target===auth)close();});auth.addEventListener('keydown',event=>{if(event.key==='Escape')close();if(event.key==='Tab'){event.preventDefault();auth.querySelector('.auth-close').focus();}});});
