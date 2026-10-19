@@ -514,7 +514,14 @@ final class sotsugyoUITests: XCTestCase {
         app.buttons["キャンセル"].tap()
         XCTAssertTrue(app.buttons["編集を破棄"].waitForExistence(timeout: 5))
         capture("cheki-07-discard-confirmation", app: app)
-        app.buttons["編集を続ける"].tap()
+        if app.buttons["編集を続ける"].exists {
+            app.buttons["編集を続ける"].tap()
+        } else {
+            // iOS 27 uses a popover that dismisses when tapping outside it.
+            app.scrollViews["photo.editor.canvas"]
+                .coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        }
+        XCTAssertTrue(app.buttons["編集を破棄"].waitForNonExistence(timeout: 5))
         XCTAssertTrue(app.buttons["cheki.saveEdits"].isEnabled)
         app.buttons["キャンセル"].tap()
         app.buttons["編集を破棄"].tap()
