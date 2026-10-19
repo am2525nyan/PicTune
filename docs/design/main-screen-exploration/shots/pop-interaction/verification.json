@@ -1,0 +1,33 @@
+{
+  "checks": [
+    {
+      "screen": "a-ribbon",
+      "photo_open": true,
+      "metadata": true,
+      "no_music": true,
+      "beach_metadata": true,
+      "close_button": true,
+      "escape": true
+    },
+    {
+      "screen": "b-camera-toy",
+      "photo_open": true,
+      "metadata": true,
+      "no_music": true,
+      "beach_metadata": true,
+      "close_button": true,
+      "escape": true
+    },
+    {
+      "screen": "c-soda-booth",
+      "photo_open": true,
+      "metadata": true,
+      "no_music": true,
+      "beach_metadata": true,
+      "close_button": true,
+      "escape": true
+    }
+  ],
+  "reduced_motion": true,
+  "page_errors": []
+}

@@ -1,0 +1,81 @@
+[
+  {
+    "name": "a-ribbon",
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "Mochiy Pop One": 2,
+        "SF Pro": 8
+      },
+      "sizes": [
+        40,
+        22,
+        13,
+        11
+      ],
+      "weights": [
+        "400",
+        "700"
+      ],
+      "leftEdges": 5,
+      "accentHues": [
+        336
+      ],
+      "cards": 0
+    }
+  },
+  {
+    "name": "b-camera-toy",
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "Zen Maru Gothic": 2,
+        "SF Pro": 6
+      },
+      "sizes": [
+        40,
+        22,
+        13,
+        11
+      ],
+      "weights": [
+        "400",
+        "700"
+      ],
+      "leftEdges": 2,
+      "accentHues": [
+        216,
+        48
+      ],
+      "cards": 1
+    }
+  },
+  {
+    "name": "c-soda-booth",
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "SF Pro": 11
+      },
+      "sizes": [
+        40,
+        22,
+        13,
+        11
+      ],
+      "weights": [
+        "400",
+        "700",
+        "800"
+      ],
+      "leftEdges": 4,
+      "accentHues": [
+        168
+      ],
+      "cards": 0
+    }
+  }
+]
