@@ -101,3 +101,19 @@ test('owners can upload registered images; unregistered uploads are refused',asy
  await setDoc(doc(a,'imageOwners/new.jpg'),{ownerID:'alice'});
  await assertSucceeds(uploadBytes(ref(storage,'images/new.jpg'),new Uint8Array([1]),{contentType:'image/jpeg',customMetadata:{ownerIDs:'alice'}}));
 });
+
+test('photo edits require access to the replacement image and keep sharing scoped to the owner',async()=>{
+ const a=db('alice'), b=db('bob');
+ await join();
+ await setDoc(doc(a,'imageOwners/edited.jpg'),{ownerID:'alice'});
+ await assertSucceeds(uploadBytes(ref(env.authenticatedContext('alice').storage(),'images/edited.jpg'),new Uint8Array([4,5,6]),{contentType:'image/jpeg',customMetadata:{ownerIDs:'alice'}}));
+ await assertFails(updateDoc(doc(a,folder+'/photos/p1'),{url:'someone-elses.jpg'}));
+ await assertSucceeds(updateDoc(doc(a,folder+'/photos/p1'),{url:'edited.jpg'}));
+ assert.equal((await getDoc(doc(b,folder+'/photos/p1'))).data().trackName,'song');
+ await assertSucceeds(setDoc(doc(b,'users/bob/imageAccess/edited.jpg'),{ownerID:'alice',folderID:'trip',photoID:'p1'}));
+ await assertSucceeds(getMetadata(ref(env.authenticatedContext('bob').storage(),'images/edited.jpg')));
+ await assertFails(updateDoc(doc(b,folder+'/photos/p1'),{url:'photo.jpg'}));
+ await assertFails(updateDoc(doc(db('eve'),folder+'/photos/p1'),{url:'edited.jpg'}));
+ await deleteDoc(doc(a,folder));
+ await assertFails(getMetadata(ref(env.authenticatedContext('bob').storage(),'images/edited.jpg')));
+});

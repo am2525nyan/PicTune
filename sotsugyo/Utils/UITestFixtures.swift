@@ -85,6 +85,7 @@ private struct UITestSearchView: View {
 
 final class UITestContentModel: MainContentModel {
     private var fixtureLetter = UITestFixtures.letter
+    private static var editedPhotos: [String: LibraryPhoto] = [:]
 
     override func loadPhotos(folderID: String) async throws {
         folderDocument = folderID
@@ -94,7 +95,16 @@ final class UITestContentModel: MainContentModel {
         photos = [
             LibraryPhoto(record: PhotoRecord(id: "fixture-music", fileName: "fixture-music.jpg", date: formatter.date(from: "2024-03-01-12:30"), music: music, livePhotoFileName: ""), image: UITestFixtures.image()),
             LibraryPhoto(record: PhotoRecord(id: "fixture-photo-only", fileName: "fixture-photo-only.jpg", date: formatter.date(from: "2024-03-02-15:45"), music: nil, livePhotoFileName: ""), image: UITestFixtures.image(true))
-        ]
+        ].map { Self.editedPhotos[$0.id] ?? $0 }
+    }
+
+    override func savePhotoEdits(photo: LibraryPhoto, image: UIImage, folderID: String) async throws -> LibraryPhoto {
+        try UITestFixtures.failIfRequested()
+        try await Task.sleep(for: .milliseconds(300))
+        let saved = LibraryPhoto(record: photo.record.replacingImage(fileName: UUID().uuidString + ".jpg"), image: image)
+        Self.editedPhotos[photo.id] = saved
+        photos = photos.map { $0.id == photo.id ? saved : $0 }
+        return saved
     }
 
     override func getFolder() async throws {
@@ -102,7 +112,7 @@ final class UITestContentModel: MainContentModel {
             PhotoFolder(id: PhotoFolder.allID, title: "all", date: nil, letter: ""),
             PhotoFolder(id: "fixture-folder", title: "卒業の思い出", date: nil, letter: fixtureLetter)
         ]
-        folderCoverImages = ["fixture-folder": UITestFixtures.image()]
+        folderCoverImages = ["fixture-folder": Self.editedPhotos["fixture-music"]?.image ?? UITestFixtures.image()]
     }
 
     override func loadFolderCover(folderId: String) async throws { }

@@ -5,11 +5,16 @@ struct ImageDetailView: View {
     let photo: LibraryPhoto
 
     var resolvePreview: MusicPreviewPlayer.ResolveTrack? = nil
+    var saveEdits: ((LibraryPhoto, UIImage) async throws -> LibraryPhoto)? = nil
+    @State private var editedPhoto: LibraryPhoto?
+    @State private var isEditing = false
+
+    private var displayedPhoto: LibraryPhoto { editedPhoto ?? photo }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                Image(uiImage: photo.image)
+                Image(uiImage: displayedPhoto.image)
                     .resizable()
                     .scaledToFit()
                     .overlay {
@@ -36,15 +41,28 @@ struct ImageDetailView: View {
         .navigationTitle("チェキ")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            if saveEdits != nil {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("落書き", systemImage: "pencil.tip.crop.circle") { isEditing = true }
+                        .accessibilityIdentifier("cheki.edit")
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 ShareLink(
-                    item: ChekiShareImage(image: photo.image),
-                    preview: SharePreview("チェキ", image: Image(uiImage: photo.image))
+                    item: ChekiShareImage(image: displayedPhoto.image),
+                    preview: SharePreview("チェキ", image: Image(uiImage: displayedPhoto.image))
                 ) {
                     Label("共有", systemImage: "square.and.arrow.up")
                 }
             }
         }
+        .fullScreenCover(isPresented: $isEditing) {
+            SavedPhotoEditorView(image: displayedPhoto.image) { image in
+                guard let saveEdits else { return }
+                editedPhoto = try await saveEdits(displayedPhoto, image)
+            }
+        }
+        .onChange(of: photo.record.fileName) { _, _ in editedPhoto = nil }
     }
 
     @ViewBuilder

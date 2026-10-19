@@ -154,45 +154,7 @@ struct PhotoPreviewView: View {
         }
     }
 
-    private var stampPicker: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 12) {
-                Button {
-                    selectedStamp = nil
-                } label: {
-                    VStack {
-                        Image(systemName: "nosign").font(.title2)
-                        Text("なし").font(.caption)
-                    }
-                    .frame(width: 64, height: 96)
-                    .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 8))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 8).strokeBorder(selectedStamp == nil ? Color.accentColor : .clear, lineWidth: 3)
-                    }
-                }
-                .accessibilityAddTraits(selectedStamp == nil ? .isSelected : [])
-                ForEach(1..<17) { index in
-                    Button {
-                        selectedStamp = String(index)
-                    } label: {
-                        Image(String(index))
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 64, height: 96)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 8).strokeBorder(selectedStamp == String(index) ? Color.accentColor : .clear, lineWidth: 3)
-                            }
-                    }
-                    .accessibilityLabel("スタンプ\(index)")
-                    .accessibilityAddTraits(selectedStamp == String(index) ? .isSelected : [])
-                }
-            }
-            .padding(3)
-        }
-        .buttonStyle(.plain)
-        .scrollIndicators(.hidden)
-    }
+    private var stampPicker: some View { PhotoStampPicker(selectedStamp: $selectedStamp) }
 
     private var musicSelection: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -246,26 +208,78 @@ struct PhotoPreviewView: View {
     }
 }
 
+private struct PhotoStampPicker: View {
+    @Binding var selectedStamp: String?
+
+    var body: some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: 12) {
+                Button {
+                    selectedStamp = nil
+                } label: {
+                    VStack {
+                        Image(systemName: "nosign").font(.title2)
+                        Text("なし").font(.caption)
+                    }
+                    .frame(width: 64, height: 96)
+                    .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 8))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 8).strokeBorder(selectedStamp == nil ? Color.accentColor : .clear, lineWidth: 3)
+                    }
+                }
+                .accessibilityAddTraits(selectedStamp == nil ? .isSelected : [])
+                ForEach(1..<17) { index in
+                    Button {
+                        selectedStamp = String(index)
+                    } label: {
+                        Image(String(index))
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 64, height: 96)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 8).strokeBorder(selectedStamp == String(index) ? Color.accentColor : .clear, lineWidth: 3)
+                            }
+                    }
+                    .accessibilityLabel("スタンプ\(index)")
+                    .accessibilityAddTraits(selectedStamp == String(index) ? .isSelected : [])
+                }
+            }
+            .padding(3)
+        }
+        .buttonStyle(.plain)
+        .scrollIndicators(.hidden)
+    }
+
+}
+
 // The preview and exported image share one coordinate system, independent of screen size.
 struct PhotoArtwork: View {
     static let size = CGSize(width: 333, height: 529)
     let image: UIImage
     let stamp: String?
+    var isSavedPhoto = false
+
+    var canvasSize: CGSize { isSavedPhoto ? SavedPhotoArtwork.canvasSize(for: image) : Self.size }
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-            Image("Image").resizable().frame(width: Self.size.width, height: Self.size.height)
-            Image(uiImage: image)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 286, height: 386)
-                .clipped()
-                .offset(x: 24, y: 51)
+            if isSavedPhoto {
+                Image(uiImage: image).resizable().frame(width: canvasSize.width, height: canvasSize.height)
+            } else {
+                Image("Image").resizable().frame(width: Self.size.width, height: Self.size.height)
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 286, height: 386)
+                    .clipped()
+                    .offset(x: 24, y: 51)
+            }
             if let stamp {
-                Image(stamp).resizable().frame(width: Self.size.width, height: Self.size.height)
+                Image(stamp).resizable().frame(width: canvasSize.width, height: canvasSize.height)
             }
         }
-        .frame(width: Self.size.width, height: Self.size.height)
+        .frame(width: canvasSize.width, height: canvasSize.height)
     }
 }
 
@@ -275,12 +289,21 @@ private struct ZoomablePhotoEditor: UIViewRepresentable {
     let canvas: PKCanvasView
     let isDrawing: Bool
     let viewportSize: CGSize
+    var isSavedPhoto = false
+    var onDrawingChange: ((Bool) -> Void)?
 
-    class Coordinator: NSObject, UIScrollViewDelegate {
+    private var artworkSize: CGSize { isSavedPhoto ? SavedPhotoArtwork.canvasSize(for: image) : PhotoArtwork.size }
+
+    class Coordinator: NSObject, UIScrollViewDelegate, PKCanvasViewDelegate {
         let picker = PKToolPicker()
         var artwork: UIHostingController<PhotoArtwork>?
         var content = UIView(frame: CGRect(origin: .zero, size: PhotoArtwork.size))
         var fittedScale: CGFloat = 0
+        var onDrawingChange: ((Bool) -> Void)?
+
+        func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+            onDrawingChange?(!canvasView.drawing.strokes.isEmpty)
+        }
 
         func viewForZooming(in scrollView: UIScrollView) -> UIView? { content }
 
@@ -307,13 +330,16 @@ private struct ZoomablePhotoEditor: UIViewRepresentable {
         scrollView.showsVerticalScrollIndicator = false
         scrollView.panGestureRecognizer.minimumNumberOfTouches = 2
 
-        let artwork = UIHostingController(rootView: PhotoArtwork(image: image, stamp: stamp))
+        context.coordinator.content.frame = CGRect(origin: .zero, size: artworkSize)
+        let artwork = UIHostingController(rootView: PhotoArtwork(image: image, stamp: stamp, isSavedPhoto: isSavedPhoto))
         artwork.view.frame = context.coordinator.content.bounds
         artwork.view.backgroundColor = .clear
         artwork.view.isUserInteractionEnabled = false
         context.coordinator.artwork = artwork
         context.coordinator.content.addSubview(artwork.view)
 
+        canvas.delegate = context.coordinator
+        context.coordinator.onDrawingChange = onDrawingChange
         canvas.backgroundColor = .clear
         canvas.isOpaque = false
         canvas.drawingPolicy = .anyInput
@@ -321,16 +347,17 @@ private struct ZoomablePhotoEditor: UIViewRepresentable {
         canvas.frame = context.coordinator.content.bounds
         context.coordinator.content.addSubview(canvas)
         scrollView.addSubview(context.coordinator.content)
-        scrollView.contentSize = PhotoArtwork.size
+        scrollView.contentSize = artworkSize
         context.coordinator.picker.addObserver(canvas)
         return scrollView
     }
 
     func updateUIView(_ scrollView: UIScrollView, context: Context) {
-        context.coordinator.artwork?.rootView = PhotoArtwork(image: image, stamp: stamp)
+        context.coordinator.onDrawingChange = onDrawingChange
+        context.coordinator.artwork?.rootView = PhotoArtwork(image: image, stamp: stamp, isSavedPhoto: isSavedPhoto)
         if viewportSize.width > 0 && viewportSize.height > 0 {
-            let fittedScale = min(viewportSize.width / PhotoArtwork.size.width,
-                                  viewportSize.height / PhotoArtwork.size.height)
+            let fittedScale = min(viewportSize.width / artworkSize.width,
+                                  viewportSize.height / artworkSize.height)
             if abs(context.coordinator.fittedScale - fittedScale) > 0.001 {
                 let wasAtFit = context.coordinator.fittedScale == 0 ||
                     scrollView.zoomScale <= context.coordinator.fittedScale + 0.001
@@ -355,7 +382,137 @@ private struct ZoomablePhotoEditor: UIViewRepresentable {
             coordinator.picker.setVisible(false, forFirstResponder: canvas)
             coordinator.picker.removeObserver(canvas)
             canvas.resignFirstResponder()
+            canvas.delegate = nil
             canvas.removeFromSuperview()
+        }
+    }
+}
+
+/// Adds marks to the saved cheki itself, including its existing frame and decoration.
+struct SavedPhotoEditorView: View {
+    let image: UIImage
+    let saveEdits: (UIImage) async throws -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var canvas = PKCanvasView()
+    @State private var selectedStamp: String?
+    @State private var isDrawing = true
+    @State private var hasDrawing = false
+    @State private var isSaving = false
+    @State private var isConfirmingDiscard = false
+    @State private var errorMessage: String?
+
+    private var hasChanges: Bool { hasDrawing || selectedStamp != nil }
+
+    var body: some View {
+        NavigationStack {
+            GeometryReader { geometry in
+                ZoomablePhotoEditor(image: image, stamp: selectedStamp, canvas: canvas,
+                                    isDrawing: isDrawing && !isSaving, viewportSize: geometry.size,
+                                    isSavedPhoto: true, onDrawingChange: { hasDrawing = $0 })
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+            }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                VStack(spacing: 8) {
+                    Picker("編集ツール", selection: $isDrawing) {
+                        Text("スタンプ").tag(false)
+                        Text("ペン").tag(true)
+                    }
+                    .pickerStyle(.segmented)
+                    Text("指やApple Pencilで描けます。2本の指で拡大・縮小できます。")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+                .background(.regularMaterial)
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                if isDrawing {
+                    // Keep the cheki's lower writing margin above PencilKit's palette.
+                    Color.clear.frame(height: 88).accessibilityHidden(true)
+                } else {
+                    PhotoStampPicker(selectedStamp: $selectedStamp)
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                        .background(.regularMaterial)
+                }
+            }
+            .background(Color(uiColor: .systemGroupedBackground))
+            .navigationTitle("チェキに落書き")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("キャンセル") {
+                        if hasChanges { isConfirmingDiscard = true } else { dismiss() }
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("保存") { save() }
+                        .fontWeight(.semibold)
+                        .disabled(!hasChanges || isSaving)
+                        .accessibilityIdentifier("cheki.saveEdits")
+                }
+            }
+            .disabled(isSaving)
+            .overlay {
+                if isSaving {
+                    ProgressView("保存中…")
+                        .padding(24)
+                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                }
+            }
+            .confirmationDialog("落書きを終了しますか？", isPresented: $isConfirmingDiscard, titleVisibility: .visible) {
+                Button("編集を破棄", role: .destructive) { dismiss() }
+                Button("編集を続ける", role: .cancel) { }
+            } message: {
+                Text("今回の編集内容は保存されません。")
+            }
+            .alert("保存できませんでした", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
+                Button("閉じる", role: .cancel) { errorMessage = nil }
+            } message: {
+                Text(errorMessage ?? "")
+            }
+        }
+        .interactiveDismissDisabled()
+    }
+
+    private func save() {
+        guard hasChanges, !isSaving else { return }
+        isSaving = true
+        Task { @MainActor in
+            defer { isSaving = false }
+            let rendered = SavedPhotoArtwork.render(image: image, stamp: selectedStamp, drawing: canvas.drawing)
+            do {
+                try await saveEdits(rendered)
+                dismiss()
+            } catch {
+                errorMessage = PhotoPreviewViewModel.saveErrorMessage(for: error)
+            }
+        }
+    }
+}
+
+enum SavedPhotoArtwork {
+    static func canvasSize(for image: UIImage) -> CGSize {
+        CGSize(width: PhotoArtwork.size.width, height: PhotoArtwork.size.width * image.size.height / image.size.width)
+    }
+
+    /// Keep the saved image's full resolution and aspect ratio; never add another frame.
+    @MainActor
+    static func render(image: UIImage, stamp: String?, drawing: PKDrawing) -> UIImage {
+        let size = canvasSize(for: image)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = image.scale
+        format.opaque = true
+        return UIGraphicsImageRenderer(size: image.size, format: format).image { context in
+            let bounds = CGRect(origin: .zero, size: image.size)
+            UIColor.white.setFill()
+            context.fill(bounds)
+            image.draw(in: bounds)
+            if let stamp { UIImage(named: stamp)?.draw(in: bounds) }
+            drawing.image(from: CGRect(origin: .zero, size: size),
+                          scale: image.size.width * image.scale / size.width).draw(in: bounds)
         }
     }
 }

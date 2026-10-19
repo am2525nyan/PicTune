@@ -96,7 +96,8 @@ service cloud.firestore {
           allow read: if canReadFolder(uid, fid);
           allow create: if signedIn() && ((owns(uid) && canUseImage(request.resource.data.url))
             || (fid == 'all' && canSend(uid) && ownsImage(request.resource.data.url)));
-          allow update: if owns(uid) && request.resource.data.url == resource.data.url;
+          allow update: if owns(uid) && (request.resource.data.url == resource.data.url
+            || canUseImage(request.resource.data.url));
           allow delete: if owns(uid);
         }
       }

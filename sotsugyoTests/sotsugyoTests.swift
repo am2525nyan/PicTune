@@ -1009,6 +1009,9 @@ private final class RecordingPhotoLibraryRepository: PhotoLibraryRepository {
     }
     func updateLibraryDate(userID: String) async throws { }
     func updateLastViewedDate(userID: String) async throws { lastViewedUsers.append(userID) }
+    func savePhotoEdits(userID: String, folderID: String, photo: PhotoRecord, imageData: Data) async throws -> String {
+        throw URLError(.unsupportedURL)
+    }
     func downloadURL(fileName: String) async throws -> URL { throw failure() }
     private func failure() -> Error { NSError(domain: "LibraryRepositoryTest", code: 1) }
 }
