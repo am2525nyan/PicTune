@@ -18,21 +18,21 @@ struct ContentView: View {
                 MainImageView(viewModel: viewModel, folderId: "all")
                     .padding(.horizontal, 12)
             }
+            .contentMargins(.bottom, 104, for: .scrollContent)
             .refreshable {
                 try? await viewModel.firstgetUrl()
             }
         }
+        .overlay(alignment: .bottomTrailing) {
+            ButtonView(
+                isPresentingCamera: $isPresentingCamera,
+                showQRAlart: $showQRAlert,
+                isPresentingQR: $isPresentingQR
+            )
+            .padding(24)
+        }
         .navigationTitle("写真")
         .navigationBarTitleDisplayMode(.large)
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                ButtonView(
-                    isPresentingCamera: $isPresentingCamera,
-                    showQRAlart: $showQRAlert,
-                    isPresentingQR: $isPresentingQR
-                )
-            }
-        }
         .fullScreenCover(isPresented: $isPresentingCamera) {
             CameraView(isPresentingCamera: $isPresentingCamera, cameraManager: cameraManager, isPresentingSearch: .constant(true), friendUid: .constant(""))
         }
