@@ -87,12 +87,8 @@ button:focus-visible,a:focus-visible{outline:3px solid #5365e7;outline-offset:5p
 .gallery-copy h2 span{color:#f45a2a}
 .gallery-copy p{font-size:14px;line-height:1.65;color:#79716b;margin:15px 0 0}
 
-/* Shared stock-photo frames for the revised 02 and 03 studies. */
-.sample-cheki{position:relative;display:block;background:#fffdf8;padding:9px 9px 34px;box-shadow:0 8px 16px #36204326;color:#653477}
-.sample-photo{display:block;width:100%;aspect-ratio:1/1.1;object-fit:cover;pointer-events:none}
-.sample-caption{position:absolute;left:9px;right:9px;bottom:9px;display:flex;align-items:center;justify-content:space-between;font:700 11px/1.2 "Zen Maru Gothic",sans-serif;letter-spacing:.02em}
-.sample-caption .icon{width:16px;height:16px;fill:currentColor}
-.sample-tape{position:absolute;top:-9px;left:28%;width:47%;height:23px;background:repeating-linear-gradient(90deg,#ff7fb9 0 8px,#ffbfda 8px 16px);opacity:.85;transform:rotate(-5deg);clip-path:polygon(3% 0,100% 0,97% 100%,0 100%)}
+/* Tape decorates the original app-exported cheki without cropping it. */
+.cheki-tape{position:absolute;top:-9px;left:28%;width:47%;height:23px;background:repeating-linear-gradient(90deg,#ff7fb9 0 8px,#ffbfda 8px 16px);opacity:.85;transform:rotate(-5deg);clip-path:polygon(3% 0,100% 0,97% 100%,0 100%)}
 
 /* 02 — a letter opens and lets photos, music and notes spill out. */
 .universe{--bg:#ffd5e8;--accent:#7139da;--button-bg:#7139da;color:#351c52}
@@ -100,19 +96,15 @@ button:focus-visible,a:focus-visible{outline:3px solid #5365e7;outline-offset:5p
 .universe-stage{position:absolute;top:128px;left:0;width:390px;height:408px;--letter-x:195px;--letter-y:330px}
 .float{position:absolute;transform:rotate(var(--r));z-index:2;transition:transform .85s cubic-bezier(.16,1,.3,1),opacity .4s;transition-delay:var(--delay,0ms)}
 .f1{width:170px;left:26px;top:30px;--r:-13deg;--delay:100ms;z-index:3}
-.f2{width:160px;left:207px;top:4px;--r:10deg;--delay:190ms;z-index:4}
+.f2{width:148px;left:214px;top:4px;--r:10deg;--delay:190ms;z-index:4}
 .f3{width:108px;left:251px;top:240px;--r:12deg;--delay:250ms;z-index:5}
-.f3 .sample-cheki{padding:6px 6px 26px}
-.f3 .sample-caption{font-size:8px;bottom:7px}
-.f3 .sample-caption .icon{width:11px;height:11px}
 .f5{left:141px;top:4px;--r:-18deg;--delay:220ms;color:#ff4f9a;z-index:5}
 .f5 .icon{width:62px;height:62px;fill:currentColor;stroke:#fff6fc;stroke-width:1.5;filter:drop-shadow(0 4px 0 #b52f6c)}
 .f6{left:10px;top:235px;--r:-12deg;--delay:160ms;background:#7139da;padding:14px;border:3px solid #fff5fc;border-radius:20px;box-shadow:3px 5px 0 #54269b;color:#fff;z-index:6}
 .f6 .icon{width:34px;height:34px;stroke-width:2.3}
-.f7{left:29px;top:320px;--r:-14deg;--delay:280ms;width:110px;background:#fff9e9;box-shadow:3px 5px 0 #d091b0;padding:11px 12px;font:800 16px/1.4 -apple-system,BlinkMacSystemFont,sans-serif;z-index:5}
-.f7 span{font:700 10px/2 "Zen Maru Gothic",sans-serif}
-.f8{left:280px;top:188px;--r:14deg;--delay:310ms;background:#ffeb73;color:#55306b;border:3px solid #fff9cf;border-radius:50%;width:98px;height:77px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:15px;font-weight:850;line-height:1.05;box-shadow:3px 4px 0 #aa7e32;z-index:7}
-.f8 strong{font:900 22px/1.1 -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:-.04em}
+.f7{left:29px;top:320px;--r:-14deg;--delay:280ms;width:110px;background:#fff9e9;box-shadow:3px 5px 0 #d091b0;padding:11px 12px;font:700 16px/1.5 "Zen Maru Gothic",sans-serif;z-index:5}
+.f8{left:315px;top:214px;--r:14deg;--delay:310ms;background:#ffeb73;color:#f4519c;border:3px solid #fff9cf;border-radius:50%;width:58px;height:58px;display:grid;place-items:center;box-shadow:3px 4px 0 #aa7e32;z-index:7}
+.f8 .icon{width:31px;height:31px;fill:currentColor;stroke:#fff7df;stroke-width:1.2}
 .f9{left:7px;top:-15px;--r:-8deg;--delay:330ms;color:#7139da}
 .f9 .icon{width:43px;height:43px;fill:currentColor;stroke-width:1}
 .f10{left:170px;top:231px;--r:12deg;--delay:350ms;color:#7139da;z-index:6}
@@ -129,7 +121,6 @@ button:focus-visible,a:focus-visible{outline:3px solid #5365e7;outline-offset:5p
 .envelope-flap{height:63px;background:#9754d7;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:50% 0;transition:transform .55s ease;z-index:6;border-radius:7px 7px 0 0}
 .is-open .envelope-flap{transform:rotateX(180deg);z-index:0}
 .envelope-seal{position:absolute;left:69px;top:42px;width:34px;height:34px;fill:#ffeb8c;stroke:#ffeb8c;z-index:7;pointer-events:none}
-.envelope-label{position:absolute;left:0;right:0;bottom:10px;z-index:7;font-size:10px;font-weight:800;letter-spacing:.13em;pointer-events:none}
 .universe-copy{position:absolute;top:552px;left:24px;right:24px;text-align:center}
 .universe-copy h2{margin:0;font:700 34px/1.3 "Zen Maru Gothic","Hiragino Sans",sans-serif;letter-spacing:-.025em}
 .universe-copy h2 span{font-size:34px;color:#7139da}
@@ -146,12 +137,11 @@ button:focus-visible,a:focus-visible{outline:3px solid #5365e7;outline-offset:5p
 .title-underline{width:283px;height:12px;position:absolute;bottom:-13px;left:3px;border-bottom:6px solid #ffef84;border-radius:50%;transform:rotate(-2deg)}
 .poster-stage{position:absolute;top:285px;left:0;width:390px;height:340px}
 .poster-orbit{position:absolute;left:15px;top:13px;width:360px;height:293px;border:3px dashed #f8e7ff;border-radius:50%;transform:rotate(-20deg)}
-.poster-photo{position:absolute;border:0;text-align:left;transition:transform .6s;box-shadow:4px 7px 0 #793cb83d,0 12px 22px #54209a22}
-.poster-photo .sample-photo{outline:2px solid #f4b5d8;outline-offset:2px}
-.poster-photo .sample-caption{color:#7e35ad}
+.poster-photo{position:absolute;border:0;padding:0;background:#fff;text-align:left;transition:transform .6s;box-shadow:4px 7px 0 #793cb83d,0 12px 22px #54209a22}
+.poster-photo .cheki{box-shadow:none}
 .p-one{left:24px;top:29px;width:176px;transform:rotate(-9deg);z-index:3}
-.p-two{left:191px;top:104px;width:176px;transform:rotate(8deg);z-index:4}
-.p-two .sample-tape{background:repeating-linear-gradient(45deg,#ad8bea 0 6px,#e2caff 6px 12px)}
+.p-two{left:201px;top:67px;width:158px;transform:rotate(8deg);z-index:4}
+.p-two .cheki-tape{background:repeating-linear-gradient(45deg,#ad8bea 0 6px,#e2caff 6px 12px)}
 .poster-stage.swapped .p-one{z-index:5;transform:rotate(-4deg)}
 .poster-stage.swapped .p-two{transform:rotate(4deg)}
 .poster-seal{position:absolute;left:29px;top:-14px;z-index:6;background:#ff81bd;border:3px solid #ffe4f2;border-radius:50%;width:60px;height:60px;display:grid;place-items:center;transform:rotate(-15deg);box-shadow:3px 4px 0 #8736bc;pointer-events:none}
@@ -530,7 +520,7 @@ to{opacity:1;translate:0 0}
 <div class="description">
 <span class="preference">調整した案</span><br><span class="design-id">02 / LITTLE UNIVERSE</span>
 <h2>好きなものが、集まる。</h2>
-<p>丸ゴシックとまっすぐな英字に整え、手紙から写真と音符が飛び出す構成にしました。ダウンロードした花とカフェの写真をチェキ風に仕立てています。</p>
+<p>丸ゴシックの見出しと、手紙からチェキや音符が飛び出す構成です。写真はご本人のPicTuneでデコったチェキを使い、メモには「また、一緒に。」を添えました。</p>
 <dl class="details">
 <div>
 <dt>構図</dt>
@@ -565,9 +555,9 @@ to{opacity:1;translate:0 0}
 <div class="wordmark">pictune<span>®</span>
 </div>
 <div class="universe-stage is-open">
-<div class="float f1"><div class="sample-cheki"><img class="sample-photo" src="onboarding-preview-assets/stock-tulips.jpg" alt="ピンクのリボンで包んだチューリップ"><span class="sample-caption">花をもらった日<svg class="icon" aria-hidden="true"><use href="#heart"/></svg></span><span class="sample-tape" aria-hidden="true"></span></div></div>
-<div class="float f2"><div class="sample-cheki"><img class="sample-photo" src="onboarding-preview-assets/stock-coffee.jpg" alt="カフェのテーブルに置かれたアイスコーヒー"><span class="sample-caption">いつものカフェ<svg class="icon" aria-hidden="true"><use href="#heart"/></svg></span><span class="sample-tape" aria-hidden="true"></span></div></div>
-<div class="float f3"><div class="sample-cheki"><img class="sample-photo" src="onboarding-preview-assets/stock-tulips.jpg" alt="ピンクのリボンで包んだチューリップ"><span class="sample-caption">うれしい日<svg class="icon" aria-hidden="true"><use href="#heart"/></svg></span><span class="sample-tape" aria-hidden="true"></span></div></div>
+<div class="float f1"><img class="cheki" src="onboarding-preview-assets/user-cheki-pink.jpg" alt="ピンクの手描きチェキ"></div>
+<div class="float f2"><img class="cheki" src="onboarding-preview-assets/user-cheki-yellow.jpg" alt="黄色とラベンダーの手描きチェキ"></div>
+<div class="float f3"><img class="cheki" src="onboarding-preview-assets/user-cheki-pink.jpg" alt="ピンクの手描きチェキ"></div>
 <div class="float f5">
 <svg class="icon " aria-hidden="true">
 <use href="#heart"/>
@@ -578,12 +568,8 @@ to{opacity:1;translate:0 0}
 <use href="#music"/>
 </svg>
 </div>
-<div class="float f7">TO YOU<br>
-<span>また、一緒に。</span>
-</div>
-<div class="float f8">GOOD<br>
-<strong>TIMES!</strong>
-</div>
+<div class="float f7">また、<br>一緒に。</div>
+<div class="float f8" aria-hidden="true"><svg class="icon"><use href="#heart"/></svg></div>
 <div class="float f9">
 <svg class="icon " aria-hidden="true">
 <use href="#spark"/>
@@ -601,7 +587,7 @@ to{opacity:1;translate:0 0}
 </div>
 <button class="letter-trigger" aria-label="手紙を閉じる" aria-expanded="true">
 <span class="envelope-back"></span><span class="envelope-flap"></span><span class="envelope-front"></span><span class="envelope-bottom"></span>
-<svg class="icon envelope-seal" aria-hidden="true"><use href="#heart"/></svg><span class="envelope-label">FOR YOU</span>
+<svg class="icon envelope-seal" aria-hidden="true"><use href="#heart"/></svg>
 </button>
 </div>
 <div class="universe-copy">
@@ -639,7 +625,7 @@ to{opacity:1;translate:0 0}
 <div class="description">
 <span class="preference">調整した案</span><br><span class="design-id">03 / POP POSTER</span>
 <h2>かわいいを、大胆に。</h2>
-<p>花とカフェの新しい写真に、リボン・チェックのテープ・ハート・音符を重ねました。紫のドット背景まで飾り、スクラップブックのような賑やかさを加えています。</p>
+<p>ご本人のPicTuneのデコチェキに、リボン・チェックのテープ・ハート・音符を重ねました。紫のドット背景まで飾り、スクラップブックのような賑やかさを加えています。</p>
 <dl class="details">
 <div>
 <dt>構図</dt>
@@ -685,8 +671,8 @@ to{opacity:1;translate:0 0}
 </div>
 <div class="poster-stage">
 <div class="poster-orbit" aria-hidden="true"></div>
-<button class="poster-photo sample-cheki p-one" aria-label="花をもらった日のチェキを手前にする"><img class="sample-photo" src="onboarding-preview-assets/stock-tulips.jpg" alt="ピンクのリボンで包んだチューリップ"><span class="sample-caption">花をもらった日<svg class="icon" aria-hidden="true"><use href="#heart"/></svg></span><span class="sample-tape" aria-hidden="true"></span></button>
-<button class="poster-photo sample-cheki p-two" aria-label="また、ここで。のチェキを手前にする"><img class="sample-photo" src="onboarding-preview-assets/stock-coffee.jpg" alt="カフェのテーブルに置かれたアイスコーヒー"><span class="sample-caption">また、ここで。<svg class="icon" aria-hidden="true"><use href="#heart"/></svg></span><span class="sample-tape" aria-hidden="true"></span></button>
+<button class="poster-photo p-one" aria-label="ピンクのチェキを手前にする"><img class="cheki" src="onboarding-preview-assets/user-cheki-pink.jpg" alt="ピンクの手描きチェキ"><span class="cheki-tape" aria-hidden="true"></span></button>
+<button class="poster-photo p-two" aria-label="黄色のチェキを手前にする"><img class="cheki" src="onboarding-preview-assets/user-cheki-yellow.jpg" alt="黄色とラベンダーの手描きチェキ"><span class="cheki-tape" aria-hidden="true"></span></button>
 <div class="poster-seal" aria-hidden="true"><svg class="icon">
 <use href="#heart"/>
 </svg>
@@ -1366,7 +1352,7 @@ to{opacity:1;translate:0 0}
 </div>
 </section>
 </div>
-<footer class="studio-footer">デザイン比較用のHTMLです。02・03はUnsplashの写真を使ったチェキ風サンプル、他の案はご本人のPicTuneのデコチェキです。素材の出典は<a href="onboarding-preview-assets/README.md">こちら</a>。画面内の動きとログイン入口はプレビューで、認証・音楽再生・写真の保存は行いません。</footer>
+<footer class="studio-footer">デザイン比較用のHTMLです。写真はすべてご本人のPicTuneから取得したデコチェキです。素材の詳細は<a href="onboarding-preview-assets/README.md">こちら</a>。画面内の動きとログイン入口はプレビューで、認証・音楽再生・写真の保存は行いません。</footer>
 </main>
 <script>
 const studio=document.querySelector('.studio');
