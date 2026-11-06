@@ -1,0 +1,28 @@
+[
+  {
+    "name": "onboarding-aligned",
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "Zen Maru Gothic": 4
+      },
+      "sizes": [
+        60,
+        35,
+        29,
+        17
+      ],
+      "weights": [
+        "400",
+        "700"
+      ],
+      "leftEdges": 4,
+      "accentHues": [
+        264,
+        336
+      ],
+      "cards": 1
+    }
+  }
+]

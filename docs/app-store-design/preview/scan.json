@@ -1,0 +1,76 @@
+[
+  {
+    "name": "a-pop-gift",
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "Hiragino Maru Gothic ProN": 4
+      },
+      "sizes": [
+        56,
+        23,
+        17
+      ],
+      "weights": [
+        "600",
+        "800",
+        "900"
+      ],
+      "leftEdges": 2,
+      "accentHues": [],
+      "cards": 2
+    }
+  },
+  {
+    "name": "b-music-sleeve",
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "-apple-system": 2,
+        "Hiragino Kaku Gothic ProN": 2
+      },
+      "sizes": [
+        53,
+        23,
+        17
+      ],
+      "weights": [
+        "400",
+        "800",
+        "900"
+      ],
+      "leftEdges": 2,
+      "accentHues": [
+        168
+      ],
+      "cards": 2
+    }
+  },
+  {
+    "name": "c-letter-ribbon",
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "-apple-system": 2,
+        "Hiragino Mincho ProN": 2
+      },
+      "sizes": [
+        49,
+        23,
+        17
+      ],
+      "weights": [
+        "400",
+        "800"
+      ],
+      "leftEdges": 2,
+      "accentHues": [
+        24
+      ],
+      "cards": 1
+    }
+  }
+]
