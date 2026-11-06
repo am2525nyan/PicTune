@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PicTune — App Store 構図比較</title>
+<style>
+:root{--screen-w:402px;color-scheme:light;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif}
+*{box-sizing:border-box}body{margin:0;padding:36px;background:#e9e8ed;color:#25212c}header{max-width:1384px;margin:0 auto 28px}h1{font-size:26px;margin:0 0 12px}header p{font-size:15px;line-height:1.8;margin:0}main{display:flex;gap:28px;justify-content:center;flex-wrap:wrap}figure{margin:0}figcaption{font-size:16px;font-weight:700;padding:18px 0 10px}figcaption small{display:block;font-weight:400;font-size:13px;margin-top:8px}
+.screen{position:relative;isolation:isolate;width:440px;height:956px;overflow:hidden;background:#fff}
+.brand{position:absolute;left:32px;top:30px;display:flex;gap:10px;align-items:center;font-size:23px;font-weight:800;letter-spacing:-.8px}.brand img{width:32px;height:32px;border-radius:7px}.headline{position:relative;margin:104px 28px 0;z-index:3;font-size:54px;line-height:1.36;letter-spacing:-3px;font-weight:900}.headline span{display:block;white-space:nowrap}.sub{position:relative;z-index:3;margin:20px 32px 0;font-size:17px;font-weight:600;line-height:1.7}
+.phone{position:absolute;width:254px;left:93px;top:365px;border:7px solid #26252b;border-radius:36px;overflow:hidden;box-shadow:0 18px 28px #0003;background:#e4ddf8;z-index:2;line-height:0}.phone img{display:block;width:100%;height:auto}.phone::after{content:"";position:absolute;left:calc(50% - 36px);top:7px;width:72px;height:20px;border-radius:20px;background:#111}.foot{position:absolute;bottom:24px;left:32px;font-size:13px;font-weight:600;z-index:5}
+.headphones{position:absolute;width:155px;height:170px;z-index:4;filter:drop-shadow(0 10px 0 #0002) drop-shadow(0 8px 12px #0002)}.headphones svg{width:100%;height:100%;overflow:visible}.music{position:absolute;z-index:4;width:86px;height:100px;filter:drop-shadow(0 8px 0 #0002)}
+.pop{background:#d72861;color:#fff;font-family:"Hiragino Maru Gothic ProN",sans-serif}.pop::before{content:"";position:absolute;left:-190px;bottom:-190px;width:820px;height:720px;border:60px solid #ff81a5;border-radius:50%;transform:rotate(-22deg);z-index:-1}.pop .headline{margin-top:102px;font-size:56px;letter-spacing:-3px;-webkit-text-stroke:1.2px currentColor}.pop .headline .sticker{margin-top:9px;padding:0 10px 5px;width:max-content;color:#211b27;background:#fff;border:3px solid #ffe5ed;border-radius:23px;box-shadow:0 8px 0 #b21545,0 13px 15px #90133142;transform:rotate(-3deg);text-shadow:0 3px 0 #c6c0c8}.pop .phone{transform:rotate(-5deg)}.pop .headphones{right:-5px;top:321px;transform:rotate(19deg)}.pop .music{left:8px;bottom:87px;transform:rotate(-14deg)}
+.night{background:#101b1c;color:#fff}.night .brand{color:#7ce1d7}.night .headline{font-family:"Hiragino Kaku Gothic ProN",sans-serif;letter-spacing:-4px;font-size:53px;font-weight:900}.night .headline span:last-child{color:#7ce1d7}.night .sub{font-weight:400;color:#d0e5e3}.night .phone{top:356px;transform:rotate(5deg);border-color:#526d6b;box-shadow:0 20px 30px #0008}.record{position:absolute;width:390px;height:390px;border-radius:50%;background:repeating-radial-gradient(circle,#203b3a 0 3px,#2c4e4b 4px 5px);left:-210px;top:480px;border:8px solid #35645f;z-index:0}.record:after{content:"";position:absolute;width:88px;height:88px;background:#7ce1d7;border:34px solid #7ce1d7;border-radius:50%;left:143px;top:143px;box-shadow:inset 0 0 0 5px #102323}.night .music{right:12px;top:305px;transform:rotate(16deg)}.night .foot{color:#acc7c4}
+.gift{background:#fff9f1;color:#26201b}.gift .brand{color:#bd461b}.gift .headline{font-family:"Hiragino Mincho ProN",serif;font-size:49px;line-height:1.45;letter-spacing:-3px;font-weight:800}.gift .headline span:last-child{color:#bd461b}.gift .sub{color:#654a3d;font-weight:400}.gift .phone{top:352px;border-color:#3d302c;transform:rotate(-3deg);box-shadow:0 18px 30px #5939202b}.ribbon{position:absolute;width:640px;height:105px;background:#f77c49;transform:rotate(-27deg);left:-100px;top:560px;z-index:0;box-shadow:0 12px 0 #ffdfc6}.gift .music{right:12px;bottom:113px;transform:rotate(16deg)}.gift .foot{color:#765442}
+</style>
+<header><h1>PicTune / App Store デザイン検討</h1><p>同じ実画面を使った、色・文字・立体感の比較です。アプリUIの変更案ではありません。<br>画面内は既存のテストデータです。公開時は許諾済みの写真・楽曲情報を使って再撮影します。</p></header>
+<main>
+<figure><section class="screen pop" data-name="a-pop-gift" data-chrome="none">
+<div class="brand"><img src="../../sotsugyo/Assets.xcassets/AppIcon.appiconset/pictune%202%20(1).jpg" alt="">PicTune</div>
+<h2 class="headline"><span>思い出を、</span><span class="sticker">プレゼント。</span></h2><p class="sub">写真に音楽と手紙を添えて。</p>
+<div class="phone"><img src="../verification/invite-links/opened.png" alt="実装済みの招待フォルダ開封画面。テストデータ。"></div>
+<div class="headphones" aria-hidden="true"><svg viewBox="0 0 160 180"><path d="M24 111V77a56 56 0 0 1 112 0v34" fill="none" stroke="white" stroke-width="30" stroke-linecap="round"/><path d="M24 111V77a56 56 0 0 1 112 0v34" fill="none" stroke="#211b27" stroke-width="19" stroke-linecap="round"/><path d="M29 69a51 51 0 0 1 102 0" fill="none" stroke="#7c7582" stroke-width="4" stroke-linecap="round"/><rect x="7" y="89" width="43" height="66" rx="20" fill="#fff"/><rect x="110" y="89" width="43" height="66" rx="20" fill="#fff"/><rect x="14" y="96" width="31" height="52" rx="15" fill="#302835"/><rect x="115" y="96" width="31" height="52" rx="15" fill="#302835"/><path d="M21 108v25M123 108v25" stroke="#8e8396" stroke-width="5" stroke-linecap="round"/></svg></div>
+<svg class="music" aria-hidden="true" viewBox="0 0 90 110"><path d="M48 76V21L79 12V40L58 45V81C58 105 9 106 10 85C11 69 35 65 48 76Z" fill="#211b27" stroke="white" stroke-width="9" stroke-linejoin="round"/></svg>
+
+</section><figcaption>A / ポップなギフト<small>濃いピンク・厚みのある文字・白縁のヘッドホン</small></figcaption></figure>
+<figure><section class="screen night" data-name="b-music-sleeve" data-chrome="none">
+<div class="brand">PicTune</div><h2 class="headline"><span>思い出を、</span><span>プレゼント。</span></h2><p class="sub">写真に音楽と手紙を添えて。</p><div class="record" aria-hidden="true"></div>
+<div class="phone"><img src="../verification/invite-links/opened.png" alt="実装済みの招待フォルダ開封画面。テストデータ。"></div>
+<svg class="music" aria-hidden="true" viewBox="0 0 90 110"><path d="M48 76V21L79 12V40L58 45V81C58 105 9 106 10 85C11 69 35 65 48 76Z" fill="#7ce1d7" stroke="#101b1c" stroke-width="4" stroke-linejoin="round"/></svg>
+</section><figcaption>B / 音楽のジャケット<small>黒・ミント・レコードの溝と大きな文字</small></figcaption></figure>
+<figure><section class="screen gift" data-name="c-letter-ribbon" data-chrome="none">
+<div class="brand">PicTune</div><h2 class="headline"><span>思い出を、</span><span>プレゼント。</span></h2><p class="sub">写真に音楽と手紙を添えて。</p><div class="ribbon" aria-hidden="true"></div>
+<div class="phone"><img src="../verification/invite-links/opened.png" alt="実装済みの招待フォルダ開封画面。テストデータ。"></div>
+<svg class="music" aria-hidden="true" viewBox="0 0 100 110"><path d="M50 94L14 59C-10 25 26 3 50 29C74 3 110 25 86 59Z" fill="#ed7442" stroke="white" stroke-width="9" stroke-linejoin="round"/></svg>
+</section><figcaption>C / 手紙のラッピング<small>白・オレンジ・明朝体とリボン</small></figcaption></figure>
+</main>
+</html>
