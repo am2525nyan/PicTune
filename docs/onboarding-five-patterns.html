@@ -100,9 +100,10 @@ button:focus-visible,a:focus-visible{outline:3px solid #5365e7;outline-offset:5p
 .f2{width:148px;left:214px;top:4px;--r:10deg;--delay:190ms;z-index:4}
 .f3{width:100px;left:260px;top:232px;--r:12deg;--delay:250ms;z-index:5}
 .f5{left:141px;top:4px;--r:-18deg;--delay:220ms;color:#ff4f9a;z-index:5}
-.f5 .icon{width:62px;height:62px;fill:currentColor;stroke:#fff6fc;stroke-width:1.5;filter:drop-shadow(0 4px 0 #b52f6c)}
-.f6{left:10px;top:235px;--r:-12deg;--delay:160ms;background:#7139da;padding:14px;border:3px solid #fff5fc;border-radius:20px;box-shadow:3px 5px 0 #54269b;color:#fff;z-index:6}
-.f6 .icon{width:34px;height:34px;stroke-width:2.3}
+.f5 .icon,.f12 .icon{fill:currentColor;stroke:#fff6fc;stroke-width:1.5;filter:drop-shadow(0 4px 0 #b52f6c)}
+.f5 .icon{width:62px;height:62px}
+.f6{left:10px;top:235px;--r:-12deg;--delay:160ms;display:grid;place-items:center;width:68px;height:68px;background:#7139da;padding:0;border:3px solid #fff5fc;border-radius:20px;box-shadow:3px 5px 0 #54269b;color:#fff;z-index:6}
+.f6 .icon{display:block;width:34px;height:34px;stroke-width:2.3;transform:translateY(1px)}
 .f7{left:29px;top:320px;--r:-14deg;--delay:280ms;width:110px;background:#fff9e9;box-shadow:3px 5px 0 #d091b0;padding:11px 12px;font:700 16px/1.5 "Zen Maru Gothic",sans-serif;z-index:5}
 .f8{left:315px;top:214px;--r:14deg;--delay:310ms;background:#ffeb73;color:#f4519c;border:3px solid #fff9cf;border-radius:50%;width:58px;height:58px;display:grid;place-items:center;box-shadow:3px 4px 0 #aa7e32;z-index:7}
 .f8 .icon{width:31px;height:31px;fill:currentColor;stroke:#fff7df;stroke-width:1.2}
@@ -110,8 +111,8 @@ button:focus-visible,a:focus-visible{outline:3px solid #5365e7;outline-offset:5p
 .f9 .icon{width:43px;height:43px;fill:currentColor;stroke-width:1}
 .f10{left:170px;top:231px;--r:12deg;--delay:350ms;color:#7139da;z-index:6}
 .f10 .icon{width:41px;height:41px;fill:#fff6a5;stroke-width:1.6}
-.f12{left:340px;top:369px;--r:20deg;--delay:370ms;color:#e9378b}
-.f12 .icon{width:28px;height:28px;fill:currentColor}
+.f12{left:340px;top:369px;--r:20deg;--delay:370ms;color:#ff4f9a}
+.f12 .icon{width:28px;height:28px}
 .universe-stage.letter-reset .float{transition:none}
 .universe-stage:not(.is-open) .float{transform:translate(calc(var(--letter-x) - var(--x,195px)),calc(var(--letter-y) - var(--y,330px))) rotate(0deg) scale(.08);opacity:0;transition-delay:0ms;pointer-events:none}
 .letter-trigger{position:absolute;bottom:0;left:109px;z-index:10;width:172px;height:108px;border:0;padding:0;background:transparent;perspective:600px;color:#fff}
