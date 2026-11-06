@@ -4,10 +4,21 @@ import Combine
 @MainActor
 final class MusicPreviewPlayer: ObservableObject {
     enum State { case idle, loading, playing }
+    enum Issue {
+        case noPreview
+        case failed(String)
+
+        var message: String {
+            switch self {
+            case .noPreview: return "この曲には試聴音源がありません。"
+            case .failed(let message): return message
+            }
+        }
+    }
     typealias ResolveTrack = (Track) async throws -> Track
 
     @Published private(set) var state: State = .idle
-    @Published private(set) var message: String?
+    @Published private(set) var issue: Issue?
     @Published private(set) var resolvedTrack: Track?
     private(set) var audioPlayer: AVPlayer?
     private let resolveTrack: ResolveTrack
@@ -17,6 +28,11 @@ final class MusicPreviewPlayer: ObservableObject {
     private var timeObservation: NSKeyValueObservation?
     private var notifications: [NSObjectProtocol] = []
     private var ownsAudioSession = false
+    var message: String? { issue?.message }
+    var hasNoPreview: Bool {
+        if case .noPreview? = issue { return true }
+        return false
+    }
 
     init(resolveTrack: @escaping ResolveTrack = { try await AppleMusicAPI.shared.refreshTrack($0) }) {
         self.resolveTrack = resolveTrack
@@ -28,7 +44,7 @@ final class MusicPreviewPlayer: ObservableObject {
             return
         }
         stop()
-        message = nil
+        issue = nil
         resolvedTrack = nil
         state = .loading
         let currentRequest = requestID
@@ -47,7 +63,7 @@ final class MusicPreviewPlayer: ObservableObject {
                 guard let preview = playableTrack.previewURL,
                       let url = URL(string: preview), url.scheme == "https", url.host != nil else {
                     state = .idle
-                    message = "この曲には試聴音源がありません。"
+                    issue = .noPreview
                     return
                 }
                 try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
@@ -87,8 +103,8 @@ final class MusicPreviewPlayer: ObservableObject {
             } catch {
                 guard requestID == currentRequest, !Task.isCancelled else { return }
                 state = .idle
-                message = (error as? AppleMusicError)?.errorDescription
-                    ?? "試聴できませんでした。通信状況を確認して、もう一度お試しください。"
+                issue = .failed((error as? AppleMusicError)?.errorDescription
+                    ?? "試聴できませんでした。通信状況を確認して、もう一度お試しください。")
             }
         }
     }
@@ -112,7 +128,7 @@ final class MusicPreviewPlayer: ObservableObject {
 
     private func failPlayback() {
         stop()
-        message = "試聴できませんでした。通信状況を確認して、もう一度お試しください。"
+        issue = .failed("試聴できませんでした。通信状況を確認して、もう一度お試しください。")
     }
 
     deinit {

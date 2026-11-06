@@ -140,7 +140,7 @@ struct PhotoPreviewView: View {
             .frame(maxWidth: .infinity)
         }
         .background(Color(uiColor: .systemGroupedBackground))
-        .navigationTitle("音楽を追加")
+        .navigationTitle("保存前の確認")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
@@ -150,7 +150,15 @@ struct PhotoPreviewView: View {
             }
         }
         .navigationDestination(isPresented: $isPresentingSearch) {
+            #if DEBUG
+            if UITestFixtures.isEnabled && UITestFixtures.isEditor {
+                SearchView(selectedTrack: $selectedTrack, viewModel: UITestFixtures.musicSearch(selection: selectedTrack))
+            } else {
+                SearchView(selectedTrack: $selectedTrack)
+            }
+            #else
             SearchView(selectedTrack: $selectedTrack)
+            #endif
         }
     }
 
@@ -163,28 +171,43 @@ struct PhotoPreviewView: View {
                 Text("任意").font(.subheadline).foregroundStyle(.secondary)
             }
             if let track = selectedTrack {
-                HStack {
+                HStack(spacing: 8) {
                     Button {
                         isPresentingSearch = true
                     } label: {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(track.name).font(.body)
-                            Text(track.artist).font(.subheadline).foregroundStyle(.secondary)
+                        HStack(spacing: 12) {
+                            MusicArtwork(track: track, size: 44)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(track.name).font(.body.weight(.semibold))
+                                Text(track.artist).font(.subheadline).foregroundStyle(.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            Image(systemName: "chevron.right")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .accessibilityHidden(true)
                         }
                         .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                        .contentShape(Rectangle())
                     }
+                    .buttonStyle(.plain)
                     .accessibilityHint("選択した音楽を変更します")
-                    Button("音楽を削除", systemImage: "xmark.circle.fill", role: .destructive) {
+                    Button {
                         selectedTrack = nil
+                    } label: {
+                        Label("曲の選択を解除", systemImage: "xmark.circle.fill")
+                            .labelStyle(.iconOnly)
+                            .foregroundStyle(.secondary)
+                            .frame(minWidth: 44, minHeight: 44)
+                            .contentShape(Rectangle())
                     }
-                    .labelStyle(.iconOnly)
-                    .frame(minWidth: 44, minHeight: 44)
+                    .buttonStyle(.plain)
                 }
             } else {
                 Button {
                     isPresentingSearch = true
                 } label: {
-                    Label("音楽を追加", systemImage: "music.note")
+                    Label("曲を選ぶ", systemImage: "music.note")
                         .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                 }
                 Text("音楽を追加せずに写真だけでも保存できます。")

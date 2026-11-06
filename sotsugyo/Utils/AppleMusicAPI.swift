@@ -2,7 +2,7 @@ import Foundation
 import MusicKit
 
 enum AppleMusicError: LocalizedError {
-    case permissionDenied, restricted, configuration, unavailable, invalidResponse, rateLimited
+    case permissionDenied, restricted, configuration, unavailable, invalidResponse, rateLimited, connection
 
     var errorDescription: String? {
         switch self {
@@ -12,6 +12,7 @@ enum AppleMusicError: LocalizedError {
         case .unavailable: return "この地域では曲を取得できないか、配信が終了しています。"
         case .invalidResponse: return "曲の情報を取得できませんでした。もう一度お試しください。"
         case .rateLimited: return "検索が混み合っています。少し待ってからお試しください。"
+        case .connection: return "Apple Musicに接続できませんでした。通信状況を確認して、もう一度お試しください。"
         }
     }
 }

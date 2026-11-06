@@ -3,10 +3,10 @@ import SwiftUI
 struct SearchView: View {
     @Binding var selectedTrack: Track?
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel: SearchViewModel
     @State private var retryCount = 0
     @State private var isConfirmingClearHistory = false
-    private let musicAccent = Color(uiColor: .systemPurple)
 
     init(selectedTrack: Binding<Track?>, viewModel: SearchViewModel? = nil) {
         _selectedTrack = selectedTrack
@@ -30,8 +30,8 @@ struct SearchView: View {
         .scrollDismissesKeyboard(.interactively)
         .overlay { emptyState }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if viewModel.selection != nil {
-                selectionSummary
+            if let track = viewModel.selection, !resultsContainSelection(track) {
+                selectionSummary(track)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
@@ -41,12 +41,16 @@ struct SearchView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) { addButton }
         }
-        .tint(musicAccent)
-        .navigationTitle("音楽を追加")
+        .navigationTitle("曲を選ぶ")
         .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $viewModel.searchText, prompt: "Apple Musicで曲名・アーティスト名を検索")
+        .searchable(text: $viewModel.searchText, prompt: "曲名・アーティスト名")
         .modifier(KeepToolbarDuringSearch())
         .onSubmit(of: .search) { viewModel.remember(viewModel.query) }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active, case .permissionDenied? = viewModel.searchError {
+                retryCount += 1
+            }
+        }
         .confirmationDialog("検索履歴を消去しますか？", isPresented: $isConfirmingClearHistory, titleVisibility: .visible) {
             Button("履歴を消去", role: .destructive) { viewModel.clearHistory() }
             Button("キャンセル", role: .cancel) { }
@@ -68,28 +72,30 @@ struct SearchView: View {
         }
         .disabled(viewModel.selection == nil)
         .accessibilityIdentifier("music.add")
-        .accessibilityHint("選択した曲を写真に追加して、写真編集に戻ります")
+        .accessibilityHint("選択した曲を追加して、保存前の確認に戻ります")
     }
 
-    @ViewBuilder
-    private var selectionSummary: some View {
-        if let track = viewModel.selection {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("選択した曲")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(musicAccent)
-                HStack(spacing: 8) {
-                    MusicArtwork(track: track, size: 36)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(track.name).font(.subheadline.weight(.semibold)).lineLimit(1)
-                        Text(track.artist).font(.caption).foregroundStyle(.secondary).lineLimit(1)
-                    }
+    private func resultsContainSelection(_ track: Track) -> Bool {
+        !viewModel.query.isEmpty && viewModel.resultsQuery == viewModel.query
+            && viewModel.tracks.contains { $0.selectionID == track.selectionID }
+    }
+
+    private func selectionSummary(_ track: Track) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("選択した曲")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            HStack(spacing: 8) {
+                MusicArtwork(track: track, size: 36)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(track.name).font(.subheadline.weight(.semibold))
+                    Text(track.artist).font(.caption).foregroundStyle(.secondary)
                 }
             }
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel("選択中の曲: \(track.name)、\(track.artist)")
-            .accessibilityIdentifier("music.selection")
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("選択中の曲: \(track.name)、\(track.artist)")
+        .accessibilityIdentifier("music.selection")
     }
 
     @ViewBuilder
@@ -131,19 +137,12 @@ struct SearchView: View {
             .accessibilityElement(children: .combine)
         }
         if let error = viewModel.searchError {
-            VStack(alignment: .leading, spacing: 8) {
-                Label("検索できませんでした", systemImage: "wifi.exclamationmark")
-                    .font(.headline)
-                Text(error).font(.subheadline).foregroundStyle(.secondary)
-                Button("再試行") { retryCount += 1 }
-                    .buttonStyle(.bordered)
-                    .frame(minHeight: 44)
-            }
-            .padding(.vertical, 8)
+            searchFailure(error)
         }
         if !viewModel.tracks.isEmpty {
             Section {
                 ForEach(viewModel.tracks) { track in
+                    let isSelected = viewModel.selection?.selectionID == track.selectionID
                     HStack(spacing: 0) {
                         Button {
                             viewModel.select(track)
@@ -151,10 +150,10 @@ struct SearchView: View {
                             HStack(spacing: 12) {
                                 MusicArtwork(track: track)
                                 trackInfo(track)
-                                if viewModel.selection?.selectionID == track.selectionID {
+                                if isSelected {
                                     Image(systemName: "checkmark.circle.fill")
                                         .font(.title3)
-                                        .foregroundStyle(musicAccent)
+                                        .foregroundStyle(.tint)
                                         .accessibilityHidden(true)
                                 }
                             }
@@ -163,7 +162,8 @@ struct SearchView: View {
                         }
                         .buttonStyle(.plain)
                         .disabled(viewModel.isSearching || viewModel.resultsQuery != viewModel.query)
-                        .accessibilityAddTraits(viewModel.selection?.selectionID == track.selectionID ? .isSelected : [])
+                        .accessibilityAddTraits(isSelected ? .isSelected : [])
+                        .accessibilityIdentifier(isSelected ? "music.selectedResult" : "music.result")
                         .accessibilityHint("写真に追加する曲として選択します")
                         if let url = track.serviceURL {
                             Link(destination: url) {
@@ -181,6 +181,32 @@ struct SearchView: View {
                     .textCase(nil)
             }
         }
+    }
+
+    private func searchFailure(_ error: AppleMusicError) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            switch error {
+            case .permissionDenied:
+                Label("Apple Musicへのアクセスが必要です", systemImage: "lock")
+                    .font(.headline)
+                Text(error.localizedDescription).font(.subheadline).foregroundStyle(.secondary)
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    Link("設定を開く", destination: url)
+                        .frame(minHeight: 44)
+                }
+            case .restricted:
+                Label("Apple Musicへのアクセスが制限されています", systemImage: "lock")
+                    .font(.headline)
+            default:
+                Label("検索できませんでした", systemImage: "exclamationmark.circle")
+                    .font(.headline)
+                Text(error.localizedDescription).font(.subheadline).foregroundStyle(.secondary)
+                Button("再試行") { retryCount += 1 }
+                    .buttonStyle(.bordered)
+                    .frame(minHeight: 44)
+            }
+        }
+        .padding(.vertical, 8)
     }
 
     @ViewBuilder
@@ -201,11 +227,11 @@ struct SearchView: View {
     }
 
     private func trackInfo(_ track: Track) -> some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text(track.name).font(.body.weight(.semibold)).foregroundStyle(.primary).lineLimit(1)
-            Text(track.artist).font(.subheadline).foregroundStyle(.secondary).lineLimit(1)
+        VStack(alignment: .leading, spacing: 4) {
+            Text(track.name).font(.body.weight(.semibold)).foregroundStyle(.primary)
+            Text(track.artist).font(.subheadline).foregroundStyle(.secondary)
             if let album = track.albumName, !album.isEmpty {
-                Text(album).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                Text(album).font(.caption).foregroundStyle(.secondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -223,7 +249,7 @@ private struct KeepToolbarDuringSearch: ViewModifier {
     }
 }
 
-private struct MusicArtwork: View {
+struct MusicArtwork: View {
     let track: Track
     var size: CGFloat = 56
 
@@ -232,10 +258,9 @@ private struct MusicArtwork: View {
             image.resizable().scaledToFill()
         } placeholder: {
             Image(systemName: "music.note")
-                .foregroundStyle(.white)
+                .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(LinearGradient(colors: [Color("mainColor"), Color(uiColor: .systemPurple)],
-                                           startPoint: .topLeading, endPoint: .bottomTrailing))
+                .background(Color(uiColor: .tertiarySystemFill))
         }
         .frame(width: size, height: size)
         .clipShape(RoundedRectangle(cornerRadius: 6))
