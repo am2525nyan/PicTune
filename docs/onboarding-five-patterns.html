@@ -124,10 +124,15 @@ button:focus-visible,a:focus-visible{outline:3px solid #5365e7;outline-offset:5p
 .envelope-flap{height:63px;background:#9754d7;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:50% 0;transition:transform .55s ease;z-index:6;border-radius:7px 7px 0 0}
 .is-open .envelope-flap{transform:rotateX(180deg);z-index:0}
 .envelope-seal{position:absolute;left:69px;top:42px;width:34px;height:34px;fill:#ffeb8c;stroke:#ffeb8c;z-index:7;pointer-events:none}
-.universe-copy{position:absolute;top:552px;left:24px;right:24px;text-align:center}
-.universe-copy h2{margin:0;font:700 34px/1.3 "Zen Maru Gothic","Hiragino Sans",sans-serif;letter-spacing:-.025em}
-.universe-copy h2 span{font-size:34px;color:#7139da}
-.universe-copy p{font-size:12px;line-height:1.7;color:#745369;margin:13px 0 0}
+.universe-copy{position:absolute;top:548px;left:24px;right:24px;text-align:center}
+.universe-copy h2{margin:0;font-family:"Zen Maru Gothic","Hiragino Sans",sans-serif;font-weight:700;letter-spacing:-.025em}
+.universe-copy .pop-intro{display:table;margin:0 auto;padding:0 9px;font-size:30px;line-height:1.2;color:#351c52;background:linear-gradient(transparent 52%,#ffed83 52% 93%,transparent 93%);transform:rotate(-3deg)}
+.universe-copy .pop-title{display:flex;justify-content:center;margin-top:6px;font-size:43px;line-height:1.25;color:#7139da;white-space:nowrap;isolation:isolate}
+.universe-copy .pop-letter{display:inline-block;position:relative;paint-order:stroke fill;-webkit-text-stroke:5px #fff9ef;text-shadow:3px 5px 0 #e87bb1;transform:translateY(var(--rise,0px)) rotate(var(--tilt,0deg));transform-origin:50% 75%}
+.universe.entering .pop-letter{animation:letter-bounce .65s cubic-bezier(.22,.8,.32,1) both;animation-delay:var(--pop-delay,0ms)}
+@keyframes letter-bounce{0%{opacity:0;transform:translateY(14px) rotate(var(--tilt,0deg)) scale(.75)}60%{opacity:1;transform:translateY(-6px) rotate(var(--tilt,0deg)) scale(1.08)}80%{transform:translateY(2px) rotate(var(--tilt,0deg)) scale(.98)}100%{opacity:1;transform:translateY(var(--rise,0px)) rotate(var(--tilt,0deg)) scale(1)}}
+@media(prefers-reduced-motion:reduce){.universe.entering .pop-letter{animation:none}}
+.universe-copy p{font-size:12px;line-height:1.65;color:#654563;margin:10px 0 0}
 .universe .primary{font:700 17px "Zen Maru Gothic",sans-serif;min-height:60px;box-shadow:0 4px 0 #51279d}
 
 /* 03 — sticker-covered purple scrapbook, with complete photo frames. */
@@ -523,7 +528,7 @@ to{opacity:1;translate:0 0}
 <div class="description">
 <span class="preference">調整した案</span><br><span class="design-id">02 / LITTLE UNIVERSE</span>
 <h2>好きなものが、集まる。</h2>
-<p>丸ゴシックの見出しと、手紙からチェキや音符が飛び出す構成です。写真はご本人のPicTuneでデコったチェキを使い、斜めのリボンと、手前に重なる影付きのハートを添えました。</p>
+<p>縁取りと影を付けた大きな文字が、少しずつ弾んで登場します。手紙からはチェキや音符が飛び出す構成です。写真はご本人のPicTuneでデコったチェキを使い、斜めのリボンと、手前に重なる影付きのハートを添えました。</p>
 <dl class="details">
 <div>
 <dt>構図</dt>
@@ -601,7 +606,10 @@ to{opacity:1;translate:0 0}
 </button>
 </div>
 <div class="universe-copy">
-<h2>何気ない日も、<br><span>とっておき。</span></h2>
+<h2 aria-label="何気ない日も、とっておき。">
+<span class="pop-intro" aria-hidden="true">何気ない日も、</span>
+<span class="pop-title" aria-hidden="true"><span class="pop-letter" style="--tilt:-6deg;--rise:1px;--pop-delay:180ms">と</span><span class="pop-letter" style="--tilt:4deg;--rise:-2px;--pop-delay:230ms">っ</span><span class="pop-letter" style="--tilt:-3deg;--rise:0px;--pop-delay:280ms">て</span><span class="pop-letter" style="--tilt:5deg;--rise:-2px;--pop-delay:330ms">お</span><span class="pop-letter" style="--tilt:-4deg;--rise:1px;--pop-delay:380ms">き</span><span class="pop-letter" style="--tilt:7deg;--rise:-1px;--pop-delay:430ms">。</span></span>
+</h2>
 <p>撮って、デコって、好きな曲を。<br>いつもの毎日が、宝物になる。</p>
 </div>
 <div class="bottom">
