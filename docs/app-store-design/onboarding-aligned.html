@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PicTune — オンボーディングに合わせたApp Store画像</title>
+<style>
+@font-face{font-family:"Zen Maru Gothic";src:url("assets/ZenMaruGothic-Bold.ttf") format("truetype");font-style:normal;font-weight:700;font-display:swap}
+:root{--screen-w:402px;--pink:#ffd5e8;--purple:#7139da;--ink:#351c52;--yellow:#ffed83;--paper:#fff9ef;font-family:"Zen Maru Gothic",sans-serif;font-synthesis:none;color:var(--ink)}
+*{box-sizing:border-box}body{margin:0;padding:32px;background:#f2f0ed}header{max-width:720px;margin:0 auto 24px}header h1{font-size:22px;line-height:32px;margin:0 0 12px}header p{font-family:-apple-system,sans-serif;font-size:14px;line-height:24px;margin:0}main{display:flex;justify-content:center}.screen{position:relative;width:440px;height:956px;overflow:hidden;background:var(--pink);isolation:isolate}
+.brand{position:absolute;left:32px;top:35px;font-size:29px;line-height:36px;font-weight:700;letter-spacing:-.7px;color:var(--purple)}
+.headline{position:absolute;top:119px;left:25px;right:25px;margin:0;font-weight:700;text-align:center}.intro{display:table;margin:0 auto;padding:0 6px;font-size:35px;line-height:46px;letter-spacing:-1.4px;background:linear-gradient(transparent 53%,var(--yellow) 53% 92%,transparent 92%);transform:rotate(-3deg)}
+.title{display:table;margin:15px auto 0;font-size:60px;line-height:80px;white-space:nowrap;color:var(--purple);letter-spacing:-2px;paint-order:stroke fill;-webkit-text-stroke:6px var(--paper);text-shadow:3px 5px 0 #e87bb1;transform:rotate(-1.5deg)}
+.subtitle{position:absolute;top:288px;left:24px;right:24px;margin:0;text-align:center;font-size:17px;line-height:27px;color:#654563}
+.phone{position:absolute;width:260px;left:90px;top:357px;border:5px solid #351c52;border-radius:35px;background:#fff;overflow:hidden;box-shadow:0 12px 20px #7139da22;transform:rotate(-3deg);z-index:2;line-height:0}.phone img{display:block;width:100%;height:auto}.phone::after{content:"";position:absolute;left:calc(50% - 34px);top:8px;width:68px;height:19px;border-radius:20px;background:#251a30}
+.accent{position:absolute;z-index:3}.bow{left:320px;top:328px;width:100px;height:86px;transform:rotate(14deg);filter:drop-shadow(2px 4px 0 #b579b3)}.heart{left:19px;top:562px;width:52px;height:52px;transform:rotate(-15deg);fill:#ff4f9a;stroke:#fff6fc;stroke-width:1.5;filter:drop-shadow(0 4px 0 #b52f6c)}.spark{left:366px;top:96px;width:33px;height:33px;fill:#7139da;stroke:#7139da;stroke-width:1}.music{left:354px;top:761px;width:60px;height:60px;border:3px solid #fff5fc;border-radius:17px;background:#7139da;box-shadow:3px 4px 0 #54269b;display:grid;place-items:center;transform:rotate(12deg)}.music svg{width:31px;height:31px;fill:none;stroke:#fff;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<header><h1>PicTune / オンボーディングと揃えた修正版</h1><p>制作中の02案を参照し、書体・配色・斜めのリボン・文字の縁取りを揃えています。<br>画面内は既存のテストデータです。公開前に写真・楽曲情報を入れて再撮影します。</p></header>
+<main><section class="screen" data-name="onboarding-aligned" data-chrome="none">
+<div class="brand">PicTune</div>
+<h2 class="headline" aria-label="何気ない日も、とっておき。"><span class="intro" aria-hidden="true">何気ない日も、</span><span class="title" aria-hidden="true">とっておき。</span></h2>
+<p class="subtitle">写真に音楽と手紙を添えて。</p>
+<div class="phone"><img src="../verification/invite-links/opened.png" alt="実装済みの招待フォルダ開封画面。テストデータ。"></div>
+<svg class="accent bow" viewBox="0 0 110 94" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><path d="M48 39 31 84l-7-13-15 4 29-43m23 6 17 47 7-12 15 2-30-44" fill="#c3a0ed" stroke="#fff6fc" stroke-width="2.5"/><path d="M54 37C31 0 6 4 12 30s27 24 42 7C76 0 105 5 99 30S72 52 54 37Z" fill="#ff82bc" stroke="#fff6fc" stroke-width="2.5"/><path d="M20 21c7-7 17 0 24 9m23 0c8-10 17-14 23-9" fill="none" stroke="#ffd7e9" stroke-width="3"/><ellipse cx="55" cy="37" rx="10" ry="12" fill="#ed549d" stroke="#fff6fc" stroke-width="2"/></svg>
+<svg class="accent heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>
+<svg class="accent spark" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 1 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/></svg>
+<div class="accent music" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-3v13M9 8l12-3"/><ellipse cx="6" cy="18" rx="3" ry="2.5"/><ellipse cx="18" cy="15" rx="3" ry="2.5"/></svg></div>
+</section></main>
+</html>
