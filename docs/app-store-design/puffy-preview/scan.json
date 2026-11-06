@@ -1,0 +1,26 @@
+[
+  {
+    "name": "puffy-stickers",
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "Hiragino Maru Gothic ProN": 2
+      },
+      "sizes": [
+        25,
+        16
+      ],
+      "weights": [
+        "700",
+        "900"
+      ],
+      "leftEdges": 2,
+      "accentHues": [
+        336,
+        264
+      ],
+      "cards": 1
+    }
+  }
+]
