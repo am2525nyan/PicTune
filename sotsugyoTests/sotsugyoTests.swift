@@ -83,8 +83,10 @@ final class PhotoUploadIntegrationTests: XCTestCase {
         do {
             _ = try await reference.putDataAsync(Data([1, 2, 3]), metadata: metadata)
             XCTFail("Upload must require the ownership metadata")
-        } catch let error as StorageError {
-            guard case .unauthorized = error else { return XCTFail("Unexpected error: \(error)") }
+        } catch {
+            let storageError = error as NSError
+            XCTAssertEqual(storageError.domain, StorageErrorDomain)
+            XCTAssertEqual(storageError.code, StorageErrorCode.unauthorized.rawValue)
         }
         metadata.customMetadata = ["ownerIDs": uid]
         _ = try await reference.putDataAsync(Data([1, 2, 3]), metadata: metadata)
@@ -93,11 +95,9 @@ final class PhotoUploadIntegrationTests: XCTestCase {
 
 @MainActor
 final class sotsugyoTests: XCTestCase {
-    func testStorageErrorFiveShowsPermissionFailureAndAllowsRetry() async {
+    func testStorageUnauthorizedShowsPermissionFailureAndAllowsRetry() async {
         let camera = RecordingCameraManager()
-        camera.failure = StorageError.unauthorized("test-bucket", "images/test.jpg")
-        // Reproduce the SDK's otherwise unhelpful localizedDescription.
-        XCTAssertEqual((camera.failure as NSError).code, 5)
+        camera.failure = StorageError.unauthorized(bucket: "test-bucket", object: "images/test.jpg", serverError: [:]) as NSError
         let model = PhotoPreviewViewModel()
         let image = UIGraphicsImageRenderer(size: CGSize(width: 20, height: 20)).image { _ in }
 
@@ -117,7 +117,7 @@ final class sotsugyoTests: XCTestCase {
     }
 
     func testStorageAuthenticationFailureRequestsSignInInsteadOfNetworkRetry() {
-        let message = PhotoPreviewViewModel.saveErrorMessage(for: StorageError.unauthenticated)
+        let message = PhotoPreviewViewModel.saveErrorMessage(for: StorageError.unauthenticated(serverError: [:]))
         XCTAssertTrue(message.contains("もう一度ログイン"))
         XCTAssertTrue(message.contains("storage/unauthenticated"))
         XCTAssertFalse(message.contains("通信状況"))

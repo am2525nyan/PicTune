@@ -66,12 +66,11 @@ class PhotoPreviewViewModel: ObservableObject {
                 break
             }
         }
-        // StorageError does not conform to LocalizedError. Its NSError code is
-        // an enum index (e.g. unauthorized = 5), not a StorageErrorCode value.
-        guard let storageError = error as? StorageError else {
+        let storageError = error as NSError
+        guard storageError.domain == StorageErrorDomain else {
             return "写真を保存できませんでした。\n\(error.localizedDescription)"
         }
-        switch storageError {
+        switch StorageErrorCode(rawValue: storageError.code) {
         case .unauthorized:
             return "写真を保存する権限がありません。アプリの管理者にお問い合わせください。\nエラー: storage/unauthorized"
         case .unauthenticated:

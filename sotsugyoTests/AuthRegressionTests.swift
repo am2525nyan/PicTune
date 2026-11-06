@@ -25,8 +25,8 @@ final class AuthRegressionTests: XCTestCase {
         }
     }
     func testCollisionUsesUpdatedAppleCredentialAndDoesNotTreatOtherErrorsAsLogin() {
-        let original = OAuthProvider.credential(withProviderID: "apple.com", idToken: "old", rawNonce: "nonce")
-        let updated = OAuthProvider.credential(withProviderID: "apple.com", idToken: "updated", rawNonce: "nonce")
+        let original = OAuthProvider.appleCredential(withIDToken: "old", rawNonce: "nonce", fullName: nil)
+        let updated = OAuthProvider.appleCredential(withIDToken: "updated", rawNonce: "nonce", fullName: nil)
         let collision = NSError(domain: AuthErrorDomain, code: AuthErrorCode.credentialAlreadyInUse.rawValue,
                                 userInfo: [AuthErrorUserInfoUpdatedCredentialKey: updated])
         XCTAssertTrue(AccountLinkingModel.existingSignInCredential(for: collision, original: original) === updated)
@@ -283,7 +283,7 @@ final class AnonymousAuthIntegrationTests: XCTestCase {
     func testExistingGoogleAndAppleAccountsUseTheSameEntryAndRequireConfirmation() async throws {
         for credential in [
             GoogleAuthProvider.credential(withIDToken: fakeIDToken(issuer: "https://accounts.google.com"), accessToken: "emulator"),
-            OAuthProvider.credential(withProviderID: "apple.com", idToken: fakeIDToken(issuer: "https://appleid.apple.com"), rawNonce: "emulator")
+            OAuthProvider.appleCredential(withIDToken: fakeIDToken(issuer: "https://appleid.apple.com"), rawNonce: "emulator", fullName: nil)
         ] as [AuthCredential] {
             let existing = try await auth.signIn(with: credential)
             try auth.signOut()
@@ -337,7 +337,7 @@ final class AnonymousAuthIntegrationTests: XCTestCase {
         let googleLinked = await model.link(credential: google)
         XCTAssertTrue(googleLinked, model.errorMessage ?? "")
         XCTAssertEqual(auth.currentUser?.uid, anonymous.user.uid)
-        let apple = OAuthProvider.credential(withProviderID: "apple.com", idToken: fakeIDToken(issuer: "https://appleid.apple.com"), rawNonce: "emulator")
+        let apple = OAuthProvider.appleCredential(withIDToken: fakeIDToken(issuer: "https://appleid.apple.com"), rawNonce: "emulator", fullName: nil)
         let appleLinked = await model.link(credential: apple)
         XCTAssertTrue(appleLinked, model.errorMessage ?? "")
         XCTAssertEqual(auth.currentUser?.uid, anonymous.user.uid)
