@@ -12,6 +12,15 @@ enum UITestFixtures {
     }
     static let letter = "楽しい思い出をありがとう。\nまた一緒に写真を撮りましょう。"
 
+    @MainActor static func musicSearch(selection: Track? = nil) -> SearchViewModel {
+        let defaults = UserDefaults(suiteName: "PicTune.UITests.Search")!
+        return SearchViewModel(selection: selection, defaults: defaults) { query in
+            if query == "error" { throw URLError(.notConnectedToInternet) }
+            if query == "empty" { return [] }
+            return [Track(id: "fixture-track", name: "思い出の曲", artist: "PicTune Artist", albumImages: [], previewURL: nil, albumName: "卒業アルバム")]
+        }
+    }
+
     static func image(_ alternate: Bool = false) -> UIImage {
         let size = CGSize(width: 333, height: 529)
         return UIGraphicsImageRenderer(size: size).image { context in
@@ -30,7 +39,7 @@ enum UITestFixtures {
 struct UITestRootView: View {
     @StateObject private var photos = UITestContentModel()
     @StateObject private var folders = UITestContentModel()
-    @StateObject private var camera = CameraManager()
+    @StateObject private var camera = CameraManager(currentUserID: { nil })
 
     var body: some View {
         if ProcessInfo.processInfo.arguments.contains("-ui-testing-invite") {
@@ -64,13 +73,7 @@ private struct UITestSearchView: View {
     @StateObject private var viewModel: SearchViewModel
 
     init() {
-        let defaults = UserDefaults(suiteName: "PicTune.UITests.Search")!
-        defaults.removePersistentDomain(forName: "PicTune.UITests.Search")
-        let model = SearchViewModel(defaults: defaults) { query in
-            if query == "error" { throw URLError(.notConnectedToInternet) }
-            if query == "empty" { return [] }
-            return [Track(id: "fixture-track", name: "思い出の曲", artist: "PicTune Artist", albumImages: [], previewURL: nil, albumName: "卒業アルバム")]
-        }
+        let model = UITestFixtures.musicSearch()
         let arguments = ProcessInfo.processInfo.arguments
         model.searchText = arguments.contains("-ui-testing-search-error") ? "error" : arguments.contains("-ui-testing-search-empty") ? "empty" : "思い出"
         _viewModel = StateObject(wrappedValue: model)

@@ -118,46 +118,68 @@ struct MusicAttachmentView: View {
                 : AnyLayout(HStackLayout(spacing: 12))
 
             layout {
-                AsyncImage(url: displayedTrack.albumImages.first.flatMap(URL.init(string:))) { image in
-                    image.resizable().scaledToFit()
-                } placeholder: {
-                    Image(systemName: "music.note").font(.title).foregroundStyle(.secondary)
-                }
-                .frame(width: 64, height: 64)
-                .accessibilityHidden(true)
+                MusicArtwork(track: displayedTrack, size: 64)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(displayedTrack.name).font(.headline)
                     Text(displayedTrack.artist).font(.subheadline).foregroundStyle(.secondary)
                 }
             }
             layout {
-                Button {
-                    player.toggle(track)
-                } label: {
-                    Label(player.state == .idle ? "試聴" : "停止",
-                          systemImage: player.state == .idle ? "play.fill" : "stop.fill")
-                        .frame(minHeight: 44)
+                if player.hasNoPreview {
+                    Label("試聴音源なし", systemImage: "speaker.slash")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("music.previewUnavailable")
+                } else if track.provider != .unknown {
+                    previewButton
                 }
-                .buttonStyle(.bordered)
-                .disabled(track.provider == .unknown)
-                .accessibilityIdentifier("music.preview")
-                if player.state == .loading { ProgressView().accessibilityLabel("試聴を準備中") }
-                if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 0) }
                 if let url = displayedTrack.serviceURL {
+                    if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 0) }
                     Link("\(displayedTrack.provider.name)で聴く", destination: url)
                         .font(.subheadline)
+                        .frame(minWidth: 44, minHeight: 44)
                         .accessibilityIdentifier("music.serviceLink")
                 }
             }
-            if let message = player.message {
+            if !player.hasNoPreview, let message = player.message {
                 Text(message).font(.caption).foregroundStyle(.secondary)
                     .accessibilityIdentifier("music.previewMessage")
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .onDisappear { player.stop() }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { player.stop() }
         }
+    }
+
+    private var previewButton: some View {
+        Button {
+            player.toggle(track)
+        } label: {
+            Group {
+                switch player.state {
+                case .idle:
+                    if player.issue != nil {
+                        Label("再試行", systemImage: "arrow.clockwise")
+                    } else {
+                        Label("試聴", systemImage: "play.fill")
+                    }
+                case .loading:
+                    HStack(spacing: 8) {
+                        ProgressView().accessibilityHidden(true)
+                        Text("準備中…")
+                        Image(systemName: "xmark").font(.caption.weight(.semibold))
+                    }
+                case .playing:
+                    Label("停止", systemImage: "stop.fill")
+                }
+            }
+            .frame(minWidth: 44, minHeight: 44)
+        }
+        .buttonStyle(.bordered)
+        .accessibilityIdentifier("music.preview")
+        .accessibilityHint(player.state == .loading ? "試聴の準備をキャンセルします" : "")
     }
 }

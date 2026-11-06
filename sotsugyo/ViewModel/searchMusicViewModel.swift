@@ -9,7 +9,7 @@ final class SearchViewModel: ObservableObject {
     @Published var selection: Track?
     @Published private(set) var tracks: [Track] = []
     @Published private(set) var isSearching = false
-    @Published private(set) var searchError: String?
+    @Published private(set) var searchError: AppleMusicError?
     @Published private(set) var resultsQuery = ""
     @Published private(set) var recentSearches: [String]
 
@@ -59,8 +59,7 @@ final class SearchViewModel: ObservableObject {
             guard self.requestID == requestID else { return }
             isSearching = false
             guard !Task.isCancelled, !(error is CancellationError), self.query == query else { return }
-            searchError = (error as? AppleMusicError)?.errorDescription
-                ?? "Apple Musicに接続できませんでした。通信状況を確認して、もう一度お試しください。"
+            searchError = (error as? AppleMusicError) ?? .connection
         }
     }
 

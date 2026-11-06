@@ -205,7 +205,10 @@ private struct MusicUITestScene: View {
                 ImageDetailView(photo: LibraryPhoto(record: PhotoRecord(
                     id: "fixture", fileName: "fixture.jpg", date: Date(timeIntervalSince1970: 1_791_241_200),
                     music: FirebaseMusic(photoID: "fixture", track: Self.track), livePhotoFileName: ""),
-                    image: Self.sampleImage), resolvePreview: { $0 })
+                    image: Self.sampleImage), resolvePreview: { track in
+                        try await Task.sleep(for: .seconds(3))
+                        return track
+                    })
             } else {
                 SearchView(selectedTrack: $selectedTrack, viewModel: SearchViewModel(search: { query in
                     if query == "error" { throw AppleMusicError.permissionDenied }
