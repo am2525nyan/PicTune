@@ -130,7 +130,7 @@ final class AccountLinkingModel: ObservableObject {
 
     static func existingSignInCredential(for error: Error, original: AuthCredential) -> AuthCredential? {
         let error = error as NSError
-        guard error.domain == AuthErrorDomain, let code = AuthErrorCode.Code(rawValue: error.code),
+        guard error.domain == AuthErrorDomain, let code = AuthErrorCode(rawValue: error.code),
               [.credentialAlreadyInUse, .emailAlreadyInUse].contains(code) else {
             return nil
         }
@@ -187,7 +187,7 @@ final class AccountLinkingModel: ObservableObject {
     static func message(for error: Error) -> String {
         let error = error as NSError
         guard error.domain == AuthErrorDomain else { return error.localizedDescription }
-        switch AuthErrorCode.Code(rawValue: error.code) {
+        switch AuthErrorCode(rawValue: error.code) {
         case .credentialAlreadyInUse, .emailAlreadyInUse, .accountExistsWithDifferentCredential:
             return "別のログイン方法で登録されているアカウントです。以前使ったログイン方法を選んでください。今の写真や手紙はそのまま残っています。"
         case .providerAlreadyLinked:
